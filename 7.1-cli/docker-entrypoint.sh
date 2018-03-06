@@ -20,4 +20,3 @@ fi
     echo "Xdebug is enabled"
 
 exec "$@"
-
