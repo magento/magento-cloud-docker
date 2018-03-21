@@ -32,7 +32,8 @@ RUN docker-php-ext-install \
   xsl \
   zip \
   bcmath \
-  soap
+  soap \
+  sockets
 
 RUN pecl install -o -f xdebug
 
