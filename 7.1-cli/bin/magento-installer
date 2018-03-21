@@ -5,20 +5,15 @@
 MAGENTO_COMMAND="magento-command"
 ECE_COMMAND="ece-command"
 
-if [ "$M2_CLEAN_COMPOSER" = "true" ]; then
-    echo "Cleaning Composer packages..."
-    rm -rf $MAGENTO_ROOT/vendor/*
-fi
-
 composer --working-dir=$MAGENTO_ROOT install
 
 chown -R www-data:www-data $MAGENTO_ROOT
 
-if [ "$M2_USE_SAMPLE_DATA" = "true" ]; then
-    echo "Deploying Sample Data..."
+if [ "$M2SETUP_USE_SAMPLE_DATA" = "true" ]; then
+  echo "Deploying Sample Data..."
 
-    $MAGENTO_COMMAND sampledata:deploy
-    composer --working-dir=$MAGENTO_ROOT update
+  $MAGENTO_COMMAND sampledata:deploy
+  composer --working-dir=$MAGENTO_ROOT update
 fi
 
 echo "Installing Magento Cloud..."
