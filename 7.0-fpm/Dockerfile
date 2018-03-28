@@ -54,4 +54,4 @@ ADD etc/php-fpm.ini /usr/local/etc/php/conf.d/zz-magento.ini
 
 ADD etc/php-fpm.conf /usr/local/etc/
 
-CMD ["php-fpm", "-F"]
+CMD ["php-fpm", "-R"]
