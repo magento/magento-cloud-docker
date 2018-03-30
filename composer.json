@@ -2,11 +2,15 @@
     "name": "magento/magento-cloud-docker",
     "description": "Magento Cloud Docker",
     "type": "project",
+    "license": "MIT",
     "require": {
+        "php": "^7.1",
         "symfony/console": "^4.0",
         "illuminate/filesystem": "^5.6"
     },
-    "license": "MIT",
+    "require-dev": {
+        "roave/security-advisories": "dev-master"
+    },
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
