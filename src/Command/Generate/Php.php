@@ -17,10 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Php extends Command
 {
-    const SUPPORTED_VERSIONS = ['7.0', '7.1', '7.2'];
-    const EDITIONS = ['cli', 'fpm'];
-
-    const ARGUMENT_VERSION = 'version';
+    private const SUPPORTED_VERSIONS = ['7.0', '7.1', '7.2'];
+    private const EDITIONS = ['cli', 'fpm'];
+    private const ARGUMENT_VERSION = 'version';
 
     /**
      * @var Filesystem
@@ -86,10 +85,11 @@ class Php extends Command
         $this->filesystem->copyDirectory($dataDir, $destination);
 
         $dockerfile = $destination . '/Dockerfile';
-        $content = str_replace(
-            '{%version%}',
-            $version,
-            $this->filesystem->get($dockerfile)
+        $content = strtr(
+            $this->filesystem->get($dockerfile),
+            [
+                '{%version%}' => $version,
+            ]
         );
 
         $this->filesystem->put($dockerfile, $content);
