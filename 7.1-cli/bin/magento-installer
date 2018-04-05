@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 [ "$DEBUG" = "true" ] && set -x
 
 MAGENTO_COMMAND="magento-command"
