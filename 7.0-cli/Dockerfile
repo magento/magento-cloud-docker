@@ -3,6 +3,7 @@ FROM php:7.0-cli
 # Install dependencies
 RUN apt-get update \
   && apt-get install -y \
+    quilt \ 
     libfreetype6-dev \ 
     libicu-dev \ 
     libjpeg62-turbo-dev \ 
