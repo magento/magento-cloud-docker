@@ -23,13 +23,24 @@ echo "Installing Magento Cloud..."
 $ECE_COMMAND build
 $ECE_COMMAND deploy
 $ECE_COMMAND prestart
-$ECE_COMMAND post-deploy
 
 echo "Fixing file permissions.."
 
 find $MAGENTO_ROOT/pub -type f -exec chmod 664 {} \;
 find $MAGENTO_ROOT/pub -type d -exec chmod 775 {} \;
 
+# Kill child processes when exit
+trap "pkill $$" EXIT SIGTERM SIGINT
+# Forward port from web to 127.0.0.1
+socat TCP-L:8080,fork,bind=127.0.0.1 TCP:web:80 &
+
 chown -R www-data:www-data $MAGENTO_ROOT
 
+$ECE_COMMAND post-deploy
+
+# Kills socat now that we are done with it.  And any other child processes if there were any.
+pkill $$
+
 echo "Installation complete"
+
+

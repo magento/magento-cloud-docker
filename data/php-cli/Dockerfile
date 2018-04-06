@@ -4,6 +4,7 @@ FROM php:{%version%}-cli
 RUN apt-get update \
   && apt-get install -y \
     libfreetype6-dev \ 
+    socat \ 
     libicu-dev \ 
     libjpeg62-turbo-dev \ 
     libmcrypt-dev \ 
