@@ -7,7 +7,7 @@ RUN apt-get update \
     libicu-dev \ 
     libjpeg62-turbo-dev \ 
     libmcrypt-dev \ 
-    libpng12-dev \ 
+    libpng-dev \
     libxslt1-dev \ 
     sendmail-bin \ 
     sendmail \ 
