@@ -23,6 +23,10 @@ echo "Installing Magento Cloud..."
 $ECE_COMMAND build
 $ECE_COMMAND deploy
 $ECE_COMMAND prestart
+
+# Temporary disabling SSL in admin
+$MAGENTO_COMMAND config:set web/secure/use_in_adminhtml 0
+
 $ECE_COMMAND post-deploy
 
 echo "Fixing file permissions.."
