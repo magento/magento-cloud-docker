@@ -26,3 +26,12 @@ php ./bin/mcd generate:php <version>
 Where:
 
 - `version`: Version of PHP to be generated
+
+## Executing commands
+
+### Connecting to CLI container
+- Connect to CLI container by running `docker-compose run cli bash`
+
+### Running commands directly
+- `docker-compose run cli ece-command` for ECE-Tools specific commands
+- `docker-compose run cli magento-command` for Magento 2 specifiic commands
