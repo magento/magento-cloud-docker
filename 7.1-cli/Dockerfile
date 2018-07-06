@@ -28,10 +28,10 @@ RUN docker-php-ext-install \
   intl \
   mbstring \
   mcrypt \
+  pcntl \
   pdo_mysql \
   xsl \
   zip \
-  pcntl \
   bcmath \
   soap \
   sockets
