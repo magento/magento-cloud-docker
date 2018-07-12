@@ -4,7 +4,9 @@
 
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
-chown www-data:www-data $MAGENTO_ROOT
+#chown www-data:www-data $MAGENTO_ROOT
+setfacl -R -d -m "g:www-data:7" $MAGENTO_ROOT
+setfacl -R -m "g:www-data:7" $MAGENTO_ROOT
 
 # Configure Sendmail if required
 if [ "$ENABLE_SENDMAIL" == "true" ]; then
