@@ -4,8 +4,13 @@
 
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
-setfacl -R -d -m "g:www-data:7" $MAGENTO_ROOT
-setfacl -R -m "g:www-data:7" $MAGENTO_ROOT
+if setfacl -R -d -m "g:www-data:7" $MAGENTO_ROOT && setfacl -R -m "g:www-data:7" $MAGENTO_ROOT
+then 
+     echo "Adding permissions for www-data group via setfacl"
+else 
+     echo "Changing permissions to www-data user and group via chown"
+     chown -R www-data:www-data $MAGENTO_ROOT
+fi
 
 # Configure Sendmail if required
 if [ "$ENABLE_SENDMAIL" == "true" ]; then
