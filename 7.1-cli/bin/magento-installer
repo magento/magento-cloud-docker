@@ -6,10 +6,23 @@ set -e
 
 MAGENTO_COMMAND="magento-command"
 ECE_COMMAND="ece-command"
+COMPOSER_CACHE_DIRECTORY=/root/.composer/cache
 
 composer --working-dir=$MAGENTO_ROOT install
 
-chown -R www-data:www-data $MAGENTO_ROOT
+if setfacl -R -d -m "g:www-data:7" $MAGENTO_ROOT && setfacl -R -m "g:www-data:7" $MAGENTO_ROOT
+then 
+     echo "Adding permissions for www-data group via setfacl"
+     MAGENTO_ROOT_OWNER=$(ls -ld $MAGENTO_ROOT | awk '{print $3}')
+     COMPOSER_CACHE_OWNER=$(ls -ld $COMPOSER_CACHE_DIRECTORY | awk '{print $3}')
+     setfacl -R -d -m "u:${MAGENTO_ROOT_OWNER}:7" $MAGENTO_ROOT
+     setfacl -R -m "u:${MAGENTO_ROOT_OWNER}:7" $MAGENTO_ROOT
+     setfacl -R -d -m "u:${COMPOSER_CACHE_OWNER}:7" $COMPOSER_CACHE_DIRECTORY
+     setfacl -R -m "u:${COMPOSER_CACHE_OWNER}:7" $COMPOSER_CACHE_DIRECTORY
+else 
+     echo "Changing permissions to www-data user and group via chown"
+     chown -R www-data:www-data $MAGENTO_ROOT
+fi
 
 if [ "$M2SETUP_USE_SAMPLE_DATA" = "true" ]; then
   echo "Deploying Sample Data..."
@@ -33,6 +46,19 @@ echo "Fixing file permissions.."
 find $MAGENTO_ROOT/pub -type f -exec chmod 664 {} \;
 find $MAGENTO_ROOT/pub -type d -exec chmod 775 {} \;
 
-chown -R www-data:www-data $MAGENTO_ROOT
+
+if setfacl -R -d -m "g:www-data:7" $MAGENTO_ROOT && setfacl -R -m "g:www-data:7" $MAGENTO_ROOT
+then 
+     echo "Adding permissions for www-data group via setfacl"
+     MAGENTO_ROOT_OWNER=$(ls -ld $MAGENTO_ROOT | awk '{print $3}')
+     COMPOSER_CACHE_OWNER=$(ls -ld $COMPOSER_CACHE_DIRECTORY | awk '{print $3}')
+     setfacl -R -d -m "u:${MAGENTO_ROOT_OWNER}:7" $MAGENTO_ROOT
+     setfacl -R -m "u:${MAGENTO_ROOT_OWNER}:7" $MAGENTO_ROOT
+     setfacl -R -d -m "u:${COMPOSER_CACHE_OWNER}:7" $COMPOSER_CACHE_DIRECTORY
+     setfacl -R -m "u:${COMPOSER_CACHE_OWNER}:7" $COMPOSER_CACHE_DIRECTORY
+else 
+     echo "Changing permissions to www-data user and group via chown"
+     chown -R www-data:www-data $MAGENTO_ROOT
+fi
 
 echo "Installation complete"

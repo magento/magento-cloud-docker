@@ -4,7 +4,22 @@
 
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
-chown www-data:www-data $MAGENTO_ROOT
+
+COMPOSER_CACHE_DIRECTORY=/root/.composer/cache
+
+if setfacl -R -d -m "g:www-data:7" $MAGENTO_ROOT && setfacl -R -m "g:www-data:7" $MAGENTO_ROOT
+then 
+     echo "Adding permissions for www-data group via setfacl"
+     MAGENTO_ROOT_OWNER=$(ls -ld $MAGENTO_ROOT | awk '{print $3}')
+     COMPOSER_CACHE_OWNER=$(ls -ld $COMPOSER_CACHE_DIRECTORY | awk '{print $3}')
+     setfacl -R -d -m "u:${MAGENTO_ROOT_OWNER}:7" $MAGENTO_ROOT
+     setfacl -R -m "u:${MAGENTO_ROOT_OWNER}:7" $MAGENTO_ROOT
+     setfacl -R -d -m "u:${COMPOSER_CACHE_OWNER}:7" $COMPOSER_CACHE_DIRECTORY
+     setfacl -R -m "u:${COMPOSER_CACHE_OWNER}:7" $COMPOSER_CACHE_DIRECTORY
+else 
+     echo "Changing permissions to www-data user and group via chown"
+     chown -R www-data:www-data $MAGENTO_ROOT
+fi
 
 # Configure Sendmail if required
 if [ "$ENABLE_SENDMAIL" == "true" ]; then
