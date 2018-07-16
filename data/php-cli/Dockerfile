@@ -67,5 +67,7 @@ ADD bin/* /usr/local/bin/
 RUN ["chmod", "+x", "/usr/local/bin/magento-installer"]
 RUN ["chmod", "+x", "/usr/local/bin/magento-command"]
 RUN ["chmod", "+x", "/usr/local/bin/ece-command"]
+RUN ["chmod", "+x", "/usr/local/bin/cloud-build"]
+RUN ["chmod", "+x", "/usr/local/bin/cloud-deploy"]
 
 CMD ["bash"]
