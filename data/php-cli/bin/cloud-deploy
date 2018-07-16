@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+[ "$DEBUG" = "true" ] && set -x
+
+MAGENTO_COMMAND="magento-command"
+ECE_COMMAND="ece-command"
+
+echo "Deploying..."
+
+$ECE_COMMAND deploy
+
+# Temporary disabling SSL in admin
+$MAGENTO_COMMAND config:set web/secure/use_in_adminhtml 0
+
+$ECE_COMMAND post-deploy
+
+echo "Deployment finished"
+echo "Installation complete"

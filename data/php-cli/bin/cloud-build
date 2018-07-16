@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -e
+
+[ "$DEBUG" = "true" ] && set -x
+
+MAGENTO_COMMAND="magento-command"
+ECE_COMMAND="ece-command"
+
+composer --working-dir=$MAGENTO_ROOT install
+
+chown -R www-data:www-data $MAGENTO_ROOT
+
+if [ "$M2SETUP_USE_SAMPLE_DATA" = "true" ]; then
+  echo "Deploying Sample Data..."
+
+  $MAGENTO_COMMAND sampledata:deploy
+  composer --working-dir=$MAGENTO_ROOT update
+fi
+
+echo "Building Magento Cloud..."
+
+$ECE_COMMAND build
+
+echo "Fixing file permissions.."
+
+find $MAGENTO_ROOT/pub -type f -exec chmod 664 {} \;
+find $MAGENTO_ROOT/pub -type d -exec chmod 775 {} \;
+
+chown -R www-data:www-data $MAGENTO_ROOT
+
+echo "Building complete"

@@ -42,7 +42,7 @@ class Php extends Command
      */
     protected function configure()
     {
-        $this->setName('generate:php:cli')
+        $this->setName('generate:php')
             ->setDescription('Generates proper configs')
             ->addArgument(self::ARGUMENT_VERSION, InputArgument::REQUIRED);
 
