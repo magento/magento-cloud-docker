@@ -15,6 +15,12 @@ https://hub.docker.com/r/magento/
 Inspired by https://github.com/meanbee/docker-magento2
 
 # Usage
+
+## Instalaltion
+
+1. To be able to use this Docker configuration, you must have cloned [Magento Cloud](https://github.com/magento/magento-cloud)  project
+1. Follow instruction on [DevDocs](https://devdocs.magento.com/guides/v2.2/cloud/reference/docker-config.html)
+
 ## Generating new PHP configuration
 
 To generate configuration for new version of PHP, run next command:
