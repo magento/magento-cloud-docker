@@ -5,6 +5,8 @@ A collection of build configurations for Magento Cloud Docker images. Includes:
 - PHP CLI
 - PHP FPM
 - NGINX 1.9+
+- Redis
+- Varnish
 
 ## Docker Hub
 
