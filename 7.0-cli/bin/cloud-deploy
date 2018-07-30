@@ -10,10 +10,6 @@ ECE_COMMAND="ece-command"
 echo "Deploying Magento Cloud..."
 
 $ECE_COMMAND deploy
-
-# Temporary disabling SSL in admin
-$MAGENTO_COMMAND config:set web/secure/use_in_adminhtml 0
-
 $ECE_COMMAND post-deploy
 
 echo "Deployment finished"
