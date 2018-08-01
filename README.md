@@ -18,7 +18,7 @@ https://hub.docker.com/r/magento/
 
 ## Credits
 
-Inspired by https://github.com/meanbee/docker-magento2
+Inspired by [meanbee/docker-magento2](https://github.com/meanbee/docker-magento2)
 
 # Usage
 
@@ -47,16 +47,16 @@ Where:
 docker-compose run cli bash
 ```
 
-### Running Magento commands
+### Running Magento command
 
 ```bash
-docker-compose run cli ece-command
+docker-compose run cli magento-command
 ```
 
 ### Running ECE-Tools command
 
 ```bash
-docker-compose run cli magento-command
+docker-compose run cli ece-command
 ```
 
 [ico-dockerbuild]: https://img.shields.io/docker/build/magento/magento-cloud-docker-php.svg?style=flat-square
