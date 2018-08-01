@@ -1,6 +1,10 @@
-# Introduction
+# Magento Commerce (Cloud) Docker
 
-A collection of build configurations for Magento Cloud Docker images. Includes:
+[![Docker Build Status][ico-dockerbuild]][link-dockerhub]
+[![Docker Pulls][ico-downloads]][link-dockerhub]
+[![Docker Stars][ico-dockerstars]][link-dockerhub]
+
+A collection of build configurations to emulate Magento Cloud environment locally. Includes next services:
 
 - PHP CLI
 - PHP FPM
@@ -18,7 +22,7 @@ Inspired by https://github.com/meanbee/docker-magento2
 
 # Usage
 
-## Instalaltion
+## Installation
 
 1. To be able to use this Docker configuration, you must have cloned [Magento Cloud](https://github.com/magento/magento-cloud)  project
 1. Follow instruction on [DevDocs](https://devdocs.magento.com/guides/v2.2/cloud/reference/docker-config.html)
@@ -38,8 +42,25 @@ Where:
 ## Executing commands
 
 ### Connecting to CLI container
-- Connect to CLI container by running `docker-compose run cli bash`
 
-### Running commands directly
-- `docker-compose run cli ece-command` for ECE-Tools specific commands
-- `docker-compose run cli magento-command` for Magento 2 specifiic commands
+```bash
+docker-compose run cli bash
+```
+
+### Running Magento commands
+
+```bash
+docker-compose run cli ece-command
+```
+
+### Running ECE-Tools command
+
+```bash
+docker-compose run cli magento-command
+```
+
+[ico-dockerbuild]: https://img.shields.io/docker/build/magento/magento-cloud-docker-php.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/docker/pulls/magento/magento-cloud-docker-php.svg?style=flat-square
+[ico-dockerstars]: https://img.shields.io/docker/stars/magento/magento-cloud-docker-php.svg?style=flat-square
+
+[link-dockerhub]: https://hub.docker.com/r/magento/magento-cloud-docker-php
