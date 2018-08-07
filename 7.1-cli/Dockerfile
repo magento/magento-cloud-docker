@@ -44,6 +44,7 @@ ENV PHP_ENABLE_XDEBUG false
 ENV MAGENTO_ROOT /var/www/magento
 
 ENV DEBUG false
+ENV M2_SAMPLE_DATA false
 
 ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
 ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
@@ -70,5 +71,8 @@ RUN ["chmod", "+x", "/usr/local/bin/magento-command"]
 RUN ["chmod", "+x", "/usr/local/bin/ece-command"]
 RUN ["chmod", "+x", "/usr/local/bin/cloud-build"]
 RUN ["chmod", "+x", "/usr/local/bin/cloud-deploy"]
+RUN ["chmod", "+x", "/usr/local/bin/run-cron"]
+
+WORKDIR /var/www/magento
 
 CMD ["bash"]

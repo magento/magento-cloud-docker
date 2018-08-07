@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Php extends Command
 {
-    private const SUPPORTED_VERSIONS = ['7.0', '7.1', '7.2'];
+    private const SUPPORTED_VERSIONS = ['7.0', '7.1'];
     private const EDITIONS = ['cli', 'fpm'];
     private const ARGUMENT_VERSION = 'version';
 
@@ -44,7 +44,12 @@ class Php extends Command
     {
         $this->setName('generate:php')
             ->setDescription('Generates proper configs')
-            ->addArgument(self::ARGUMENT_VERSION, InputArgument::REQUIRED);
+            ->addArgument(
+                self::ARGUMENT_VERSION,
+                InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
+                'Generates PHP configuration',
+                self::SUPPORTED_VERSIONS
+            );
 
         parent::configure();
     }
@@ -57,14 +62,19 @@ class Php extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $version = $input->getArgument(self::ARGUMENT_VERSION);
+        $versions = $input->getArgument(self::ARGUMENT_VERSION);
 
-        if (!\in_array($version, self::SUPPORTED_VERSIONS, true)) {
-            throw new \InvalidArgumentException('Not supported version');
+        if ($diff = array_diff($versions, self::SUPPORTED_VERSIONS)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Not supported versions %s',
+                implode(' ', $diff)
+            ));
         }
 
-        foreach (self::EDITIONS as $edition) {
-            $this->copyData($version, $edition);
+        foreach ($versions as $version) {
+            foreach (self::EDITIONS as $edition) {
+                $this->copyData($version, $edition);
+            }
         }
 
         $output->writeln('<info>Done</info>');
@@ -73,9 +83,9 @@ class Php extends Command
     /**
      * @param string $version
      * @param string $edition
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
-    private function copyData(string $version, string $edition)
+    private function copyData(string $version, string $edition): void
     {
         $destination = BP . '/' . $version . '-' . $edition;
         $dataDir = DATA . '/php-' . $edition;

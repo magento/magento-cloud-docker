@@ -5,6 +5,16 @@
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
 
+CRON_LOG=/var/log/cron.log
+
+# Setup Magento cron
+echo "* * * * * root /usr/local/bin/php ${MAGENTO_ROOT}/bin/magento cron:run | grep -v \"Ran jobs by schedule\" >> ${MAGENTO_ROOT}/var/log/magento.cron.log" > /etc/cron.d/magento
+
+# Get rsyslog running for cron output
+touch $CRON_LOG
+echo "cron.* $CRON_LOG" > /etc/rsyslog.d/cron.conf
+service rsyslog start
+
 # Configure Sendmail if required
 if [ "$ENABLE_SENDMAIL" == "true" ]; then
     /etc/init.d/sendmail start
