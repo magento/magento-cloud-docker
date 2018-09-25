@@ -64,3 +64,20 @@ docker-compose run cli ece-command
 [ico-dockerstars]: https://img.shields.io/docker/stars/magento/magento-cloud-docker-php.svg?style=flat-square
 
 [link-dockerhub]: https://hub.docker.com/r/magento/magento-cloud-docker-php
+
+## Known limitations
+
+### Importing DB dump
+
+To import DB dump, place it into the root of your project as `dump.sql` and extend `db` container configuration as follows:
+
+```yaml
+  db:
+    image: 'mariadb:10'
+    ports:
+      - 3306
+    volumes_from:
+      - dbdata
+    volumes:
+      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
+```
