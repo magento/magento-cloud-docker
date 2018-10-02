@@ -3,7 +3,7 @@
     "description": "Magento Cloud Docker",
     "type": "project",
     "license": [
-        "MIT",
+        "OSL-3.0",
         "AFL-3.0"
     ],
     "require": {
