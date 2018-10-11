@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Php extends Command
 {
-    private const SUPPORTED_VERSIONS = ['7.0', '7.1'];
+    private const SUPPORTED_VERSIONS = ['7.0', '7.1', '7.2'];
     private const EDITIONS = ['cli', 'fpm'];
     private const ARGUMENT_VERSION = 'version';
 
@@ -40,7 +40,7 @@ class Php extends Command
     /**
      * @inheritdoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('generate:php')
             ->setDescription('Generates proper configs')
@@ -94,11 +94,32 @@ class Php extends Command
         $this->filesystem->makeDirectory($destination);
         $this->filesystem->copyDirectory($dataDir, $destination);
 
+        $extensions = [
+            'dom',
+            'gd',
+            'intl',
+            'mbstring',
+            'pdo_mysql',
+            'xsl',
+            'zip',
+            'bcmath',
+            'soap',
+            'sockets',
+        ];
+
+        if (in_array($version, ['7.0', '7.1'])) {
+            $extensions = array_merge(
+                $extensions,
+                ['mcrypt', 'pcntl']
+            );
+        }
+
         $dockerfile = $destination . '/Dockerfile';
         $content = strtr(
             $this->filesystem->get($dockerfile),
             [
                 '{%version%}' => $version,
+                '{%extensions%}' => implode(' ', $extensions)
             ]
         );
 

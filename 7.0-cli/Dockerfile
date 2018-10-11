@@ -23,19 +23,7 @@ RUN docker-php-ext-configure \
   gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 
 # Install required PHP extensions
-RUN docker-php-ext-install \
-  dom \
-  gd \
-  intl \
-  mbstring \
-  mcrypt \
-  pcntl \
-  pdo_mysql \
-  xsl \
-  zip \
-  bcmath \
-  soap \
-  sockets
+RUN docker-php-ext-install dom gd intl mbstring pdo_mysql xsl zip bcmath soap sockets mcrypt pcntl
 
 RUN pecl install -o -f xdebug
 
@@ -73,6 +61,6 @@ RUN ["chmod", "+x", "/usr/local/bin/cloud-build"]
 RUN ["chmod", "+x", "/usr/local/bin/cloud-deploy"]
 RUN ["chmod", "+x", "/usr/local/bin/run-cron"]
 
-WORKDIR /var/www/magento
+WORKDIR ${MAGENTO_ROOT}
 
 CMD ["bash"]

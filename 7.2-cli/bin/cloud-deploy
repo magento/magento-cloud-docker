@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+[ "$DEBUG" = "true" ] && set -x
+
+MAGENTO_COMMAND="magento-command"
+ECE_COMMAND="ece-command"
+
+echo "Deploying Magento Cloud..."
+
+$ECE_COMMAND deploy
+$ECE_COMMAND post-deploy
+
+echo "Deployment finished"
+echo "Installation complete"
