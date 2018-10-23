@@ -34,10 +34,10 @@ ENV MAGENTO_ROOT /var/www/magento
 ENV DEBUG false
 ENV M2_SAMPLE_DATA false
 
-ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
-ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
+COPY etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
+COPY etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 
-ADD docker-entrypoint.sh /docker-entrypoint.sh
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 
@@ -47,12 +47,12 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 
 VOLUME /root/.composer/cache
 
-ADD etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
+COPY etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
 
 # Get composer installed to /usr/local/bin/composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-ADD bin/* /usr/local/bin/
+COPY bin/* /usr/local/bin/
 
 RUN ["chmod", "+x", "/usr/local/bin/magento-installer"]
 RUN ["chmod", "+x", "/usr/local/bin/magento-command"]
