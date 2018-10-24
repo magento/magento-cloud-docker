@@ -1,4 +1,4 @@
-FROM php:7.1-cli
+FROM php:7.2-cli
 
 # Install dependencies
 RUN apt-get update \
@@ -23,7 +23,7 @@ RUN docker-php-ext-configure \
   gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 
 # Install required PHP extensions
-RUN docker-php-ext-install dom gd intl mbstring pdo_mysql xsl zip bcmath soap sockets mcrypt pcntl
+RUN docker-php-ext-install dom gd intl mbstring pdo_mysql xsl zip bcmath soap sockets
 
 RUN pecl install -o -f xdebug
 
@@ -34,10 +34,10 @@ ENV MAGENTO_ROOT /var/www/magento
 ENV DEBUG false
 ENV M2_SAMPLE_DATA false
 
-COPY etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
-COPY etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
+ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
+ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+ADD docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 
@@ -47,12 +47,12 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 
 VOLUME /root/.composer/cache
 
-COPY etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
+ADD etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
 
 # Get composer installed to /usr/local/bin/composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-COPY bin/* /usr/local/bin/
+ADD bin/* /usr/local/bin/
 
 RUN ["chmod", "+x", "/usr/local/bin/magento-installer"]
 RUN ["chmod", "+x", "/usr/local/bin/magento-command"]

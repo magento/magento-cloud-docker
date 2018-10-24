@@ -87,7 +87,7 @@ class Php extends Command
      */
     private function copyData(string $version, string $edition): void
     {
-        $destination = BP . '/' . $version . '-' . $edition;
+        $destination = BP . '/php/' . $version . '-' . $edition;
         $dataDir = DATA . '/php-' . $edition;
 
         $this->filesystem->deleteDirectory($destination);

@@ -1,4 +1,4 @@
-FROM php:7.0-fpm
+FROM php:7.0-cli
 
 # Install dependencies
 RUN apt-get update \
@@ -11,7 +11,12 @@ RUN apt-get update \
     libxslt1-dev \ 
     sendmail-bin \ 
     sendmail \ 
-    sudo
+    sudo \ 
+    cron \ 
+    rsyslog \ 
+    mysql-client \
+    git \
+    redis-tools
 
 # Configure the gd library
 RUN docker-php-ext-configure \
@@ -27,6 +32,7 @@ ENV PHP_ENABLE_XDEBUG false
 ENV MAGENTO_ROOT /var/www/magento
 
 ENV DEBUG false
+ENV M2_SAMPLE_DATA false
 
 ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
 ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
@@ -37,10 +43,24 @@ RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-ENV MAGENTO_RUN_MODE production
-ENV UPLOAD_MAX_FILESIZE 64M
+ENV COMPOSER_ALLOW_SUPERUSER 1
 
-ADD etc/php-fpm.ini /usr/local/etc/php/conf.d/zz-magento.ini
-ADD etc/php-fpm.conf /usr/local/etc/
+VOLUME /root/.composer/cache
 
-CMD ["php-fpm", "-R"]
+ADD etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
+
+# Get composer installed to /usr/local/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+ADD bin/* /usr/local/bin/
+
+RUN ["chmod", "+x", "/usr/local/bin/magento-installer"]
+RUN ["chmod", "+x", "/usr/local/bin/magento-command"]
+RUN ["chmod", "+x", "/usr/local/bin/ece-command"]
+RUN ["chmod", "+x", "/usr/local/bin/cloud-build"]
+RUN ["chmod", "+x", "/usr/local/bin/cloud-deploy"]
+RUN ["chmod", "+x", "/usr/local/bin/run-cron"]
+
+WORKDIR ${MAGENTO_ROOT}
+
+CMD ["bash"]
