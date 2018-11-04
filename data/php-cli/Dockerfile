@@ -16,7 +16,8 @@ RUN apt-get update \
     rsyslog \ 
     mysql-client \
     git \
-    redis-tools
+    redis-tools \
+    nano
 
 # Configure the gd library
 RUN docker-php-ext-configure \
@@ -30,9 +31,7 @@ RUN pecl install -o -f xdebug
 ENV PHP_MEMORY_LIMIT 2G
 ENV PHP_ENABLE_XDEBUG false
 ENV MAGENTO_ROOT /var/www/magento
-
 ENV DEBUG false
-ENV M2_SAMPLE_DATA false
 
 ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
 ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini

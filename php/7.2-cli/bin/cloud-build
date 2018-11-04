@@ -11,13 +11,6 @@ composer --working-dir=$MAGENTO_ROOT install
 
 chown -R www-data:www-data $MAGENTO_ROOT
 
-if [ "$M2SETUP_USE_SAMPLE_DATA" = "true" ]; then
-  echo "Deploying Sample Data..."
-
-  $MAGENTO_COMMAND sampledata:deploy
-  composer --working-dir=$MAGENTO_ROOT update
-fi
-
 echo "Building Magento Cloud..."
 
 $ECE_COMMAND build
