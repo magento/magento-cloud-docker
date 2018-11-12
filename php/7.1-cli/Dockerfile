@@ -17,7 +17,8 @@ RUN apt-get update \
     mysql-client \
     git \
     redis-tools \
-    nano
+    nano \
+    unzip
 
 # Configure the gd library
 RUN docker-php-ext-configure \

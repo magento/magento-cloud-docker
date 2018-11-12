@@ -43,6 +43,7 @@ class Php extends Command
     protected function configure(): void
     {
         $this->setName('generate:php')
+            ->setAliases(['g:php'])
             ->setDescription('Generates proper configs')
             ->addArgument(
                 self::ARGUMENT_VERSION,
