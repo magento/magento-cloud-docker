@@ -4,13 +4,7 @@
 [![Docker Pulls][ico-downloads]][link-dockerhub]
 [![Docker Stars][ico-dockerstars]][link-dockerhub]
 
-A collection of build configurations to emulate Magento Cloud environment locally. Includes next services:
-
-- PHP CLI
-- PHP FPM
-- NGINX 1.9+
-- Redis
-- Varnish
+A collection of build configurations to emulate Magento Cloud environment locally.
 
 ## Docker Hub
 
@@ -65,19 +59,7 @@ docker-compose run cli ece-command
 
 [link-dockerhub]: https://hub.docker.com/r/magento/magento-cloud-docker-php
 
-## Known limitations
+## Quick reference
 
-### Importing DB dump
-
-To import DB dump, place it into the root of your project as `dump.sql` and extend `db` container configuration as follows:
-
-```yaml
-  db:
-    image: 'mariadb:10'
-    ports:
-      - 3306
-    volumes_from:
-      - dbdata
-    volumes:
-      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
-```
+* [Importing DB dump](https://devdocs.magento.com/guides/v2.3/cloud/docker/docker-development.html#database-container)
+* [Checking cron logs](https://devdocs.magento.com/guides/v2.3/cloud/docker/docker-development.html#cron-container)

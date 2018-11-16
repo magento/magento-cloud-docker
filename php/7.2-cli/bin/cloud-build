@@ -7,7 +7,7 @@ set -e
 MAGENTO_COMMAND="magento-command"
 ECE_COMMAND="ece-command"
 
-composer --working-dir=$MAGENTO_ROOT install --no-suggest
+composer --working-dir=$MAGENTO_ROOT install --no-suggest --no-ansi --no-interaction --no-progress --prefer-dist
 
 chown -R www-data:www-data $MAGENTO_ROOT
 
