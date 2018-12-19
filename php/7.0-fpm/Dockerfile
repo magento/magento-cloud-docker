@@ -18,7 +18,7 @@ RUN docker-php-ext-configure \
   gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 
 # Install required PHP extensions
-RUN docker-php-ext-install dom gd intl mbstring pdo_mysql xsl zip bcmath soap sockets mcrypt pcntl
+RUN docker-php-ext-install dom gd intl mbstring pdo_mysql xsl zip bcmath soap sockets opcache mcrypt pcntl
 
 RUN pecl install -o -f xdebug
 

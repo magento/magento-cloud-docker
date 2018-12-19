@@ -106,6 +106,7 @@ class Php extends Command
             'bcmath',
             'soap',
             'sockets',
+            'opcache'
         ];
 
         if (in_array($version, ['7.0', '7.1'])) {
