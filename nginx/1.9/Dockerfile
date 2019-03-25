@@ -4,7 +4,7 @@ COPY etc/vhost.conf /etc/nginx/conf.d/default.conf
 COPY etc/certs/ /etc/nginx/ssl/
 COPY bin/* /usr/local/bin/
 
-EXPOSE 443
+EXPOSE 80 443
 
 ENV UPLOAD_MAX_FILESIZE 64M
 ENV FPM_HOST fpm
