@@ -7,8 +7,11 @@ mkdir -p $MAGENTO_ROOT
 
 CRON_LOG=/var/log/cron.log
 
-if [ ! -z "${CRONTAB}" ]; then
+if [ ! -z "${CRONTAB}" ]
+then
     echo "${CRONTAB}" > /etc/cron.d/magento
+else
+    echo "* * * * * root /usr/local/bin/php ${MAGENTO_ROOT}/bin/magento cron:run | grep -v \"Ran jobs by schedule\" >> ${MAGENTO_ROOT}/var/log/magento.cron.log" > /etc/cron.d/magento
 fi
 
 # Get rsyslog running for cron output
