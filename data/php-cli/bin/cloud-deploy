@@ -10,6 +10,9 @@ ECE_COMMAND="ece-command"
 echo "Deploying Magento Cloud..."
 
 $ECE_COMMAND deploy
+
+echo "Post-deploy..."
+
 $ECE_COMMAND post-deploy
 
 echo "Deployment finished"
