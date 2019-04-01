@@ -161,9 +161,6 @@ sub vcl_deliver {
         set resp.http.X-Magento-Cache-Debug = "MISS";
     }
 
-#   unset resp.http.Age;
-
-
     unset resp.http.X-Magento-Debug;
     unset resp.http.X-Magento-Tags;
     unset resp.http.X-Powered-By;
