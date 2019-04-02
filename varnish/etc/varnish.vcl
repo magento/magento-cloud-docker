@@ -1,6 +1,7 @@
 vcl 4.0;
 
 import std;
+
 # The minimal Varnish version is 4.0
 # For SSL offloading, pass the following header in your proxy server or load balancer: 'SSL-OFFLOADED: https'
 
@@ -9,8 +10,8 @@ backend default {
     .port = "80";
 }
 
-sub vcl_recv {
 
+sub vcl_recv {
     # Ensure the true IP is sent onwards.
     # This was an issue getting xdebug working through varnish
     # whilst having a proxy infront of varnish (for local docker dev)
@@ -100,6 +101,10 @@ sub vcl_hash {
         hash_data(req.http.SSL-OFFLOADED);
     }
 
+    # Cache https seperately
+    if (req.http.X-Forwarded-Proto) {
+        hash_data(req.http.X-Forwarded-Proto);
+    }
 }
 
 sub vcl_backend_response {
@@ -150,14 +155,10 @@ sub vcl_backend_response {
 }
 
 sub vcl_deliver {
-    if (resp.http.X-Magento-Debug) {
-        if (resp.http.x-varnish ~ " ") {
-            set resp.http.X-Magento-Cache-Debug = "HIT";
-        } else {
-            set resp.http.X-Magento-Cache-Debug = "MISS";
-        }
+    if (resp.http.x-varnish ~ " ") {
+        set resp.http.X-Magento-Cache-Debug = "HIT";
     } else {
-        unset resp.http.Age;
+        set resp.http.X-Magento-Cache-Debug = "MISS";
     }
 
     unset resp.http.X-Magento-Debug;
