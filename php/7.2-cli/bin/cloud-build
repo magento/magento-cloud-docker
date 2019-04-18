@@ -7,19 +7,22 @@ set -e
 MAGENTO_COMMAND="magento-command"
 ECE_COMMAND="ece-command"
 
+echo "Cleaning directories."
+
+rm -rf $MAGENTO_ROOT/setup/*
+rm -rf $MAGENTO_ROOT/vendor/*
+
+echo "Installing dependencies."
+
 composer --working-dir=$MAGENTO_ROOT install --no-suggest --no-ansi --no-interaction --no-progress --prefer-dist
 
-chown -R www-data:www-data $MAGENTO_ROOT
-
-echo "Building Magento Cloud..."
+echo "Running \"build\" hook."
 
 $ECE_COMMAND build
 
-echo "Fixing file permissions..."
+echo "Fixing file permissions."
 
 find $MAGENTO_ROOT/pub -type f -exec chmod 664 {} \;
 find $MAGENTO_ROOT/pub -type d -exec chmod 775 {} \;
-
-chown -R www-data:www-data $MAGENTO_ROOT
 
 echo "Building complete"

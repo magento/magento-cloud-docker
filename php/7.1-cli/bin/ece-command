@@ -4,6 +4,4 @@
 
 ECE_COMMAND="$MAGENTO_ROOT/vendor/bin/ece-tools"
 
-chmod +x $ECE_COMMAND
-
 exec $ECE_COMMAND "$@"
