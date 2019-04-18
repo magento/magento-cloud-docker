@@ -7,8 +7,9 @@ mkdir -p $MAGENTO_ROOT
 
 CRON_LOG=/var/log/cron.log
 
-# Setup Magento cron
-echo "* * * * * root /usr/local/bin/php ${MAGENTO_ROOT}/bin/magento cron:run | grep -v \"Ran jobs by schedule\" >> ${MAGENTO_ROOT}/var/log/magento.cron.log" > /etc/cron.d/magento
+if [ ! -z "${CRONTAB}" ]; then
+    echo "${CRONTAB}" > /etc/cron.d/magento
+fi
 
 # Get rsyslog running for cron output
 touch $CRON_LOG
@@ -37,4 +38,3 @@ fi
         $COMPOSER_MAGENTO_USERNAME $COMPOSER_MAGENTO_PASSWORD
 
 exec "$@"
-
