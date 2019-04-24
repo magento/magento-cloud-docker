@@ -7,13 +7,12 @@ set -e
 MAGENTO_COMMAND="magento-command"
 ECE_COMMAND="ece-command"
 
-echo "Deploying Magento Cloud..."
+echo "Running \"deploy\" hook."
 
 $ECE_COMMAND deploy
 
-echo "Post-deploy..."
+echo "Running \"post-deploy\" hook."
 
 $ECE_COMMAND post-deploy
 
-echo "Deployment finished"
-echo "Installation complete"
+echo "Deployment finished."

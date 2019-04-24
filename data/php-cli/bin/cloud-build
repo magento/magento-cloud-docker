@@ -7,15 +7,27 @@ set -e
 MAGENTO_COMMAND="magento-command"
 ECE_COMMAND="ece-command"
 
+if [ "$MAGENTO_RUN_MODE" == "production" ]; then
+    echo "Cleaning directories."
+
+    rm -rf $MAGENTO_ROOT/setup/*
+    rm -rf $MAGENTO_ROOT/vendor/*
+    rm -rf $MAGENTO_ROOT/generated/*
+fi
+
+echo "Installing dependencies."
+
 composer --working-dir=$MAGENTO_ROOT install --no-suggest --no-ansi --no-interaction --no-progress --prefer-dist
 
-echo "Building Magento Cloud..."
+echo "Running \"build\" hook."
 
 $ECE_COMMAND build
 
-echo "Fixing file permissions..."
+if [ "$MAGENTO_RUN_MODE" == "production" ]; then
+    echo "Fixing file permissions."
 
-find $MAGENTO_ROOT/pub -type f -exec chmod 664 {} \;
-find $MAGENTO_ROOT/pub -type d -exec chmod 775 {} \;
+    find $MAGENTO_ROOT/pub -type f -exec chmod 664 {} \;
+    find $MAGENTO_ROOT/pub -type d -exec chmod 775 {} \;
+fi
 
-echo "Building complete"
+echo "Building complete."
