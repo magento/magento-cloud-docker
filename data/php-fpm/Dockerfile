@@ -19,13 +19,11 @@ RUN docker-php-ext-configure \
 
 # Install required PHP extensions
 RUN docker-php-ext-install {%extensions%}
-
 RUN pecl install -o -f xdebug
 
 ENV PHP_MEMORY_LIMIT 2G
 ENV PHP_ENABLE_XDEBUG false
-ENV MAGENTO_ROOT /var/www/magento
-
+ENV MAGENTO_ROOT /app
 ENV DEBUG false
 
 COPY etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
