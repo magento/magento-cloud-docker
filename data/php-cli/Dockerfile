@@ -22,8 +22,7 @@ RUN apt-get update \
 
 {%docker-php-ext-enable%}
 
-RUN mkdir -p /usr/local/etc/php/mods-available
-RUN mv /usr/local/etc/php/conf.d/*.ini /usr/local/etc/php/mods-available/
+RUN rm -f /usr/local/etc/php/conf.d/*.ini
 
 ADD etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
 ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
