@@ -117,6 +117,7 @@ class Php extends Command
     /**
      * @param string $version
      * @param string $edition
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     private function build(string $version, string $edition): void
     {
@@ -131,6 +132,13 @@ class Php extends Command
         $this->filesystem->put($dockerfile, $this->buildDockerfile($dockerfile, $version, $edition));
     }
 
+    /**
+     * @param string $dockerfile
+     * @param string $phpVersion
+     * @param string $edition
+     * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     private function buildDockerfile(string $dockerfile, string $phpVersion, string $edition): string
     {
         $phpConstraintObject = new Constraint('==', $this->versionParser->normalize($phpVersion));
@@ -157,7 +165,7 @@ class Php extends Command
                             $phpPeclExtensions[] = $phpExtInstallConfig[self::EXTENSION_PACKAGE_NAME] ?? $phpExtName;
                             break;
                         default:
-                            throw new \RuntimeException("PHP Extension type not supported");
+                            throw new \RuntimeException('PHP Extension type not supported');
                     }
                     if (isset($phpExtInstallConfig[self::EXTENSION_OS_DEPENDENCIES])) {
                         $extOsDependencies = array_merge(
@@ -178,16 +186,16 @@ class Php extends Command
             }
         }
 
-        $packges = array_merge(
-            self::EDITION_CLI == $edition ? self::DEFAULT_PACKAGES_PHP_CLI : self::DEFAULT_PACKAGES_PHP_FPM
-            , $extOsDependencies
+        $packages = array_merge(
+            self::EDITION_CLI == $edition ? self::DEFAULT_PACKAGES_PHP_CLI : self::DEFAULT_PACKAGES_PHP_FPM,
+            $extOsDependencies
         );
 
         return strtr(
             $this->filesystem->get($dockerfile),
             [
                 '{%version%}' => $phpVersion,
-                '{%packages%}' => implode(" \\\n  ", $packges),
+                '{%packages%}' => implode(" \\\n  ", $packages),
                 '{%docker-php-ext-configure%}' => implode(PHP_EOL, $dockerPhpExtConfigure),
                 '{%docker-php-ext-install%}' => !empty($dockerPhpExtInstall)
                     ? "RUN docker-php-ext-install -j$(nproc) \\\n  " . implode(" \\\n  ", $dockerPhpExtInstall)

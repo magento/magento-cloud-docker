@@ -17,7 +17,7 @@ return [
 //        'calendar' => [],
 //        'common' => [],
 //        'ctype' => [],
-//        'curl' => [],
++//        'curl' => [],
 //        'dba' => [],
     /**
      * ext-dom is installed by default https://www.php.net/manual/en/dom.installation.php
@@ -82,7 +82,7 @@ return [
 //        'mongodb' => [],
 //        'msgpack' => [],
 //        'mssql' => [],
-//        'mysql' => [],
++//        'mysql' => [],
 //        'mysqli' => [],
 //        'mysqlnd' => [],
 //        'newrelic' => [],
