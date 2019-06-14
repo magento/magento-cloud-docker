@@ -195,7 +195,7 @@ class Php extends Command
             $this->filesystem->get($dockerfile),
             [
                 '{%version%}' => $phpVersion,
-                '{%packages%}' => implode(" \\\n  ", $packages),
+                '{%packages%}' => implode(" \\\n  ", array_unique($packages)),
                 '{%docker-php-ext-configure%}' => implode(PHP_EOL, $dockerPhpExtConfigure),
                 '{%docker-php-ext-install%}' => !empty($dockerPhpExtInstall)
                     ? "RUN docker-php-ext-install -j$(nproc) \\\n  " . implode(" \\\n  ", $dockerPhpExtInstall)

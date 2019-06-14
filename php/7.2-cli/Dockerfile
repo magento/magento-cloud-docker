@@ -21,50 +21,127 @@ RUN apt-get update \
   nano \
   unzip \
   vim \
+  libbz2-dev \
   libjpeg62-turbo-dev \
   libpng-dev \
   libfreetype6-dev \
+  libgeoip-dev \
+  wget \
+  libgmp-dev \
+  libmagickwand-dev \
+  libmagickcore-dev \
+  libc-client-dev \
+  libkrb5-dev \
   libicu-dev \
+  libldap2-dev \
+  libpspell-dev \
+  librecode0 \
+  librecode-dev \
+  libsodium-dev \
   libssh2-1 \
   libssh2-1-dev \
-  libxslt1-dev
+  libtidy-dev \
+  libxslt1-dev \
+  libyaml-dev
 
 # Configure the gd library
 RUN docker-php-ext-configure \
   gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+RUN docker-php-ext-configure \
+  imap --with-kerberos --with-imap-ssl
+RUN docker-php-ext-configure \
+  ldap --with-libdir=lib/x86_64-linux-gnu
+RUN docker-php-ext-configure \
+  opcache --enable-opcache
 
 # Install required PHP extensions
 RUN docker-php-ext-install -j$(nproc) \
   bcmath \
+  bz2 \
+  calendar \
+  dba \
+  exif \
   gd \
+  gettext \
+  gmp \
+  imap \
   intl \
+  ldap \
+  mysqli \
   opcache \
   pdo_mysql \
+  pspell \
+  recode \
+  shmop \
   soap \
   sockets \
+  sodium \
+  sysvmsg \
+  sysvsem \
+  sysvshm \
+  tidy \
+  wddx \
+  xmlrpc \
   xsl \
   zip \
   pcntl
 
 RUN pecl install -o -f \
+  geoip-1.1.1 \
+  igbinary \
+  imagick \
+  mailparse \
+  msgpack \
+  oauth \
+  propro \
+  raphf \
+  redis \
   ssh2-1.1.2 \
-  xdebug
+  xdebug \
+  yaml
 
 RUN docker-php-ext-enable \
   bcmath \
+  bz2 \
+  calendar \
+  dba \
+  exif \
   gd \
+  geoip \
+  gettext \
+  gmp \
+  igbinary \
+  imagick \
+  imap \
   intl \
+  ldap \
+  mailparse \
+  msgpack \
+  mysqli \
+  oauth \
   opcache \
   pdo_mysql \
+  propro \
+  pspell \
+  raphf \
+  recode \
+  redis \
+  shmop \
   soap \
   sockets \
+  sodium \
   ssh2 \
+  sysvmsg \
+  sysvsem \
+  sysvshm \
+  tidy \
+  wddx \
   xdebug \
+  xmlrpc \
   xsl \
+  yaml \
   zip \
   pcntl
-
-RUN rm -f /usr/local/etc/php/conf.d/*.ini
 
 ADD etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
 ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini

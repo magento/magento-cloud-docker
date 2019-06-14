@@ -22,8 +22,6 @@ RUN apt-get update \
 
 {%docker-php-ext-enable%}
 
-RUN rm -f /usr/local/etc/php/conf.d/*.ini
-
 COPY etc/php-fpm.ini /usr/local/etc/php/conf.d/zz-magento.ini
 COPY etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
 COPY etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
