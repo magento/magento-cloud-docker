@@ -19,9 +19,6 @@ return [
     'calendar' => [
         '7.*' => [Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE],
     ],
-    'dba' => [
-        '7.*' => [Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE],
-    ],
     'exif' => [
         '7.*' => [Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE],
     ],
@@ -104,18 +101,6 @@ return [
     'pdo_mysql' => [
         '7.*' => [Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE],
     ],
-    'pdo_pgsql' => [
-        '7.*' => [
-            Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE,
-            Php::EXTENSION_OS_DEPENDENCIES => ['libpq-dev'],
-        ],
-    ],
-    'pgsql' => [
-        '7.*' => [
-            Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE,
-            Php::EXTENSION_OS_DEPENDENCIES => ['libpq-dev'],
-        ],
-    ],
     'propro' => [
         '7.*' => [Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_PECL],
     ],
@@ -179,9 +164,6 @@ return [
             Php::EXTENSION_OS_DEPENDENCIES => ['libtidy-dev'],
         ],
     ],
-    'wddx' => [
-        '7.*' => [Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE],
-    ],
     'xdebug' => [
         '7.*' => [Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_PECL],
     ],
@@ -215,6 +197,9 @@ return [
 //    'common' => [],
 //    'ctype' => [],
 //    'curl' => [],
+//    'dba' => [
+//        '7.*' => [Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE],
+//    ],
 //    'dom' => [],
 //    'enchant' => [],
 //    'event' => [],
@@ -238,6 +223,18 @@ return [
 //    'odbc' => [],
 //    'openssl' => [],
 //    'pdo' => [],
+//    'pdo_pgsql' => [
+//        '7.*' => [
+//            Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE,
+//            Php::EXTENSION_OS_DEPENDENCIES => ['libpq-dev'],
+//        ],
+//    ],
+//    'pgsql' => [
+//        '7.*' => [
+//            Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE,
+//            Php::EXTENSION_OS_DEPENDENCIES => ['libpq-dev'],
+//        ],
+//    ],
 //    'pdo_dblib' => [],
 //    'pdo_firebird' => [],
 //    'pdo_odbc' => [],
@@ -265,4 +262,7 @@ return [
 //    'xmlwriter' => [],
 //    'zbarcode' => [],
 //    'zendopcache' => [],
+//    'wddx' => [
+//        '7.*' => [Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE],
+//    ],
 ];

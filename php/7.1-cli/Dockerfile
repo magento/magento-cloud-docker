@@ -35,7 +35,6 @@ RUN apt-get update \
   libicu-dev \
   libldap2-dev \
   libmcrypt-dev \
-  libpq-dev \
   libpspell-dev \
   librecode0 \
   librecode-dev \
@@ -61,7 +60,6 @@ RUN docker-php-ext-install -j$(nproc) \
   bcmath \
   bz2 \
   calendar \
-  dba \
   exif \
   gd \
   gettext \
@@ -73,8 +71,6 @@ RUN docker-php-ext-install -j$(nproc) \
   mysqli \
   opcache \
   pdo_mysql \
-  pdo_pgsql \
-  pgsql \
   pspell \
   recode \
   shmop \
@@ -84,7 +80,6 @@ RUN docker-php-ext-install -j$(nproc) \
   sysvsem \
   sysvshm \
   tidy \
-  wddx \
   xmlrpc \
   xsl \
   zip \
@@ -109,7 +104,6 @@ RUN docker-php-ext-enable \
   bcmath \
   bz2 \
   calendar \
-  dba \
   exif \
   gd \
   geoip \
@@ -127,8 +121,6 @@ RUN docker-php-ext-enable \
   oauth \
   opcache \
   pdo_mysql \
-  pdo_pgsql \
-  pgsql \
   propro \
   pspell \
   raphf \
@@ -143,7 +135,6 @@ RUN docker-php-ext-enable \
   sysvsem \
   sysvshm \
   tidy \
-  wddx \
   xdebug \
   xmlrpc \
   xsl \

@@ -51,7 +51,6 @@ RUN docker-php-ext-install -j$(nproc) \
   bcmath \
   bz2 \
   calendar \
-  dba \
   exif \
   gd \
   gettext \
@@ -72,7 +71,6 @@ RUN docker-php-ext-install -j$(nproc) \
   sysvsem \
   sysvshm \
   tidy \
-  wddx \
   xmlrpc \
   xsl \
   zip \
@@ -96,7 +94,6 @@ RUN docker-php-ext-enable \
   bcmath \
   bz2 \
   calendar \
-  dba \
   exif \
   gd \
   geoip \
@@ -127,7 +124,6 @@ RUN docker-php-ext-enable \
   sysvsem \
   sysvshm \
   tidy \
-  wddx \
   xdebug \
   xmlrpc \
   xsl \
