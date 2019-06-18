@@ -37,7 +37,6 @@ RUN apt-get update \
   libpspell-dev \
   librecode0 \
   librecode-dev \
-  libsodium-dev \
   libssh2-1 \
   libssh2-1-dev \
   libtidy-dev \
@@ -74,7 +73,6 @@ RUN docker-php-ext-install -j$(nproc) \
   shmop \
   soap \
   sockets \
-  sodium \
   sysvmsg \
   sysvsem \
   sysvshm \
@@ -126,7 +124,6 @@ RUN docker-php-ext-enable \
   shmop \
   soap \
   sockets \
-  sodium \
   ssh2 \
   sysvmsg \
   sysvsem \
