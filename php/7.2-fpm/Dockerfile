@@ -1,7 +1,6 @@
 FROM php:7.2-fpm
 
 ENV PHP_MEMORY_LIMIT 2G
-ENV PHP_ENABLE_XDEBUG false
 ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
@@ -9,7 +8,7 @@ ENV UPLOAD_MAX_FILESIZE 64M
 
 # Install dependencies
 RUN apt-get update \
-  && apt-get install -y \
+  && apt-get install -y --no-install-recommends \
   sendmail-bin \
   sendmail \
   sudo \
@@ -85,7 +84,7 @@ RUN pecl install -o -f \
   raphf \
   redis \
   ssh2-1.1.2 \
-  xdebug \
+  xdebug-2.6.1 \
   yaml
 
 RUN docker-php-ext-enable \

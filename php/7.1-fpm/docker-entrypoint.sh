@@ -11,15 +11,11 @@ if [ "$ENABLE_SENDMAIL" == "true" ]; then
 fi
 
 # Enable PHP extensions
-PHP_EXT_DIR=/usr/local/etc/php/conf.d/
+PHP_EXT_DIR=/usr/local/etc/php/conf.d
 PHP_EXT_COM_ON=docker-php-ext-enable
-
-if [ -d ${PHP_EXT_DIR} ] && [ hash ${PHP_EXT_COM_ON} 2>/dev/null ] && [[ -v ${PHP_EXTENSIONS} ]]; then
-    shopt -q extglob; extglob_set=$?
-    ((extglob_set)) && shopt -s extglob
-    rm -f "$PHP_EXT_DIR!(zz-magento.ini|zz-xdebug-settings.ini|zz-mail.ini)"
-    ((extglob_set)) && shopt -u extglob
-    ${PHP_EXT_COM_ON} ${PHP_EXTENSIONS}
+[ -d ${PHP_EXT_DIR} ] && rm -f ${PHP_EXT_DIR}/docker-php-ext-*.ini
+if [ -x "$(command -v ${PHP_EXT_COM_ON})" ] && [ ! -z "${PHP_EXTENSIONS}" ]; then
+      ${PHP_EXT_COM_ON} ${PHP_EXTENSIONS}
 fi
 
 # Substitute in php.ini values

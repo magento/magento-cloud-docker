@@ -161,7 +161,12 @@ return [
         ],
     ],
     'xdebug' => [
-        '>=7.0.0 <7.3.0' => [Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_PECL],
+        '>=7.0.0 <7.3.0' => [
+            Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_PECL,
+            // https://intellij-support.jetbrains.com/hc/en-us/community/posts/360003310760-XDebug-not-working-anymore
+            // https://intellij-support.jetbrains.com/hc/en-us/community/posts/360003410140-PHPStorm-with-PHP7-3-and-xdebug-2-7-0
+            Php::EXTENSION_PACKAGE_NAME => 'xdebug-2.6.1',
+        ],
     ],
     'xmlrpc' => [
         '>=7.0.0 <7.3.0' => [Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE],

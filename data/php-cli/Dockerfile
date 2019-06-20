@@ -8,7 +8,7 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Install dependencies
 RUN apt-get update \
-  && apt-get install -y \
+  && apt-get install -y --no-install-recommends \
   {%packages%}
 
 # Configure the gd library

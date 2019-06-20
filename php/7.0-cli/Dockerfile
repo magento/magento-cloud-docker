@@ -1,7 +1,6 @@
 FROM php:7.0-cli
 
 ENV PHP_MEMORY_LIMIT 2G
-ENV PHP_ENABLE_XDEBUG false
 ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
@@ -9,7 +8,7 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Install dependencies
 RUN apt-get update \
-  && apt-get install -y \
+  && apt-get install -y --no-install-recommends \
   sendmail-bin \
   sendmail \
   sudo \
@@ -97,7 +96,7 @@ RUN pecl install -o -f \
   redis \
   libsodium \
   ssh2-1.1.2 \
-  xdebug \
+  xdebug-2.6.1 \
   yaml
 
 RUN docker-php-ext-enable \
