@@ -165,7 +165,11 @@ class Php extends Command
                             $phpPeclExtensions[] = $phpExtInstallConfig[self::EXTENSION_PACKAGE_NAME] ?? $phpExtName;
                             break;
                         default:
-                            throw new \RuntimeException('PHP Extension type not supported');
+                            throw new \RuntimeException(sprintf(
+                                "PHP extension %s. The type %s not supported",
+                                $phpExtName,
+                                $phpExtInstallConfig[self::EXTENSION_TYPE]
+                            ));
                     }
                     if (isset($phpExtInstallConfig[self::EXTENSION_OS_DEPENDENCIES])) {
                         $extOsDependencies = array_merge(
