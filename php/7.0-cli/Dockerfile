@@ -5,10 +5,13 @@ ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mcrypt mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
 # Install dependencies
 RUN apt-get update \
+  && apt-get upgrade -y \
   && apt-get install -y --no-install-recommends \
+  apt-utils \
   sendmail-bin \
   sendmail \
   sudo \
@@ -37,12 +40,14 @@ RUN apt-get update \
   libpspell-dev \
   librecode0 \
   librecode-dev \
-  libsodium-dev \
   libssh2-1 \
   libssh2-1-dev \
   libtidy-dev \
   libxslt1-dev \
-  libyaml-dev
+  libyaml-dev \
+  libzip-dev \
+  zip \
+  && rm -rf /var/lib/apt/lists/*
 
 # Configure the gd library
 RUN docker-php-ext-configure \
@@ -53,6 +58,8 @@ RUN docker-php-ext-configure \
   ldap --with-libdir=lib/x86_64-linux-gnu
 RUN docker-php-ext-configure \
   opcache --enable-opcache
+RUN docker-php-ext-configure \
+  zip --with-libzip
 
 # Install required PHP extensions
 RUN docker-php-ext-install -j$(nproc) \
@@ -94,10 +101,19 @@ RUN pecl install -o -f \
   propro \
   raphf \
   redis \
-  libsodium \
   ssh2-1.1.2 \
   xdebug-2.6.1 \
   yaml
+
+RUN mkdir -p /tmp/libsodium  \
+  && curl -sL https://github.com/jedisct1/libsodium/archive/1.0.18-RELEASE.tar.gz | tar xzf - -C  /tmp/libsodium \
+  && cd /tmp/libsodium/libsodium-1.0.18-RELEASE/ \
+  && ./configure \
+  && make && make check \
+  && make install  \
+  && cd / \
+  && rm -rf /tmp/libsodium  \
+  && pecl install -o -f libsodium
 
 RUN docker-php-ext-enable \
   bcmath \
