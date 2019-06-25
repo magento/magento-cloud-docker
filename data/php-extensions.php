@@ -133,9 +133,35 @@ return [
     ],
     'sodium' => [
         '>=7.0.0 <7.2.0' => [
-            Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_PECL,
-            Php::EXTENSION_OS_DEPENDENCIES => ['libsodium-dev'],
-            Php::EXTENSION_PACKAGE_NAME => 'libsodium',
+            Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_INSTALLATION_SCRIPT,
+            Php::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
+mkdir -p /tmp/libsodium 
+curl -sL https://github.com/jedisct1/libsodium/archive/1.0.18-RELEASE.tar.gz | tar xzf - -C  /tmp/libsodium
+cd /tmp/libsodium/libsodium-1.0.18-RELEASE/
+./configure
+make && make check
+make install 
+cd /
+rm -rf /tmp/libsodium 
+pecl install -o -f libsodium
+BASH
+        ],
+        '~7.2.0' => [
+            Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_INSTALLATION_SCRIPT,
+            Php::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
+rm -f /usr/local/etc/php/conf.d/*sodium.ini
+rm -f /usr/local/lib/php/extensions/*/*sodium.so
+apt-get remove libsodium* -y 
+mkdir -p /tmp/libsodium 
+curl -sL https://github.com/jedisct1/libsodium/archive/1.0.18-RELEASE.tar.gz | tar xzf - -C  /tmp/libsodium
+cd /tmp/libsodium/libsodium-1.0.18-RELEASE/
+./configure
+make && make check
+make install 
+cd /
+rm -rf /tmp/libsodium 
+pecl install -o -f libsodium
+BASH
         ]
     ],
     'ssh2' => [
@@ -184,7 +210,11 @@ return [
         ],
     ],
     'zip' => [
-        '>=7.0.0 <7.3.0' => [Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE],
+        '>=7.0.0 <7.3.0' => [
+            Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE,
+            Php::EXTENSION_OS_DEPENDENCIES => ['libzip-dev', 'zip'],
+            Php::EXTENSION_CONFIGURE_OPTIONS => ['--with-libzip'],
+        ],
     ],
     'pcntl' => [
         '>=7.0.0 <7.3.0' => [Php::EXTENSION_TYPE => Php::EXTENSION_TYPE_CORE],

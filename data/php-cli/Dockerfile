@@ -5,11 +5,14 @@ ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV COMPOSER_ALLOW_SUPERUSER 1
+{%env_php_extensions%}
 
 # Install dependencies
 RUN apt-get update \
+  && apt-get upgrade -y \
   && apt-get install -y --no-install-recommends \
-  {%packages%}
+  {%packages%} \
+  && rm -rf /var/lib/apt/lists/*
 
 # Configure the gd library
 {%docker-php-ext-configure%}
@@ -18,6 +21,8 @@ RUN apt-get update \
 {%docker-php-ext-install%}
 
 {%php-pecl-extensions%}
+
+{%installation_scripts%}
 
 {%docker-php-ext-enable%}
 
