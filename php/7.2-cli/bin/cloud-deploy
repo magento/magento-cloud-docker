@@ -5,14 +5,14 @@ set -e
 [ "$DEBUG" = "true" ] && set -x
 
 MAGENTO_COMMAND="magento-command"
-ECE_COMMAND="ece-command"
+RUN_HOOKS="run-hooks"
 
 echo "Running \"deploy\" hook."
 
-$ECE_COMMAND deploy
+$RUN_HOOKS deploy
 
 echo "Running \"post-deploy\" hook."
 
-$ECE_COMMAND post-deploy
+$RUN_HOOKS post_deploy
 
 echo "Deployment finished."

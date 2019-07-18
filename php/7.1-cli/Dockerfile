@@ -1,4 +1,4 @@
-FROM php:7.1-cli
+FROM php:7.1-cli-stretch
 
 ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
@@ -17,12 +17,14 @@ RUN apt-get update \
   sudo \
   cron \
   rsyslog \
-  mysql-client \
+  mariadb-client \
   git \
   redis-tools \
   nano \
   unzip \
   vim \
+  python3 \
+  python3-pip \
   libbz2-dev \
   libjpeg62-turbo-dev \
   libpng-dev \
@@ -48,6 +50,10 @@ RUN apt-get update \
   libzip-dev \
   zip \
   && rm -rf /var/lib/apt/lists/*
+
+# Install PyYAML
+RUN pip3 install --upgrade setuptools \
+    && pip3 install pyyaml
 
 # Configure the gd library
 RUN docker-php-ext-configure \
@@ -177,6 +183,7 @@ RUN ["chmod", "+x", "/usr/local/bin/ece-command"]
 RUN ["chmod", "+x", "/usr/local/bin/cloud-build"]
 RUN ["chmod", "+x", "/usr/local/bin/cloud-deploy"]
 RUN ["chmod", "+x", "/usr/local/bin/run-cron"]
+RUN ["chmod", "+x", "/usr/local/bin/run-hooks"]
 
 WORKDIR ${MAGENTO_ROOT}
 

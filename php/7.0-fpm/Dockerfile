@@ -1,4 +1,4 @@
-FROM php:7.0-fpm
+FROM php:7.0-fpm-stretch
 
 ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
