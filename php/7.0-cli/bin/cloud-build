@@ -5,7 +5,7 @@ set -e
 [ "$DEBUG" = "true" ] && set -x
 
 MAGENTO_COMMAND="magento-command"
-ECE_COMMAND="ece-command"
+RUN_HOOKS="run-hooks"
 
 if [ "$MAGENTO_RUN_MODE" == "production" ]; then
     echo "Cleaning directories."
@@ -21,7 +21,7 @@ composer --working-dir=$MAGENTO_ROOT install --no-suggest --no-ansi --no-interac
 
 echo "Running \"build\" hook."
 
-$ECE_COMMAND build
+$RUN_HOOKS build
 
 if [ "$MAGENTO_RUN_MODE" == "production" ]; then
     echo "Fixing file permissions."
