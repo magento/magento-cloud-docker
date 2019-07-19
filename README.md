@@ -37,7 +37,7 @@ Where:
 
 For example, you fixed some issue of the nginx image:
 
-1. Build the image on your local machine`docker build -t test/nginx:1.9 ./nginx/1.9`
+1. Build the image on your local machine `docker build -t test/nginx:1.9 ./nginx/1.9`
 
 1. Clone [Magento Cloud template](https://github.com/magento/magento-cloud) `git clone https://github.com/magento/magento-cloud.git`
 
