@@ -51,7 +51,6 @@ For example, you fixed some issue of the nginx image:
 
 1. Run docker and test your changes `./bin/docker up`
 
-
 [ico-dockerbuild]: https://img.shields.io/docker/build/magento/magento-cloud-docker-php.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/docker/pulls/magento/magento-cloud-docker-php.svg?style=flat-square
 [ico-dockerstars]: https://img.shields.io/docker/stars/magento/magento-cloud-docker-php.svg?style=flat-square
