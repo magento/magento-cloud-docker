@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config;
 
-use Magento\CloudDocker\Filesystem\FileSystemException;
+use Magento\CloudDocker\Filesystem\FilesystemException;
 
 /**
  * Read content of file.
@@ -16,7 +16,7 @@ interface ReaderInterface
 {
     /**
      * @return array
-     * @throws FileSystemException
+     * @throws FilesystemException
      */
     public function read(): array;
 }

@@ -9,6 +9,9 @@ namespace Magento\CloudDocker\Filesystem;
 
 use Magento\CloudDocker\App\GenericException;
 
-class FileSystemException extends GenericException
+/**
+ * Generic Filesystem exception.
+ */
+class FilesystemException extends GenericException
 {
 }

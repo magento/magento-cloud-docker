@@ -9,7 +9,7 @@ namespace Magento\CloudDocker\Config;
 
 use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\FileList;
-use Magento\CloudDocker\Filesystem\FileSystemException;
+use Magento\CloudDocker\Filesystem\FilesystemException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -50,15 +50,15 @@ class Reader implements ReaderInterface
                 $this->filesystem->get($this->fileList->getServicesConfig())
             );
         } catch (\Exception $exception) {
-            throw new FileSystemException($exception->getMessage(), $exception->getCode(), $exception);
+            throw new FilesystemException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
         if (!isset($appConfig['type'])) {
-            throw new FileSystemException('PHP version could not be parsed.');
+            throw new FilesystemException('PHP version could not be parsed.');
         }
 
         if (!isset($appConfig['relationships'])) {
-            throw new FileSystemException('Relationships could not be parsed.');
+            throw new FilesystemException('Relationships could not be parsed.');
         }
 
         $config = [
@@ -75,7 +75,7 @@ class Reader implements ReaderInterface
             list($name) = explode(':', $constraint);
 
             if (!isset($servicesConfig[$name]['type'])) {
-                throw new FileSystemException(sprintf(
+                throw new FilesystemException(sprintf(
                     'Service with name "%s" could not be parsed',
                     $name
                 ));
@@ -84,7 +84,7 @@ class Reader implements ReaderInterface
             list($service, $version) = explode(':', $servicesConfig[$name]['type']);
 
             if (array_key_exists($service, $config['services'])) {
-                throw new FileSystemException(sprintf(
+                throw new FilesystemException(sprintf(
                     'Only one instance of service "%s" supported',
                     $service
                 ));

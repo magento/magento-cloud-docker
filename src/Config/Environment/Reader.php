@@ -11,7 +11,7 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\Config\ReaderInterface;
 use Magento\CloudDocker\Filesystem\DirectoryList;
-use Magento\CloudDocker\Filesystem\FileSystemException;
+use Magento\CloudDocker\Filesystem\FilesystemException;
 
 /**
  * Reader of config.php and config.php.dist files.
@@ -56,10 +56,10 @@ class Reader implements ReaderInterface
                 return $this->filesystem->getRequire($sourcePath);
             }
         } catch (FileNotFoundException $exception) {
-            throw new FileSystemException($exception->getMessage(), $exception->getCode(), $exception);
+            throw new FilesystemException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
-        throw new FileSystemException(sprintf(
+        throw new FilesystemException(sprintf(
             'Source file %s does not exists',
             $sourcePath
         ));

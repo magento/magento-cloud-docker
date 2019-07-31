@@ -10,7 +10,7 @@ namespace Magento\CloudDocker\Service;
 use Magento\CloudDocker\Config\Reader;
 use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Filesystem\FileSystemException;
+use Magento\CloudDocker\Filesystem\FilesystemException;
 
 /**
  * Retrieve Service versions/configs from Cloud configuration.
@@ -92,7 +92,7 @@ class Config
                 : $this->reader->read()['services'][$serviceName]['version'] ?? null;
 
             return $version;
-        } catch (FileSystemException $exception) {
+        } catch (FilesystemException $exception) {
             throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
         }
     }
@@ -108,7 +108,7 @@ class Config
         try {
             $config = $this->reader->read();
             list($type, $version) = explode(':', $config['type']);
-        } catch (FileSystemException $exception) {
+        } catch (FilesystemException $exception) {
             throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
@@ -135,7 +135,7 @@ class Config
     {
         try {
             return $this->reader->read()['crons'] ?? [];
-        } catch (FileSystemException $exception) {
+        } catch (FilesystemException $exception) {
             throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
         }
     }
@@ -148,7 +148,7 @@ class Config
     {
         try {
             return $this->reader->read()['runtime']['extensions'];
-        } catch (FileSystemException $exception) {
+        } catch (FilesystemException $exception) {
             throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
         }
     }
@@ -161,7 +161,7 @@ class Config
     {
         try {
             return $this->reader->read()['runtime']['disabled_extensions'];
-        } catch (FileSystemException $exception) {
+        } catch (FilesystemException $exception) {
             throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
         }
     }

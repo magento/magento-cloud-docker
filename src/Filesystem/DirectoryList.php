@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Filesystem;
 
+/**
+ * Resolver for directory configurations.
+ */
 class DirectoryList
 {
     /**

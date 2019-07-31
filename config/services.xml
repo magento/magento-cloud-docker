@@ -10,7 +10,7 @@
         <service id="Magento\CloudDocker\App\GenericException" autowire="false"/>
         <service id="Magento\CloudDocker\App\ConfigurationMismatchException" autowire="false"/>
         <service id="Magento\CloudDocker\Filesystem\DirectoryList" autowire="false"/>
-        <service id="Magento\CloudDocker\Filesystem\FileSystemException" autowire="false"/>
+        <service id="Magento\CloudDocker\Filesystem\FilesystemException" autowire="false"/>
         <service id="Magento\CloudDocker\Compose\DeveloperCompose" shared="false"/>
         <service id="Magento\CloudDocker\Compose\ProductionCompose" shared="false"/>
         <service id="Magento\CloudDocker\Compose\FunctionalCompose" shared="false"/>

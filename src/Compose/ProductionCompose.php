@@ -12,6 +12,7 @@ use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Environment\Reader;
 use Magento\CloudDocker\Filesystem\FileList;
+use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
@@ -364,6 +365,12 @@ class ProductionCompose implements ComposeInterface
      */
     protected function getVariables(): array
     {
+        try {
+            $envConfig = $this->reader->read();
+        } catch (FilesystemException $exception) {
+            throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
+        }
+
         return array_merge([
             'PHP_MEMORY_LIMIT' => '2048M',
             'UPLOAD_MAX_FILESIZE' => '64M',
@@ -372,7 +379,7 @@ class ProductionCompose implements ComposeInterface
             'PHP_IDE_CONFIG' => 'serverName=magento_cloud_docker',
             # Docker host for developer environments, can be different for your OS
             'XDEBUG_CONFIG' => 'remote_host=host.docker.internal',
-        ], $this->reader->read());
+        ], $envConfig);
     }
 
     /**
