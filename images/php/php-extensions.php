@@ -4,7 +4,7 @@
  * See COPYING.txt for license details.
  */
 
-use Mcd\Command\Generate\Php;
+use Magento\CloudDocker\Command\Generate\Php;
 
 return [
     'bcmath' => [

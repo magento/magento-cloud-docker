@@ -1,0 +1,10 @@
+version: 2
+syncs:
+  magento-sync:
+    src: './'
+    sync_excludes:
+      - '.git'
+      - '.idea'
+      - '.magento'
+      - '.docker'
+      - '.github'

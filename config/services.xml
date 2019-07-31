@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Default configuration for services in *this* file -->
+        <defaults autowire="true" autoconfigure="true" public="true"/>
+
+        <prototype namespace="Magento\CloudDocker\" resource="../src/*" exclude="../src/{App}"/>
+        <service id="Magento\CloudDocker\App\GenericException" autowire="false"/>
+        <service id="Magento\CloudDocker\App\ConfigurationMismatchException" autowire="false"/>
+        <service id="Magento\CloudDocker\Filesystem\DirectoryList" autowire="false"/>
+        <service id="Magento\CloudDocker\Filesystem\FileSystemException" autowire="false"/>
+        <service id="Magento\CloudDocker\Compose\DeveloperCompose" shared="false"/>
+        <service id="Magento\CloudDocker\Compose\ProductionCompose" shared="false"/>
+        <service id="Magento\CloudDocker\Compose\FunctionalCompose" shared="false"/>
+        <service id="Illuminate\Filesystem\Filesystem"/>
+        <service id="Composer\Semver\VersionParser"/>
+    </services>
+</container>

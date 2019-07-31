@@ -3,11 +3,14 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Mcd\Command\Generate;
+declare(strict_types=1);
+
+namespace Magento\CloudDocker\Command\Generate;
 
 use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\VersionParser;
 use Illuminate\Filesystem\Filesystem;
+use Magento\CloudDocker\Filesystem\DirectoryList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,18 +21,18 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Php extends Command
 {
-    private const SUPPORTED_VERSIONS = ['7.0', '7.1', '7.2'];
-    private const EDITION_CLI = 'cli';
-    private const EDITION_FPM = 'fpm';
-    private const EDITIONS = [self::EDITION_CLI, self::EDITION_FPM];
-    private const ARGUMENT_VERSION = 'version';
-    private const DEFAULT_PACKAGES_PHP_FPM = [
+    const SUPPORTED_VERSIONS = ['7.0', '7.1', '7.2'];
+    const EDITION_CLI = 'cli';
+    const EDITION_FPM = 'fpm';
+    const EDITIONS = [self::EDITION_CLI, self::EDITION_FPM];
+    const ARGUMENT_VERSION = 'version';
+    const DEFAULT_PACKAGES_PHP_FPM = [
         'apt-utils',
         'sendmail-bin',
         'sendmail',
         'sudo'
     ];
-    private const DEFAULT_PACKAGES_PHP_CLI = [
+    const DEFAULT_PACKAGES_PHP_CLI = [
         'apt-utils',
         'sendmail-bin',
         'sendmail',
@@ -46,7 +49,7 @@ class Php extends Command
         'python3-pip',
     ];
 
-    private const PHP_EXTENSIONS_ENABLED_BY_DEFAULT = [
+    const PHP_EXTENSIONS_ENABLED_BY_DEFAULT = [
         'bcmath',
         'bz2',
         'calendar',
@@ -90,20 +93,28 @@ class Php extends Command
     private $versionParser;
 
     /**
-     * @inheritdoc
+     * @var DirectoryList
      */
-    public function __construct(?string $name = null)
-    {
-        $this->filesystem = new Filesystem();
-        $this->versionParser = new VersionParser();
+    private $directoryList;
 
-        parent::__construct($name);
+    /**
+     * @param Filesystem $filesystem
+     * @param VersionParser $versionParser
+     * @param DirectoryList $directoryList
+     */
+    public function __construct(Filesystem $filesystem, VersionParser $versionParser, DirectoryList $directoryList)
+    {
+        $this->filesystem = $filesystem;
+        $this->versionParser = $versionParser;
+        $this->directoryList = $directoryList;
+
+        parent::__construct();
     }
 
     /**
      * @inheritdoc
      */
-    protected function configure(): void
+    protected function configure()
     {
         $this->setName('generate:php')
             ->setAliases(['g:php'])
@@ -148,10 +159,10 @@ class Php extends Command
      * @param string $edition
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    private function build(string $version, string $edition): void
+    private function build(string $version, string $edition)
     {
-        $destination = BP . '/php/' . $version . '-' . $edition;
-        $dataDir = DATA . '/php-' . $edition;
+        $destination = $this->directoryList->getImagesRoot() . '/php/' . $version . '-' . $edition;
+        $dataDir = $this->directoryList->getImagesRoot() . '/php/' . $edition;
         $dockerfile = $destination . '/' . self::DOCKERFILE;
 
         $this->filesystem->deleteDirectory($destination);
@@ -171,7 +182,7 @@ class Php extends Command
     private function buildDockerfile(string $dockerfile, string $phpVersion, string $edition): string
     {
         $phpConstraintObject = new Constraint('==', $this->versionParser->normalize($phpVersion));
-        $phpExtConfigs = $this->filesystem->getRequire(DATA . '/php-extensions.php');
+        $phpExtConfigs = $this->filesystem->getRequire($this->directoryList->getImagesRoot() . '/php/php-extensions.php');
 
         $packages = self::EDITION_CLI == $edition ? self::DEFAULT_PACKAGES_PHP_CLI : self::DEFAULT_PACKAGES_PHP_FPM;
         $phpExtCore = [];

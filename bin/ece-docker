@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+$container = require __DIR__ . '/../bootstrap.php';
+
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\Config\FileLocator;
+
+$loader = new XmlFileLoader($container, new FileLocator(BP . '/config'));
+$loader->load('services.xml');
+
+$container->compile();
+
+$application = new Magento\CloudDocker\Application($container);
+$application->run();
+

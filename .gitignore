@@ -1,2 +1,7 @@
 .idea
-/vendor/
+vendor
+composer.phar
+composer.lock
+.DS_Store
+auth.json
+docker-compose.yml
