@@ -16,9 +16,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Generates .dist files.
  */
-class GenerateDist extends Command
+class BuildDist extends Command
 {
-    const NAME = 'generate:dist';
+    const NAME = 'build:dist';
 
     /**
      * @var Generator

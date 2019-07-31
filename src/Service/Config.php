@@ -10,6 +10,7 @@ namespace Magento\CloudDocker\Service;
 use Magento\CloudDocker\Config\Reader;
 use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Filesystem\FileSystemException;
 
 /**
  * Retrieve Service versions/configs from Cloud configuration.

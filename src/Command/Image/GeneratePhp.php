@@ -5,10 +5,11 @@
  */
 declare(strict_types=1);
 
-namespace Magento\CloudDocker\Command\Generate;
+namespace Magento\CloudDocker\Command\Image;
 
 use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\VersionParser;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Symfony\Component\Console\Command\Command;
@@ -19,8 +20,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @inheritdoc
  */
-class Php extends Command
+class GeneratePhp extends Command
 {
+    const NAME = 'image:generate:php';
     const SUPPORTED_VERSIONS = ['7.0', '7.1', '7.2'];
     const EDITION_CLI = 'cli';
     const EDITION_FPM = 'fpm';
@@ -116,8 +118,7 @@ class Php extends Command
      */
     protected function configure()
     {
-        $this->setName('generate:php')
-            ->setAliases(['g:php'])
+        $this->setName(self::NAME)
             ->setDescription('Generates proper configs')
             ->addArgument(
                 self::ARGUMENT_VERSION,
@@ -157,7 +158,7 @@ class Php extends Command
     /**
      * @param string $version
      * @param string $edition
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
     private function build(string $version, string $edition)
     {

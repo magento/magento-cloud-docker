@@ -33,25 +33,14 @@ class Application extends \Symfony\Component\Console\Application
     }
 
     /**
-     * @return ContainerInterface
-     */
-    public function getContainer(): ContainerInterface
-    {
-        return $this->container;
-    }
-
-    /**
      * @inheritdoc
      */
     protected function getDefaultCommands()
     {
-        return array_merge(
-            parent::getDefaultCommands(),
-            [
-                $this->container->get(Command\Build::class),
-                $this->container->get(Command\GenerateDist::class),
-                $this->container->get(Command\Generate\Php::class)
-            ]
-        );
+        return array_merge(parent::getDefaultCommands(), [
+            $this->container->get(Command\BuildCompose::class),
+            $this->container->get(Command\BuildDist::class),
+            $this->container->get(Command\Image\GeneratePhp::class)
+        ]);
     }
 }

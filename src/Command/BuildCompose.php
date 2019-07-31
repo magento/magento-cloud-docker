@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Command;
 
 use Illuminate\Filesystem\Filesystem;
-use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\App\GenericException;
 use Magento\CloudDocker\Compose\DeveloperCompose;
 use Magento\CloudDocker\Compose\ComposeFactory;
 use Magento\CloudDocker\Config\ConfigFactory;
@@ -25,9 +25,9 @@ use Symfony\Component\Yaml\Yaml;
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class Build extends Command
+class BuildCompose extends Command
 {
-    const NAME = 'build';
+    const NAME = 'build:compose';
 
     const OPTION_PHP = 'php';
     const OPTION_NGINX = 'nginx';
@@ -169,7 +169,7 @@ class Build extends Command
     /**
      * {@inheritDoc}
      *
-     * @throws ConfigurationMismatchException
+     * @throws GenericException
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
@@ -182,7 +182,7 @@ class Build extends Command
         if (ComposeFactory::COMPOSE_DEVELOPER === $type
             && !in_array($syncEngine, DeveloperCompose::SYNC_ENGINES_LIST, true)
         ) {
-            throw new ConfigurationMismatchException(sprintf(
+            throw new GenericException(sprintf(
                 "File sync engine '%s' is not supported. Available: %s",
                 $syncEngine,
                 implode(', ', DeveloperCompose::SYNC_ENGINES_LIST)

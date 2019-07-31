@@ -16,4 +16,3 @@ $container->compile();
 
 $application = new Magento\CloudDocker\Application($container);
 $application->run();
-
