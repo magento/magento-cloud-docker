@@ -11,5 +11,11 @@ if (!defined('ECE_BP')) {
     define('ECE_BP', BP);
 }
 
-require __DIR__ . '/vendor/autoload.php';
+foreach ([__DIR__ . '/../../autoload.php', __DIR__ . '/vendor/autoload.php'] as $file) {
+    if (file_exists($file)) {
+        return require $file;
+    }
+}
+
+throw new \RuntimeException('Required file \'autoload.php\' was not found.');
 
