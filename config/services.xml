@@ -16,5 +16,6 @@
         <service id="Magento\CloudDocker\Compose\FunctionalCompose" shared="false"/>
         <service id="Illuminate\Filesystem\Filesystem"/>
         <service id="Composer\Semver\VersionParser"/>
+        <service id="Composer\Semver\Semver"/>
     </services>
 </container>

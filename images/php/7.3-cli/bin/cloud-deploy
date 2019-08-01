@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -e
+
+[ "$DEBUG" = "true" ] && set -x
+
+MAGENTO_COMMAND="magento-command"
+RUN_HOOKS="run-hooks"
+
+echo "Running \"deploy\" hook."
+
+$RUN_HOOKS deploy
+
+echo "Running \"post-deploy\" hook."
+
+$RUN_HOOKS post_deploy
+
+echo "Deployment finished."

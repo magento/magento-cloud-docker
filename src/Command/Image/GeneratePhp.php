@@ -8,9 +8,11 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Command\Image;
 
 use Composer\Semver\Constraint\Constraint;
+use Composer\Semver\Semver;
 use Composer\Semver\VersionParser;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
+use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,7 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GeneratePhp extends Command
 {
     const NAME = 'image:generate:php';
-    const SUPPORTED_VERSIONS = ['7.0', '7.1', '7.2'];
+    const SUPPORTED_VERSIONS = ['7.0', '7.1', '7.2', '7.3'];
     const EDITION_CLI = 'cli';
     const EDITION_FPM = 'fpm';
     const EDITIONS = [self::EDITION_CLI, self::EDITION_FPM];
@@ -92,7 +94,7 @@ class GeneratePhp extends Command
     /**
      * @var VersionParser
      */
-    private $versionParser;
+    private $semver;
 
     /**
      * @var DirectoryList
@@ -101,13 +103,13 @@ class GeneratePhp extends Command
 
     /**
      * @param Filesystem $filesystem
-     * @param VersionParser $versionParser
+     * @param Semver $semver
      * @param DirectoryList $directoryList
      */
-    public function __construct(Filesystem $filesystem, VersionParser $versionParser, DirectoryList $directoryList)
+    public function __construct(Filesystem $filesystem, Semver $semver, DirectoryList $directoryList)
     {
         $this->filesystem = $filesystem;
-        $this->versionParser = $versionParser;
+        $this->semver = $semver;
         $this->directoryList = $directoryList;
 
         parent::__construct();
@@ -133,14 +135,14 @@ class GeneratePhp extends Command
     /**
      * {@inheritdoc}
      *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws ConfigurationMismatchException|FileNotFoundException
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $versions = $input->getArgument(self::ARGUMENT_VERSION);
 
         if ($diff = array_diff($versions, self::SUPPORTED_VERSIONS)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new ConfigurationMismatchException(sprintf(
                 'Not supported versions %s',
                 implode(' ', $diff)
             ));
@@ -158,7 +160,7 @@ class GeneratePhp extends Command
     /**
      * @param string $version
      * @param string $edition
-     * @throws FileNotFoundException
+     * @throws ConfigurationMismatchException|FileNotFoundException
      */
     private function build(string $version, string $edition)
     {
@@ -178,14 +180,13 @@ class GeneratePhp extends Command
      * @param string $phpVersion
      * @param string $edition
      * @return string
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException|\RuntimeException
+     * @throws ConfigurationMismatchException|FileNotFoundException
      */
     private function buildDockerfile(string $dockerfile, string $phpVersion, string $edition): string
     {
-        $phpConstraintObject = new Constraint('==', $this->versionParser->normalize($phpVersion));
         $phpExtConfigs = $this->filesystem->getRequire($this->directoryList->getImagesRoot() . '/php/php-extensions.php');
 
-        $packages = self::EDITION_CLI == $edition ? self::DEFAULT_PACKAGES_PHP_CLI : self::DEFAULT_PACKAGES_PHP_FPM;
+        $packages = self::EDITION_CLI === $edition ? self::DEFAULT_PACKAGES_PHP_CLI : self::DEFAULT_PACKAGES_PHP_FPM;
         $phpExtCore = [];
         $phpExtCoreConfigOptions = [];
         $phpExtList = [];
@@ -195,11 +196,10 @@ class GeneratePhp extends Command
 
         foreach ($phpExtConfigs as $phpExtName => $phpExtConfig) {
             if (!is_string($phpExtName)) {
-                throw new \RuntimeException('Extension name not set');
+                throw new ConfigurationMismatchException('Extension name not set');
             }
             foreach ($phpExtConfig as $phpExtConstraint => $phpExtInstallConfig) {
-                $phpExtConstraintObject = $this->versionParser->parseConstraints($phpExtConstraint);
-                if (!$phpConstraintObject->matches($phpExtConstraintObject)) {
+                if (!$this->semver::satisfies($phpVersion, $phpExtConstraint)) {
                     continue;
                 }
                 $phpExtType = $phpExtInstallConfig[self::EXTENSION_TYPE];
@@ -223,8 +223,8 @@ class GeneratePhp extends Command
                         }, explode("\n", 'RUN ' . $phpExtInstallConfig[self::EXTENSION_INSTALLATION_SCRIPT])));
                         break;
                     default:
-                        throw new \RuntimeException(sprintf(
-                            "PHP extension %s. The type %s not supported",
+                        throw new ConfigurationMismatchException(sprintf(
+                            'PHP extension %s. The type %s not supported',
                             $phpExtName,
                             $phpExtType
                         ));
@@ -235,7 +235,7 @@ class GeneratePhp extends Command
                 ) {
                     $packages = array_merge($packages, $phpExtInstallConfig[self::EXTENSION_OS_DEPENDENCIES]);
                 }
-                if (in_array($phpExtName, self::PHP_EXTENSIONS_ENABLED_BY_DEFAULT)) {
+                if (in_array($phpExtName, self::PHP_EXTENSIONS_ENABLED_BY_DEFAULT, true)) {
                     $phpExtEnabledDefault[] = $phpExtName;
                 }
                 $phpExtList[] = $phpExtName;
@@ -248,19 +248,19 @@ class GeneratePhp extends Command
                 '{%version%}' => $phpVersion,
                 '{%packages%}' => implode(" \\\n  ", array_unique($packages)),
                 '{%docker-php-ext-configure%}' => implode(PHP_EOL, $phpExtCoreConfigOptions),
-                '{%docker-php-ext-install%}' => !empty($phpExtCore)
+                '{%docker-php-ext-install%}' => $phpExtCore
                     ? "RUN docker-php-ext-install -j$(nproc) \\\n  " . implode(" \\\n  ", $phpExtCore)
                     : '',
-                '{%php-pecl-extensions%}' => !empty($phpExtPecl)
+                '{%php-pecl-extensions%}' => $phpExtPecl
                     ? "RUN pecl install -o -f \\\n  " . implode(" \\\n  ", $phpExtPecl)
                     : '',
-                '{%docker-php-ext-enable%}' => !empty($phpExtList)
+                '{%docker-php-ext-enable%}' => $phpExtList
                     ? "RUN docker-php-ext-enable \\\n  " . implode(" \\\n  ", $phpExtList)
                     : '',
-                '{%installation_scripts%}' => !empty($phpExtInstScripts)
+                '{%installation_scripts%}' => $phpExtInstScripts
                     ? implode(PHP_EOL, $phpExtInstScripts)
                     : '',
-                '{%env_php_extensions%}' => !(empty($phpExtEnabledDefault))
+                '{%env_php_extensions%}' => $phpExtEnabledDefault
                     ? 'ENV PHP_EXTENSIONS ' . implode(' ', $phpExtEnabledDefault)
                     : '',
             ]
