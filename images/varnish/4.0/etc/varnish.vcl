@@ -10,7 +10,6 @@ backend default {
     .port = "80";
 }
 
-
 sub vcl_recv {
     # Ensure the true IP is sent onwards.
     # This was an issue getting xdebug working through varnish
