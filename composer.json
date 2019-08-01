@@ -9,6 +9,7 @@
     ],
     "require": {
         "php": "^7.0",
+        "ext-json": "*",
         "composer/semver": "^1.0",
         "illuminate/config": "^5.5",
         "illuminate/filesystem": "^5.5",
@@ -27,6 +28,12 @@
         "psr-4": {
             "Magento\\CloudDocker\\": "src/"
         }
+    },
+    "scripts": {
+        "test": [
+            "@phpunit"
+        ],
+        "phpunit": "phpunit"
     },
     "config": {
         "sort-packages": true
