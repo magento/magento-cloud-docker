@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Compose;
 
 use Illuminate\Contracts\Config\Repository;
+use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Environment\Reader;
@@ -53,7 +54,7 @@ class ProductionCompose implements ComposeInterface
     protected $fileList;
 
     /**
-     * @var PhpExtension
+     * @var ExtensionResolver
      */
     private $phpExtension;
 
@@ -67,7 +68,7 @@ class ProductionCompose implements ComposeInterface
      * @param FileList $fileList
      * @param Config $config
      * @param Converter $converter
-     * @param PhpExtension $phpExtension
+     * @param ExtensionResolver $phpExtension
      * @param Reader $reader
      */
     public function __construct(
@@ -75,7 +76,7 @@ class ProductionCompose implements ComposeInterface
         FileList $fileList,
         Config $config,
         Converter $converter,
-        PhpExtension $phpExtension,
+        ExtensionResolver $phpExtension,
         Reader $reader
     ) {
         $this->serviceFactory = $serviceFactory;

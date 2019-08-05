@@ -9,6 +9,7 @@ namespace Magento\CloudDocker\Compose;
 
 use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Service\ServiceInterface;
 
 /**
@@ -126,7 +127,7 @@ class FunctionalCompose extends ProductionCompose
     protected function getPhpExtensions(string $phpVersion): array
     {
         return array_unique(array_merge(
-            PhpExtension::DEFAULT_PHP_EXTENSIONS,
+            ExtensionResolver::DEFAULT_PHP_EXTENSIONS,
             ['xsl', 'redis'],
             in_array($phpVersion, ['7.0', '7.1']) ? ['mcrypt'] : []
         ));

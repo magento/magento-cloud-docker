@@ -202,7 +202,6 @@ class BuildCompose extends Command
             [ComposeFactory::COMPOSE_DEVELOPER, ComposeFactory::COMPOSE_PRODUCTION],
             false
         )) {
-
             $this->distGenerator->generate();
         }
 

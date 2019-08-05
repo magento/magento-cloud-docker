@@ -132,7 +132,7 @@ return [
         '>=7.0' => [GeneratePhp::EXTENSION_TYPE => GeneratePhp::EXTENSION_TYPE_CORE],
     ],
     'sodium' => [
-        '>=7.0.0 <7.2.0' => [
+        '>=7.0 <7.2' => [
             GeneratePhp::EXTENSION_TYPE => GeneratePhp::EXTENSION_TYPE_INSTALLATION_SCRIPT,
             GeneratePhp::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
 mkdir -p /tmp/libsodium 
@@ -146,7 +146,7 @@ rm -rf /tmp/libsodium
 pecl install -o -f libsodium
 BASH
         ],
-        '~7.2.0' => [
+        '>=7.2' => [
             GeneratePhp::EXTENSION_TYPE => GeneratePhp::EXTENSION_TYPE_INSTALLATION_SCRIPT,
             GeneratePhp::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
 rm -f /usr/local/etc/php/conf.d/*sodium.ini
