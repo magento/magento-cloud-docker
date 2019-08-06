@@ -6,7 +6,7 @@
         <!-- Default configuration for services in *this* file -->
         <defaults autowire="true" autoconfigure="true" public="true"/>
 
-        <prototype namespace="Magento\CloudDocker\" resource="../src/*" exclude="../src/{App}"/>
+        <prototype namespace="Magento\CloudDocker\" resource="../src/*" exclude="../src/{App,Test}"/>
         <service id="Magento\CloudDocker\App\GenericException" autowire="false"/>
         <service id="Magento\CloudDocker\App\ConfigurationMismatchException" autowire="false"/>
         <service id="Magento\CloudDocker\Filesystem\DirectoryList" autowire="false"/>
@@ -17,6 +17,5 @@
         <service id="Illuminate\Filesystem\Filesystem"/>
         <service id="Composer\Semver\VersionParser"/>
         <service id="Composer\Semver\Semver"/>
-        <service id="PHPUnit\Framework\TestCase"/>
     </services>
 </container>
