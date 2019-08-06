@@ -17,5 +17,6 @@
         <service id="Illuminate\Filesystem\Filesystem"/>
         <service id="Composer\Semver\VersionParser"/>
         <service id="Composer\Semver\Semver"/>
+        <service id="PHPUnit\Framework\TestCase"/>
     </services>
 </container>
