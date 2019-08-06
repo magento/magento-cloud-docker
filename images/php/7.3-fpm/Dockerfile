@@ -31,8 +31,6 @@ RUN apt-get update \
   libpspell-dev \
   librecode0 \
   librecode-dev \
-  libssh2-1 \
-  libssh2-1-dev \
   libtidy-dev \
   libxslt1-dev \
   libyaml-dev \
@@ -91,8 +89,7 @@ RUN pecl install -o -f \
   propro \
   raphf \
   redis \
-  ssh2-1.1.2 \
-  xdebug-2.6.1 \
+  xdebug-2.7.1 \
   yaml
 
 RUN rm -f /usr/local/etc/php/conf.d/*sodium.ini \
@@ -137,7 +134,6 @@ RUN docker-php-ext-enable \
   soap \
   sockets \
   sodium \
-  ssh2 \
   sysvmsg \
   sysvsem \
   sysvshm \

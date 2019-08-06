@@ -165,7 +165,9 @@ BASH
         ]
     ],
     'ssh2' => [
-        '>=7.0' => [
+        // SSH2 is not supported on 7.3
+        // https://serverpilot.io/docs/how-to-install-the-php-ssh2-extension
+        '>=7.0 <7.3' => [
             GeneratePhp::EXTENSION_TYPE => GeneratePhp::EXTENSION_TYPE_PECL,
             GeneratePhp::EXTENSION_OS_DEPENDENCIES => ['libssh2-1', 'libssh2-1-dev'],
             GeneratePhp::EXTENSION_PACKAGE_NAME => 'ssh2-1.1.2',
@@ -187,11 +189,15 @@ BASH
         ],
     ],
     'xdebug' => [
-        '>=7.0' => [
+        '>=7.0 <7.3' => [
             GeneratePhp::EXTENSION_TYPE => GeneratePhp::EXTENSION_TYPE_PECL,
             // https://intellij-support.jetbrains.com/hc/en-us/community/posts/360003310760-XDebug-not-working-anymore
             // https://intellij-support.jetbrains.com/hc/en-us/community/posts/360003410140-PHPStorm-with-PHP7-3-and-xdebug-2-7-0
             GeneratePhp::EXTENSION_PACKAGE_NAME => 'xdebug-2.6.1',
+        ],
+        '>=7.3' => [
+            GeneratePhp::EXTENSION_TYPE => GeneratePhp::EXTENSION_TYPE_PECL,
+            GeneratePhp::EXTENSION_PACKAGE_NAME => 'xdebug-2.7.1',
         ],
     ],
     'xmlrpc' => [
