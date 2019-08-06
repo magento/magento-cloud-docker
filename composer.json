@@ -49,19 +49,19 @@
                 "mutagen.sh"
             ],
             [
-                "dist/docker/mnt",
+                "dist/mnt",
                 ".docker/mnt"
             ],
             [
-                "dist/docker/tmp",
+                "dist/tmp",
                 ".docker/tmp"
             ],
             [
-                "dist/docker/mysql",
+                "dist/mysql",
                 ".docker/mysql"
             ],
             [
-                "dist/docker/bin/docker",
+                "dist/bin/docker",
                 "bin/docker"
             ]
         ],
