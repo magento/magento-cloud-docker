@@ -73,7 +73,7 @@ class ExtensionResolver
         'soap' => '>=7.0',
         'sockets' => '>=7.0',
         'sodium' => '>=7.0',
-        'ssh2' => '>=7.0',
+        'ssh2' => '>=7.0 <7.3',
         'sysvmsg' => '>=7.0',
         'sysvsem' => '>=7.0',
         'sysvshm' => '>=7.0',
