@@ -4,7 +4,6 @@ set -e
 
 [ "$DEBUG" = "true" ] && set -x
 
-MAGENTO_COMMAND="magento-command"
 RUN_HOOKS="run-hooks"
 
 echo "Running \"deploy\" hook."

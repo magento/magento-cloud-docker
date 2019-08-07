@@ -7,9 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Command\Image;
 
-use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\Semver;
-use Composer\Semver\VersionParser;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
@@ -92,7 +90,7 @@ class GeneratePhp extends Command
     private $filesystem;
 
     /**
-     * @var VersionParser
+     * @var Semver
      */
     private $semver;
 
