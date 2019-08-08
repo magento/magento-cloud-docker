@@ -1,11 +1,14 @@
 FROM php:{%version%}-cli-stretch
 
-ENV PHP_MEMORY_LIMIT 2G
-ENV MAGENTO_ROOT /app
-ENV DEBUG false
-ENV MAGENTO_RUN_MODE production
-ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV PHP_MEMORY_LIMIT=2G \
+    MAGENTO_ROOT=/app \
+    DEBUG=false \
+    MAGENTO_RUN_MODE=production \
+    COMPOSER_ALLOW_SUPERUSER=1
 {%env_php_extensions%}
+
+# Configure Node.js version
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash
 
 # Install dependencies
 RUN apt-get update \
@@ -17,6 +20,9 @@ RUN apt-get update \
 # Install PyYAML
 RUN pip3 install --upgrade setuptools \
     && pip3 install pyyaml
+
+# Install Grunt
+RUN npm install -g grunt-cli
 
 # Configure the gd library
 {%docker-php-ext-configure%}
@@ -39,18 +45,20 @@ VOLUME /root/.composer/cache
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 ADD bin/* /usr/local/bin/
-
 ADD docker-entrypoint.sh /docker-entrypoint.sh
-RUN ["chmod", "+x", "/docker-entrypoint.sh"]
-ENTRYPOINT ["/docker-entrypoint.sh"]
 
-RUN ["chmod", "+x", "/usr/local/bin/magento-installer"]
-RUN ["chmod", "+x", "/usr/local/bin/magento-command"]
-RUN ["chmod", "+x", "/usr/local/bin/ece-command"]
-RUN ["chmod", "+x", "/usr/local/bin/cloud-build"]
-RUN ["chmod", "+x", "/usr/local/bin/cloud-deploy"]
-RUN ["chmod", "+x", "/usr/local/bin/run-cron"]
-RUN ["chmod", "+x", "/usr/local/bin/run-hooks"]
+RUN ["chmod", "+x", \
+    "/docker-entrypoint.sh", \
+    "/usr/local/bin/magento-installer", \
+    "/usr/local/bin/magento-command", \
+    "/usr/local/bin/ece-command", \
+    "/usr/local/bin/cloud-build", \
+    "/usr/local/bin/cloud-deploy", \
+    "/usr/local/bin/run-cron", \
+    "/usr/local/bin/run-hooks" \
+]
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 WORKDIR ${MAGENTO_ROOT}
 

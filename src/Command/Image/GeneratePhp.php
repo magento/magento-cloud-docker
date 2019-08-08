@@ -36,19 +36,20 @@ class GeneratePhp extends Command
     ];
     const DEFAULT_PACKAGES_PHP_CLI = [
         'apt-utils',
-        'sendmail-bin',
-        'sendmail',
-        'sudo',
         'cron',
-        'rsyslog',
-        'mariadb-client',
         'git',
-        'redis-tools',
+        'mariadb-client',
         'nano',
-        'unzip',
-        'vim',
+        'nodejs',
         'python3',
         'python3-pip',
+        'redis-tools',
+        'rsyslog',
+        'sendmail',
+        'sendmail-bin',
+        'sudo',
+        'unzip',
+        'vim',
     ];
 
     const PHP_EXTENSIONS_ENABLED_BY_DEFAULT = [
