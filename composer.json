@@ -61,14 +61,14 @@
                 ".docker/mysql"
             ],
             [
-                "dist/bin/docker",
-                "bin/docker"
+                "dist/bin/magento-docker",
+                "bin/magento-docker"
             ]
         ],
         "chmod": [
             {
                 "mask": "0755",
-                "path": "bin/docker"
+                "path": "bin/magento-docker"
             }
         ]
     }
