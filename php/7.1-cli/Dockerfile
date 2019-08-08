@@ -182,6 +182,7 @@ RUN ["chmod", "+x", "/usr/local/bin/magento-command"]
 RUN ["chmod", "+x", "/usr/local/bin/ece-command"]
 RUN ["chmod", "+x", "/usr/local/bin/cloud-build"]
 RUN ["chmod", "+x", "/usr/local/bin/cloud-deploy"]
+RUN ["chmod", "+x", "/usr/local/bin/cloud-post-deploy"]
 RUN ["chmod", "+x", "/usr/local/bin/run-cron"]
 RUN ["chmod", "+x", "/usr/local/bin/run-hooks"]
 

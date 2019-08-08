@@ -40,7 +40,6 @@ def get_hooks(hook_name):
 
 # Main function.
 def main():
-
     if len(sys.argv) != 2:
         error_exit("Usage: run-hooks <hook-name>")
 
