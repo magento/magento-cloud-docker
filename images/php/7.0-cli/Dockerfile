@@ -18,8 +18,8 @@ RUN apt-get update \
   cron \
   git \
   mariadb-client \
-  nodejs \
   nano \
+  nodejs \
   python3 \
   python3-pip \
   redis-tools \
