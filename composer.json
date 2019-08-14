@@ -1,24 +1,75 @@
 {
     "name": "magento/magento-cloud-docker",
     "description": "Magento Cloud Docker",
-    "type": "project",
+    "type": "magento2-component",
+    "version": "1.0.0",
     "license": [
         "OSL-3.0",
         "AFL-3.0"
     ],
     "require": {
-        "php": "^7.1",
-        "symfony/console": "^4.0",
-        "illuminate/filesystem": "^5.6",
-        "composer/semver": "^1.5"
+        "php": "^7.0",
+        "ext-json": "*",
+        "composer/semver": "^1.0",
+        "illuminate/config": "^5.5",
+        "illuminate/filesystem": "^5.5",
+        "symfony/config": "^3.4||^4.0",
+        "symfony/console": "^2.6||^4.0",
+        "symfony/dependency-injection": "^3.1||^4.0",
+        "symfony/yaml": "^3.3||^4.0"
     },
     "require-dev": {
-        "roave/security-advisories": "dev-master"
+        "phpunit/phpunit": "^6.2"
     },
-    "minimum-stability": "stable",
+    "bin": [
+        "bin/ece-docker"
+    ],
     "autoload": {
         "psr-4": {
-            "Mcd\\": "src/"
+            "Magento\\CloudDocker\\": "src/"
         }
+    },
+    "scripts": {
+        "test": [
+            "phpunit"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "prefer-stable": true,
+    "extra": {
+        "map": [
+            [
+                "dist/docker-sync.yml",
+                "docker-sync.yml"
+            ],
+            [
+                "dist/mutagen.sh",
+                "mutagen.sh"
+            ],
+            [
+                "dist/mnt",
+                ".docker/mnt"
+            ],
+            [
+                "dist/tmp",
+                ".docker/tmp"
+            ],
+            [
+                "dist/mysql",
+                ".docker/mysql"
+            ],
+            [
+                "dist/bin/magento-docker",
+                "bin/magento-docker"
+            ]
+        ],
+        "chmod": [
+            {
+                "mask": "0755",
+                "path": "bin/magento-docker"
+            }
+        ]
     }
 }

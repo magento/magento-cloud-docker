@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -e
+
+if [ ${#@} -ne 0 ] && [ "${@#"-h"}" = "" ]; then
+USAGE="Magento Cloud Docker
+
+\033[33mArguments:\033[0m
+  pull              pull latest images
+  up                destroy, re-create and start containers
+  down              destroy containers
+  bash              connect to bash
+  stop              stop containers
+  start             start containers
+  restart           restart containers
+  ece-build         build application
+  ece-deploy        deploy application
+  ece-redeploy      re-build and re-deploy application
+
+\033[33mOptions:\033[0m
+  -h            show this help text\n"
+
+  printf "$USAGE"
+  exit 0;
+fi;
+
+case "$1" in
+    pull)
+        docker-compose pull
+        ;;
+    up)
+        docker-compose down --volumes
+        docker-compose up --detach
+        ;;
+    down)
+        docker-compose down --volumes
+        ;;
+    bash)
+        docker-compose run deploy bash
+        ;;
+    stop)
+        docker-compose stop
+        ;;
+    start)
+        docker-compose start
+        ;;
+    restart)
+        docker-compose restart
+        ;;
+    ece-build)
+        docker-compose run build cloud-build
+        ;;
+    ece-deploy)
+        docker-compose run deploy cloud-deploy
+        ;;
+    ece-redeploy)
+        docker-compose run build cloud-build
+        docker-compose run deploy cloud-deploy
+        ;;
+    *)
+        printf "\033[31m Wrong command passed\033[0m\n"
+        exit 1
+esac
