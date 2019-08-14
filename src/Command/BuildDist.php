@@ -54,7 +54,5 @@ class BuildDist extends Command
         $this->distGenerator->generate();
 
         $output->writeln('<info>Dist files generated</info>');
-
-        return 0;
     }
 }
