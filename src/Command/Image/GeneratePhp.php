@@ -11,6 +11,7 @@ use Composer\Semver\Semver;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -76,14 +77,6 @@ class GeneratePhp extends Command
     ];
 
     const DOCKERFILE = 'Dockerfile';
-    const EXTENSION_OS_DEPENDENCIES = 'extension_os_dependencies';
-    const EXTENSION_PACKAGE_NAME = 'extension_package_name';
-    const EXTENSION_TYPE = 'extension_type';
-    const EXTENSION_TYPE_PECL = 'extension_type_pecl';
-    const EXTENSION_TYPE_CORE = 'extension_type_core';
-    const EXTENSION_TYPE_INSTALLATION_SCRIPT = 'extension_type_installation_script';
-    const EXTENSION_CONFIGURE_OPTIONS = 'extension_configure_options';
-    const EXTENSION_INSTALLATION_SCRIPT = 'extension_installation_script';
 
     /**
      * @var Filesystem
@@ -183,7 +176,7 @@ class GeneratePhp extends Command
      */
     private function buildDockerfile(string $dockerfile, string $phpVersion, string $edition): string
     {
-        $phpExtConfigs = $this->filesystem->getRequire($this->directoryList->getImagesRoot() . '/php/php-extensions.php');
+        $phpExtConfigs = ExtensionResolver::getConfig();
 
         $packages = self::EDITION_CLI === $edition ? self::DEFAULT_PACKAGES_PHP_CLI : self::DEFAULT_PACKAGES_PHP_FPM;
         $phpExtCore = [];
@@ -201,25 +194,26 @@ class GeneratePhp extends Command
                 if (!$this->semver::satisfies($phpVersion, $phpExtConstraint)) {
                     continue;
                 }
-                $phpExtType = $phpExtInstallConfig[self::EXTENSION_TYPE];
+                $phpExtType = $phpExtInstallConfig[ExtensionResolver::EXTENSION_TYPE];
                 switch ($phpExtType) {
-                    case self::EXTENSION_TYPE_CORE:
-                        $phpExtCore[] = $phpExtInstallConfig[self::EXTENSION_PACKAGE_NAME] ?? $phpExtName;
-                        if (isset($phpExtInstallConfig[self::EXTENSION_CONFIGURE_OPTIONS])) {
+                    case ExtensionResolver::EXTENSION_TYPE_CORE:
+                        $phpExtCore[] = $phpExtInstallConfig[ExtensionResolver::EXTENSION_PACKAGE_NAME] ?? $phpExtName;
+                        if (isset($phpExtInstallConfig[ExtensionResolver::EXTENSION_CONFIGURE_OPTIONS])) {
                             $phpExtCoreConfigOptions[] = sprintf(
                                 "RUN docker-php-ext-configure \\\n  %s %s",
                                 $phpExtName,
-                                implode(' ', $phpExtInstallConfig[self::EXTENSION_CONFIGURE_OPTIONS])
+                                implode(' ', $phpExtInstallConfig[ExtensionResolver::EXTENSION_CONFIGURE_OPTIONS])
                             );
                         }
                         break;
-                    case self::EXTENSION_TYPE_PECL:
-                        $phpExtPecl[] = $phpExtInstallConfig[self::EXTENSION_PACKAGE_NAME] ?? $phpExtName;
+                    case ExtensionResolver::EXTENSION_TYPE_PECL:
+                        $phpExtPecl[] = $phpExtInstallConfig[ExtensionResolver::EXTENSION_PACKAGE_NAME] ?? $phpExtName;
                         break;
-                    case self::EXTENSION_TYPE_INSTALLATION_SCRIPT:
+                    case ExtensionResolver::EXTENSION_TYPE_INSTALLATION_SCRIPT:
                         $phpExtInstScripts[] = implode(" \\\n", array_map(function (string $command) {
                             return strpos($command, 'RUN') === false ? '  && ' . $command : $command;
-                        }, explode("\n", 'RUN ' . $phpExtInstallConfig[self::EXTENSION_INSTALLATION_SCRIPT])));
+                        }, explode("\n",
+                            'RUN ' . $phpExtInstallConfig[ExtensionResolver::EXTENSION_INSTALLATION_SCRIPT])));
                         break;
                     default:
                         throw new ConfigurationMismatchException(sprintf(
@@ -229,10 +223,13 @@ class GeneratePhp extends Command
                         ));
                 }
                 if (
-                    isset($phpExtInstallConfig[self::EXTENSION_OS_DEPENDENCIES])
-                    && $phpExtType != self::EXTENSION_TYPE_INSTALLATION_SCRIPT
+                    isset($phpExtInstallConfig[ExtensionResolver::EXTENSION_OS_DEPENDENCIES])
+                    && $phpExtType !== ExtensionResolver::EXTENSION_TYPE_INSTALLATION_SCRIPT
                 ) {
-                    $packages = array_merge($packages, $phpExtInstallConfig[self::EXTENSION_OS_DEPENDENCIES]);
+                    $packages = array_merge(
+                        $packages,
+                        $phpExtInstallConfig[ExtensionResolver::EXTENSION_OS_DEPENDENCIES]
+                    );
                 }
                 if (in_array($phpExtName, self::PHP_EXTENSIONS_ENABLED_BY_DEFAULT, true)) {
                     $phpExtEnabledDefault[] = $phpExtName;
