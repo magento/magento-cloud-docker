@@ -13,7 +13,7 @@ You can submit issues and pull requests to extend functionality or fix potential
 *Please note:* this repository is not an official support channel. To get project-specific help, please create support ticket through [Support Portal](https://support.magento.com). Support-related issues will be closed with the request to open a support ticket.
 
 # Magento Cloud Suite
-Magento Cloud Suite includes set of packages, designed to deploy and manage Magento Commerce installations.
+The Magento Cloud Suite includes a set of packages designed to deploy and manage Magento Commerce installations.
 - [ECE-Tools](https://github.com/magento/ece-tools) - set of scripts and tools designed to manage and deploy Cloud projects
 - [Magento Cloud Components](https://github.com/magento/magento-cloud-components) - package with extended core functionality for Cloud
 - [Magento Cloud Docker](https://github.com/magento/magento-cloud-docker) - functionality and images to deploy Cloud environments locally
