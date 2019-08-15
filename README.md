@@ -8,7 +8,7 @@
 Magento Cloud Docker is a package—part of the [Magento Cloud Suite](#magento-cloud-suite)—designed to develop, test, and deploy your Magento Commerce store. The Magento Cloud Docker implementation deploys your Cloud project to your local work station so that you can develop and test your code in a simulated Cloud environment.
 
 ## Contributing to Magento Cloud Docker Code Base
-You can submit issues and pull requests to extend functionality or fix potential bugs. Improvements to Magento Cloud Docker can include any development experience improvements, optimizations for deployment process, etc. If you find a bug or have a new suggestion, let us know by creating a Github issue.
+You can submit issues and pull requests to extend functionality or fix potential bugs. Improvements to Magento Cloud Docker can include any development experience improvements, optimizations for deployment process, etc. If you find a bug or have a new suggestion, let us know by [creating a Github issue](https://github.com/magento/magento-cloud-docker/issues).
 
 *Please note:* this repository is not an official support channel. To get project-specific help, please create support ticket through [Support Portal](https://support.magento.com). Support-related issues will be closed with the request to open a support ticket.
 
