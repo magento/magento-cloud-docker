@@ -1,4 +1,5 @@
 # Magento Cloud Docker
+
 [![Docker Build Status][ico-dockerbuild]][link-dockerhub]
 [![Docker Pulls][ico-downloads]][link-dockerhub]
 [![Docker Stars][ico-dockerstars]][link-dockerhub]
