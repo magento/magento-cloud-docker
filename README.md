@@ -21,7 +21,7 @@ The Magento Cloud Suite includes a set of packages designed to deploy and manage
 ## Documentation
 - [Magento Cloud Docker DevDocs](https://devdocs.magento.com/guides/v2.3/cloud/docker/docker-config.html)
 - [Magento Cloud Guide DevDocs](https://devdocs.magento.com/guides/v2.3/cloud/bk-cloud.html)
-- [Release Notes](https://github.com/magento/ece-tools/releases)
+- [ECE-Tools Release Notes](https://github.com/magento/ece-tools/releases)
 
 ## Other Useful Resources
 - [Cloud Knowledge Base and Support](https://support.magento.com)
