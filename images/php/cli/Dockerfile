@@ -1,3 +1,5 @@
+{%note%}
+
 FROM php:{%version%}-cli-stretch
 
 ENV PHP_MEMORY_LIMIT=2G \
@@ -45,6 +47,11 @@ VOLUME /root/.composer/cache
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 ADD bin/* /usr/local/bin/
+
+RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
+
+RUN chown -R www:www /etc /usr/local/etc /var
+
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN ["chmod", "+x", \
@@ -58,6 +65,10 @@ RUN ["chmod", "+x", \
     "/usr/local/bin/run-cron", \
     "/usr/local/bin/run-hooks" \
 ]
+
+{%volumes_cmd%}
+
+{%volumes_def%}
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
