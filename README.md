@@ -8,15 +8,15 @@
 Magento Cloud Docker is a package—part of the [Magento Cloud Suite](#magento-cloud-suite)—designed to develop, test, and deploy your Magento Commerce store. The Magento Cloud Docker implementation deploys your Cloud project to your local work station so that you can develop and test your code in a simulated Cloud environment.
 
 ## Contributing to Magento Cloud Docker Code Base
-You can submit issues and pull requests to extend functionality or fix potential bugs. Improvements to Magento Cloud Docker can include any development experience improvements, optimizations for deployment process, etc. If you find a bug or have a new suggestion, let us know by [creating a Github issue](https://github.com/magento/magento-cloud-docker/issues).
+You can submit issues and pull requests to extend functionality or fix potential bugs. Improvements to Magento Cloud Docker can include work such as improving the developer experience or optimizing the deployment process. If you find a bug or have a suggestion, let us know by creating a Github issue.
 
-*Please note:* this repository is not an official support channel. To get project-specific help, please create support ticket through [Support Portal](https://support.magento.com). Support-related issues will be closed with the request to open a support ticket.
+*Note:*  This repository is not an official support channel. To get project-specific help, submit a [Magento Support ticket](https://support.magento.com). Any support-related issues opened in this repository will be closed with a request to open a support ticket.
 
 # Magento Cloud Suite
-The Magento Cloud Suite includes a set of packages designed to deploy and manage Magento Commerce installations.
-- [ECE-Tools](https://github.com/magento/ece-tools) - set of scripts and tools designed to manage and deploy Cloud projects
-- [Magento Cloud Components](https://github.com/magento/magento-cloud-components) - package with extended core functionality for Cloud
-- [Magento Cloud Docker](https://github.com/magento/magento-cloud-docker) - package with images and functionality to deploy Cloud environments locally
+The Magento Cloud Suite includes a set of packages designed to deploy and manage Magento Commerce installations on the Cloud platform.
+- The [ece-tools package](https://github.com/magento/ece-tools) - A set of scripts and tools designed to manage and deploy Cloud projects
+- [Magento Cloud Components](https://github.com/magento/magento-cloud-components) package - Extended Magento Commerce core functionality for sites deployed on the Cloud platform
+- [Magento Cloud Docker](https://github.com/magento/magento-cloud-docker) package - Functionality and Docker images to deploy Magento Commerce to a local Cloud environment
 
 ## Documentation
 - [Magento Cloud Docker DevDocs](https://devdocs.magento.com/guides/v2.3/cloud/docker/docker-config.html)
