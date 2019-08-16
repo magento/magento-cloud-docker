@@ -1,5 +1,4 @@
 {%note%}
-
 FROM php:{%version%}-fpm-stretch
 
 ENV PHP_MEMORY_LIMIT 2G

@@ -69,6 +69,10 @@
             {
                 "mask": "0755",
                 "path": "bin/magento-docker"
+            },
+            {
+                "mask": "0755",
+                "path": "mutagen.sh"
             }
         ]
     }

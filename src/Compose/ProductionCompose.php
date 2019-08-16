@@ -29,6 +29,9 @@ class ProductionCompose implements ComposeInterface
     const DEFAULT_VARNISH_VERSION = 'latest';
     const DEFAULT_TLS_VERSION = 'latest';
 
+    const SERVICE_PHP_CLI = ServiceFactory::SERVICE_CLI;
+    const SERVICE_PHP_FPM = ServiceFactory::SERVICE_FPM;
+
     const DIR_MAGENTO = '/app';
 
     const CRON_ENABLED = true;
@@ -150,7 +153,7 @@ class ProductionCompose implements ComposeInterface
         $cliDepends = array_keys($services);
 
         $services['fpm'] = $this->serviceFactory->create(
-            ServiceFactory::SERVICE_FPM,
+            static::SERVICE_PHP_FPM,
             $phpVersion,
             [
                 'ports' => [9000],
@@ -160,7 +163,7 @@ class ProductionCompose implements ComposeInterface
             ]
         );
         $services['build'] = $this->serviceFactory->create(
-            ServiceFactory::SERVICE_CLI,
+            static::SERVICE_PHP_CLI,
             $phpVersion,
             [
                 'hostname' => 'deploy.magento2.docker',
@@ -283,7 +286,7 @@ class ProductionCompose implements ComposeInterface
         string $hostname
     ): array {
         $config = $this->serviceFactory->create(
-            ServiceFactory::SERVICE_CLI,
+            static::SERVICE_PHP_CLI,
             $version,
             [
                 'hostname' => $hostname,

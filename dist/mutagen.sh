@@ -1,5 +1,7 @@
 #!/bin/bash
 mutagen create \
+       --default-owner=www \
+       --default-group=www \
        --sync-mode=two-way-resolved \
        --default-file-mode=0644 \
        --default-directory-mode=0755 \

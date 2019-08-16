@@ -1,5 +1,4 @@
 {%note%}
-
 FROM php:{%version%}-cli-stretch
 
 ENV PHP_MEMORY_LIMIT=2G \
@@ -73,5 +72,7 @@ RUN ["chmod", "+x", \
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 WORKDIR ${MAGENTO_ROOT}
+
+USER www:www
 
 CMD ["bash"]
