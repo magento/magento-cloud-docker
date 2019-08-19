@@ -211,7 +211,5 @@ class BuildCompose extends Command
         );
 
         $output->writeln('<info>Configuration was built.</info>');
-
-        return 0;
     }
 }
