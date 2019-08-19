@@ -1,7 +1,7 @@
 #!/bin/bash
 mutagen create \
-       --default-owner=www \
-       --default-group=www \
+       --default-group-beta=www \
+       --default-owner-beta=www \
        --sync-mode=two-way-resolved \
        --default-file-mode=0644 \
        --default-directory-mode=0755 \
@@ -9,6 +9,9 @@ mutagen create \
        --ignore=/.magento \
        --ignore=/.docker \
        --ignore=/.github \
+       --ignore=/generated \
+       --ignore=/pub/static \
+       --ignore=/var \
        --ignore-vcs \
        --symlink-mode=posix-raw \
        ./ docker://$(docker-compose ps -q fpm|awk '{print $1}')/app

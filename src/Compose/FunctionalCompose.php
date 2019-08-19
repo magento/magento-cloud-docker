@@ -40,7 +40,7 @@ class FunctionalCompose extends ProductionCompose
     /**
      * @inheritDoc
      */
-    protected function getMagentoVolumes(bool $isReadOnly): array
+    protected function getMagentoVolumes(Repository $config, bool $isReadOnly): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 
@@ -57,7 +57,7 @@ class FunctionalCompose extends ProductionCompose
     /**
      * @inheritDoc
      */
-    protected function getMagentoBuildVolumes(bool $isReadOnly): array
+    protected function getMagentoBuildVolumes(Repository $config, bool $isReadOnly): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 
