@@ -7,7 +7,10 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Service;
 
+use Composer\Factory;
+use Composer\IO\NullIO;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Filesystem\FileList;
 
 /**
  * Create instance of Docker service configuration.
@@ -29,16 +32,16 @@ class ServiceFactory
 
     const CONFIG = [
         self::SERVICE_CLI => [
-            'image' => 'magento/magento-cloud-docker-php:%s-cli'
+            'image' => 'magento/magento-cloud-docker-php:%s-cli:%s'
         ],
         self::SERVICE_CLI_DEV => [
-            'image' => 'magento/magento-cloud-docker-php:%s-cli-dev'
+            'image' => 'magento/magento-cloud-docker-php:%s-cli-dev:%s'
         ],
         self::SERVICE_FPM => [
-            'image' => 'magento/magento-cloud-docker-php:%s-fpm'
+            'image' => 'magento/magento-cloud-docker-php:%s-fpm:%s'
         ],
         self::SERVICE_FPM_DEV => [
-            'image' => 'magento/magento-cloud-docker-php:%s-fpm-dev'
+            'image' => 'magento/magento-cloud-docker-php:%s-fpm-dev:%s'
         ],
         self::SERVICE_DB => [
             'image' => 'mariadb:%s',
@@ -56,10 +59,10 @@ class ServiceFactory
             ]
         ],
         self::SERVICE_NGINX => [
-            'image' => 'magento/magento-cloud-docker-nginx:%s'
+            'image' => 'magento/magento-cloud-docker-nginx:%s:%s'
         ],
         self::SERVICE_VARNISH => [
-            'image' => 'magento/magento-cloud-docker-varnish:%s',
+            'image' => 'magento/magento-cloud-docker-varnish:%s:%s',
             'config' => [
                 'environment' => [
                     'VIRTUAL_HOST=magento2.docker',
@@ -72,7 +75,7 @@ class ServiceFactory
             ]
         ],
         self::SERVICE_TLS => [
-            'image' => 'magento/magento-cloud-docker-tls:%s',
+            'image' => 'magento/magento-cloud-docker-tls:%s:%s',
             'versions' => ['latest'],
             'config' => [
                 'ports' => [
@@ -93,7 +96,7 @@ class ServiceFactory
             ]
         ],
         self::SERVICE_ELASTICSEARCH => [
-            'image' => 'magento/magento-cloud-docker-elasticsearch:%s'
+            'image' => 'magento/magento-cloud-docker-elasticsearch:%s:%s'
         ],
         self::SERVICE_RABBIT_MQ => [
             'image' => 'rabbitmq:%s',
@@ -102,6 +105,19 @@ class ServiceFactory
             'image' => 'node:%s',
         ],
     ];
+
+    /**
+     * @var FileList
+     */
+    private $fileList;
+
+    /**
+     * @param FileList $fileList
+     */
+    public function __construct(FileList $fileList)
+    {
+        $this->fileList = $fileList;
+    }
 
     /**
      * @param string $name
@@ -122,8 +138,15 @@ class ServiceFactory
         $metaConfig = self::CONFIG[$name];
         $defaultConfig = $metaConfig['config'] ?? [];
 
+        $mcdVersion = Factory::create(new NullIO(), $this->fileList->getComposer())
+            ->getPackage()
+            ->getVersion();
+
+        /** Extract minor version. Patch version should not affect images. */
+        preg_match('/^\d+\.\d+/', $mcdVersion, $matches);
+
         return array_replace(
-            ['image' => sprintf($metaConfig['image'], $version)],
+            ['image' => sprintf($metaConfig['image'], $version, $matches[0])],
             $defaultConfig,
             $extendedConfig
         );

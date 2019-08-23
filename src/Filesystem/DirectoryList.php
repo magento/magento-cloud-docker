@@ -42,7 +42,7 @@ class DirectoryList
     /**
      * @return string
      */
-    private function getRoot(): string
+    public function getRoot(): string
     {
         return $this->root;
     }

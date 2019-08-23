@@ -9,7 +9,6 @@ mutagen create \
        --ignore=/.magento \
        --ignore=/.docker \
        --ignore=/.github \
-       --ignore=/generated \
        --ignore=/pub/static \
        --ignore=/var \
        --ignore-vcs \
