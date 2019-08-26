@@ -32,16 +32,16 @@ class ServiceFactory
 
     const CONFIG = [
         self::SERVICE_CLI => [
-            'image' => 'magento/magento-cloud-docker-php:%s-cli:%s'
+            'image' => 'magento/magento-cloud-docker-php:%s-cli-%s'
         ],
         self::SERVICE_CLI_DEV => [
-            'image' => 'magento/magento-cloud-docker-php:%s-cli-dev:%s'
+            'image' => 'magento/magento-cloud-docker-php:%s-cli-dev-%s'
         ],
         self::SERVICE_FPM => [
-            'image' => 'magento/magento-cloud-docker-php:%s-fpm:%s'
+            'image' => 'magento/magento-cloud-docker-php:%s-fpm-%s'
         ],
         self::SERVICE_FPM_DEV => [
-            'image' => 'magento/magento-cloud-docker-php:%s-fpm-dev:%s'
+            'image' => 'magento/magento-cloud-docker-php:%s-fpm-dev-%s'
         ],
         self::SERVICE_DB => [
             'image' => 'mariadb:%s',
@@ -59,10 +59,10 @@ class ServiceFactory
             ]
         ],
         self::SERVICE_NGINX => [
-            'image' => 'magento/magento-cloud-docker-nginx:%s:%s'
+            'image' => 'magento/magento-cloud-docker-nginx:%s-%s'
         ],
         self::SERVICE_VARNISH => [
-            'image' => 'magento/magento-cloud-docker-varnish:%s:%s',
+            'image' => 'magento/magento-cloud-docker-varnish:%s-%s',
             'config' => [
                 'environment' => [
                     'VIRTUAL_HOST=magento2.docker',
@@ -75,7 +75,7 @@ class ServiceFactory
             ]
         ],
         self::SERVICE_TLS => [
-            'image' => 'magento/magento-cloud-docker-tls:%s:%s',
+            'image' => 'magento/magento-cloud-docker-tls:%s-%s',
             'versions' => ['latest'],
             'config' => [
                 'ports' => [
@@ -96,7 +96,7 @@ class ServiceFactory
             ]
         ],
         self::SERVICE_ELASTICSEARCH => [
-            'image' => 'magento/magento-cloud-docker-elasticsearch:%s:%s'
+            'image' => 'magento/magento-cloud-docker-elasticsearch:%s-%s'
         ],
         self::SERVICE_RABBIT_MQ => [
             'image' => 'rabbitmq:%s',
