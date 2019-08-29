@@ -9,8 +9,6 @@ mutagen create \
        --ignore=/.magento \
        --ignore=/.docker \
        --ignore=/.github \
-       --ignore=/pub/static \
-       --ignore=/var \
        --ignore-vcs \
        --symlink-mode=posix-raw \
        ./ docker://$(docker-compose ps -q fpm|awk '{print $1}')/app
