@@ -1,5 +1,6 @@
 #!/bin/bash
 mutagen create \
+       --label=magento-docker \
        --default-group-beta=www \
        --default-owner-beta=www \
        --sync-mode=two-way-resolved \
