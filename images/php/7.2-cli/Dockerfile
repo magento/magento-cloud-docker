@@ -199,13 +199,13 @@ RUN ["chmod", "+x", \
     "/usr/local/bin/run-hooks" \
 ]
 
-RUN mkdir ${MAGENTO_ROOT} && chown www:www ${MAGENTO_ROOT}
-RUN mkdir ${MAGENTO_ROOT}/vendor && chown www:www ${MAGENTO_ROOT}/vendor
-RUN mkdir ${MAGENTO_ROOT}/generated && chown www:www ${MAGENTO_ROOT}/generated
-RUN mkdir ${MAGENTO_ROOT}/var && chown www:www ${MAGENTO_ROOT}/var
-RUN mkdir -p ${MAGENTO_ROOT}/app/etc && chown www:www ${MAGENTO_ROOT}/app/etc
-RUN mkdir -p ${MAGENTO_ROOT}/pub/static && chown www:www ${MAGENTO_ROOT}/pub/static
-RUN mkdir -p ${MAGENTO_ROOT}/pub/media && chown www:www ${MAGENTO_ROOT}/pub/media
+RUN mkdir ${MAGENTO_ROOT} && chown -R www:www ${MAGENTO_ROOT}
+RUN mkdir ${MAGENTO_ROOT}/vendor && chown -R www:www ${MAGENTO_ROOT}/vendor
+RUN mkdir ${MAGENTO_ROOT}/generated && chown -R www:www ${MAGENTO_ROOT}/generated
+RUN mkdir ${MAGENTO_ROOT}/var && chown -R www:www ${MAGENTO_ROOT}/var
+RUN mkdir -p ${MAGENTO_ROOT}/app/etc && chown -R www:www ${MAGENTO_ROOT}/app/etc
+RUN mkdir -p ${MAGENTO_ROOT}/pub/static && chown -R www:www ${MAGENTO_ROOT}/pub/static
+RUN mkdir -p ${MAGENTO_ROOT}/pub/media && chown -R www:www ${MAGENTO_ROOT}/pub/media
 
 VOLUME ${MAGENTO_ROOT}
 VOLUME ${MAGENTO_ROOT}/vendor

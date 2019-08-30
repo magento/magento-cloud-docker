@@ -199,7 +199,7 @@ RUN ["chmod", "+x", \
     "/usr/local/bin/run-hooks" \
 ]
 
-RUN mkdir ${MAGENTO_ROOT} && chown www:www ${MAGENTO_ROOT}
+RUN mkdir ${MAGENTO_ROOT} && chown -R www:www ${MAGENTO_ROOT}
 
 VOLUME ${MAGENTO_ROOT}
 
