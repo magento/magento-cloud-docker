@@ -10,6 +10,7 @@
     "require": {
         "php": "^7.0",
         "ext-json": "*",
+        "composer/composer": "^1.0",
         "composer/semver": "^1.0",
         "illuminate/config": "^5.5",
         "illuminate/filesystem": "^5.5",
@@ -69,6 +70,10 @@
             {
                 "mask": "0755",
                 "path": "bin/magento-docker"
+            },
+            {
+                "mask": "0755",
+                "path": "mutagen.sh"
             }
         ]
     }

@@ -29,6 +29,9 @@ class ProductionCompose implements ComposeInterface
     const DEFAULT_VARNISH_VERSION = 'latest';
     const DEFAULT_TLS_VERSION = 'latest';
 
+    const SERVICE_PHP_CLI = ServiceFactory::SERVICE_CLI;
+    const SERVICE_PHP_FPM = ServiceFactory::SERVICE_FPM;
+
     const DIR_MAGENTO = '/app';
 
     const CRON_ENABLED = true;
@@ -41,7 +44,7 @@ class ProductionCompose implements ComposeInterface
     /**
      * @var Config
      */
-    private $config;
+    private $serviceConfig;
 
     /**
      * @var Converter
@@ -65,23 +68,23 @@ class ProductionCompose implements ComposeInterface
 
     /**
      * @param ServiceFactory $serviceFactory
+     * @param Config $serviceConfig
      * @param FileList $fileList
-     * @param Config $config
      * @param Converter $converter
      * @param ExtensionResolver $phpExtension
      * @param Reader $reader
      */
     public function __construct(
         ServiceFactory $serviceFactory,
+        Config $serviceConfig,
         FileList $fileList,
-        Config $config,
         Converter $converter,
         ExtensionResolver $phpExtension,
         Reader $reader
     ) {
         $this->serviceFactory = $serviceFactory;
+        $this->serviceConfig = $serviceConfig;
         $this->fileList = $fileList;
-        $this->config = $config;
         $this->converter = $converter;
         $this->phpExtension = $phpExtension;
         $this->reader = $reader;
@@ -96,8 +99,8 @@ class ProductionCompose implements ComposeInterface
      */
     public function build(Repository $config): array
     {
-        $phpVersion = $config->get(ServiceInterface::NAME_PHP, '') ?: $this->getPhpVersion();
-        $dbVersion = $config->get(ServiceInterface::NAME_DB, '') ?: $this->getServiceVersion(ServiceInterface::NAME_DB);
+        $phpVersion = $config->get(ServiceInterface::NAME_PHP) ?: $this->getPhpVersion();
+        $dbVersion = $config->get(ServiceInterface::NAME_DB) ?: $this->getServiceVersion(ServiceInterface::NAME_DB);
 
         $services = [
             'db' => $this->serviceFactory->create(
@@ -133,7 +136,7 @@ class ProductionCompose implements ComposeInterface
             $services['node'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_NODE,
                 $nodeVersion,
-                ['volumes' => $this->getMagentoVolumes(false)]
+                ['volumes' => $this->getMagentoVolumes($config, false)]
             );
         }
 
@@ -150,24 +153,24 @@ class ProductionCompose implements ComposeInterface
         $cliDepends = array_keys($services);
 
         $services['fpm'] = $this->serviceFactory->create(
-            ServiceFactory::SERVICE_FPM,
+            static::SERVICE_PHP_FPM,
             $phpVersion,
             [
                 'ports' => [9000],
                 'depends_on' => ['db'],
                 'extends' => 'generic',
-                'volumes' => $this->getMagentoVolumes(true),
+                'volumes' => $this->getMagentoVolumes($config, true),
             ]
         );
         $services['build'] = $this->serviceFactory->create(
-            ServiceFactory::SERVICE_CLI,
+            static::SERVICE_PHP_CLI,
             $phpVersion,
             [
                 'hostname' => 'deploy.magento2.docker',
                 'depends_on' => $cliDepends,
                 'extends' => 'generic',
                 'volumes' => array_merge(
-                    $this->getMagentoBuildVolumes(false),
+                    $this->getMagentoBuildVolumes($config, false),
                     $this->getComposerVolumes(),
                     [
                         './.docker/mnt:/mnt',
@@ -176,7 +179,7 @@ class ProductionCompose implements ComposeInterface
                 )
             ]
         );
-        $services['deploy'] = $this->getCliService($phpVersion, true, $cliDepends, 'deploy.magento2.docker');
+        $services['deploy'] = $this->getCliService($config, $phpVersion, true, $cliDepends, 'deploy.magento2.docker');
         $services['web'] = $this->serviceFactory->create(
             ServiceFactory::SERVICE_NGINX,
             $config->get(ServiceInterface::NAME_NGINX, self::DEFAULT_NGINX_VERSION),
@@ -184,7 +187,7 @@ class ProductionCompose implements ComposeInterface
                 'hostname' => 'web.magento2.docker',
                 'depends_on' => ['fpm'],
                 'extends' => 'generic',
-                'volumes' => $this->getMagentoVolumes(true),
+                'volumes' => $this->getMagentoVolumes($config, true),
             ]
         );
         $services['varnish'] = $this->serviceFactory->create(
@@ -207,7 +210,8 @@ class ProductionCompose implements ComposeInterface
         ];
 
         if (static::CRON_ENABLED) {
-            $services['cron'] = $this->getCronCliService($phpVersion, true, $cliDepends, 'cron.magento2.docker');
+            $services['cron'] = $this->getCronCliService($config, $phpVersion, true, $cliDepends,
+                'cron.magento2.docker');
         }
 
         $volumeConfig = [];
@@ -234,6 +238,7 @@ class ProductionCompose implements ComposeInterface
     }
 
     /**
+     * @param Repository $config
      * @param string $version
      * @param bool $isReadOnly
      * @param array $depends
@@ -241,11 +246,16 @@ class ProductionCompose implements ComposeInterface
      * @return array
      * @throws ConfigurationMismatchException
      */
-    private function getCronCliService(string $version, bool $isReadOnly, array $depends, string $hostname): array
-    {
-        $config = $this->getCliService($version, $isReadOnly, $depends, $hostname);
+    private function getCronCliService(
+        Repository $config,
+        string $version,
+        bool $isReadOnly,
+        array $depends,
+        string $hostname
+    ): array {
+        $cliConfig = $this->getCliService($config, $version, $isReadOnly, $depends, $hostname);
 
-        if ($cronConfig = $this->config->getCron()) {
+        if ($cronConfig = $this->serviceConfig->getCron()) {
             $preparedCronConfig = [];
 
             foreach ($cronConfig as $job) {
@@ -258,17 +268,18 @@ class ProductionCompose implements ComposeInterface
                 );
             }
 
-            $config['environment'] = [
+            $cliConfig['environment'] = [
                 'CRONTAB' => implode(PHP_EOL, $preparedCronConfig)
             ];
         }
 
-        $config['command'] = 'run-cron';
+        $cliConfig['command'] = 'run-cron';
 
-        return $config;
+        return $cliConfig;
     }
 
     /**
+     * @param Repository $config
      * @param string $version
      * @param bool $isReadOnly
      * @param array $depends
@@ -277,20 +288,21 @@ class ProductionCompose implements ComposeInterface
      * @throws ConfigurationMismatchException
      */
     private function getCliService(
+        Repository $config,
         string $version,
         bool $isReadOnly,
         array $depends,
         string $hostname
     ): array {
-        $config = $this->serviceFactory->create(
-            ServiceFactory::SERVICE_CLI,
+        return $this->serviceFactory->create(
+            static::SERVICE_PHP_CLI,
             $version,
             [
                 'hostname' => $hostname,
                 'depends_on' => $depends,
                 'extends' => 'generic',
                 'volumes' => array_merge(
-                    $this->getMagentoVolumes($isReadOnly),
+                    $this->getMagentoVolumes($config, $isReadOnly),
                     $this->getComposerVolumes(),
                     [
                         './.docker/mnt:/mnt',
@@ -299,8 +311,6 @@ class ProductionCompose implements ComposeInterface
                 )
             ]
         );
-
-        return $config;
     }
 
     /**
@@ -312,10 +322,11 @@ class ProductionCompose implements ComposeInterface
     }
 
     /**
+     * @param Repository $config
      * @param bool $isReadOnly
      * @return array
      */
-    protected function getMagentoVolumes(bool $isReadOnly): array
+    protected function getMagentoVolumes(Repository $config, bool $isReadOnly): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 
@@ -331,10 +342,11 @@ class ProductionCompose implements ComposeInterface
     }
 
     /**
+     * @param Repository $config
      * @param bool $isReadOnly
      * @return array
      */
-    protected function getMagentoBuildVolumes(bool $isReadOnly): array
+    protected function getMagentoBuildVolumes(Repository $config, bool $isReadOnly): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 
@@ -390,7 +402,7 @@ class ProductionCompose implements ComposeInterface
      */
     protected function getServiceVersion(string $serviceName)
     {
-        return $this->config->getServiceVersion($serviceName);
+        return $this->serviceConfig->getServiceVersion($serviceName);
     }
 
     /**
@@ -399,7 +411,7 @@ class ProductionCompose implements ComposeInterface
      */
     protected function getPhpVersion(): string
     {
-        return $this->config->getPhpVersion();
+        return $this->serviceConfig->getPhpVersion();
     }
 
     /**
