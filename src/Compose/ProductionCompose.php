@@ -106,7 +106,10 @@ class ProductionCompose implements ComposeInterface
             'db' => $this->serviceFactory->create(
                 ServiceFactory::SERVICE_DB,
                 $dbVersion,
-                ['ports' => [3306]]
+                [
+                    'ports' => [3306],
+                    'networks' => ['mynetwork'],
+                ]
             )
         ];
 
@@ -116,7 +119,8 @@ class ProductionCompose implements ComposeInterface
         if ($redisVersion) {
             $services['redis'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_REDIS,
-                $redisVersion
+                $redisVersion,
+                ['networks' => ['mynetwork']]
             );
         }
 
@@ -126,7 +130,8 @@ class ProductionCompose implements ComposeInterface
         if ($esVersion) {
             $services['elasticsearch'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_ELASTICSEARCH,
-                $esVersion
+                $esVersion,
+                ['networks' => ['mynetwork']]
             );
         }
 
@@ -136,7 +141,10 @@ class ProductionCompose implements ComposeInterface
             $services['node'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_NODE,
                 $nodeVersion,
-                ['volumes' => $this->getMagentoVolumes($config, false)]
+                [
+                    'volumes' => $this->getMagentoVolumes($config, false),
+                    'networks' => ['mynetwork'],
+                ]
             );
         }
 
@@ -146,7 +154,8 @@ class ProductionCompose implements ComposeInterface
         if ($rabbitMQVersion) {
             $services['rabbitmq'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_RABBIT_MQ,
-                $rabbitMQVersion
+                $rabbitMQVersion,
+                ['networks' => ['mynetwork']]
             );
         }
 
@@ -160,6 +169,7 @@ class ProductionCompose implements ComposeInterface
                 'depends_on' => ['db'],
                 'extends' => 'generic',
                 'volumes' => $this->getMagentoVolumes($config, true),
+                'networks' => ['mynetwork'],
             ]
         );
         $services['build'] = $this->serviceFactory->create(
@@ -176,7 +186,14 @@ class ProductionCompose implements ComposeInterface
                         './.docker/mnt:/mnt',
                         './.docker/tmp:/tmp'
                     ]
-                )
+                ),
+                'networks' => [
+                    'mynetwork' => [
+                        'aliases' => [
+                            'web.magento2.docker',
+                        ],
+                    ],
+                ],
             ]
         );
         $services['deploy'] = $this->getCliService($config, $phpVersion, true, $cliDepends, 'deploy.magento2.docker');
@@ -188,17 +205,36 @@ class ProductionCompose implements ComposeInterface
                 'depends_on' => ['fpm'],
                 'extends' => 'generic',
                 'volumes' => $this->getMagentoVolumes($config, true),
+                'networks' => [
+                    'mynetwork' => [
+                        'aliases' => [
+                            'web.magento2.docker',
+                        ],
+                    ],
+                ],
             ]
         );
         $services['varnish'] = $this->serviceFactory->create(
             ServiceFactory::SERVICE_VARNISH,
             self::DEFAULT_VARNISH_VERSION,
-            ['depends_on' => ['web']]
+            [
+                'depends_on' => ['web'],
+                'networks' => [
+                    'mynetwork' => [
+                        'aliases' => [
+                            'magento2.docker',
+                        ],
+                    ],
+                ],
+            ]
         );
         $services['tls'] = $this->serviceFactory->create(
             ServiceFactory::SERVICE_TLS,
             self::DEFAULT_TLS_VERSION,
-            ['depends_on' => ['varnish']]
+            [
+                'depends_on' => ['varnish'],
+                'networks' => ['mynetwork'],
+            ]
         );
         $phpExtensions = $this->getPhpExtensions($phpVersion);
         $services['generic'] = [
@@ -233,7 +269,12 @@ class ProductionCompose implements ComposeInterface
                 'magento-etc' => $volumeConfig,
                 'magento-static' => $volumeConfig,
                 'magento-media' => $volumeConfig,
-            ]
+            ],
+            'networks' => [
+                'mynetwork' => [
+                    'driver' => 'bridge',
+                ],
+            ],
         ];
     }
 
@@ -308,7 +349,14 @@ class ProductionCompose implements ComposeInterface
                         './.docker/mnt:/mnt',
                         './.docker/tmp:/tmp'
                     ]
-                )
+                ),
+                'networks' => [
+                    'mynetwork' => [
+                        'aliases' => [
+                            $hostname,
+                        ],
+                    ],
+                ],
             ]
         );
     }
