@@ -108,7 +108,7 @@ class ProductionCompose implements ComposeInterface
                 $dbVersion,
                 [
                     'ports' => [3306],
-                    'networks' => ['mynetwork'],
+                    'networks' => ['magento'],
                 ]
             )
         ];
@@ -120,7 +120,7 @@ class ProductionCompose implements ComposeInterface
             $services['redis'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_REDIS,
                 $redisVersion,
-                ['networks' => ['mynetwork']]
+                ['networks' => ['magento']]
             );
         }
 
@@ -131,7 +131,7 @@ class ProductionCompose implements ComposeInterface
             $services['elasticsearch'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_ELASTICSEARCH,
                 $esVersion,
-                ['networks' => ['mynetwork']]
+                ['networks' => ['magento']]
             );
         }
 
@@ -143,7 +143,7 @@ class ProductionCompose implements ComposeInterface
                 $nodeVersion,
                 [
                     'volumes' => $this->getMagentoVolumes($config, false),
-                    'networks' => ['mynetwork'],
+                    'networks' => ['magento'],
                 ]
             );
         }
@@ -155,7 +155,7 @@ class ProductionCompose implements ComposeInterface
             $services['rabbitmq'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_RABBIT_MQ,
                 $rabbitMQVersion,
-                ['networks' => ['mynetwork']]
+                ['networks' => ['magento']]
             );
         }
 
@@ -169,7 +169,7 @@ class ProductionCompose implements ComposeInterface
                 'depends_on' => ['db'],
                 'extends' => 'generic',
                 'volumes' => $this->getMagentoVolumes($config, true),
-                'networks' => ['mynetwork'],
+                'networks' => ['magento'],
             ]
         );
         $services['build'] = $this->serviceFactory->create(
@@ -188,7 +188,7 @@ class ProductionCompose implements ComposeInterface
                     ]
                 ),
                 'networks' => [
-                    'mynetwork' => [
+                    'magento' => [
                         'aliases' => [
                             'web.magento2.docker',
                         ],
@@ -206,7 +206,7 @@ class ProductionCompose implements ComposeInterface
                 'extends' => 'generic',
                 'volumes' => $this->getMagentoVolumes($config, true),
                 'networks' => [
-                    'mynetwork' => [
+                    'magento' => [
                         'aliases' => [
                             'web.magento2.docker',
                         ],
@@ -220,7 +220,7 @@ class ProductionCompose implements ComposeInterface
             [
                 'depends_on' => ['web'],
                 'networks' => [
-                    'mynetwork' => [
+                    'magento' => [
                         'aliases' => [
                             'magento2.docker',
                         ],
@@ -233,7 +233,7 @@ class ProductionCompose implements ComposeInterface
             self::DEFAULT_TLS_VERSION,
             [
                 'depends_on' => ['varnish'],
-                'networks' => ['mynetwork'],
+                'networks' => ['magento'],
             ]
         );
         $phpExtensions = $this->getPhpExtensions($phpVersion);
@@ -271,7 +271,7 @@ class ProductionCompose implements ComposeInterface
                 'magento-media' => $volumeConfig,
             ],
             'networks' => [
-                'mynetwork' => [
+                'magento' => [
                     'driver' => 'bridge',
                 ],
             ],
@@ -351,7 +351,7 @@ class ProductionCompose implements ComposeInterface
                     ]
                 ),
                 'networks' => [
-                    'mynetwork' => [
+                    'magento' => [
                         'aliases' => [
                             $hostname,
                         ],
