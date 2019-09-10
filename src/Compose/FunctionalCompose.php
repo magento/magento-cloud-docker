@@ -19,7 +19,7 @@ use Magento\CloudDocker\Service\ServiceInterface;
  */
 class FunctionalCompose extends ProductionCompose
 {
-    const DIR_MAGENTO = '/var/www/magento';
+    const DIR_MAGENTO = '/app';
     const CRON_ENABLED = false;
 
     /**
@@ -62,7 +62,7 @@ class FunctionalCompose extends ProductionCompose
         $flag = $isReadOnly ? ':ro' : ':rw';
 
         return [
-            '.:/var/www/ece-tools',
+            '.:/ece-tools',
             'magento:' . self::DIR_MAGENTO . $flag,
         ];
     }
