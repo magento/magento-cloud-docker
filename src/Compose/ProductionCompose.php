@@ -106,7 +106,15 @@ class ProductionCompose implements ComposeInterface
             'db' => $this->serviceFactory->create(
                 ServiceFactory::SERVICE_DB,
                 $dbVersion,
-                ['ports' => [3306]]
+                [
+                    'ports' => [3306],
+                    'volumes' => [
+                        '/var/lib/mysql',
+                        './.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d',
+                        './.docker/mnt:/mnt',
+                        './.docker/tmp:/tmp'
+                    ],
+                ]
             )
         ];
 
