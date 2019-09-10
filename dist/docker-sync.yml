@@ -1,0 +1,12 @@
+version: 2
+syncs:
+  magento-sync:
+    src: './'
+    sync_excludes:
+      - '.git'
+      - '.idea'
+      - '.magento'
+      - '.docker'
+      - '.github'
+    sync_userid: '1000'
+    sync_groupid: '1000'

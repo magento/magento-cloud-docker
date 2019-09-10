@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+[ "$DEBUG" = "true" ] && set -x
+
+echo "Running \"deploy\" hook."
+
+run-hooks deploy
+
+echo "Deployment finished."
