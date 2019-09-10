@@ -45,7 +45,7 @@ class FunctionalCompose extends ProductionCompose
         $flag = $isReadOnly ? ':ro' : ':rw';
 
         return [
-            '.:/var/www/ece-tools',
+            '.:/ece-tools',
             'magento:' . self::DIR_MAGENTO . $flag,
             'magento-var:' . self::DIR_MAGENTO . '/var:delegated',
             'magento-etc:' . self::DIR_MAGENTO . '/app/etc:delegated',
