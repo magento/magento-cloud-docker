@@ -176,7 +176,7 @@ class ProductionCompose implements ComposeInterface
             static::SERVICE_PHP_CLI,
             $phpVersion,
             [
-                'hostname' => 'deploy.magento2.docker',
+                'hostname' => 'build.magento2.docker',
                 'depends_on' => $cliDepends,
                 'extends' => 'generic',
                 'volumes' => array_merge(
