@@ -375,7 +375,10 @@ class ProductionCompose implements ComposeInterface
             : '~/.composer/cache';
 
         return [
-            $composeCacheDirectory . ':/root/.composer/cache:delegated',
+            $composeCacheDirectory . sprintf(
+                ':%s/.composer/cache:delegated',
+                self::DIR_MAGENTO
+            ),
         ];
     }
 
