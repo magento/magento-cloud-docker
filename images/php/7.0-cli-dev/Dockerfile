@@ -4,7 +4,8 @@ FROM php:7.0-cli-stretch
 ENV PHP_MEMORY_LIMIT=2G \
     MAGENTO_ROOT=/app \
     DEBUG=false \
-    MAGENTO_RUN_MODE=production
+    MAGENTO_RUN_MODE=production \
+    COMPOSER_ALLOW_SUPERUSER=1
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mcrypt mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
 # Configure Node.js version
@@ -174,6 +175,7 @@ ADD etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
 ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
 ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 
+VOLUME /root/.composer/cache
 # Get composer installed to /usr/local/bin/composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
