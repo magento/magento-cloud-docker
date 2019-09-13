@@ -245,7 +245,11 @@ class GeneratePhp extends Command
             'root' => [
                 'def' => 'VOLUME ${MAGENTO_ROOT}',
                 'cmd' => 'RUN mkdir ${MAGENTO_ROOT} && chown -R www:www ${MAGENTO_ROOT}'
-            ]
+            ],
+            '.composer' => [
+                'def' => 'VOLUME ${MAGENTO_ROOT}/.composer',
+                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/.composer && chown -R www:www ${MAGENTO_ROOT}/.composer'
+            ],
         ];
         if (!$dev) {
             $volumes = array_merge($volumes, [
@@ -263,16 +267,13 @@ class GeneratePhp extends Command
                 ],
                 'app-etc' => [
                     'def' => 'VOLUME ${MAGENTO_ROOT}/app/etc',
-                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/app/etc && chown -R www:www ${MAGENTO_ROOT}/app/etc'
+                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/app/etc && chown -R www:www ${MAGENTO_ROOT}/app'
                 ],
-                'pub-static' => [
-                    'def' => 'VOLUME ${MAGENTO_ROOT}/pub/static',
-                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/pub/static && chown -R www:www ${MAGENTO_ROOT}/pub/static'
+                'pub-static-and-media' => [
+                    'def' => 'VOLUME ${MAGENTO_ROOT}/pub/static' . "\n" . 'VOLUME ${MAGENTO_ROOT}/pub/media',
+                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media '
+                        . '&& chown -R www:www ${MAGENTO_ROOT}/pub'
                 ],
-                'pub-media' => [
-                    'def' => 'VOLUME ${MAGENTO_ROOT}/pub/media',
-                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/pub/media && chown -R www:www ${MAGENTO_ROOT}/pub/media'
-                ]
             ]);
         }
         $volumesCmd = '';
