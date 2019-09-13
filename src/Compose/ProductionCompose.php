@@ -109,6 +109,12 @@ class ProductionCompose implements ComposeInterface
                 [
                     'ports' => [3306],
                     'networks' => ['magento'],
+                    'volumes' => [
+                        '/var/lib/mysql',
+                        './.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d',
+                        './.docker/mnt:/mnt',
+                        './.docker/tmp:/tmp'
+                    ],
                 ]
             )
         ];
