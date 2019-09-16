@@ -107,8 +107,15 @@ class ProductionCompose implements ComposeInterface
                 ServiceFactory::SERVICE_DB,
                 $dbVersion,
                 [
+                    'hostname' => 'db.magento2.docker',
                     'ports' => [3306],
-                    'networks' => ['magento'],
+                    'networks' => [
+                        'magento' => [
+                            'aliases' => [
+                                'db.magento2.docker',
+                            ],
+                        ],
+                    ],
                     'volumes' => [
                         '/var/lib/mysql',
                         './.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d',
