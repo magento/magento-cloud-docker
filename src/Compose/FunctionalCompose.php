@@ -145,4 +145,12 @@ class FunctionalCompose extends ProductionCompose
             in_array($phpVersion, ['7.0', '7.1']) ? ['mcrypt'] : []
         ));
     }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getDockerMount(): array
+    {
+        return [];
+    }
 }

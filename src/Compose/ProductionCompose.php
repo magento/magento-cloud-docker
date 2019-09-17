@@ -116,12 +116,13 @@ class ProductionCompose implements ComposeInterface
                             ],
                         ],
                     ],
-                    'volumes' => [
-                        '/var/lib/mysql',
-                        './.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d',
-                        './.docker/mnt:/mnt',
-                        './.docker/tmp:/tmp'
-                    ],
+                    'volumes' => array_merge(
+                        [
+                            '/var/lib/mysql',
+                            './.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
+                        ],
+                        $this->getDockerMount()
+                    ),
                 ]
             )
         ];
@@ -195,10 +196,7 @@ class ProductionCompose implements ComposeInterface
                 'volumes' => array_merge(
                     $this->getMagentoBuildVolumes($config, false),
                     $this->getComposerVolumes(),
-                    [
-                        './.docker/mnt:/mnt',
-                        './.docker/tmp:/tmp'
-                    ]
+                    $this->getDockerMount()
                 ),
                 'networks' => [
                     'magento' => [
@@ -358,10 +356,7 @@ class ProductionCompose implements ComposeInterface
                 'volumes' => array_merge(
                     $this->getMagentoVolumes($config, $isReadOnly),
                     $this->getComposerVolumes(),
-                    [
-                        './.docker/mnt:/mnt',
-                        './.docker/tmp:/tmp'
-                    ]
+                    $this->getDockerMount()
                 ),
                 'networks' => [
                     'magento' => [
@@ -483,5 +478,13 @@ class ProductionCompose implements ComposeInterface
     protected function getPhpExtensions(string $phpVersion): array
     {
         return $this->phpExtension->get($phpVersion);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getDockerMount(): array
+    {
+        return ['./.docker/mnt:/mnt', './.docker/tmp:/tmp'];
     }
 }
