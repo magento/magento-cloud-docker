@@ -36,7 +36,7 @@ case "$1" in
         docker-compose down --volumes
         ;;
     bash)
-        docker-compose run deploy bash
+        docker-compose run --rm deploy bash
         ;;
     stop)
         docker-compose stop
@@ -48,18 +48,18 @@ case "$1" in
         docker-compose restart
         ;;
     ece-build)
-        docker-compose run build cloud-build
+        docker-compose run --rm build cloud-build
         ;;
     ece-deploy)
-        docker-compose run deploy cloud-deploy
+        docker-compose run --rm deploy cloud-deploy
         ;;
     ece-post-deploy)
-        docker-compose run deploy cloud-post-deploy
+        docker-compose run --rm deploy cloud-post-deploy
         ;;
     ece-redeploy)
-        docker-compose run build cloud-build
-        docker-compose run deploy cloud-deploy
-        docker-compose run deploy cloud-post-deploy
+        docker-compose run --rm build cloud-build
+        docker-compose run --rm deploy cloud-deploy
+        docker-compose run --rm deploy cloud-post-deploy
         ;;
     *)
         printf "$USAGE"
