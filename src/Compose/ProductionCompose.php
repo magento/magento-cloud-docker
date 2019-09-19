@@ -106,7 +106,24 @@ class ProductionCompose implements ComposeInterface
             'db' => $this->serviceFactory->create(
                 ServiceFactory::SERVICE_DB,
                 $dbVersion,
-                ['ports' => [3306]]
+                [
+                    'hostname' => 'db.magento2.docker',
+                    'ports' => [3306],
+                    'networks' => [
+                        'magento' => [
+                            'aliases' => [
+                                'db.magento2.docker',
+                            ],
+                        ],
+                    ],
+                    'volumes' => array_merge(
+                        [
+                            '/var/lib/mysql',
+                            './.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
+                        ],
+                        $this->getDockerMount()
+                    ),
+                ]
             )
         ];
 
@@ -116,7 +133,8 @@ class ProductionCompose implements ComposeInterface
         if ($redisVersion) {
             $services['redis'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_REDIS,
-                $redisVersion
+                $redisVersion,
+                ['networks' => ['magento']]
             );
         }
 
@@ -126,7 +144,8 @@ class ProductionCompose implements ComposeInterface
         if ($esVersion) {
             $services['elasticsearch'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_ELASTICSEARCH,
-                $esVersion
+                $esVersion,
+                ['networks' => ['magento']]
             );
         }
 
@@ -136,7 +155,10 @@ class ProductionCompose implements ComposeInterface
             $services['node'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_NODE,
                 $nodeVersion,
-                ['volumes' => $this->getMagentoVolumes($config, false)]
+                [
+                    'volumes' => $this->getMagentoVolumes($config, false),
+                    'networks' => ['magento'],
+                ]
             );
         }
 
@@ -146,7 +168,8 @@ class ProductionCompose implements ComposeInterface
         if ($rabbitMQVersion) {
             $services['rabbitmq'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_RABBIT_MQ,
-                $rabbitMQVersion
+                $rabbitMQVersion,
+                ['networks' => ['magento']]
             );
         }
 
@@ -160,23 +183,28 @@ class ProductionCompose implements ComposeInterface
                 'depends_on' => ['db'],
                 'extends' => 'generic',
                 'volumes' => $this->getMagentoVolumes($config, true),
+                'networks' => ['magento'],
             ]
         );
         $services['build'] = $this->serviceFactory->create(
             static::SERVICE_PHP_CLI,
             $phpVersion,
             [
-                'hostname' => 'deploy.magento2.docker',
+                'hostname' => 'build.magento2.docker',
                 'depends_on' => $cliDepends,
                 'extends' => 'generic',
                 'volumes' => array_merge(
                     $this->getMagentoBuildVolumes($config, false),
                     $this->getComposerVolumes(),
-                    [
-                        './.docker/mnt:/mnt',
-                        './.docker/tmp:/tmp'
-                    ]
-                )
+                    $this->getDockerMount()
+                ),
+                'networks' => [
+                    'magento' => [
+                        'aliases' => [
+                            'web.magento2.docker',
+                        ],
+                    ],
+                ],
             ]
         );
         $services['deploy'] = $this->getCliService($config, $phpVersion, true, $cliDepends, 'deploy.magento2.docker');
@@ -188,17 +216,36 @@ class ProductionCompose implements ComposeInterface
                 'depends_on' => ['fpm'],
                 'extends' => 'generic',
                 'volumes' => $this->getMagentoVolumes($config, true),
+                'networks' => [
+                    'magento' => [
+                        'aliases' => [
+                            'web.magento2.docker',
+                        ],
+                    ],
+                ],
             ]
         );
         $services['varnish'] = $this->serviceFactory->create(
             ServiceFactory::SERVICE_VARNISH,
             self::DEFAULT_VARNISH_VERSION,
-            ['depends_on' => ['web']]
+            [
+                'depends_on' => ['web'],
+                'networks' => [
+                    'magento' => [
+                        'aliases' => [
+                            'magento2.docker',
+                        ],
+                    ],
+                ],
+            ]
         );
         $services['tls'] = $this->serviceFactory->create(
             ServiceFactory::SERVICE_TLS,
             self::DEFAULT_TLS_VERSION,
-            ['depends_on' => ['varnish']]
+            [
+                'depends_on' => ['varnish'],
+                'networks' => ['magento'],
+            ]
         );
         $phpExtensions = $this->getPhpExtensions($phpVersion);
         $services['generic'] = [
@@ -233,7 +280,12 @@ class ProductionCompose implements ComposeInterface
                 'magento-etc' => $volumeConfig,
                 'magento-static' => $volumeConfig,
                 'magento-media' => $volumeConfig,
-            ]
+            ],
+            'networks' => [
+                'magento' => [
+                    'driver' => 'bridge',
+                ],
+            ],
         ];
     }
 
@@ -304,11 +356,15 @@ class ProductionCompose implements ComposeInterface
                 'volumes' => array_merge(
                     $this->getMagentoVolumes($config, $isReadOnly),
                     $this->getComposerVolumes(),
-                    [
-                        './.docker/mnt:/mnt',
-                        './.docker/tmp:/tmp'
-                    ]
-                )
+                    $this->getDockerMount()
+                ),
+                'networks' => [
+                    'magento' => [
+                        'aliases' => [
+                            $hostname,
+                        ],
+                    ],
+                ],
             ]
         );
     }
@@ -367,7 +423,7 @@ class ProductionCompose implements ComposeInterface
             : '~/.composer/cache';
 
         return [
-            $composeCacheDirectory . ':/root/.composer/cache:delegated',
+            $composeCacheDirectory . ':' . self::DIR_MAGENTO . '/.composer/cache:delegated',
         ];
     }
 
@@ -422,5 +478,13 @@ class ProductionCompose implements ComposeInterface
     protected function getPhpExtensions(string $phpVersion): array
     {
         return $this->phpExtension->get($phpVersion);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getDockerMount(): array
+    {
+        return ['./.docker/mnt:/mnt', './.docker/tmp:/tmp'];
     }
 }

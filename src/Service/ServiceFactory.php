@@ -46,10 +46,6 @@ class ServiceFactory
         self::SERVICE_DB => [
             'image' => 'mariadb:%s',
             'config' => [
-                'volumes' => [
-                    '/var/lib/mysql',
-                    './.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d',
-                ],
                 'environment' => [
                     'MYSQL_ROOT_PASSWORD=magento2',
                     'MYSQL_DATABASE=magento2',
