@@ -8,7 +8,9 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Unit\Service;
 
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Service\ServiceFactory;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,11 +24,23 @@ class ServiceFactoryTest extends TestCase
     private $factory;
 
     /**
+     * @var FileList|MockObject
+     */
+    private $fileListMock;
+
+    /**
      * @inheritdoc
      */
     protected function setUp()
     {
-        $this->factory = new ServiceFactory();
+        $this->fileListMock = $this->createMock(FileList::class);
+
+        $this->fileListMock->method('getComposer')
+            ->willReturn(__DIR__ . '/../../../../composer.json');
+
+        $this->factory = new ServiceFactory(
+            $this->fileListMock
+        );
     }
 
     /**
