@@ -1,0 +1,14 @@
+dist: trusty
+
+git:
+  depth: false
+
+language: php
+php:
+  - '7.1'
+
+install: composer update
+
+script:
+  - ./vendor/bin/phpunit
+
