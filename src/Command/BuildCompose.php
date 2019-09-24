@@ -9,8 +9,9 @@ namespace Magento\CloudDocker\Command;
 
 use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\App\GenericException;
-use Magento\CloudDocker\Compose\DeveloperCompose;
-use Magento\CloudDocker\Compose\ComposeFactory;
+use Magento\CloudDocker\Compose\DeveloperBuilder;
+use Magento\CloudDocker\Compose\BuilderFactory;
+use Magento\CloudDocker\Compose\ProductionBuilder;
 use Magento\CloudDocker\Config\ConfigFactory;
 use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Service\ServiceInterface;
@@ -27,17 +28,18 @@ use Symfony\Component\Yaml\Yaml;
  */
 class BuildCompose extends Command
 {
-    const NAME = 'build:compose';
+    public const NAME = 'build:compose';
 
-    const OPTION_PHP = 'php';
-    const OPTION_NGINX = 'nginx';
-    const OPTION_DB = 'db';
-    const OPTION_REDIS = 'redis';
-    const OPTION_ES = 'es';
-    const OPTION_RABBIT_MQ = 'rmq';
-    const OPTION_NODE = 'node';
-    const OPTION_MODE = 'mode';
-    const OPTION_SYNC_ENGINE = 'sync-engine';
+    private const OPTION_PHP = 'php';
+    private const OPTION_NGINX = 'nginx';
+    private const OPTION_DB = 'db';
+    private const OPTION_REDIS = 'redis';
+    private const OPTION_ES = 'es';
+    private const OPTION_RABBIT_MQ = 'rmq';
+    private const OPTION_NODE = 'node';
+    private const OPTION_MODE = 'mode';
+    private const OPTION_SYNC_ENGINE = 'sync-engine';
+    private const OPTION_USE_ABSOLUTE_PATH = 'use-absolute-path';
 
     /**
      * Option key to service name map.
@@ -55,9 +57,9 @@ class BuildCompose extends Command
     ];
 
     /**
-     * @var ComposeFactory
+     * @var BuilderFactory
      */
-    private $composeFactory;
+    private $builderFactory;
 
     /**
      * @var Generator
@@ -75,18 +77,18 @@ class BuildCompose extends Command
     private $filesystem;
 
     /**
-     * @param ComposeFactory $composeFactory
+     * @param BuilderFactory $composeFactory
      * @param Generator $distGenerator
      * @param ConfigFactory $configFactory
      * @param Filesystem $filesystem
      */
     public function __construct(
-        ComposeFactory $composeFactory,
+        BuilderFactory $composeFactory,
         Generator $distGenerator,
         ConfigFactory $configFactory,
         Filesystem $filesystem
     ) {
-        $this->composeFactory = $composeFactory;
+        $this->builderFactory = $composeFactory;
         $this->distGenerator = $distGenerator;
         $this->configFactory = $configFactory;
         $this->filesystem = $filesystem;
@@ -145,22 +147,28 @@ class BuildCompose extends Command
                     implode(
                         ', ',
                         [
-                            ComposeFactory::COMPOSE_DEVELOPER,
-                            ComposeFactory::COMPOSE_PRODUCTION,
-                            ComposeFactory::COMPOSE_FUNCTIONAL,
+                            BuilderFactory::BUILDER_DEVELOPER,
+                            BuilderFactory::BUILDER_PRODUCTION,
+                            BuilderFactory::BUILDER_FUNCTIONAL,
                         ]
                     )
                 ),
-                ComposeFactory::COMPOSE_PRODUCTION
+                BuilderFactory::BUILDER_PRODUCTION
             )->addOption(
                 self::OPTION_SYNC_ENGINE,
                 null,
                 InputOption::VALUE_REQUIRED,
                 sprintf(
                     'File sync engine. Works only with developer mode. Available: (%s)',
-                    implode(', ', DeveloperCompose::SYNC_ENGINES_LIST)
+                    implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
                 ),
-                DeveloperCompose::SYNC_ENGINE_DOCKER_SYNC
+                DeveloperBuilder::SYNC_ENGINE_DOCKER_SYNC
+            )->addOption(
+                self::OPTION_USE_ABSOLUTE_PATH,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Use absolute paths',
+                stripos(PHP_OS, 'win') === 0
             );
 
         parent::configure();
@@ -176,16 +184,16 @@ class BuildCompose extends Command
         $type = $input->getOption(self::OPTION_MODE);
         $syncEngine = $input->getOption(self::OPTION_SYNC_ENGINE);
 
-        $compose = $this->composeFactory->create($type);
+        $builder = $this->builderFactory->create($type);
         $config = $this->configFactory->create();
 
-        if (ComposeFactory::COMPOSE_DEVELOPER === $type
-            && !in_array($syncEngine, DeveloperCompose::SYNC_ENGINES_LIST, true)
+        if (BuilderFactory::BUILDER_DEVELOPER === $type
+            && !in_array($syncEngine, DeveloperBuilder::SYNC_ENGINES_LIST, true)
         ) {
             throw new GenericException(sprintf(
                 "File sync engine '%s' is not supported. Available: %s",
                 $syncEngine,
-                implode(', ', DeveloperCompose::SYNC_ENGINES_LIST)
+                implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
             ));
         }
 
@@ -195,19 +203,22 @@ class BuildCompose extends Command
             }
         });
 
-        $config->set(DeveloperCompose::SYNC_ENGINE, $syncEngine);
+        $config->set(DeveloperBuilder::SYNC_ENGINE, $syncEngine);
+        $config->set(ProductionBuilder::KEY_USE_ABSOLUTE_PATH, $input->getOption(self::OPTION_USE_ABSOLUTE_PATH));
 
         if (in_array(
             $input->getOption(self::OPTION_MODE),
-            [ComposeFactory::COMPOSE_DEVELOPER, ComposeFactory::COMPOSE_PRODUCTION],
+            [BuilderFactory::BUILDER_DEVELOPER, BuilderFactory::BUILDER_PRODUCTION],
             false
         )) {
             $this->distGenerator->generate();
         }
 
+        $builder->setConfig($config);
+
         $this->filesystem->put(
-            $compose->getPath(),
-            Yaml::dump($compose->build($config), 6, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
+            $builder->getPath(),
+            Yaml::dump($builder->build(), 6, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
         );
 
         $output->writeln('<info>Configuration was built.</info>');

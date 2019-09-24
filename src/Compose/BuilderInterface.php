@@ -10,17 +10,25 @@ namespace Magento\CloudDocker\Compose;
 use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 
-/**
- * General Builder interface.
- */
-interface ComposeInterface
+interface BuilderInterface
 {
+    public const DIR_MAGENTO = '/app';
+
     /**
-     * @param Repository $config
      * @return array
      * @throws ConfigurationMismatchException
      */
-    public function build(Repository $config): array;
+    public function build(): array;
+
+    /**
+     * @param Repository $config
+     */
+    public function setConfig(Repository $config): void;
+
+    /**
+     * @return Repository
+     */
+    public function getConfig(): Repository;
 
     /**
      * @return string

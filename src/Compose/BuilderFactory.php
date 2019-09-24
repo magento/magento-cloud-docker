@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
-use Magento\CloudDocker\Compose;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Psr\Container\ContainerInterface;
 
@@ -16,21 +15,16 @@ use Psr\Container\ContainerInterface;
  *
  * @codeCoverageIgnore
  */
-class ComposeFactory
+class BuilderFactory
 {
-    const COMPOSE_DEVELOPER = 'developer';
-    const COMPOSE_PRODUCTION = 'production';
-    const COMPOSE_FUNCTIONAL = 'functional';
+    public const BUILDER_DEVELOPER = 'developer';
+    public const BUILDER_PRODUCTION = 'production';
+    public const BUILDER_FUNCTIONAL = 'functional';
 
     /**
      * @var array
      */
-    private static $map = [
-        self::COMPOSE_DEVELOPER => Compose\DeveloperCompose::class,
-        self::COMPOSE_PRODUCTION => Compose\ProductionCompose::class,
-        /** Internal CI configurations. */
-        self::COMPOSE_FUNCTIONAL => Compose\FunctionalCompose::class
-    ];
+    private $strategies;
 
     /**
      * @var ContainerInterface
@@ -39,25 +33,27 @@ class ComposeFactory
 
     /**
      * @param ContainerInterface $container
+     * @param array $strategies
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, array $strategies)
     {
         $this->container = $container;
+        $this->strategies = $strategies;
     }
 
     /**
      * @param string $strategy
-     * @return ComposeInterface
+     * @return BuilderInterface
      * @throws ConfigurationMismatchException
      */
-    public function create(string $strategy): ComposeInterface
+    public function create(string $strategy): BuilderInterface
     {
-        if (!array_key_exists($strategy, self::$map)) {
+        if (!array_key_exists($strategy, $this->strategies)) {
             throw new ConfigurationMismatchException(
                 sprintf('Wrong strategy "%s" passed', $strategy)
             );
         }
 
-        return $this->container->get(self::$map[$strategy]);
+        return $this->container->get($this->strategies[$strategy]);
     }
 }
