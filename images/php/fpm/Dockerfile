@@ -6,6 +6,7 @@ ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV UPLOAD_MAX_FILESIZE 64M
+ENV UPDATE_UID_GID false
 {%env_php_extensions%}
 
 # Install dependencies

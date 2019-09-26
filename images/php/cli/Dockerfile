@@ -1,11 +1,11 @@
 {%note%}
 FROM php:{%version%}-cli-stretch
 
-ENV PHP_MEMORY_LIMIT=2G \
-    MAGENTO_ROOT=/app \
-    DEBUG=false \
-    MAGENTO_RUN_MODE=production \
-    COMPOSER_ALLOW_SUPERUSER=1
+ENV PHP_MEMORY_LIMIT 2G
+ENV MAGENTO_ROOT /app
+ENV DEBUG false
+ENV MAGENTO_RUN_MODE production
+ENV UPDATE_UID_GID false
 {%env_php_extensions%}
 
 # Configure Node.js version
@@ -47,7 +47,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 ADD bin/* /usr/local/bin/
 
-RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
+RUN groupadd -g ${GID} www && useradd -g ${GID} -u ${UID} -d ${MAGENTO_ROOT} -s /bin/bash www
 
 RUN chown -R www:www /etc /usr/local/etc /var
 
