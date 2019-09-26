@@ -13,8 +13,8 @@ ENV FPM_PORT 9000
 ENV MAGENTO_ROOT /app
 ENV MAGENTO_RUN_MODE production
 ENV DEBUG false
-ENV UID=1000
-ENV GID=1000
+ENV UID 1000
+ENV GID 1000
 ENV UPDATE_UID_GID false
 
 RUN groupadd -g ${GID} www && useradd -g ${GID} -u ${UID} -d ${MAGENTO_ROOT} -s /bin/bash www
