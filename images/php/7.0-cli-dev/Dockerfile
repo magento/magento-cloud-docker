@@ -5,6 +5,8 @@ ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
+ENV UID=1000
+ENV GID=1000
 ENV UPDATE_UID_GID false
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mcrypt mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
