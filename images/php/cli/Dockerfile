@@ -5,8 +5,6 @@ ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
-ENV UID 1000
-ENV GID 1000
 ENV UPDATE_UID_GID false
 {%env_php_extensions%}
 
@@ -48,7 +46,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 ADD bin/* /usr/local/bin/
 
-RUN groupadd -g ${GID} www && useradd -g ${GID} -u ${UID} -d ${MAGENTO_ROOT} -s /bin/bash www
+RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
 
 RUN chown -R www:www /etc /usr/local/etc /var
 

@@ -92,6 +92,7 @@ class FunctionalCompose extends ProductionCompose
             'ENABLE_SENDMAIL' => 'false',
             'UPLOAD_MAX_FILESIZE' => '64M',
             'MAGENTO_ROOT' => self::DIR_MAGENTO,
+            'UPDATE_UID_GID' => 'true'
         ];
     }
 

@@ -13,11 +13,9 @@ ENV FPM_PORT 9000
 ENV MAGENTO_ROOT /app
 ENV MAGENTO_RUN_MODE production
 ENV DEBUG false
-ENV UID 1000
-ENV GID 1000
 ENV UPDATE_UID_GID false
 
-RUN groupadd -g ${GID} www && useradd -g ${GID} -u ${UID} -d ${MAGENTO_ROOT} -s /bin/bash www
+RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
 RUN chown -R www:www /etc/nginx /var/cache/nginx /var/run/nginx.pid
 
 RUN apt-get update && apt-get install -y openssl
