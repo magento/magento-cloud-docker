@@ -159,7 +159,6 @@ COPY etc/www.conf /usr/local/etc/php-fpm.d/
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
-ENTRYPOINT ["/docker-entrypoint.sh"]
 
 RUN chown -R www:www /usr/local/etc
 
@@ -169,8 +168,10 @@ RUN mkdir ${MAGENTO_ROOT}/.composer && chown -R www:www ${MAGENTO_ROOT}/.compose
 VOLUME ${MAGENTO_ROOT}
 VOLUME ${MAGENTO_ROOT}/.composer
 
-USER www:www
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 WORKDIR ${MAGENTO_ROOT}
+
+USER www:www
 
 CMD ["php-fpm", "-F"]

@@ -40,7 +40,6 @@ COPY etc/www.conf /usr/local/etc/php-fpm.d/
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
-ENTRYPOINT ["/docker-entrypoint.sh"]
 
 RUN chown -R www:www /usr/local/etc
 
@@ -48,8 +47,10 @@ RUN chown -R www:www /usr/local/etc
 
 {%volumes_def%}
 
-USER www:www
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 WORKDIR ${MAGENTO_ROOT}
+
+USER www:www
 
 CMD ["php-fpm", "-F"]
