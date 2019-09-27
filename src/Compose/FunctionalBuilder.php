@@ -24,6 +24,8 @@ use Magento\CloudDocker\Service\ServiceInterface;
  */
 class FunctionalBuilder extends ProductionBuilder
 {
+    public const CRON_ENABLED = false;
+
     /**
      * @var FileList
      */
@@ -54,12 +56,11 @@ class FunctionalBuilder extends ProductionBuilder
             $serviceConfig,
             $fileList,
             $directoryList,
-            $converter, $phpExtension,
+            $converter,
+            $phpExtension,
             $reader
         );
     }
-
-    public const CRON_ENABLED = false;
 
     /**
      * @inheritDoc

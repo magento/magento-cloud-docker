@@ -38,25 +38,25 @@ class ServiceFactory
         self::SERVICE_CLI => [
             'image' => 'magento/magento-cloud-docker-php:%s-cli-%s',
             'config' => [
-                'extends' => 'generic'
+                'extends' => self::SERVICE_GENERIC
             ]
         ],
         self::SERVICE_CLI_DEV => [
             'image' => 'magento/magento-cloud-docker-php:%s-cli-dev-%s',
             'config' => [
-                'extends' => 'generic'
+                'extends' => self::SERVICE_GENERIC
             ]
         ],
         self::SERVICE_FPM => [
             'image' => 'magento/magento-cloud-docker-php:%s-fpm-%s',
             'config' => [
-                'extends' => 'generic'
+                'extends' => self::SERVICE_GENERIC
             ]
         ],
         self::SERVICE_FPM_DEV => [
             'image' => 'magento/magento-cloud-docker-php:%s-fpm-dev-%s',
             'config' => [
-                'extends' => 'generic'
+                'extends' => self::SERVICE_GENERIC
             ]
         ],
         self::SERVICE_DB => [
@@ -73,7 +73,7 @@ class ServiceFactory
         self::SERVICE_NGINX => [
             'image' => 'magento/magento-cloud-docker-nginx:%s-%s',
             'config' => [
-                'extends' => 'generic'
+                'extends' => self::SERVICE_GENERIC
             ]
         ],
         self::SERVICE_VARNISH => [
