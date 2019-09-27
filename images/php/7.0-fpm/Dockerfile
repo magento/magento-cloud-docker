@@ -150,7 +150,7 @@ RUN docker-php-ext-enable \
   zip \
   pcntl
 
-RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
+RUN groupadd -g 2000 www && useradd -g 2000 -u 2000 -d ${MAGENTO_ROOT} -s /bin/bash www
 
 COPY etc/php-fpm.ini /usr/local/etc/php/conf.d/zz-magento.ini
 COPY etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
