@@ -5,7 +5,6 @@ ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
-ENV UPDATE_UID_GID false
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
 # Configure Node.js version
@@ -199,7 +198,6 @@ RUN ["chmod", "+x", \
 ]
 
 RUN mkdir ${MAGENTO_ROOT} && chown -R www:www ${MAGENTO_ROOT}
-RUN mkdir ${MAGENTO_ROOT}/.composer && chown -R www:www ${MAGENTO_ROOT}/.composer
 RUN mkdir ${MAGENTO_ROOT}/vendor && chown -R www:www ${MAGENTO_ROOT}/vendor
 RUN mkdir ${MAGENTO_ROOT}/generated && chown -R www:www ${MAGENTO_ROOT}/generated
 RUN mkdir ${MAGENTO_ROOT}/var && chown -R www:www ${MAGENTO_ROOT}/var
@@ -207,7 +205,6 @@ RUN mkdir -p ${MAGENTO_ROOT}/app/etc && chown -R www:www ${MAGENTO_ROOT}/app
 RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media && chown -R www:www ${MAGENTO_ROOT}/pub
 
 VOLUME ${MAGENTO_ROOT}
-VOLUME ${MAGENTO_ROOT}/.composer
 VOLUME ${MAGENTO_ROOT}/vendor
 VOLUME ${MAGENTO_ROOT}/generated
 VOLUME ${MAGENTO_ROOT}/var

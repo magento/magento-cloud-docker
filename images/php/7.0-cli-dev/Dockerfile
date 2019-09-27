@@ -5,7 +5,6 @@ ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
-ENV UPDATE_UID_GID false
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mcrypt mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
 # Configure Node.js version
@@ -199,10 +198,8 @@ RUN ["chmod", "+x", \
 ]
 
 RUN mkdir ${MAGENTO_ROOT} && chown -R www:www ${MAGENTO_ROOT}
-RUN mkdir ${MAGENTO_ROOT}/.composer && chown -R www:www ${MAGENTO_ROOT}/.composer
 
 VOLUME ${MAGENTO_ROOT}
-VOLUME ${MAGENTO_ROOT}/.composer
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

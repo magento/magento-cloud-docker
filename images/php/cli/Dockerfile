@@ -5,7 +5,6 @@ ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
-ENV UPDATE_UID_GID false
 {%env_php_extensions%}
 
 # Configure Node.js version
