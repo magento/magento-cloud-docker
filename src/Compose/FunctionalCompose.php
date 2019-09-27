@@ -30,7 +30,8 @@ class FunctionalCompose extends ProductionCompose
     {
         $compose = parent::build($config);
         $compose['services']['generic']['env_file'] = [
-            './.docker/composer.env'
+            './.docker/composer.env',
+            './.docker/global.env'
         ];
         $compose['services']['db']['ports'] = ['3306:3306'];
         $compose['volumes']['magento'] = [];
@@ -85,15 +86,7 @@ class FunctionalCompose extends ProductionCompose
      */
     protected function getVariables(): array
     {
-        return [
-            'MAGENTO_RUN_MODE' => 'production',
-            'PHP_MEMORY_LIMIT' => '2048M',
-            'DEBUG' => 'false',
-            'ENABLE_SENDMAIL' => 'false',
-            'UPLOAD_MAX_FILESIZE' => '64M',
-            'MAGENTO_ROOT' => self::DIR_MAGENTO,
-            'UPDATE_UID_GID' => 'true'
-        ];
+        return [];
     }
 
     /**

@@ -27,8 +27,10 @@ RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 RUN mkdir ${MAGENTO_ROOT} && chown -R www:www ${MAGENTO_ROOT}
+RUN mkdir ${MAGENTO_ROOT}/.composer && chown -R www:www ${MAGENTO_ROOT}/.composer
 
 VOLUME ${MAGENTO_ROOT}
+VOLUME ${MAGENTO_ROOT}/.composer
 
 WORKDIR ${MAGENTO_ROOT}
 

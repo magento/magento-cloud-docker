@@ -8,8 +8,8 @@
 if [[ "$UPDATE_UID_GID" = "true" ]]; then
     echo "Updating www uid and gid"
 
-    DOCKER_UID=`stat -c "%u" $MAGENTO_ROOT`
-    DOCKER_GID=`stat -c "%g" $MAGENTO_ROOT`
+    DOCKER_UID=`stat -c "%u" $MAGENTO_ROOT/.composer`
+    DOCKER_GID=`stat -c "%g" $MAGENTO_ROOT/.composer`
 
     INCUMBENT_USER=`getent passwd $DOCKER_UID | cut -d: -f1`
     INCUMBENT_GROUP=`getent group $DOCKER_GID | cut -d: -f1`
