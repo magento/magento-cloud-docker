@@ -150,7 +150,7 @@ RUN docker-php-ext-enable \
   zip \
   pcntl
 
-RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
+RUN groupadd -g 2000 www && useradd -g 2000 -u 2000 -d ${MAGENTO_ROOT} -s /bin/bash www
 
 COPY etc/php-fpm.ini /usr/local/etc/php/conf.d/zz-magento.ini
 COPY etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
@@ -160,18 +160,17 @@ COPY etc/www.conf /usr/local/etc/php-fpm.d/
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
-ENTRYPOINT ["/docker-entrypoint.sh"]
 
 RUN chown -R www:www /usr/local/etc
 
 RUN mkdir ${MAGENTO_ROOT} && chown -R www:www ${MAGENTO_ROOT}
-RUN mkdir ${MAGENTO_ROOT}/.composer && chown -R www:www ${MAGENTO_ROOT}/.composer
 
 VOLUME ${MAGENTO_ROOT}
-VOLUME ${MAGENTO_ROOT}/.composer
 
-USER www:www
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 WORKDIR ${MAGENTO_ROOT}
+
+USER www:www
 
 CMD ["php-fpm", "-F"]
