@@ -86,7 +86,7 @@ class FunctionalBuilder extends ProductionBuilder
      */
     public function setConfig(Repository $config): void
     {
-        $config->set(self::KEY_WITH_CRON, true);
+        $config->set(self::KEY_NO_CRON, true);
 
         parent::setConfig($config);
     }
