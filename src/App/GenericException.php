@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\App;
 
+/**
+ * Base exception
+ */
 class GenericException extends \Exception
 {
     /**

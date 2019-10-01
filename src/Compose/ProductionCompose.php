@@ -257,8 +257,13 @@ class ProductionCompose implements ComposeInterface
         ];
 
         if (static::CRON_ENABLED) {
-            $services['cron'] = $this->getCronCliService($config, $phpVersion, true, $cliDepends,
-                'cron.magento2.docker');
+            $services['cron'] = $this->getCronCliService(
+                $config,
+                $phpVersion,
+                true,
+                $cliDepends,
+                'cron.magento2.docker'
+            );
         }
 
         $volumeConfig = [];

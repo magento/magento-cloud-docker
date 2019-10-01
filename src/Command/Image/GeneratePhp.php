@@ -158,7 +158,10 @@ class GeneratePhp extends Command
      */
     private function build(string $version, string $edition, bool $dev)
     {
-        $destination = $this->directoryList->getImagesRoot() . '/php/' . $version . '-' . $edition . ($dev ? '-dev' : '');
+        $destination = $this->directoryList->getImagesRoot()
+            . '/php/'
+            . $version . '-' . $edition
+            . ($dev ? '-dev' : '');
         $dataDir = $this->directoryList->getImagesRoot() . '/php/' . $edition;
         $dockerfile = $destination . '/' . self::DOCKERFILE;
 
@@ -213,10 +216,12 @@ class GeneratePhp extends Command
                         $phpExtPecl[] = $phpExtInstallConfig[ExtensionResolver::EXTENSION_PACKAGE_NAME] ?? $phpExtName;
                         break;
                     case ExtensionResolver::EXTENSION_TYPE_INSTALLATION_SCRIPT:
-                        $phpExtInstScripts[] = implode(" \\\n", array_map(function (string $command) {
+                        $phpExtInstScripts[] = implode(" \\\n", array_map(static function (string $command) {
                             return strpos($command, 'RUN') === false ? '  && ' . $command : $command;
-                        }, explode("\n",
-                            'RUN ' . $phpExtInstallConfig[ExtensionResolver::EXTENSION_INSTALLATION_SCRIPT])));
+                        }, explode(
+                            "\n",
+                            'RUN ' . $phpExtInstallConfig[ExtensionResolver::EXTENSION_INSTALLATION_SCRIPT]
+                        )));
                         break;
                     default:
                         throw new ConfigurationMismatchException(sprintf(
@@ -225,8 +230,7 @@ class GeneratePhp extends Command
                             $phpExtType
                         ));
                 }
-                if (
-                    isset($phpExtInstallConfig[ExtensionResolver::EXTENSION_OS_DEPENDENCIES])
+                if (isset($phpExtInstallConfig[ExtensionResolver::EXTENSION_OS_DEPENDENCIES])
                     && $phpExtType !== ExtensionResolver::EXTENSION_TYPE_INSTALLATION_SCRIPT
                 ) {
                     $packages = array_merge(
@@ -234,9 +238,11 @@ class GeneratePhp extends Command
                         $phpExtInstallConfig[ExtensionResolver::EXTENSION_OS_DEPENDENCIES]
                     );
                 }
+
                 if (in_array($phpExtName, self::PHP_EXTENSIONS_ENABLED_BY_DEFAULT, true)) {
                     $phpExtEnabledDefault[] = $phpExtName;
                 }
+
                 $phpExtList[] = $phpExtName;
             }
         }
