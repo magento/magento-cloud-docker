@@ -245,11 +245,7 @@ class GeneratePhp extends Command
             'root' => [
                 'def' => 'VOLUME ${MAGENTO_ROOT}',
                 'cmd' => 'RUN mkdir ${MAGENTO_ROOT} && chown -R www:www ${MAGENTO_ROOT}'
-            ],
-            '.composer' => [
-                'def' => 'VOLUME ${MAGENTO_ROOT}/.composer',
-                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/.composer && chown -R www:www ${MAGENTO_ROOT}/.composer'
-            ],
+            ]
         ];
         if (!$dev) {
             $volumes = array_merge($volumes, [
