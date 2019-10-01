@@ -33,9 +33,8 @@ class ProductionBuilder implements BuilderInterface
     public const SERVICE_PHP_CLI = ServiceFactory::SERVICE_CLI;
     public const SERVICE_PHP_FPM = ServiceFactory::SERVICE_FPM;
 
-    public const CRON_ENABLED = true;
-
     public const KEY_USE_ABSOLUTE_PATH = 'use-absolute-path';
+    public const KEY_WITH_CRON = 'with-cron';
 
     /**
      * @var ServiceFactory
@@ -267,7 +266,7 @@ class ProductionBuilder implements BuilderInterface
             ]
         );
 
-        if (static::CRON_ENABLED) {
+        if ($this->config->get(self::KEY_WITH_CRON, false)) {
             $services['cron'] = $this->getCronCliService(
                 $phpVersion,
                 true,

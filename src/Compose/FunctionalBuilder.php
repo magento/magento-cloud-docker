@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
+use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Environment\Converter;
@@ -24,8 +25,6 @@ use Magento\CloudDocker\Service\ServiceInterface;
  */
 class FunctionalBuilder extends ProductionBuilder
 {
-    public const CRON_ENABLED = false;
-
     /**
      * @var FileList
      */
@@ -80,6 +79,16 @@ class FunctionalBuilder extends ProductionBuilder
         $compose['volumes']['magento-build-media'] = [];
 
         return $compose;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setConfig(Repository $config): void
+    {
+        $config->set(self::KEY_WITH_CRON, true);
+
+        parent::setConfig($config);
     }
 
     /**

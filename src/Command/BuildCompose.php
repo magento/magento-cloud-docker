@@ -40,6 +40,7 @@ class BuildCompose extends Command
     private const OPTION_MODE = 'mode';
     private const OPTION_SYNC_ENGINE = 'sync-engine';
     private const OPTION_USE_ABSOLUTE_PATH = 'use-absolute-path';
+    private const OPTION_WITH_CRON = 'with-cron';
 
     /**
      * Option key to service name map.
@@ -99,7 +100,7 @@ class BuildCompose extends Command
     /**
      * @inheritdoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName(self::NAME)
             ->setDescription('Build docker configuration')
@@ -169,6 +170,11 @@ class BuildCompose extends Command
                 InputOption::VALUE_REQUIRED,
                 'Use absolute paths',
                 stripos(PHP_OS, 'win') === 0
+            )->addOption(
+                self::OPTION_WITH_CRON,
+                null,
+                InputOption::VALUE_NONE,
+                'Add cron container'
             );
 
         parent::configure();
@@ -203,8 +209,11 @@ class BuildCompose extends Command
             }
         });
 
-        $config->set(DeveloperBuilder::SYNC_ENGINE, $syncEngine);
-        $config->set(ProductionBuilder::KEY_USE_ABSOLUTE_PATH, $input->getOption(self::OPTION_USE_ABSOLUTE_PATH));
+        $config->set([
+            DeveloperBuilder::SYNC_ENGINE => $syncEngine,
+            ProductionBuilder::KEY_USE_ABSOLUTE_PATH => $input->getOption(self::OPTION_USE_ABSOLUTE_PATH),
+            ProductionBuilder::KEY_WITH_CRON => $input->getOption(self::OPTION_WITH_CRON)
+        ]);
 
         if (in_array(
             $input->getOption(self::OPTION_MODE),
