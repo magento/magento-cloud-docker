@@ -1,5 +1,6 @@
 {%note%}
 FROM php:{%version%}-fpm-stretch
+ARG GOSU_VERSION=1.10
 
 ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
@@ -27,6 +28,12 @@ RUN apt-get update \
 {%installation_scripts%}
 
 {%docker-php-ext-enable%}
+
+# Install gosu
+RUN dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
+ && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
+ && chmod 755 /usr/local/bin/gosu \
+ && gosu nobody true
 
 RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
 

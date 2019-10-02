@@ -62,4 +62,4 @@ fi
     composer config --global http-basic.repo.magento.com \
         $COMPOSER_MAGENTO_USERNAME $COMPOSER_MAGENTO_PASSWORD
 
-exec "$@"
+exec gosu www "$@"

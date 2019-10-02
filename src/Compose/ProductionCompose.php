@@ -419,7 +419,7 @@ class ProductionCompose implements ComposeInterface
     private function getComposerVolumes(): array
     {
         return [
-            '~/.composer:/root/.composer:delegated',
+            '~/.composer:/app/.composer:delegated',
         ];
     }
 
