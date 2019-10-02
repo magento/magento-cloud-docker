@@ -208,6 +208,4 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 
 WORKDIR ${MAGENTO_ROOT}
 
-USER www:www
-
 CMD ["bash"]
