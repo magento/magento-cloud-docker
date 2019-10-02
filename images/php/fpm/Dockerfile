@@ -6,6 +6,7 @@ ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV UPLOAD_MAX_FILESIZE 64M
+ENV UPDATE_UID_GID false
 {%env_php_extensions%}
 
 # Install dependencies
@@ -27,7 +28,7 @@ RUN apt-get update \
 
 {%docker-php-ext-enable%}
 
-RUN groupadd -g 2000 www && useradd -g 2000 -u 2000 -d ${MAGENTO_ROOT} -s /bin/bash www
+RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
 
 COPY etc/php-fpm.ini /usr/local/etc/php/conf.d/zz-magento.ini
 COPY etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
@@ -39,10 +40,6 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 
 RUN chown -R www:www /usr/local/etc
-
-{%volumes_cmd%}
-
-{%volumes_def%}
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

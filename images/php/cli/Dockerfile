@@ -6,6 +6,7 @@ ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV UPDATE_UID_GID false
 {%env_php_extensions%}
 
 # Configure Node.js version
@@ -46,7 +47,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 ADD bin/* /usr/local/bin/
 
-RUN groupadd -g 2000 www && useradd -g 2000 -u 2000 -d ${MAGENTO_ROOT} -s /bin/bash www
+RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
 
 RUN chown -R www:www /etc /usr/local/etc /var
 
@@ -63,10 +64,6 @@ RUN ["chmod", "+x", \
     "/usr/local/bin/run-cron", \
     "/usr/local/bin/run-hooks" \
 ]
-
-{%volumes_cmd%}
-
-{%volumes_def%}
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

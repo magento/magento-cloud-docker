@@ -419,7 +419,7 @@ class ProductionCompose implements ComposeInterface
     private function getComposerVolumes(): array
     {
         return [
-            '~/.composer:' . self::DIR_MAGENTO . '/.composer:delegated',
+            '~/.composer::/root/.composer/cache:delegated',
         ];
     }
 

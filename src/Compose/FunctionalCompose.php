@@ -33,8 +33,6 @@ class FunctionalCompose extends ProductionCompose
             './.docker/composer.env',
             './.docker/global.env'
         ];
-        $compose['services']['build']['user'] = 'root';
-        $compose['services']['deploy']['user'] = 'root';
         $compose['services']['db']['ports'] = ['3306:3306'];
         $compose['volumes']['magento'] = [];
         $compose['volumes']['magento-build-var'] = [];
