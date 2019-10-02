@@ -14,13 +14,9 @@ ENV MAGENTO_ROOT /app
 ENV MAGENTO_RUN_MODE production
 ENV DEBUG false
 
-RUN groupadd -g 2000 www && useradd -g 2000 -u 2000 -d ${MAGENTO_ROOT} -s /bin/bash www
-
 RUN apt-get update && apt-get install -y openssl
 RUN mkdir /etc/nginx/ssl \
   && echo -e "\n\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/magento.key -out /etc/nginx/ssl/magento.crt
-
-RUN mkdir ${MAGENTO_ROOT} && chown -R www:www ${MAGENTO_ROOT}
 
 VOLUME ${MAGENTO_ROOT}
 
