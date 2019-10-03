@@ -142,7 +142,8 @@ class GeneratePhp extends Command
 
         foreach ($versions as $version) {
             foreach (self::EDITIONS as $edition) {
-                $this->build($version, $edition);
+                $this->build($version, $edition, false);
+                $this->build($version, $edition, true);
             }
         }
 
@@ -152,11 +153,12 @@ class GeneratePhp extends Command
     /**
      * @param string $version
      * @param string $edition
+     * @param bool $dev
      * @throws ConfigurationMismatchException|FileNotFoundException
      */
-    private function build(string $version, string $edition)
+    private function build(string $version, string $edition, bool $dev)
     {
-        $destination = $this->directoryList->getImagesRoot() . '/php/' . $version . '-' . $edition;
+        $destination = $this->directoryList->getImagesRoot() . '/php/' . $version . '-' . $edition . ($dev ? '-dev' : '');
         $dataDir = $this->directoryList->getImagesRoot() . '/php/' . $edition;
         $dockerfile = $destination . '/' . self::DOCKERFILE;
 
@@ -164,17 +166,18 @@ class GeneratePhp extends Command
         $this->filesystem->makeDirectory($destination);
         $this->filesystem->copyDirectory($dataDir, $destination);
 
-        $this->filesystem->put($dockerfile, $this->buildDockerfile($dockerfile, $version, $edition));
+        $this->filesystem->put($dockerfile, $this->buildDockerfile($dockerfile, $version, $edition, $dev));
     }
 
     /**
      * @param string $dockerfile
      * @param string $phpVersion
      * @param string $edition
+     * @param bool $dev
      * @return string
      * @throws ConfigurationMismatchException|FileNotFoundException
      */
-    private function buildDockerfile(string $dockerfile, string $phpVersion, string $edition): string
+    private function buildDockerfile(string $dockerfile, string $phpVersion, string $edition, bool $dev): string
     {
         $phpExtConfigs = ExtensionResolver::getConfig();
 
@@ -238,6 +241,47 @@ class GeneratePhp extends Command
             }
         }
 
+        $volumes = [
+            'root' => [
+                'def' => 'VOLUME ${MAGENTO_ROOT}',
+                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}'
+            ],
+            '.composer' => [
+                'def' => 'VOLUME ${MAGENTO_ROOT}/.composer',
+                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/.composer'
+            ],
+        ];
+        if (!$dev) {
+            $volumes = array_merge($volumes, [
+                'vendor' => [
+                    'def' => 'VOLUME ${MAGENTO_ROOT}/vendor',
+                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/vendor'
+                ],
+                'generated' => [
+                    'def' => 'VOLUME ${MAGENTO_ROOT}/generated',
+                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/generated'
+                ],
+                'var' => [
+                    'def' => 'VOLUME ${MAGENTO_ROOT}/var',
+                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/var'
+                ],
+                'app-etc' => [
+                    'def' => 'VOLUME ${MAGENTO_ROOT}/app/etc',
+                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/app/etc'
+                ],
+                'pub-static-and-media' => [
+                    'def' => 'VOLUME ${MAGENTO_ROOT}/pub/static' . "\n" . 'VOLUME ${MAGENTO_ROOT}/pub/media',
+                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media'
+                ],
+            ]);
+        }
+        $volumesCmd = '';
+        $volumesDef = '';
+        foreach ($volumes as $data) {
+            $volumesCmd .= $data['cmd'] . "\n";
+            $volumesDef .= $data['def'] . "\n";
+        }
+
         return strtr(
             $this->filesystem->get($dockerfile),
             [
@@ -259,7 +303,9 @@ class GeneratePhp extends Command
                     : '',
                 '{%env_php_extensions%}' => $phpExtEnabledDefault
                     ? 'ENV PHP_EXTENSIONS ' . implode(' ', $phpExtEnabledDefault)
-                    : ''
+                    : '',
+                '{%volumes_cmd%}' => rtrim($volumesCmd),
+                '{%volumes_def%}' => rtrim($volumesDef)
             ]
         );
     }

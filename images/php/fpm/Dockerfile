@@ -29,12 +29,6 @@ RUN apt-get update \
 
 {%docker-php-ext-enable%}
 
-# Install gosu
-RUN dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
- && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
- && chmod 755 /usr/local/bin/gosu \
- && gosu nobody true
-
 RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
 
 COPY etc/php-fpm.ini /usr/local/etc/php/conf.d/zz-magento.ini
@@ -48,17 +42,13 @@ RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 
 RUN chown -R www:www /usr/local/etc
 
-RUN mkdir ${MAGENTO_ROOT}
-RUN mkdir ${MAGENTO_ROOT}/.composer
-RUN mkdir ${MAGENTO_ROOT}/vendor
-RUN mkdir ${MAGENTO_ROOT}/generated
-RUN mkdir ${MAGENTO_ROOT}/var
-RUN mkdir -p ${MAGENTO_ROOT}/app/etc
-RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media
+{%volumes_cmd%}
+
+{%volumes_def%}
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-USER root
+USER www:www
 
 WORKDIR ${MAGENTO_ROOT}
 

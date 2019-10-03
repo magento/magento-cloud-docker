@@ -29,7 +29,7 @@ fi
 
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
-chown -R www:www $MAGENTO_ROOT
+chown -R www:www $MAGENTO_ROOT || exit 0
 
 if [ ! -z "${CRONTAB}" ]; then
     echo "${CRONTAB}" > /etc/cron.d/magento
