@@ -1,6 +1,6 @@
 {%note%}
 FROM php:{%version%}-fpm-stretch
-ARG GOSU_VERSION=1.10
+ARG GOSU_VERSION=1.11
 
 ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
