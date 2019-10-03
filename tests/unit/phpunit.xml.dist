@@ -4,19 +4,19 @@
          xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.1/phpunit.xsd"
          colors="true"
          columns="max"
-         bootstrap="autoload.php"
+         bootstrap="../../autoload.php"
          beStrictAboutTestsThatDoNotTestAnything="false"
 >
     <testsuites>
         <testsuite name="Unit">
-            <directory suffix="Test.php">src/Test/Unit</directory>
+            <directory suffix="Test.php">../../src/Test/Unit</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
+            <directory suffix=".php">../../src</directory>
             <exclude>
-                <directory>src/Test</directory>
+                <directory>../../src/Test</directory>
             </exclude>
         </whitelist>
     </filter>
