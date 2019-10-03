@@ -171,7 +171,17 @@ RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 
 RUN chown -R www:www /usr/local/etc
 
+RUN mkdir ${MAGENTO_ROOT}
+RUN mkdir ${MAGENTO_ROOT}/.composer
+RUN mkdir ${MAGENTO_ROOT}/vendor
+RUN mkdir ${MAGENTO_ROOT}/generated
+RUN mkdir ${MAGENTO_ROOT}/var
+RUN mkdir -p ${MAGENTO_ROOT}/app/etc
+RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
+
+USER root
 
 WORKDIR ${MAGENTO_ROOT}
 
