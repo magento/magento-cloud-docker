@@ -29,7 +29,7 @@ fi
 
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
-chown -R www:www $MAGENTO_ROOT || exit 0
+chown -R www:www $MAGENTO_ROOT > /dev/null 2>&1
 
 # Configure Sendmail if required
 if [ "$ENABLE_SENDMAIL" == "true" ]; then
