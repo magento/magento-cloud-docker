@@ -16,8 +16,6 @@ fi
 
 echo "Installing dependencies."
 
-chown -R www:www $MAGENTO_ROOT
-
 composer --working-dir=$MAGENTO_ROOT install --no-suggest --no-ansi --no-interaction --no-progress --prefer-dist
 
 echo "Running \"build\" hook."
@@ -29,8 +27,6 @@ if [ "$MAGENTO_RUN_MODE" == "production" ]; then
 
     find $MAGENTO_ROOT/pub -type f -exec chmod 664 {} \;
     find $MAGENTO_ROOT/pub -type d -exec chmod 775 {} \;
-
-    chown -R www:www $MAGENTO_ROOT
 fi
 
 echo "Building complete."

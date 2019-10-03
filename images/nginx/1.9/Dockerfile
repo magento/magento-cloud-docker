@@ -18,6 +18,8 @@ RUN apt-get update && apt-get install -y openssl
 RUN mkdir /etc/nginx/ssl \
   && echo -e "\n\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/magento.key -out /etc/nginx/ssl/magento.crt
 
+VOLUME ${MAGENTO_ROOT}
+
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
