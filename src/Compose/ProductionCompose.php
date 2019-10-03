@@ -423,12 +423,8 @@ class ProductionCompose implements ComposeInterface
      */
     private function getComposerVolumes(): array
     {
-        $composeCacheDirectory = file_exists(getenv('HOME') . '/.cache/composer')
-            ? '~/.cache/composer'
-            : '~/.composer/cache';
-
         return [
-            $composeCacheDirectory . ':' . self::DIR_MAGENTO . '/.composer/cache:delegated',
+            '~/.composer:' . self::DIR_MAGENTO . '/.composer:delegated',
         ];
     }
 

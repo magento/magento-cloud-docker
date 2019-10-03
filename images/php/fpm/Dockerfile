@@ -1,11 +1,13 @@
 {%note%}
 FROM php:{%version%}-fpm-stretch
+ARG GOSU_VERSION=1.11
 
 ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV UPLOAD_MAX_FILESIZE 64M
+ENV UPDATE_UID_GID false
 {%env_php_extensions%}
 
 # Install dependencies
@@ -37,13 +39,14 @@ COPY etc/www.conf /usr/local/etc/php-fpm.d/
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
-ENTRYPOINT ["/docker-entrypoint.sh"]
 
 RUN chown -R www:www /usr/local/etc
 
 {%volumes_cmd%}
 
 {%volumes_def%}
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 USER www:www
 

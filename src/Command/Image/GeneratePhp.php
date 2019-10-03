@@ -250,35 +250,34 @@ class GeneratePhp extends Command
         $volumes = [
             'root' => [
                 'def' => 'VOLUME ${MAGENTO_ROOT}',
-                'cmd' => 'RUN mkdir ${MAGENTO_ROOT} && chown -R www:www ${MAGENTO_ROOT}'
+                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}'
             ],
             '.composer' => [
                 'def' => 'VOLUME ${MAGENTO_ROOT}/.composer',
-                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/.composer && chown -R www:www ${MAGENTO_ROOT}/.composer'
+                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/.composer'
             ],
         ];
         if (!$dev) {
             $volumes = array_merge($volumes, [
                 'vendor' => [
                     'def' => 'VOLUME ${MAGENTO_ROOT}/vendor',
-                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/vendor && chown -R www:www ${MAGENTO_ROOT}/vendor'
+                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/vendor'
                 ],
                 'generated' => [
                     'def' => 'VOLUME ${MAGENTO_ROOT}/generated',
-                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/generated && chown -R www:www ${MAGENTO_ROOT}/generated'
+                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/generated'
                 ],
                 'var' => [
                     'def' => 'VOLUME ${MAGENTO_ROOT}/var',
-                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/var && chown -R www:www ${MAGENTO_ROOT}/var'
+                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/var'
                 ],
                 'app-etc' => [
                     'def' => 'VOLUME ${MAGENTO_ROOT}/app/etc',
-                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/app/etc && chown -R www:www ${MAGENTO_ROOT}/app'
+                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/app/etc'
                 ],
                 'pub-static-and-media' => [
                     'def' => 'VOLUME ${MAGENTO_ROOT}/pub/static' . "\n" . 'VOLUME ${MAGENTO_ROOT}/pub/media',
-                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media '
-                        . '&& chown -R www:www ${MAGENTO_ROOT}/pub'
+                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media'
                 ],
             ]);
         }
