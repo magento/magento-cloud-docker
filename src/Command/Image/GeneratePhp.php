@@ -156,7 +156,7 @@ class GeneratePhp extends Command
      * @param bool $dev
      * @throws ConfigurationMismatchException|FileNotFoundException
      */
-    private function build(string $version, string $edition, bool $dev)
+    private function build(string $version, string $edition, bool $dev): void
     {
         $destination = $this->directoryList->getImagesRoot()
             . '/php/'
@@ -179,6 +179,10 @@ class GeneratePhp extends Command
      * @param bool $dev
      * @return string
      * @throws ConfigurationMismatchException|FileNotFoundException
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     private function buildDockerfile(string $dockerfile, string $phpVersion, string $edition, bool $dev): string
     {

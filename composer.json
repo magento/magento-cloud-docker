@@ -20,6 +20,8 @@
         "symfony/yaml": "^4.0"
     },
     "require-dev": {
+        "phpmd/phpmd": "@stable",
+        "phpstan/phpstan": "^0.11",
         "phpunit/phpunit": "^6.2",
         "squizlabs/php_codesniffer": "^3.0"
     },
@@ -33,11 +35,15 @@
     },
     "scripts": {
         "test": [
+            "@phpstan",
             "@phpcs",
+            "@phpmd",
             "@phpunit"
         ],
+        "phpstan": "phpstan analyse -c tests/static/phpstan.neon",
         "phpcs": "phpcs src --standard=tests/static/phpcs-ruleset.xml -p -n",
-        "phpunit": "phpunit"
+        "phpmd": "phpmd src xml tests/static/phpmd-ruleset.xml",
+        "phpunit": "phpunit --configuration tests/unit"
     },
     "config": {
         "sort-packages": true

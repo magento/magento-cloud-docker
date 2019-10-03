@@ -36,7 +36,9 @@ class DeveloperCompose extends ProductionCompose
     {
         $compose = parent::build($config);
         $compose['volumes'] = [
-            'magento-sync' => self::SYNC_ENGINE_DOCKER_SYNC === $config[self::SYNC_ENGINE] ? ['external' => true] : []
+            'magento-sync' => self::SYNC_ENGINE_DOCKER_SYNC === $config->get(self::SYNC_ENGINE)
+                ? ['external' => true]
+                : []
         ];
 
         return $compose;
@@ -45,32 +47,20 @@ class DeveloperCompose extends ProductionCompose
     /**
      * @inheritDoc
      */
-    protected function getMagentoBuildVolumes(Repository $config, bool $isReadOnly): array
+    protected function getMagentoBuildVolumes(bool $isReadOnly): array
     {
-        $target = self::DIR_MAGENTO;
-
-        if ($config->get(self::SYNC_ENGINE) === self::SYNC_ENGINE_DOCKER_SYNC) {
-            $target .= ':nocopy';
-        }
-
         return [
-            'magento-sync:' . $target
+            'magento-sync:' . self::DIR_MAGENTO . ':nocopy'
         ];
     }
 
     /**
      * @inheritDoc
      */
-    protected function getMagentoVolumes(Repository $config, bool $isReadOnly): array
+    protected function getMagentoVolumes(bool $isReadOnly): array
     {
-        $target = self::DIR_MAGENTO;
-
-        if ($config->get(self::SYNC_ENGINE) === self::SYNC_ENGINE_DOCKER_SYNC) {
-            $target .= ':nocopy';
-        }
-
         return [
-            'magento-sync:' . $target
+            'magento-sync:' . self::DIR_MAGENTO . ':nocopy'
         ];
     }
 

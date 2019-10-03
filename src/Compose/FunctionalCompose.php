@@ -11,7 +11,6 @@ use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Service\ServiceInterface;
-use Magento\CloudDocker\Service\ServiceFactory;
 
 /**
  * Docker functional test builder.
@@ -46,7 +45,7 @@ class FunctionalCompose extends ProductionCompose
     /**
      * @inheritDoc
      */
-    protected function getMagentoVolumes(Repository $config, bool $isReadOnly): array
+    protected function getMagentoVolumes(bool $isReadOnly): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 
@@ -65,7 +64,7 @@ class FunctionalCompose extends ProductionCompose
     /**
      * @inheritDoc
      */
-    protected function getMagentoBuildVolumes(Repository $config, bool $isReadOnly): array
+    protected function getMagentoBuildVolumes(bool $isReadOnly): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 

@@ -155,6 +155,8 @@ class ExtensionResolver
 
     /**
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public static function getConfig(): array
     {
