@@ -249,32 +249,12 @@ class GeneratePhp extends Command
 
         $volumes = [
             '.composer' => [
-                'def' => 'VOLUME /root/.composer',
+                'def' => 'VOLUME /root/.composer/cache',
                 'cmd' => ''
             ],
             'root' => [
                 'def' => 'VOLUME ${MAGENTO_ROOT}',
-                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}'
-            ],
-            'vendor' => [
-                'def' => 'VOLUME ${MAGENTO_ROOT}/vendor',
-                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/vendor'
-            ],
-            'generated' => [
-                'def' => 'VOLUME ${MAGENTO_ROOT}/generated',
-                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/generated'
-            ],
-            'var' => [
-                'def' => 'VOLUME ${MAGENTO_ROOT}/var',
-                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/var'
-            ],
-            'app-etc' => [
-                'def' => 'VOLUME ${MAGENTO_ROOT}/app/etc',
-                'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/app/etc'
-            ],
-            'pub-static-and-media' => [
-                'def' => 'VOLUME ${MAGENTO_ROOT}/pub/static' . "\n" . 'VOLUME ${MAGENTO_ROOT}/pub/media',
-                'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media'
+                'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}'
             ],
         ];
         $volumesCmd = '';

@@ -61,6 +61,4 @@ fi
     composer config --global http-basic.repo.magento.com \
         $COMPOSER_MAGENTO_USERNAME $COMPOSER_MAGENTO_PASSWORD
 
-chown -R www:www $MAGENTO_ROOT > /dev/null 2>&1
-
 exec "$@"

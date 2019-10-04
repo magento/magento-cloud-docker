@@ -8,6 +8,7 @@ ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV UPDATE_UID_GID false
 ENV COMPOSER_ALLOW_SUPERUSER 1
+
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mcrypt mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
 # Configure Node.js version
@@ -182,15 +183,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 ADD bin/* /usr/local/bin/
 
-# Install gosu
-RUN dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
- && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
- && chmod 755 /usr/local/bin/gosu \
- && gosu nobody true
-
 RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
-
-RUN chown -R www:www /etc /usr/local/etc /var
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
@@ -206,21 +199,10 @@ RUN ["chmod", "+x", \
     "/usr/local/bin/run-hooks" \
 ]
 
-RUN mkdir ${MAGENTO_ROOT}
-RUN mkdir ${MAGENTO_ROOT}/vendor
-RUN mkdir ${MAGENTO_ROOT}/generated
-RUN mkdir ${MAGENTO_ROOT}/var
-RUN mkdir -p ${MAGENTO_ROOT}/app/etc
-RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media
+RUN mkdir -p ${MAGENTO_ROOT}
 
-VOLUME /root/.composer
+VOLUME /root/.composer/cache
 VOLUME ${MAGENTO_ROOT}
-VOLUME ${MAGENTO_ROOT}/vendor
-VOLUME ${MAGENTO_ROOT}/generated
-VOLUME ${MAGENTO_ROOT}/var
-VOLUME ${MAGENTO_ROOT}/app/etc
-VOLUME ${MAGENTO_ROOT}/pub/static
-VOLUME ${MAGENTO_ROOT}/pub/media
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

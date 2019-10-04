@@ -34,6 +34,10 @@ class FunctionalCompose extends ProductionCompose
         ];
         $compose['services']['db']['ports'] = ['3306:3306'];
         $compose['volumes']['magento'] = [];
+        $compose['volumes']['magento-build-var'] = [];
+        $compose['volumes']['magento-build-etc'] = [];
+        $compose['volumes']['magento-build-static'] = [];
+        $compose['volumes']['magento-build-media'] = [];
 
         return $compose;
     }
@@ -67,10 +71,12 @@ class FunctionalCompose extends ProductionCompose
         return [
             '.:/ece-tools',
             'magento:' . self::DIR_MAGENTO . $flag,
-            'magento-var:' . self::DIR_MAGENTO . '/var:delegated',
-            'magento-etc:' . self::DIR_MAGENTO . '/app/etc:delegated',
-            'magento-static:' . self::DIR_MAGENTO . '/pub/static:delegated',
-            'magento-media:' . self::DIR_MAGENTO . '/pub/media:delegated',
+            'magento-vendor:' . self::DIR_MAGENTO . '/vendor' . $flag,
+            'magento-generated:' . self::DIR_MAGENTO . '/generated' . $flag,
+            'magento-build-var:' . self::DIR_MAGENTO . '/var:delegated',
+            'magento-build-etc:' . self::DIR_MAGENTO . '/app/etc:delegated',
+            'magento-build-static:' . self::DIR_MAGENTO . '/pub/static:delegated',
+            'magento-build-media:' . self::DIR_MAGENTO . '/pub/media:delegated',
         ];
     }
 

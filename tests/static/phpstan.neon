@@ -6,9 +6,6 @@ parameters:
         - %currentWorkingDirectory%/src/Test/*
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:
-        - message: "#.*ComponentRegistrar.*#"
-          path: %currentWorkingDirectory%/src/StaticContent/ThemeResolver.php
-        - message: "#Strict comparison using === between bool and null will always evaluate to false.#"
-          path: %currentWorkingDirectory%/src/Filesystem/Driver/File.php
-        - message: "#InputInterface to string#"
-          path: %currentWorkingDirectory%/src/Command/Docker/Build.php
+        - message: "#.*Ternary operator condition is always true*#"
+          path: %currentWorkingDirectory%/src/Command/Image/GeneratePhp.php
+

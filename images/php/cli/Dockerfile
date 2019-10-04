@@ -8,6 +8,7 @@ ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV UPDATE_UID_GID false
 ENV COMPOSER_ALLOW_SUPERUSER 1
+
 {%env_php_extensions%}
 
 # Configure Node.js version
@@ -48,15 +49,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 ADD bin/* /usr/local/bin/
 
-# Install gosu
-RUN dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
- && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
- && chmod 755 /usr/local/bin/gosu \
- && gosu nobody true
-
 RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
-
-RUN chown -R www:www /etc /usr/local/etc /var
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 

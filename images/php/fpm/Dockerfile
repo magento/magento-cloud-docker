@@ -8,6 +8,7 @@ ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV UPLOAD_MAX_FILESIZE 64M
 ENV UPDATE_UID_GID false
+
 {%env_php_extensions%}
 
 # Install dependencies
@@ -39,8 +40,6 @@ COPY etc/php-fpm.conf /usr/local/etc/
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 
-RUN chown -R www:www /usr/local/etc
-
 {%volumes_cmd%}
 
 {%volumes_def%}
@@ -51,4 +50,4 @@ USER root
 
 WORKDIR ${MAGENTO_ROOT}
 
-CMD ["php-fpm", "-F"]
+CMD ["php-fpm", "-R"]
