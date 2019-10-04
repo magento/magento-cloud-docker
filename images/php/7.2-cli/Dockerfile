@@ -204,21 +204,10 @@ RUN ["chmod", "+x", \
     "/usr/local/bin/run-hooks" \
 ]
 
-RUN mkdir ${MAGENTO_ROOT}
-RUN mkdir ${MAGENTO_ROOT}/vendor
-RUN mkdir ${MAGENTO_ROOT}/generated
-RUN mkdir ${MAGENTO_ROOT}/var
-RUN mkdir -p ${MAGENTO_ROOT}/app/etc
-RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media
+RUN mkdir -p ${MAGENTO_ROOT}
 
 VOLUME /root/.composer/cache
 VOLUME ${MAGENTO_ROOT}
-VOLUME ${MAGENTO_ROOT}/vendor
-VOLUME ${MAGENTO_ROOT}/generated
-VOLUME ${MAGENTO_ROOT}/var
-VOLUME ${MAGENTO_ROOT}/app/etc
-VOLUME ${MAGENTO_ROOT}/pub/static
-VOLUME ${MAGENTO_ROOT}/pub/media
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

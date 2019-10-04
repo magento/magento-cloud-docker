@@ -49,4 +49,4 @@ USER root
 
 WORKDIR ${MAGENTO_ROOT}
 
-CMD ["php-fpm", "-F"]
+CMD ["php-fpm", "-R"]

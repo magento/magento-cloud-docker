@@ -48,8 +48,6 @@ class FunctionalCompose extends ProductionCompose
         return [
             '.:/ece-tools',
             'magento:' . self::DIR_MAGENTO . $flag,
-            'magento-vendor:' . self::DIR_MAGENTO . '/vendor' . $flag,
-            'magento-generated:' . self::DIR_MAGENTO . '/generated' . $flag,
             'magento-var:' . self::DIR_MAGENTO . '/var:delegated',
             'magento-etc:' . self::DIR_MAGENTO . '/app/etc:delegated',
             'magento-static:' . self::DIR_MAGENTO . '/pub/static:delegated',
@@ -66,11 +64,7 @@ class FunctionalCompose extends ProductionCompose
 
         return [
             '.:/ece-tools',
-            'magento:' . self::DIR_MAGENTO . $flag,
-            'magento-var:' . self::DIR_MAGENTO . '/var:delegated',
-            'magento-etc:' . self::DIR_MAGENTO . '/app/etc:delegated',
-            'magento-static:' . self::DIR_MAGENTO . '/pub/static:delegated',
-            'magento-media:' . self::DIR_MAGENTO . '/pub/media:delegated',
+            'magento:' . self::DIR_MAGENTO . $flag
         ];
     }
 
