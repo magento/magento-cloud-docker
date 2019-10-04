@@ -207,15 +207,14 @@ RUN ["chmod", "+x", \
 ]
 
 RUN mkdir ${MAGENTO_ROOT}
-RUN mkdir /root/.composer
 RUN mkdir ${MAGENTO_ROOT}/vendor
 RUN mkdir ${MAGENTO_ROOT}/generated
 RUN mkdir ${MAGENTO_ROOT}/var
 RUN mkdir -p ${MAGENTO_ROOT}/app/etc
 RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media
 
-VOLUME ${MAGENTO_ROOT}
 VOLUME /root/.composer
+VOLUME ${MAGENTO_ROOT}
 VOLUME ${MAGENTO_ROOT}/vendor
 VOLUME ${MAGENTO_ROOT}/generated
 VOLUME ${MAGENTO_ROOT}/var
