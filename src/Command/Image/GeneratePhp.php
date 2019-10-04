@@ -110,7 +110,7 @@ class GeneratePhp extends Command
     /**
      * @inheritdoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName(self::NAME)
             ->setDescription('Generates proper configs')
@@ -142,8 +142,7 @@ class GeneratePhp extends Command
 
         foreach ($versions as $version) {
             foreach (self::EDITIONS as $edition) {
-                $this->build($version, $edition, false);
-                $this->build($version, $edition, true);
+                $this->build($version, $edition);
             }
         }
 
@@ -153,15 +152,13 @@ class GeneratePhp extends Command
     /**
      * @param string $version
      * @param string $edition
-     * @param bool $dev
      * @throws ConfigurationMismatchException|FileNotFoundException
      */
-    private function build(string $version, string $edition, bool $dev): void
+    private function build(string $version, string $edition): void
     {
         $destination = $this->directoryList->getImagesRoot()
             . '/php/'
-            . $version . '-' . $edition
-            . ($dev ? '-dev' : '');
+            . $version . '-' . $edition;
         $dataDir = $this->directoryList->getImagesRoot() . '/php/' . $edition;
         $dockerfile = $destination . '/' . self::DOCKERFILE;
 
@@ -169,14 +166,13 @@ class GeneratePhp extends Command
         $this->filesystem->makeDirectory($destination);
         $this->filesystem->copyDirectory($dataDir, $destination);
 
-        $this->filesystem->put($dockerfile, $this->buildDockerfile($dockerfile, $version, $edition, $dev));
+        $this->filesystem->put($dockerfile, $this->buildDockerfile($dockerfile, $version, $edition));
     }
 
     /**
      * @param string $dockerfile
      * @param string $phpVersion
      * @param string $edition
-     * @param bool $dev
      * @return string
      * @throws ConfigurationMismatchException|FileNotFoundException
      *
@@ -184,7 +180,7 @@ class GeneratePhp extends Command
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
-    private function buildDockerfile(string $dockerfile, string $phpVersion, string $edition, bool $dev): string
+    private function buildDockerfile(string $dockerfile, string $phpVersion, string $edition): string
     {
         $phpExtConfigs = ExtensionResolver::getConfig();
 
@@ -257,34 +253,30 @@ class GeneratePhp extends Command
                 'cmd' => 'RUN mkdir ${MAGENTO_ROOT}'
             ],
             '.composer' => [
-                'def' => 'VOLUME ${MAGENTO_ROOT}/.composer',
-                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/.composer'
+                'def' => 'VOLUME /root/.composer',
+                'cmd' => 'RUN mkdir /root/.composer'
+            ],
+            'vendor' => [
+                'def' => 'VOLUME ${MAGENTO_ROOT}/vendor',
+                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/vendor'
+            ],
+            'generated' => [
+                'def' => 'VOLUME ${MAGENTO_ROOT}/generated',
+                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/generated'
+            ],
+            'var' => [
+                'def' => 'VOLUME ${MAGENTO_ROOT}/var',
+                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/var'
+            ],
+            'app-etc' => [
+                'def' => 'VOLUME ${MAGENTO_ROOT}/app/etc',
+                'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/app/etc'
+            ],
+            'pub-static-and-media' => [
+                'def' => 'VOLUME ${MAGENTO_ROOT}/pub/static' . "\n" . 'VOLUME ${MAGENTO_ROOT}/pub/media',
+                'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media'
             ],
         ];
-        if (!$dev) {
-            $volumes = array_merge($volumes, [
-                'vendor' => [
-                    'def' => 'VOLUME ${MAGENTO_ROOT}/vendor',
-                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/vendor'
-                ],
-                'generated' => [
-                    'def' => 'VOLUME ${MAGENTO_ROOT}/generated',
-                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/generated'
-                ],
-                'var' => [
-                    'def' => 'VOLUME ${MAGENTO_ROOT}/var',
-                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/var'
-                ],
-                'app-etc' => [
-                    'def' => 'VOLUME ${MAGENTO_ROOT}/app/etc',
-                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/app/etc'
-                ],
-                'pub-static-and-media' => [
-                    'def' => 'VOLUME ${MAGENTO_ROOT}/pub/static' . "\n" . 'VOLUME ${MAGENTO_ROOT}/pub/media',
-                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media'
-                ],
-            ]);
-        }
         $volumesCmd = '';
         $volumesDef = '';
         foreach ($volumes as $data) {

@@ -21,9 +21,6 @@ class DeveloperCompose extends ProductionCompose
     const SYNC_ENGINE_MUTAGEN = 'mutagen';
     const SYNC_ENGINE = 'sync-engine';
 
-    const SERVICE_PHP_CLI = ServiceFactory::SERVICE_CLI_DEV;
-    const SERVICE_PHP_FPM = ServiceFactory::SERVICE_FPM_DEV;
-
     const SYNC_ENGINES_LIST = [
         self::SYNC_ENGINE_DOCKER_SYNC,
         self::SYNC_ENGINE_MUTAGEN,

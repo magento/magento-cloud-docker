@@ -7,6 +7,7 @@ ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV UPDATE_UID_GID false
+ENV COMPOSER_ALLOW_SUPERUSER 1
 {%env_php_extensions%}
 
 # Configure Node.js version

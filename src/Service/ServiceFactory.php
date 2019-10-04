@@ -18,9 +18,7 @@ use Magento\CloudDocker\Filesystem\FileList;
 class ServiceFactory
 {
     const SERVICE_CLI = 'php-cli';
-    const SERVICE_CLI_DEV = 'php-cli-dev';
     const SERVICE_FPM = 'php-fpm';
-    const SERVICE_FPM_DEV = 'php-fpm-dev';
     const SERVICE_REDIS = 'redis';
     const SERVICE_DB = 'db';
     const SERVICE_NGINX = 'nginx';
@@ -34,14 +32,8 @@ class ServiceFactory
         self::SERVICE_CLI => [
             'image' => 'magento/magento-cloud-docker-php:%s-cli-%s'
         ],
-        self::SERVICE_CLI_DEV => [
-            'image' => 'magento/magento-cloud-docker-php:%s-cli-dev-%s'
-        ],
         self::SERVICE_FPM => [
             'image' => 'magento/magento-cloud-docker-php:%s-fpm-%s'
-        ],
-        self::SERVICE_FPM_DEV => [
-            'image' => 'magento/magento-cloud-docker-php:%s-fpm-dev-%s'
         ],
         self::SERVICE_DB => [
             'image' => 'mariadb:%s',

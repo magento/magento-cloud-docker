@@ -154,7 +154,6 @@ COPY etc/php-fpm.ini /usr/local/etc/php/conf.d/zz-magento.ini
 COPY etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
 COPY etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 COPY etc/php-fpm.conf /usr/local/etc/
-COPY etc/www.conf /usr/local/etc/php-fpm.d/
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
@@ -162,7 +161,7 @@ RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 RUN chown -R www:www /usr/local/etc
 
 RUN mkdir ${MAGENTO_ROOT}
-RUN mkdir ${MAGENTO_ROOT}/.composer
+RUN mkdir /root/.composer
 RUN mkdir ${MAGENTO_ROOT}/vendor
 RUN mkdir ${MAGENTO_ROOT}/generated
 RUN mkdir ${MAGENTO_ROOT}/var
@@ -170,7 +169,7 @@ RUN mkdir -p ${MAGENTO_ROOT}/app/etc
 RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media
 
 VOLUME ${MAGENTO_ROOT}
-VOLUME ${MAGENTO_ROOT}/.composer
+VOLUME /root/.composer
 VOLUME ${MAGENTO_ROOT}/vendor
 VOLUME ${MAGENTO_ROOT}/generated
 VOLUME ${MAGENTO_ROOT}/var
