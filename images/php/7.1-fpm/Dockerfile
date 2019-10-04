@@ -184,7 +184,7 @@ VOLUME ${MAGENTO_ROOT}/pub/media
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-USER www:www
+USER root
 
 WORKDIR ${MAGENTO_ROOT}
 

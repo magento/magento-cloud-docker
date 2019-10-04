@@ -29,7 +29,6 @@ fi
 
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
-chown -R www:www $MAGENTO_ROOT > /dev/null 2>&1
 
 if [ ! -z "${CRONTAB}" ]; then
     echo "${CRONTAB}" > /etc/cron.d/magento
@@ -62,4 +61,6 @@ fi
     composer config --global http-basic.repo.magento.com \
         $COMPOSER_MAGENTO_USERNAME $COMPOSER_MAGENTO_PASSWORD
 
-exec gosu www "$@"
+chown -R www:www $MAGENTO_ROOT > /dev/null 2>&1
+
+exec "$@"

@@ -29,7 +29,6 @@ fi
 
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
-chown -R www:www $MAGENTO_ROOT > /dev/null 2>&1
 
 # Configure Sendmail if required
 if [ "$ENABLE_SENDMAIL" == "true" ]; then
@@ -52,5 +51,7 @@ fi
 
 # Configure PHP-FPM
 [ ! -z "${MAGENTO_RUN_MODE}" ] && sed -i "s/!MAGENTO_RUN_MODE!/${MAGENTO_RUN_MODE}/" /usr/local/etc/php-fpm.conf
+
+chown -R www:www $MAGENTO_ROOT > /dev/null 2>&1
 
 exec "$@"

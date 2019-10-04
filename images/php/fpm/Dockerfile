@@ -48,7 +48,7 @@ RUN chown -R www:www /usr/local/etc
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-USER www:www
+USER root
 
 WORKDIR ${MAGENTO_ROOT}
 

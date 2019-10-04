@@ -173,7 +173,7 @@ VOLUME ${MAGENTO_ROOT}/.composer
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-USER www:www
+USER root
 
 WORKDIR ${MAGENTO_ROOT}
 
