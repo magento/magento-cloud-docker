@@ -249,7 +249,7 @@ class GeneratePhp extends Command
 
         $volumes = [
             '.composer' => [
-                'def' => 'VOLUME /root/.composer',
+                'def' => 'VOLUME /root/.composer/cache',
                 'cmd' => ''
             ],
             'root' => [

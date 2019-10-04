@@ -186,8 +186,6 @@ RUN dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
 
 RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
 
-RUN chown -R www:www /etc /usr/local/etc /var
-
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN ["chmod", "+x", \
@@ -209,7 +207,7 @@ RUN mkdir ${MAGENTO_ROOT}/var
 RUN mkdir -p ${MAGENTO_ROOT}/app/etc
 RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media
 
-VOLUME /root/.composer
+VOLUME /root/.composer/cache
 VOLUME ${MAGENTO_ROOT}
 VOLUME ${MAGENTO_ROOT}/vendor
 VOLUME ${MAGENTO_ROOT}/generated

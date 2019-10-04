@@ -39,8 +39,6 @@ COPY etc/php-fpm.conf /usr/local/etc/
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 
-RUN chown -R www:www /usr/local/etc
-
 {%volumes_cmd%}
 
 {%volumes_def%}

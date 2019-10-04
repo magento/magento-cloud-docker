@@ -158,8 +158,6 @@ COPY etc/php-fpm.conf /usr/local/etc/
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 
-RUN chown -R www:www /usr/local/etc
-
 RUN mkdir ${MAGENTO_ROOT}
 RUN mkdir ${MAGENTO_ROOT}/vendor
 RUN mkdir ${MAGENTO_ROOT}/generated
@@ -167,7 +165,7 @@ RUN mkdir ${MAGENTO_ROOT}/var
 RUN mkdir -p ${MAGENTO_ROOT}/app/etc
 RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media
 
-VOLUME /root/.composer
+VOLUME /root/.composer/cache
 VOLUME ${MAGENTO_ROOT}
 VOLUME ${MAGENTO_ROOT}/vendor
 VOLUME ${MAGENTO_ROOT}/generated
