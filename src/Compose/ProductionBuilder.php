@@ -113,7 +113,8 @@ class ProductionBuilder implements BuilderInterface
     public function build(): array
     {
         $phpVersion = $this->config->get(ServiceInterface::NAME_PHP) ?: $this->getPhpVersion();
-        $dbVersion = $this->config->get(ServiceInterface::NAME_DB) ?: $this->getServiceVersion(ServiceInterface::NAME_DB);
+        $dbVersion = $this->config->get(ServiceInterface::NAME_DB)
+            ?: $this->getServiceVersion(ServiceInterface::NAME_DB);
 
         $services = [
             'db' => $this->serviceFactory->create(
@@ -194,7 +195,6 @@ class ProductionBuilder implements BuilderInterface
             [
                 'ports' => [9000],
                 'depends_on' => ['db'],
-                'extends' => 'generic',
                 'volumes' => $this->getMagentoVolumes(true),
                 'networks' => ['magento'],
             ]
@@ -259,7 +259,10 @@ class ProductionBuilder implements BuilderInterface
             ]
         );
         $phpExtensions = $this->getPhpExtensions($phpVersion);
-        $services['generic'] = $this->serviceFactory->create(ServiceFactory::SERVICE_GENERIC, '', [
+        $services['generic'] = $this->serviceFactory->create(
+            ServiceFactory::SERVICE_GENERIC,
+            '',
+            [
                 'environment' => $this->converter->convert(array_merge(
                     $this->getVariables(),
                     ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
@@ -268,13 +271,6 @@ class ProductionBuilder implements BuilderInterface
         );
 
         if (!$this->config->get(self::KEY_NO_CRON, false)) {
-            $services['cron'] = $this->getCronCliService(
-                $phpVersion,
-                true,
-                $cliDepends,
-                'cron.magento2.docker'
-            );
-        if (static::CRON_ENABLED) {
             $services['cron'] = $this->getCronCliService(
                 $phpVersion,
                 true,
@@ -400,7 +396,6 @@ class ProductionBuilder implements BuilderInterface
     private function getVolumesDefinition(): array
     {
         $volumeConfig = [];
-
         $rootPath = '${PWD}';
 
         if ($this->config->get(self::KEY_USE_ABSOLUTE_PATH)) {

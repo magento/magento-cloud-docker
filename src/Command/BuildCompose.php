@@ -210,7 +210,7 @@ class BuildCompose extends Command
         });
 
         $config->set([
-            DeveloperBuilder::SYNC_ENGINE => $syncEngine,
+            DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
             ProductionBuilder::KEY_USE_ABSOLUTE_PATH => $input->getOption(self::OPTION_USE_ABSOLUTE_PATH),
             ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON)
         ]);

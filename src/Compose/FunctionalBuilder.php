@@ -17,7 +17,6 @@ use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
-use Magento\CloudDocker\Service\ServiceInterface;
 
 /**
  * Docker functional test builder.
