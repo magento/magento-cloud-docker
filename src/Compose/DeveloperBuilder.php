@@ -44,16 +44,10 @@ class DeveloperBuilder extends ProductionBuilder
     /**
      * @inheritDoc
      */
-    protected function getMagentoBuildVolumes(bool $isReadOnly): array
+    protected function getMagentoBuildVolumes(Repository $config, bool $isReadOnly): array
     {
-        $target = self::DIR_MAGENTO;
-
-        if ($this->getConfig()->get(self::SYNC_ENGINE) === self::SYNC_ENGINE_DOCKER_SYNC) {
-            $target .= ':nocopy';
-        }
-
         return [
-            'magento-sync:' . $target
+            'magento-sync:' . self::DIR_MAGENTO . ':nocopy'
         ];
     }
 
@@ -62,14 +56,8 @@ class DeveloperBuilder extends ProductionBuilder
      */
     protected function getMagentoVolumes(bool $isReadOnly): array
     {
-        $target = self::DIR_MAGENTO;
-
-        if ($this->getConfig()->get(self::SYNC_ENGINE) === self::SYNC_ENGINE_DOCKER_SYNC) {
-            $target .= ':nocopy';
-        }
-
         return [
-            'magento-sync:' . $target
+            'magento-sync:' . self::DIR_MAGENTO . ':nocopy'
         ];
     }
 

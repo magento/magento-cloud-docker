@@ -194,6 +194,7 @@ class ProductionBuilder implements BuilderInterface
             [
                 'ports' => [9000],
                 'depends_on' => ['db'],
+                'extends' => 'generic',
                 'volumes' => $this->getMagentoVolumes(true),
                 'networks' => ['magento'],
             ]
@@ -267,6 +268,13 @@ class ProductionBuilder implements BuilderInterface
         );
 
         if (!$this->config->get(self::KEY_NO_CRON, false)) {
+            $services['cron'] = $this->getCronCliService(
+                $phpVersion,
+                true,
+                $cliDepends,
+                'cron.magento2.docker'
+            );
+        if (static::CRON_ENABLED) {
             $services['cron'] = $this->getCronCliService(
                 $phpVersion,
                 true,
@@ -475,7 +483,7 @@ class ProductionBuilder implements BuilderInterface
     private function getComposerVolumes(): array
     {
         return [
-            '~/.composer:' . self::DIR_MAGENTO . '/.composer:delegated',
+            '~/.composer:/root/.composer:delegated',
         ];
     }
 
