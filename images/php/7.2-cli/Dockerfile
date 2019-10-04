@@ -8,6 +8,7 @@ ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV UPDATE_UID_GID false
 ENV COMPOSER_ALLOW_SUPERUSER 1
+
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
 # Configure Node.js version
@@ -181,12 +182,6 @@ ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 ADD bin/* /usr/local/bin/
-
-# Install gosu
-RUN dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
- && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
- && chmod 755 /usr/local/bin/gosu \
- && gosu nobody true
 
 RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
 

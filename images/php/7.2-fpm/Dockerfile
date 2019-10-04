@@ -8,6 +8,7 @@ ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV UPLOAD_MAX_FILESIZE 64M
 ENV UPDATE_UID_GID false
+
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
 # Install dependencies
