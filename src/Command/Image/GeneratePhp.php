@@ -24,7 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GeneratePhp extends Command
 {
     const NAME = 'image:generate:php';
-    const SUPPORTED_VERSIONS = ['7.0', '7.1', '7.2', '7.3'];
+    const SUPPORTED_VERSIONS = ['7.1', '7.2', '7.3'];
     const EDITION_CLI = 'cli';
     const EDITION_FPM = 'fpm';
     const EDITIONS = [self::EDITION_CLI, self::EDITION_FPM];
@@ -248,13 +248,13 @@ class GeneratePhp extends Command
         }
 
         $volumes = [
+            '.composer' => [
+                'def' => 'VOLUME /root/.composer',
+                'cmd' => ''
+            ],
             'root' => [
                 'def' => 'VOLUME ${MAGENTO_ROOT}',
                 'cmd' => 'RUN mkdir ${MAGENTO_ROOT}'
-            ],
-            '.composer' => [
-                'def' => 'VOLUME /root/.composer',
-                'cmd' => 'RUN mkdir /root/.composer'
             ],
             'vendor' => [
                 'def' => 'VOLUME ${MAGENTO_ROOT}/vendor',
@@ -280,8 +280,8 @@ class GeneratePhp extends Command
         $volumesCmd = '';
         $volumesDef = '';
         foreach ($volumes as $data) {
-            $volumesCmd .= $data['cmd'] . "\n";
-            $volumesDef .= $data['def'] . "\n";
+            $volumesCmd .= $data['cmd'] ? $data['cmd'] . "\n" : '';
+            $volumesDef .= $data['def'] ? $data['def'] . "\n" : '';
         }
 
         return strtr(
