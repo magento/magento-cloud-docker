@@ -7,14 +7,6 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
-use Magento\CloudDocker\Compose\Php\ExtensionResolver;
-use Magento\CloudDocker\Config\Environment\Converter;
-use Magento\CloudDocker\Config\Environment\Reader;
-use Magento\CloudDocker\Filesystem\DirectoryList;
-use Magento\CloudDocker\Filesystem\FileList;
-use Magento\CloudDocker\Service\Config;
-use Magento\CloudDocker\Service\ServiceFactory;
-
 /**
  * Developer compose configuration.
  *
@@ -35,43 +27,6 @@ class DeveloperBuilder extends ProductionBuilder
     ];
 
     /**
-     * @var DirectoryList
-     */
-    private $directoryList;
-
-    /**
-     * @param ServiceFactory $serviceFactory
-     * @param Config $serviceConfig
-     * @param FileList $fileList
-     * @param DirectoryList $directoryList
-     * @param Converter $converter
-     * @param ExtensionResolver $phpExtension
-     * @param Reader $reader
-     */
-    public function __construct(
-        ServiceFactory $serviceFactory,
-        Config $serviceConfig,
-        FileList $fileList,
-        DirectoryList $directoryList,
-        Converter $converter,
-        ExtensionResolver $phpExtension,
-        Reader $reader
-    ) {
-        $this->directoryList = $directoryList;
-
-        parent::__construct(
-            $serviceFactory,
-            $serviceConfig,
-            $fileList,
-            $directoryList,
-            $converter,
-            $phpExtension,
-            $reader
-        );
-    }
-
-
-    /**
      * @inheritDoc
      */
     public function build(): array
@@ -86,16 +41,10 @@ class DeveloperBuilder extends ProductionBuilder
         } elseif ($syncEngine === self::SYNC_ENGINE_MUTAGEN) {
             $syncConfig = [];
         } elseif ($syncEngine === self::SYNC_ENGINE_NATIVE) {
-            $rootPath = '${PWD}';
-
-            if ($this->getConfig()->get(self::KEY_USE_ABSOLUTE_PATH)) {
-                $rootPath = $this->directoryList->getMagentoRoot();
-            }
-
             $syncConfig = [
                 'driver_opts' => [
                     'type' => 'none',
-                    'device' => $rootPath,
+                    'device' => $this->getRootPath(),
                     'o' => 'bind'
                 ]
             ];

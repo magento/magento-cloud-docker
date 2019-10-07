@@ -34,7 +34,7 @@ class ProductionBuilder implements BuilderInterface
     public const SERVICE_PHP_FPM = ServiceFactory::SERVICE_FPM;
 
     public const KEY_USE_ABSOLUTE_PATH = 'use-absolute-path';
-    public const KEY_NO_CRON = 'with-cron';
+    public const KEY_NO_CRON = 'no-cron';
 
     /**
      * @var ServiceFactory
@@ -396,11 +396,7 @@ class ProductionBuilder implements BuilderInterface
     private function getVolumesDefinition(): array
     {
         $volumeConfig = [];
-        $rootPath = '${PWD}';
-
-        if ($this->config->get(self::KEY_USE_ABSOLUTE_PATH)) {
-            $rootPath = $this->directoryList->getMagentoRoot();
-        }
+        $rootPath = $this->getRootPath();
 
         $volumes = [
             'magento' => [
@@ -436,6 +432,20 @@ class ProductionBuilder implements BuilderInterface
         }
 
         return $volumes;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getRootPath(): string
+    {
+        $rootPath = '${PWD}';
+
+        if ($this->config->get(self::KEY_USE_ABSOLUTE_PATH)) {
+            $rootPath = $this->directoryList->getMagentoRoot();
+        }
+
+        return $rootPath;
     }
 
     /**
