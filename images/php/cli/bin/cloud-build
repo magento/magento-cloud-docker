@@ -25,6 +25,8 @@ $RUN_HOOKS build
 if [ "$MAGENTO_RUN_MODE" == "production" ]; then
     echo "Setting file permissions."
 
+    chown -R www:www $MAGENTO_ROOT
+
     find $MAGENTO_ROOT/pub -type f -exec chmod 664 {} \;
     find $MAGENTO_ROOT/pub -type d -exec chmod 775 {} \;
 fi

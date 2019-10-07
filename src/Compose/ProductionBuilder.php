@@ -478,7 +478,7 @@ class ProductionBuilder implements BuilderInterface
     private function getComposerVolumes(): array
     {
         return [
-            '~/.composer:/root/.composer:delegated',
+            '~/.composer/cache:/root/.composer/cache:delegated',
         ];
     }
 
