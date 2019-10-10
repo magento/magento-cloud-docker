@@ -33,7 +33,6 @@ class ProductionBuilder implements BuilderInterface
     public const SERVICE_PHP_CLI = ServiceFactory::SERVICE_CLI;
     public const SERVICE_PHP_FPM = ServiceFactory::SERVICE_FPM;
 
-    public const KEY_USE_ABSOLUTE_PATH = 'use-absolute-path';
     public const KEY_NO_CRON = 'no-cron';
 
     /**
@@ -439,13 +438,16 @@ class ProductionBuilder implements BuilderInterface
      */
     protected function getRootPath(): string
     {
-        $rootPath = '${PWD}';
-
-        if ($this->config->get(self::KEY_USE_ABSOLUTE_PATH)) {
-            $rootPath = $this->directoryList->getMagentoRoot();
+        /**
+         * For Windows we'll define variable in .env file
+         *
+         * WINDOWS_PWD=//C/www/my-project
+         */
+        if (stripos(PHP_OS, 'win') === 0) {
+            return '${WINDOWS_PWD}';
         }
 
-        return $rootPath;
+        return '${PWD}';
     }
 
     /**

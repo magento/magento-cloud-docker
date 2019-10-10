@@ -165,12 +165,6 @@ class BuildCompose extends Command
                 ),
                 DeveloperBuilder::SYNC_ENGINE_DOCKER_SYNC
             )->addOption(
-                self::OPTION_USE_ABSOLUTE_PATH,
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Use absolute paths',
-                stripos(PHP_OS, 'win') === 0
-            )->addOption(
                 self::OPTION_NO_CRON,
                 null,
                 InputOption::VALUE_NONE,
@@ -211,7 +205,6 @@ class BuildCompose extends Command
 
         $config->set([
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
-            ProductionBuilder::KEY_USE_ABSOLUTE_PATH => $input->getOption(self::OPTION_USE_ABSOLUTE_PATH),
             ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON)
         ]);
 
