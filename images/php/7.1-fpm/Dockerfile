@@ -111,7 +111,7 @@ RUN mkdir -p /tmp/libsodium  \
   && rm -rf /tmp/libsodium  \
   && pecl install -o -f libsodium
 RUN cd /tmp \
-  && curl -O http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz \
+  && curl -O https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz \
   && tar zxvf ioncube_loaders_lin_x86-64.tar.gz \
   && export PHP_CONFD=$(php-config --configure-options|sed 's/.*\with-config-file-scan-dir\=\(\S*\).*/\1/g') \
   && export PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;") \
