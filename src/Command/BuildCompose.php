@@ -39,7 +39,6 @@ class BuildCompose extends Command
     private const OPTION_NODE = 'node';
     private const OPTION_MODE = 'mode';
     private const OPTION_SYNC_ENGINE = 'sync-engine';
-    private const OPTION_USE_ABSOLUTE_PATH = 'use-absolute-path';
     private const OPTION_NO_CRON = 'no-cron';
 
     /**
