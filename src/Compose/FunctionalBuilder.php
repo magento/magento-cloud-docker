@@ -10,6 +10,12 @@ namespace Magento\CloudDocker\Compose;
 use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
+use Magento\CloudDocker\Config\Environment\Converter;
+use Magento\CloudDocker\Config\Environment\Reader;
+use Magento\CloudDocker\Filesystem\DirectoryList;
+use Magento\CloudDocker\Filesystem\FileList;
+use Magento\CloudDocker\Service\Config;
+use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 
 /**
@@ -17,17 +23,50 @@ use Magento\CloudDocker\Service\ServiceInterface;
  *
  * @codeCoverageIgnore
  */
-class FunctionalCompose extends ProductionCompose
+class FunctionalBuilder extends ProductionBuilder
 {
-    const DIR_MAGENTO = '/app';
-    const CRON_ENABLED = false;
+    /**
+     * @var FileList
+     */
+    private $fileList;
+
+    /**
+     * @param ServiceFactory $serviceFactory
+     * @param Config $serviceConfig
+     * @param FileList $fileList
+     * @param DirectoryList $directoryList
+     * @param Converter $converter
+     * @param ExtensionResolver $phpExtension
+     * @param Reader $reader
+     */
+    public function __construct(
+        ServiceFactory $serviceFactory,
+        Config $serviceConfig,
+        FileList $fileList,
+        DirectoryList $directoryList,
+        Converter $converter,
+        ExtensionResolver $phpExtension,
+        Reader $reader
+    ) {
+        $this->fileList = $fileList;
+
+        parent::__construct(
+            $serviceFactory,
+            $serviceConfig,
+            $fileList,
+            $directoryList,
+            $converter,
+            $phpExtension,
+            $reader
+        );
+    }
 
     /**
      * @inheritDoc
      */
-    public function build(Repository $config): array
+    public function build(): array
     {
-        $compose = parent::build($config);
+        $compose = parent::build();
         $compose['services']['generic']['env_file'] = [
             './.docker/composer.env',
             './.docker/global.env'
@@ -40,6 +79,15 @@ class FunctionalCompose extends ProductionCompose
         $compose['volumes']['magento-build-media'] = [];
 
         return $compose;
+    }
+    /**
+     * @inheritDoc
+     */
+    public function setConfig(Repository $config): void
+    {
+        $config->set(self::KEY_NO_CRON, true);
+
+        parent::setConfig($config);
     }
 
     /**
@@ -91,7 +139,7 @@ class FunctionalCompose extends ProductionCompose
     /**
      * @inheritDoc
      */
-    protected function getServiceVersion(string $serviceName)
+    protected function getServiceVersion(string $serviceName): ?string
     {
         $mapDefaultVersion = [
             ServiceInterface::NAME_DB => '10.2',
