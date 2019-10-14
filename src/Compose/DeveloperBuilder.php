@@ -91,4 +91,12 @@ class DeveloperBuilder extends ProductionBuilder
 
         return $variables;
     }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getDockerMount(): array
+    {
+        return [];
+    }
 }
