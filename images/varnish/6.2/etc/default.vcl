@@ -8,6 +8,7 @@ import std;
 backend default {
     .host = "web";
     .port = "80";
+    .first_byte_timeout = "300"
 }
 
 sub vcl_recv {
