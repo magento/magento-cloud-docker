@@ -18,7 +18,7 @@ COPY entrypoint.sh /entrypoint.sh
 ENV HTTPS_UPSTREAM_SERVER_ADDRESS   varnish
 ENV HTTPS_UPSTREAM_SERVER_PORT  80
 ENV CERT_PATH   /certs/cert.pem
-ENV TIMEOUT 15
+ENV TIMEOUT 300
 ENV REWRITE_LOCATION 0
 
 RUN ["chmod", "+x", "/entrypoint.sh"]

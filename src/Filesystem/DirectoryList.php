@@ -34,9 +34,9 @@ class DirectoryList
      */
     public function __construct(string $root, string $magentoRoot, string $eceRoot)
     {
-        $this->root = $root;
-        $this->magentoRoot = $magentoRoot;
-        $this->eceRoot = $eceRoot;
+        $this->root = realpath($root);
+        $this->magentoRoot = realpath($magentoRoot);
+        $this->eceRoot = realpath($eceRoot);
     }
 
     /**

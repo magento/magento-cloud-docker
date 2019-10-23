@@ -110,6 +110,14 @@ RUN mkdir -p /tmp/libsodium  \
   && cd / \
   && rm -rf /tmp/libsodium  \
   && pecl install -o -f libsodium
+RUN cd /tmp \
+  && curl -O https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz \
+  && tar zxvf ioncube_loaders_lin_x86-64.tar.gz \
+  && export PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;") \
+  && export PHP_EXT_DIR=$(php-config --extension-dir) \
+  && cp "./ioncube/ioncube_loader_lin_${PHP_VERSION}.so" "${PHP_EXT_DIR}/ioncube.so" \
+  && rm -rf ./ioncube \
+  && rm ioncube_loaders_lin_x86-64.tar.gz
 
 RUN docker-php-ext-enable \
   bcmath \
@@ -151,7 +159,8 @@ RUN docker-php-ext-enable \
   xsl \
   yaml \
   zip \
-  pcntl
+  pcntl \
+  ioncube
 
 RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
 
