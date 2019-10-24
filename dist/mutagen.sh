@@ -10,6 +10,10 @@ mutagen create \
        --ignore=/.magento \
        --ignore=/.docker \
        --ignore=/.github \
+       --ignore=*.sql \
+       --ignore=*.gz \
+       --ignore=*.zip \
+       --ignore=*.bz2 \
        --ignore-vcs \
        --symlink-mode=posix-raw \
        ./ docker://$(docker-compose ps -q fpm|awk '{print $1}')/app
