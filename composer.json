@@ -17,10 +17,13 @@
         "symfony/config": "^3.4||^4.0",
         "symfony/console": "^2.3||^4.0",
         "symfony/dependency-injection": "^3.1||^4.0",
-        "symfony/yaml": "^4.0"
+        "symfony/yaml": "^3.3||^4.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.2"
+        "phpmd/phpmd": "@stable",
+        "phpstan/phpstan": "^0.11",
+        "phpunit/phpunit": "^6.2",
+        "squizlabs/php_codesniffer": "^3.0"
     },
     "bin": [
         "bin/ece-docker"
@@ -32,8 +35,15 @@
     },
     "scripts": {
         "test": [
-            "phpunit"
-        ]
+            "@phpstan",
+            "@phpcs",
+            "@phpmd",
+            "@phpunit"
+        ],
+        "phpstan": "phpstan analyse -c tests/static/phpstan.neon",
+        "phpcs": "phpcs src --standard=tests/static/phpcs-ruleset.xml -p -n",
+        "phpmd": "phpmd src xml tests/static/phpmd-ruleset.xml",
+        "phpunit": "phpunit --configuration tests/unit"
     },
     "config": {
         "sort-packages": true

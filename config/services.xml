@@ -7,13 +7,18 @@
         <defaults autowire="true" autoconfigure="true" public="true"/>
 
         <prototype namespace="Magento\CloudDocker\" resource="../src/*" exclude="../src/{App,Test}"/>
-        <service id="Magento\CloudDocker\App\GenericException" autowire="false"/>
-        <service id="Magento\CloudDocker\App\ConfigurationMismatchException" autowire="false"/>
+        <service id="Magento\CloudDocker\Compose\BuilderFactory">
+            <argument key="$strategies" type="collection">
+                <argument key="developer">Magento\CloudDocker\Compose\DeveloperBuilder</argument>
+                <argument key="production">Magento\CloudDocker\Compose\ProductionBuilder</argument>
+                <argument key="functional">Magento\CloudDocker\Compose\FunctionalBuilder</argument>
+            </argument>
+        </service>
         <service id="Magento\CloudDocker\Filesystem\DirectoryList" autowire="false"/>
         <service id="Magento\CloudDocker\Filesystem\FilesystemException" autowire="false"/>
-        <service id="Magento\CloudDocker\Compose\DeveloperCompose" shared="false"/>
-        <service id="Magento\CloudDocker\Compose\ProductionCompose" shared="false"/>
-        <service id="Magento\CloudDocker\Compose\FunctionalCompose" shared="false"/>
+        <service id="Magento\CloudDocker\Compose\DeveloperBuilder" shared="false"/>
+        <service id="Magento\CloudDocker\Compose\ProductionBuilder" shared="false"/>
+        <service id="Magento\CloudDocker\Compose\FunctionalBuilder" shared="false"/>
         <service id="Illuminate\Filesystem\Filesystem"/>
         <service id="Composer\Semver\VersionParser"/>
         <service id="Composer\Semver\Semver"/>
