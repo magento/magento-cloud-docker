@@ -38,7 +38,7 @@ class ReaderTest extends TestCase
     /**
      * @inheritDoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->fileListMock = $this->createMock(FileList::class);
         $this->filesystemMock = $this->createMock(Filesystem::class);
@@ -54,14 +54,11 @@ class ReaderTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \Magento\CloudDocker\Filesystem\FilesystemException
-     * @expectedExceptionMessage PHP version could not be parsed.
-     *
-     * @throws FilesystemException
-     */
     public function testReadEmpty()
     {
+        $this->expectException(FilesystemException::class);
+        $this->expectExceptionMessage('PHP version could not be parsed.');
+
         $this->filesystemMock->expects($this->exactly(2))
             ->method('get')
             ->willReturn(Yaml::dump([]));
@@ -69,14 +66,11 @@ class ReaderTest extends TestCase
         $this->reader->read();
     }
 
-    /**
-     * @expectedException \Magento\CloudDocker\Filesystem\FilesystemException
-     * @expectedExceptionMessage Relationships could not be parsed.
-     *
-     * @throws FileSystemException
-     */
     public function testReadWithPhp()
     {
+        $this->expectException(FilesystemException::class);
+        $this->expectExceptionMessage('Relationships could not be parsed.');
+
         $this->filesystemMock->expects($this->exactly(2))
             ->method('get')
             ->willReturnMap([
@@ -87,14 +81,11 @@ class ReaderTest extends TestCase
         $this->reader->read();
     }
 
-    /**
-     * @expectedExceptionMessage Only one instance of service "elasticsearch" supported
-     * @expectedException \Magento\CloudDocker\Filesystem\FilesystemException
-     *
-     * @throws FileSystemException
-     */
     public function testReadWithMultipleSameServices()
     {
+        $this->expectException(FilesystemException::class);
+        $this->expectExceptionMessage('Only one instance of service "elasticsearch" supported');
+
         $this->filesystemMock->expects($this->exactly(2))
             ->method('get')
             ->willReturnMap([
@@ -154,14 +145,11 @@ class ReaderTest extends TestCase
         ], $this->reader->read());
     }
 
-    /**
-     * @expectedExceptionMessage Service with name "myrabbitmq" could not be parsed
-     * @expectedException \Magento\CloudDocker\Filesystem\FilesystemException
-     *
-     * @throws FileSystemException
-     */
     public function testReadWithMissedService()
     {
+        $this->expectException(FilesystemException::class);
+        $this->expectExceptionMessage('Service with name "myrabbitmq" could not be parsed');
+
         $this->filesystemMock->expects($this->exactly(2))
             ->method('get')
             ->willReturnMap([
@@ -196,14 +184,11 @@ class ReaderTest extends TestCase
         $this->reader->read();
     }
 
-    /**
-     * @expectedException \Magento\CloudDocker\Filesystem\FilesystemException
-     * @expectedExceptionMessage Some error
-     *
-     * @throws FileSystemException
-     */
     public function testReadBroken()
     {
+        $this->expectException(FilesystemException::class);
+        $this->expectExceptionMessage('Some error');
+
         $this->fileListMock->expects($this->once())
             ->method('getAppConfig')
             ->willThrowException(new \Exception('Some error'));

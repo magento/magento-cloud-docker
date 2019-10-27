@@ -20,7 +20,7 @@
         "symfony/yaml": "^4.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.2"
+        "phpunit/phpunit": "^7.2"
     },
     "bin": [
         "bin/ece-docker"

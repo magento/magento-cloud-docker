@@ -31,7 +31,7 @@ class ServiceFactoryTest extends TestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->fileListMock = $this->createMock(FileList::class);
 
@@ -51,14 +51,11 @@ class ServiceFactoryTest extends TestCase
         $this->factory->create(ServiceFactory::SERVICE_CLI, '7.0');
     }
 
-    /**
-     * @expectedExceptionMessage Service "test" is not supported
-     * @expectedException \Magento\CloudDocker\App\ConfigurationMismatchException
-     *
-     * @throws ConfigurationMismatchException
-     */
     public function testCreateServiceNotSupported()
     {
+        $this->expectException(ConfigurationMismatchException::class);
+        $this->expectExceptionMessage('Service "test" is not supported');
+
         $this->factory->create('test', '5.6');
     }
 }
