@@ -54,4 +54,12 @@ class FileList
     {
         return $this->directoryList->getEceToolsRoot() . '/docker-compose.yml';
     }
+
+    /**
+     * @return string
+     */
+    public function getComposer(): string
+    {
+        return $this->directoryList->getRoot() . '/composer.json';
+    }
 }

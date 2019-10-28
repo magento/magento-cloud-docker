@@ -11,6 +11,7 @@ use Composer\Semver\Semver;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -76,14 +77,6 @@ class GeneratePhp extends Command
     ];
 
     const DOCKERFILE = 'Dockerfile';
-    const EXTENSION_OS_DEPENDENCIES = 'extension_os_dependencies';
-    const EXTENSION_PACKAGE_NAME = 'extension_package_name';
-    const EXTENSION_TYPE = 'extension_type';
-    const EXTENSION_TYPE_PECL = 'extension_type_pecl';
-    const EXTENSION_TYPE_CORE = 'extension_type_core';
-    const EXTENSION_TYPE_INSTALLATION_SCRIPT = 'extension_type_installation_script';
-    const EXTENSION_CONFIGURE_OPTIONS = 'extension_configure_options';
-    const EXTENSION_INSTALLATION_SCRIPT = 'extension_installation_script';
 
     /**
      * @var Filesystem
@@ -149,7 +142,8 @@ class GeneratePhp extends Command
 
         foreach ($versions as $version) {
             foreach (self::EDITIONS as $edition) {
-                $this->build($version, $edition);
+                $this->build($version, $edition, false);
+                $this->build($version, $edition, true);
             }
         }
 
@@ -159,11 +153,12 @@ class GeneratePhp extends Command
     /**
      * @param string $version
      * @param string $edition
+     * @param bool $dev
      * @throws ConfigurationMismatchException|FileNotFoundException
      */
-    private function build(string $version, string $edition)
+    private function build(string $version, string $edition, bool $dev)
     {
-        $destination = $this->directoryList->getImagesRoot() . '/php/' . $version . '-' . $edition;
+        $destination = $this->directoryList->getImagesRoot() . '/php/' . $version . '-' . $edition . ($dev ? '-dev' : '');
         $dataDir = $this->directoryList->getImagesRoot() . '/php/' . $edition;
         $dockerfile = $destination . '/' . self::DOCKERFILE;
 
@@ -171,19 +166,20 @@ class GeneratePhp extends Command
         $this->filesystem->makeDirectory($destination);
         $this->filesystem->copyDirectory($dataDir, $destination);
 
-        $this->filesystem->put($dockerfile, $this->buildDockerfile($dockerfile, $version, $edition));
+        $this->filesystem->put($dockerfile, $this->buildDockerfile($dockerfile, $version, $edition, $dev));
     }
 
     /**
      * @param string $dockerfile
      * @param string $phpVersion
      * @param string $edition
+     * @param bool $dev
      * @return string
      * @throws ConfigurationMismatchException|FileNotFoundException
      */
-    private function buildDockerfile(string $dockerfile, string $phpVersion, string $edition): string
+    private function buildDockerfile(string $dockerfile, string $phpVersion, string $edition, bool $dev): string
     {
-        $phpExtConfigs = $this->filesystem->getRequire($this->directoryList->getImagesRoot() . '/php/php-extensions.php');
+        $phpExtConfigs = ExtensionResolver::getConfig();
 
         $packages = self::EDITION_CLI === $edition ? self::DEFAULT_PACKAGES_PHP_CLI : self::DEFAULT_PACKAGES_PHP_FPM;
         $phpExtCore = [];
@@ -201,25 +197,26 @@ class GeneratePhp extends Command
                 if (!$this->semver::satisfies($phpVersion, $phpExtConstraint)) {
                     continue;
                 }
-                $phpExtType = $phpExtInstallConfig[self::EXTENSION_TYPE];
+                $phpExtType = $phpExtInstallConfig[ExtensionResolver::EXTENSION_TYPE];
                 switch ($phpExtType) {
-                    case self::EXTENSION_TYPE_CORE:
-                        $phpExtCore[] = $phpExtInstallConfig[self::EXTENSION_PACKAGE_NAME] ?? $phpExtName;
-                        if (isset($phpExtInstallConfig[self::EXTENSION_CONFIGURE_OPTIONS])) {
+                    case ExtensionResolver::EXTENSION_TYPE_CORE:
+                        $phpExtCore[] = $phpExtInstallConfig[ExtensionResolver::EXTENSION_PACKAGE_NAME] ?? $phpExtName;
+                        if (isset($phpExtInstallConfig[ExtensionResolver::EXTENSION_CONFIGURE_OPTIONS])) {
                             $phpExtCoreConfigOptions[] = sprintf(
                                 "RUN docker-php-ext-configure \\\n  %s %s",
                                 $phpExtName,
-                                implode(' ', $phpExtInstallConfig[self::EXTENSION_CONFIGURE_OPTIONS])
+                                implode(' ', $phpExtInstallConfig[ExtensionResolver::EXTENSION_CONFIGURE_OPTIONS])
                             );
                         }
                         break;
-                    case self::EXTENSION_TYPE_PECL:
-                        $phpExtPecl[] = $phpExtInstallConfig[self::EXTENSION_PACKAGE_NAME] ?? $phpExtName;
+                    case ExtensionResolver::EXTENSION_TYPE_PECL:
+                        $phpExtPecl[] = $phpExtInstallConfig[ExtensionResolver::EXTENSION_PACKAGE_NAME] ?? $phpExtName;
                         break;
-                    case self::EXTENSION_TYPE_INSTALLATION_SCRIPT:
+                    case ExtensionResolver::EXTENSION_TYPE_INSTALLATION_SCRIPT:
                         $phpExtInstScripts[] = implode(" \\\n", array_map(function (string $command) {
                             return strpos($command, 'RUN') === false ? '  && ' . $command : $command;
-                        }, explode("\n", 'RUN ' . $phpExtInstallConfig[self::EXTENSION_INSTALLATION_SCRIPT])));
+                        }, explode("\n",
+                            'RUN ' . $phpExtInstallConfig[ExtensionResolver::EXTENSION_INSTALLATION_SCRIPT])));
                         break;
                     default:
                         throw new ConfigurationMismatchException(sprintf(
@@ -229,10 +226,13 @@ class GeneratePhp extends Command
                         ));
                 }
                 if (
-                    isset($phpExtInstallConfig[self::EXTENSION_OS_DEPENDENCIES])
-                    && $phpExtType != self::EXTENSION_TYPE_INSTALLATION_SCRIPT
+                    isset($phpExtInstallConfig[ExtensionResolver::EXTENSION_OS_DEPENDENCIES])
+                    && $phpExtType !== ExtensionResolver::EXTENSION_TYPE_INSTALLATION_SCRIPT
                 ) {
-                    $packages = array_merge($packages, $phpExtInstallConfig[self::EXTENSION_OS_DEPENDENCIES]);
+                    $packages = array_merge(
+                        $packages,
+                        $phpExtInstallConfig[ExtensionResolver::EXTENSION_OS_DEPENDENCIES]
+                    );
                 }
                 if (in_array($phpExtName, self::PHP_EXTENSIONS_ENABLED_BY_DEFAULT, true)) {
                     $phpExtEnabledDefault[] = $phpExtName;
@@ -241,9 +241,52 @@ class GeneratePhp extends Command
             }
         }
 
+        $volumes = [
+            'root' => [
+                'def' => 'VOLUME ${MAGENTO_ROOT}',
+                'cmd' => 'RUN mkdir ${MAGENTO_ROOT} && chown -R www:www ${MAGENTO_ROOT}'
+            ],
+            '.composer' => [
+                'def' => 'VOLUME ${MAGENTO_ROOT}/.composer',
+                'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/.composer && chown -R www:www ${MAGENTO_ROOT}/.composer'
+            ],
+        ];
+        if (!$dev) {
+            $volumes = array_merge($volumes, [
+                'vendor' => [
+                    'def' => 'VOLUME ${MAGENTO_ROOT}/vendor',
+                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/vendor && chown -R www:www ${MAGENTO_ROOT}/vendor'
+                ],
+                'generated' => [
+                    'def' => 'VOLUME ${MAGENTO_ROOT}/generated',
+                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/generated && chown -R www:www ${MAGENTO_ROOT}/generated'
+                ],
+                'var' => [
+                    'def' => 'VOLUME ${MAGENTO_ROOT}/var',
+                    'cmd' => 'RUN mkdir ${MAGENTO_ROOT}/var && chown -R www:www ${MAGENTO_ROOT}/var'
+                ],
+                'app-etc' => [
+                    'def' => 'VOLUME ${MAGENTO_ROOT}/app/etc',
+                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/app/etc && chown -R www:www ${MAGENTO_ROOT}/app'
+                ],
+                'pub-static-and-media' => [
+                    'def' => 'VOLUME ${MAGENTO_ROOT}/pub/static' . "\n" . 'VOLUME ${MAGENTO_ROOT}/pub/media',
+                    'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}/pub/static && mkdir -p ${MAGENTO_ROOT}/pub/media '
+                        . '&& chown -R www:www ${MAGENTO_ROOT}/pub'
+                ],
+            ]);
+        }
+        $volumesCmd = '';
+        $volumesDef = '';
+        foreach ($volumes as $data) {
+            $volumesCmd .= $data['cmd'] . "\n";
+            $volumesDef .= $data['def'] . "\n";
+        }
+
         return strtr(
             $this->filesystem->get($dockerfile),
             [
+                '{%note%}' => '# This file is automatically generated. Do not edit directly. #',
                 '{%version%}' => $phpVersion,
                 '{%packages%}' => implode(" \\\n  ", array_unique($packages)),
                 '{%docker-php-ext-configure%}' => implode(PHP_EOL, $phpExtCoreConfigOptions),
@@ -262,6 +305,8 @@ class GeneratePhp extends Command
                 '{%env_php_extensions%}' => $phpExtEnabledDefault
                     ? 'ENV PHP_EXTENSIONS ' . implode(' ', $phpExtEnabledDefault)
                     : '',
+                '{%volumes_cmd%}' => rtrim($volumesCmd),
+                '{%volumes_def%}' => rtrim($volumesDef)
             ]
         );
     }

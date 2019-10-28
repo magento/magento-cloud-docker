@@ -207,11 +207,9 @@ class BuildCompose extends Command
 
         $this->filesystem->put(
             $compose->getPath(),
-            Yaml::dump($compose->build($config), 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
+            Yaml::dump($compose->build($config), 6, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
         );
 
         $output->writeln('<info>Configuration was built.</info>');
-
-        return 0;
     }
 }

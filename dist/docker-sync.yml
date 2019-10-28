@@ -8,3 +8,5 @@ syncs:
       - '.magento'
       - '.docker'
       - '.github'
+    sync_userid: '1000'
+    sync_groupid: '1000'

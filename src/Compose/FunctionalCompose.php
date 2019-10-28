@@ -11,6 +11,7 @@ use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Service\ServiceInterface;
+use Magento\CloudDocker\Service\ServiceFactory;
 
 /**
  * Docker functional test builder.
@@ -19,7 +20,7 @@ use Magento\CloudDocker\Service\ServiceInterface;
  */
 class FunctionalCompose extends ProductionCompose
 {
-    const DIR_MAGENTO = '/var/www/magento';
+    const DIR_MAGENTO = '/app';
     const CRON_ENABLED = false;
 
     /**
@@ -33,6 +34,10 @@ class FunctionalCompose extends ProductionCompose
         ];
         $compose['services']['db']['ports'] = ['3306:3306'];
         $compose['volumes']['magento'] = [];
+        $compose['volumes']['magento-build-var'] = [];
+        $compose['volumes']['magento-build-etc'] = [];
+        $compose['volumes']['magento-build-static'] = [];
+        $compose['volumes']['magento-build-media'] = [];
 
         return $compose;
     }
@@ -40,13 +45,15 @@ class FunctionalCompose extends ProductionCompose
     /**
      * @inheritDoc
      */
-    protected function getMagentoVolumes(bool $isReadOnly): array
+    protected function getMagentoVolumes(Repository $config, bool $isReadOnly): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 
         return [
-            '.:/var/www/ece-tools',
+            '.:/ece-tools',
             'magento:' . self::DIR_MAGENTO . $flag,
+            'magento-vendor:' . self::DIR_MAGENTO . '/vendor' . $flag,
+            'magento-generated:' . self::DIR_MAGENTO . '/generated' . $flag,
             'magento-var:' . self::DIR_MAGENTO . '/var:delegated',
             'magento-etc:' . self::DIR_MAGENTO . '/app/etc:delegated',
             'magento-static:' . self::DIR_MAGENTO . '/pub/static:delegated',
@@ -57,13 +64,19 @@ class FunctionalCompose extends ProductionCompose
     /**
      * @inheritDoc
      */
-    protected function getMagentoBuildVolumes(bool $isReadOnly): array
+    protected function getMagentoBuildVolumes(Repository $config, bool $isReadOnly): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 
         return [
-            '.:/var/www/ece-tools',
+            '.:/ece-tools',
             'magento:' . self::DIR_MAGENTO . $flag,
+            'magento-vendor:' . self::DIR_MAGENTO . '/vendor' . $flag,
+            'magento-generated:' . self::DIR_MAGENTO . '/generated' . $flag,
+            'magento-build-var:' . self::DIR_MAGENTO . '/var:delegated',
+            'magento-build-etc:' . self::DIR_MAGENTO . '/app/etc:delegated',
+            'magento-build-static:' . self::DIR_MAGENTO . '/pub/static:delegated',
+            'magento-build-media:' . self::DIR_MAGENTO . '/pub/media:delegated',
         ];
     }
 
@@ -131,5 +144,13 @@ class FunctionalCompose extends ProductionCompose
             ['xsl', 'redis'],
             in_array($phpVersion, ['7.0', '7.1']) ? ['mcrypt'] : []
         ));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getDockerMount(): array
+    {
+        return [];
     }
 }

@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Compose;
 
 use Illuminate\Contracts\Config\Repository;
+use Magento\CloudDocker\Service\ServiceFactory;
 
 /**
  * Developer compose configuration.
@@ -19,6 +20,9 @@ class DeveloperCompose extends ProductionCompose
     const SYNC_ENGINE_DOCKER_SYNC = 'docker-sync';
     const SYNC_ENGINE_MUTAGEN = 'mutagen';
     const SYNC_ENGINE = 'sync-engine';
+
+    const SERVICE_PHP_CLI = ServiceFactory::SERVICE_CLI_DEV;
+    const SERVICE_PHP_FPM = ServiceFactory::SERVICE_FPM_DEV;
 
     const SYNC_ENGINES_LIST = [
         self::SYNC_ENGINE_DOCKER_SYNC,
@@ -39,23 +43,34 @@ class DeveloperCompose extends ProductionCompose
     }
 
     /**
-     * @param bool $isReadOnly
-     * @return array
+     * @inheritDoc
      */
-    protected function getMagentoBuildVolumes(bool $isReadOnly): array
+    protected function getMagentoBuildVolumes(Repository $config, bool $isReadOnly): array
     {
+        $target = self::DIR_MAGENTO;
+
+        if ($config->get(self::SYNC_ENGINE) === self::SYNC_ENGINE_DOCKER_SYNC) {
+            $target .= ':nocopy';
+        }
+
         return [
-            'magento-sync:' . self::DIR_MAGENTO . ':nocopy'
+            'magento-sync:' . $target
         ];
     }
 
     /**
      * @inheritDoc
      */
-    protected function getMagentoVolumes(bool $isReadOnly): array
+    protected function getMagentoVolumes(Repository $config, bool $isReadOnly): array
     {
+        $target = self::DIR_MAGENTO;
+
+        if ($config->get(self::SYNC_ENGINE) === self::SYNC_ENGINE_DOCKER_SYNC) {
+            $target .= ':nocopy';
+        }
+
         return [
-            'magento-sync:' . self::DIR_MAGENTO . ':nocopy'
+            'magento-sync:' . $target
         ];
     }
 

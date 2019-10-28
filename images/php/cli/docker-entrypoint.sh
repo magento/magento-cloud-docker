@@ -5,16 +5,9 @@
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
 
-CRON_LOG=/var/log/cron.log
-
 if [ ! -z "${CRONTAB}" ]; then
     echo "${CRONTAB}" > /etc/cron.d/magento
 fi
-
-# Get rsyslog running for cron output
-touch $CRON_LOG
-echo "cron.* $CRON_LOG" > /etc/rsyslog.d/cron.conf
-service rsyslog start
 
 # Configure Sendmail if required
 if [ "$ENABLE_SENDMAIL" == "true" ]; then
@@ -24,7 +17,9 @@ fi
 # Enable PHP extensions
 PHP_EXT_DIR=/usr/local/etc/php/conf.d
 PHP_EXT_COM_ON=docker-php-ext-enable
+
 [ -d ${PHP_EXT_DIR} ] && rm -f ${PHP_EXT_DIR}/docker-php-ext-*.ini
+
 if [ -x "$(command -v ${PHP_EXT_COM_ON})" ] && [ ! -z "${PHP_EXTENSIONS}" ]; then
       ${PHP_EXT_COM_ON} ${PHP_EXTENSIONS}
 fi

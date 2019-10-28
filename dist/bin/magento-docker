@@ -2,7 +2,6 @@
 
 set -e
 
-if [ ${#@} -ne 0 ] && [ "${@#"-h"}" = "" ]; then
 USAGE="Magento Cloud Docker
 
 \033[33mArguments:\033[0m
@@ -20,8 +19,9 @@ USAGE="Magento Cloud Docker
 \033[33mOptions:\033[0m
   -h            show this help text\n"
 
-  printf "$USAGE"
-  exit 0;
+if [ ${#@} -ne 0 ] && [ "${@#"-h"}" = "" ]; then
+    printf "$USAGE"
+    exit 0;
 fi;
 
 case "$1" in
@@ -53,11 +53,15 @@ case "$1" in
     ece-deploy)
         docker-compose run deploy cloud-deploy
         ;;
+    ece-post-deploy)
+        docker-compose run deploy cloud-post-deploy
+        ;;
     ece-redeploy)
         docker-compose run build cloud-build
         docker-compose run deploy cloud-deploy
+        docker-compose run deploy cloud-post-deploy
         ;;
     *)
-        printf "\033[31m Wrong command passed\033[0m\n"
-        exit 1
+        printf "$USAGE"
+        exit 0;
 esac
