@@ -14,6 +14,7 @@ use Magento\CloudDocker\Compose\BuilderFactory;
 use Magento\CloudDocker\Compose\ProductionBuilder;
 use Magento\CloudDocker\Config\ConfigFactory;
 use Magento\CloudDocker\Config\Dist\Generator;
+use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -30,19 +31,29 @@ class BuildCompose extends Command
 {
     public const NAME = 'build:compose';
 
+    /**
+     * Services.
+     */
     private const OPTION_PHP = 'php';
     private const OPTION_NGINX = 'nginx';
     private const OPTION_DB = 'db';
     private const OPTION_REDIS = 'redis';
     private const OPTION_ES = 'es';
     private const OPTION_RABBIT_MQ = 'rmq';
+    private const OPTION_SELENIUM_VERSION = 'selenium-version';
+    private const OPTION_SELENIUM_IMAGE = 'selenium-image';
+
+    /**
+     * State modifiers.
+     */
     private const OPTION_NODE = 'node';
     private const OPTION_MODE = 'mode';
     private const OPTION_SYNC_ENGINE = 'sync-engine';
     private const OPTION_NO_CRON = 'no-cron';
+    private const OPTION_WITH_SELENIUM = 'with-selenium';
 
     /**
-     * Option key to service name map.
+     * Option key to config name map.
      *
      * @var array
      */
@@ -54,6 +65,8 @@ class BuildCompose extends Command
         self::OPTION_ES => ServiceInterface::NAME_ELASTICSEARCH,
         self::OPTION_NODE => ServiceInterface::NAME_NODE,
         self::OPTION_RABBIT_MQ => ServiceInterface::NAME_RABBITMQ,
+        self::OPTION_SELENIUM_VERSION => ServiceFactory::SERVICE_SELENIUM_VERSION,
+        self::OPTION_SELENIUM_IMAGE => ServiceFactory::SERVICE_SELENIUM_IMAGE
     ];
 
     /**
@@ -139,36 +152,52 @@ class BuildCompose extends Command
                 InputOption::VALUE_REQUIRED,
                 'Node.js version'
             )->addOption(
-                self::OPTION_MODE,
-                'm',
-                InputOption::VALUE_REQUIRED,
-                sprintf(
-                    'Mode of environment (%s)',
-                    implode(
-                        ', ',
-                        [
-                            BuilderFactory::BUILDER_DEVELOPER,
-                            BuilderFactory::BUILDER_PRODUCTION,
-                            BuilderFactory::BUILDER_FUNCTIONAL,
-                        ]
-                    )
-                ),
-                BuilderFactory::BUILDER_PRODUCTION
-            )->addOption(
-                self::OPTION_SYNC_ENGINE,
+                self::OPTION_SELENIUM_VERSION,
                 null,
                 InputOption::VALUE_REQUIRED,
-                sprintf(
-                    'File sync engine. Works only with developer mode. Available: (%s)',
-                    implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
-                ),
-                DeveloperBuilder::SYNC_ENGINE_DOCKER_SYNC
+                'Selenium version'
             )->addOption(
-                self::OPTION_NO_CRON,
+                self::OPTION_SELENIUM_IMAGE,
                 null,
-                InputOption::VALUE_NONE,
-                'Remove cron container'
+                InputOption::VALUE_REQUIRED,
+                'Selenium image'
             );
+
+        $this->addOption(
+            self::OPTION_MODE,
+            'm',
+            InputOption::VALUE_REQUIRED,
+            sprintf(
+                'Mode of environment (%s)',
+                implode(
+                    ', ',
+                    [
+                        BuilderFactory::BUILDER_DEVELOPER,
+                        BuilderFactory::BUILDER_PRODUCTION,
+                        BuilderFactory::BUILDER_FUNCTIONAL,
+                    ]
+                )
+            ),
+            BuilderFactory::BUILDER_PRODUCTION
+        )->addOption(
+            self::OPTION_SYNC_ENGINE,
+            null,
+            InputOption::VALUE_REQUIRED,
+            sprintf(
+                'File sync engine. Works only with developer mode. Available: (%s)',
+                implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
+            ),
+            DeveloperBuilder::SYNC_ENGINE_DOCKER_SYNC
+        )->addOption(
+            self::OPTION_NO_CRON,
+            null,
+            InputOption::VALUE_NONE,
+            'Remove cron container'
+        )->addOption(
+            self::OPTION_WITH_SELENIUM,
+            null,
+            InputOption::VALUE_NONE
+        );
 
         parent::configure();
     }
@@ -204,7 +233,8 @@ class BuildCompose extends Command
 
         $config->set([
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
-            ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON)
+            ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON),
+            ProductionBuilder::KEY_WITH_SELENIUM => $input->getOption(self::OPTION_WITH_SELENIUM)
         ]);
 
         if (in_array(

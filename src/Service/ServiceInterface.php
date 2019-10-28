@@ -14,12 +14,13 @@ namespace Magento\CloudDocker\Service;
  */
 interface ServiceInterface
 {
-    const NAME_PHP = 'php';
-    const NAME_DB = 'mysql';
-    const NAME_NGINX = 'nginx';
-    const NAME_REDIS = 'redis';
-    const NAME_ELASTICSEARCH = 'elasticsearch';
-    const NAME_RABBITMQ = 'rabbitmq';
-    const NAME_NODE = 'node';
-    const NAME_VARNISH = 'varnish';
+    public const NAME_PHP = 'php';
+    public const NAME_DB = 'mysql';
+    public const NAME_NGINX = 'nginx';
+    public const NAME_REDIS = 'redis';
+    public const NAME_ELASTICSEARCH = 'elasticsearch';
+    public const NAME_RABBITMQ = 'rabbitmq';
+    public const NAME_NODE = 'node';
+    public const NAME_VARNISH = 'varnish';
+    public const NAME_SELENIUM = 'selenium';
 }

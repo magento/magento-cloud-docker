@@ -17,6 +17,7 @@ use Magento\CloudDocker\Filesystem\FileList;
  */
 class ServiceFactory
 {
+    public const SERVICE_GENERIC = 'generic';
     public const SERVICE_CLI = 'php-cli';
     public const SERVICE_FPM = 'php-fpm';
     public const SERVICE_REDIS = 'redis';
@@ -27,26 +28,34 @@ class ServiceFactory
     public const SERVICE_RABBIT_MQ = 'rabbitmq';
     public const SERVICE_TLS = 'tls';
     public const SERVICE_NODE = 'node';
-    public const SERVICE_GENERIC = 'generic';
+    public const SERVICE_SELENIUM = 'selenium';
+    public const SERVICE_SELENIUM_IMAGE = 'selenium-image';
+    public const SERVICE_SELENIUM_VERSION = 'selenium-version';
+
+    private const PATTERN_STD = '%s:%s';
+    private const PATTERN_VERSIONED = '%s:%s-%s';
 
     /**
      * @var array
      */
     private static $config = [
         self::SERVICE_CLI => [
-            'image' => 'magento/magento-cloud-docker-php:%s-cli-%s',
+            'image' => 'magento/magento-cloud-docker-php',
+            'pattern' => '%s:%s-cli-%s',
             'config' => [
                 'extends' => self::SERVICE_GENERIC
             ]
         ],
         self::SERVICE_FPM => [
-            'image' => 'magento/magento-cloud-docker-php:%s-fpm-%s',
+            'image' => 'magento/magento-cloud-docker-php',
+            'pattern' => '%s:%s-fpm-%s',
             'config' => [
                 'extends' => self::SERVICE_GENERIC
             ]
         ],
         self::SERVICE_DB => [
-            'image' => 'mariadb:%s',
+            'image' => 'mariadb',
+            'pattern' => self::PATTERN_STD,
             'config' => [
                 'environment' => [
                     'MYSQL_ROOT_PASSWORD=magento2',
@@ -57,13 +66,15 @@ class ServiceFactory
             ]
         ],
         self::SERVICE_NGINX => [
-            'image' => 'magento/magento-cloud-docker-nginx:%s-%s',
+            'image' => 'magento/magento-cloud-docker-nginx',
+            'pattern' => self::PATTERN_VERSIONED,
             'config' => [
                 'extends' => self::SERVICE_GENERIC
             ]
         ],
         self::SERVICE_VARNISH => [
-            'image' => 'magento/magento-cloud-docker-varnish:%s-%s',
+            'image' => 'magento/magento-cloud-docker-varnish',
+            'pattern' => self::PATTERN_VERSIONED,
             'config' => [
                 'environment' => [
                     'VIRTUAL_HOST=magento2.docker',
@@ -76,7 +87,8 @@ class ServiceFactory
             ]
         ],
         self::SERVICE_TLS => [
-            'image' => 'magento/magento-cloud-docker-tls:%s-%s',
+            'image' => 'magento/magento-cloud-docker-tls',
+            'pattern' => self::PATTERN_VERSIONED,
             'versions' => ['latest'],
             'config' => [
                 'ports' => [
@@ -88,7 +100,8 @@ class ServiceFactory
             ]
         ],
         self::SERVICE_REDIS => [
-            'image' => 'redis:%s',
+            'image' => 'redis',
+            'pattern' => self::PATTERN_STD,
             'config' => [
                 'volumes' => [
                     '/data',
@@ -97,16 +110,28 @@ class ServiceFactory
             ]
         ],
         self::SERVICE_ELASTICSEARCH => [
-            'image' => 'magento/magento-cloud-docker-elasticsearch:%s-%s'
+            'image' => 'magento/magento-cloud-docker-elasticsearch',
+            'pattern' => self::PATTERN_VERSIONED
         ],
         self::SERVICE_RABBIT_MQ => [
-            'image' => 'rabbitmq:%s',
+            'image' => 'rabbitmq',
+            'pattern' => self::PATTERN_STD
         ],
         self::SERVICE_NODE => [
-            'image' => 'node:%s',
+            'image' => 'node',
+            'pattern' => self::PATTERN_STD
         ],
         self::SERVICE_GENERIC => [
-            'image' => 'alpine'
+            'image' => 'alpine',
+            'pattern' => '%s'
+        ],
+        self::SERVICE_SELENIUM => [
+            'image' => 'selenium/standalone-chrome',
+            'pattern' => self::PATTERN_STD,
+            'config' => [
+                'ports' => [4444],
+                'extends' => self::SERVICE_GENERIC
+            ]
         ]
     ];
 
@@ -126,11 +151,12 @@ class ServiceFactory
     /**
      * @param string $name
      * @param string $version
-     * @param array $extendedConfig
+     * @param array $config
+     * @param string $image
      * @return array
      * @throws ConfigurationMismatchException
      */
-    public function create(string $name, string $version, array $extendedConfig = []): array
+    public function create(string $name, string $version, array $config = [], string $image = null): array
     {
         if (!array_key_exists($name, self::$config)) {
             throw new ConfigurationMismatchException(sprintf(
@@ -149,10 +175,13 @@ class ServiceFactory
         /** Extract minor version. Patch version should not affect images. */
         preg_match('/^\d+\.\d+/', $mcdVersion, $matches);
 
+        $image = $image ?: $metaConfig['image'];
+        $pattern = $metaConfig['pattern'];
+
         return array_replace(
-            ['image' => sprintf($metaConfig['image'], $version, $matches[0])],
+            ['image' => sprintf($pattern, $image, $version, $matches[0])],
             $defaultConfig,
-            $extendedConfig
+            $config
         );
     }
 }
