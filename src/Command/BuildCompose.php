@@ -110,7 +110,9 @@ class BuildCompose extends Command
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     protected function configure(): void
     {
@@ -121,42 +123,50 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'PHP version'
-            )->addOption(
+            )
+            ->addOption(
                 self::OPTION_NGINX,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Nginx version'
-            )->addOption(
+            )
+            ->addOption(
                 self::OPTION_DB,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'DB version'
-            )->addOption(
+            )
+            ->addOption(
                 self::OPTION_REDIS,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Redis version'
-            )->addOption(
+            )
+            ->addOption(
                 self::OPTION_ES,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Elasticsearch version'
-            )->addOption(
+            )
+            ->addOption(
                 self::OPTION_RABBIT_MQ,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'RabbitMQ version'
-            )->addOption(
+            )
+            ->addOption(
                 self::OPTION_NODE,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Node.js version'
-            )->addOption(
+            )
+            ->addOption(
                 self::OPTION_SELENIUM_VERSION,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Selenium version'
-            )->addOption(
+            )
+            ->addOption(
                 self::OPTION_SELENIUM_IMAGE,
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -179,25 +189,28 @@ class BuildCompose extends Command
                 )
             ),
             BuilderFactory::BUILDER_PRODUCTION
-        )->addOption(
-            self::OPTION_SYNC_ENGINE,
-            null,
-            InputOption::VALUE_REQUIRED,
-            sprintf(
-                'File sync engine. Works only with developer mode. Available: (%s)',
-                implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
-            ),
-            DeveloperBuilder::SYNC_ENGINE_DOCKER_SYNC
-        )->addOption(
-            self::OPTION_NO_CRON,
-            null,
-            InputOption::VALUE_NONE,
-            'Remove cron container'
-        )->addOption(
-            self::OPTION_WITH_SELENIUM,
-            null,
-            InputOption::VALUE_NONE
-        );
+        )
+            ->addOption(
+                self::OPTION_SYNC_ENGINE,
+                null,
+                InputOption::VALUE_REQUIRED,
+                sprintf(
+                    'File sync engine. Works only with developer mode. Available: (%s)',
+                    implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
+                ),
+                DeveloperBuilder::SYNC_ENGINE_DOCKER_SYNC
+            )
+            ->addOption(
+                self::OPTION_NO_CRON,
+                null,
+                InputOption::VALUE_NONE,
+                'Remove cron container'
+            )
+            ->addOption(
+                self::OPTION_WITH_SELENIUM,
+                null,
+                InputOption::VALUE_NONE
+            );
 
         parent::configure();
     }
