@@ -34,3 +34,8 @@ Inspired by [meanbee/docker-magento2](https://github.com/meanbee/docker-magento2
 Each Magento source file included in this distribution is licensed under OSL-3.0 license.
 
 Please see [LICENSE.txt](https://github.com/magento/ece-tools/blob/develop/LICENSE.txt) for the full text of the [Open Software License v. 3.0 (OSL-3.0)](http://opensource.org/licenses/osl-3.0.php).
+
+[ico-dockerbuild]: https://img.shields.io/docker/build/magento/magento-cloud-docker-php.svg?style=flat-square	
+[ico-downloads]: https://img.shields.io/docker/pulls/magento/magento-cloud-docker-php.svg?style=flat-square	
+[ico-dockerstars]: https://img.shields.io/docker/stars/magento/magento-cloud-docker-php.svg?style=flat-square	
+[link-dockerhub]: https://hub.docker.com/r/magento/magento-cloud-docker-php
