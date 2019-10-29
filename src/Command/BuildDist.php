@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class BuildDist extends Command
 {
-    const NAME = 'build:dist';
+    public const NAME = 'build:dist';
 
     /**
      * @var Generator
