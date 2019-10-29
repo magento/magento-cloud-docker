@@ -34,7 +34,7 @@ class ConfigTest extends TestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->readerMock = $this->createMock(Reader::class);
 
@@ -89,24 +89,21 @@ class ConfigTest extends TestCase
         $this->assertEquals($result, $this->version->getServiceVersion($serviceName));
     }
 
-    /**
-     * @expectedException \Magento\CloudDocker\App\ConfigurationMismatchException
-     * @expectedExceptionMessage Type "notphp" is not supported
-     */
     public function testGetServiceVersionFromConfigException()
     {
+        $this->expectException(ConfigurationMismatchException::class);
+        $this->expectExceptionMessage('Type "notphp" is not supported');
+
         $this->readerMock->expects($this->once())
             ->method('read')
             ->willReturn(['type' => 'notphp:1']);
         $this->version->getServiceVersion(ServiceInterface::NAME_PHP);
     }
 
-    /**
-     * @throws ConfigurationMismatchException
-     * @expectedException \Magento\CloudDocker\App\ConfigurationMismatchException
-     */
     public function testGetServiceVersionException()
     {
+        $this->expectException(ConfigurationMismatchException::class);
+
         $exception = new FilesystemException('reader exception');
         $this->readerMock->expects($this->once())
             ->method('read')
@@ -129,12 +126,11 @@ class ConfigTest extends TestCase
         $this->assertEquals($result, $this->version->getPhpVersion());
     }
 
-    /**
-     * @expectedException \Magento\CloudDocker\App\ConfigurationMismatchException
-     * @expectedExceptionMessage Some exception
-     */
     public function testGetPhpVersionReaderException()
     {
+        $this->expectException(ConfigurationMismatchException::class);
+        $this->expectExceptionMessage('Some exception');
+
         $exception = new ConfigurationMismatchException('Some exception');
         $this->readerMock->expects($this->once())
             ->method('read')
@@ -142,24 +138,21 @@ class ConfigTest extends TestCase
         $this->version->getPhpVersion();
     }
 
-    /**
-     * @expectedException \Magento\CloudDocker\App\ConfigurationMismatchException
-     * @expectedExceptionMessage Type "notphp" is not supported
-     */
     public function testGetPhpVersionWrongType()
     {
+        $this->expectException(ConfigurationMismatchException::class);
+        $this->expectExceptionMessage('Type "notphp" is not supported');
+
         $this->readerMock->expects($this->once())
             ->method('read')
             ->willReturn(['type' => 'notphp:7.1']);
         $this->version->getPhpVersion();
     }
 
-    /**
-     * @throws ConfigurationMismatchException
-     * @expectedException \Magento\CloudDocker\App\ConfigurationMismatchException
-     */
     public function testGetPhpVersionException()
     {
+        $this->expectException(ConfigurationMismatchException::class);
+
         $exception = new FileSystemException('reader exception');
         $this->readerMock->expects($this->once())
             ->method('read')
@@ -182,12 +175,10 @@ class ConfigTest extends TestCase
         $this->assertEquals($result, $this->version->getCron());
     }
 
-    /**
-     * @throws ConfigurationMismatchException
-     * @expectedException \Magento\CloudDocker\App\ConfigurationMismatchException
-     */
     public function testGetCronException()
     {
+        $this->expectException(ConfigurationMismatchException::class);
+
         $exception = new FileSystemException('reader exception');
         $this->readerMock->expects($this->once())
             ->method('read')
