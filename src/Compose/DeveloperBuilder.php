@@ -51,7 +51,8 @@ class DeveloperBuilder extends ProductionBuilder
         }
 
         $compose['volumes'] = [
-            'magento-sync' => $syncConfig
+            'magento-sync' => $syncConfig,
+            'magento-db' => []
         ];
 
         return $compose;
