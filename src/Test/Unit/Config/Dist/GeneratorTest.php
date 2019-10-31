@@ -49,7 +49,7 @@ class GeneratorTest extends TestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->directoryListMock = $this->createMock(DirectoryList::class);
         $this->filesystemMock = $this->createMock(Filesystem::class);
@@ -138,14 +138,11 @@ return [
 TEXT;
     }
 
-    /**
-     * @expectedExceptionMessage file system error
-     * @expectedException \Magento\CloudDocker\App\ConfigurationMismatchException
-     *
-     * @throws ConfigurationMismatchException
-     */
     public function testGenerateFileSystemException()
     {
+        $this->expectException(ConfigurationMismatchException::class);
+        $this->expectExceptionMessage('file system error');
+
         $this->filesystemMock->expects($this->once())
             ->method('put')
             ->willThrowException(new ConfigurationMismatchException('file system error'));
