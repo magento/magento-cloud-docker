@@ -131,11 +131,11 @@ class ProductionBuilder implements BuilderInterface
                     ],
                     'volumes' => array_merge(
                         [
-                            '/var/lib/mysql',
+                            'magento-db:/var/lib/mysql',
                             '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
                         ],
                         $this->getDockerMount()
-                    ),
+                    )
                 ]
             )
         ];
@@ -411,6 +411,7 @@ class ProductionBuilder implements BuilderInterface
             'magento-etc' => $volumeConfig,
             'magento-static' => $volumeConfig,
             'magento-media' => $volumeConfig,
+            'magento-db' => $volumeConfig,
         ];
 
         if ($this->getDockerMount()) {
