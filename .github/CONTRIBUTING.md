@@ -20,10 +20,10 @@ You must have a [GitHub account](https://help.github.com/en/github/getting-start
 3. For PRs which include new logic or new features, you must also submit the following information along with the pull request
    * Unit/integration test coverage
    * Proposed [documentation](https://devdocs.magento.com) updates: Submit developer documentation contributions from the [Magento DevDocs](https://github.com/magento/devdocs) repository. Submit updates to Magento user documentation from the [Magento Merchant documentation](https://github.com/magento/merchdocs) repository.
-4. For larger features or changes, [open an issue](https://github.com/magento/adobe-stock-integration/issues) to discuss the proposed changes prior to development. Discussing the updates in advance can prevent duplicate or unnecessary effort and allow other contributors to provide input.
+4. For larger features or changes, [open an issue](https://github.com/magento/magento-cloud-docker/issues/new) to discuss the proposed changes prior to development. Discussing the updates in advance can prevent duplicate or unnecessary effort and allow other contributors to provide input.
 
 ## Contribution process
-1. Search current [listed issues](https://github.com/magento/adobe-stock-integration/issues) (open or closed) for similar proposals of intended contribution before starting work on a new contribution.
+1. Search current [listed issues](https://github.com/magento/magento-cloud-docker/issues) (open or closed) for similar proposals of intended contribution before starting work on a new contribution.
 2. Review the [Contributor License Agreement](https://magento.com/legaldocuments/mca) if this is your first time contributing.
 3. Create and test your work.
 4. Fork the Magento Cloud repository according to the [Fork A Repository instructions](https://devdocs.magento.com/guides/v2.3/contributor-guide/contributing.html#fork) and when you are ready to send us a pull request – follow the [Create A Pull Request instructions](https://devdocs.magento.com/guides/v2.3/contributor-guide/contributing.html#pull_request).
@@ -36,6 +36,6 @@ The full text is available in the repository [Wiki](https://github.com/magento/m
 
 ## Connecting with Community!
 
-If you have any questions, join us in [#adobe-stock](https://magentocommeng.slack.com/messages/CH8BGFX9D) Slack chat. If you are not on our slack, [click here](http://tinyurl.com/engcom-slack) to join.
+If you have any questions, join us in [#cloud-docker](https://magentocommeng.slack.com/messages/CJ6F3F8NS) Slack chat. If you are not on our slack, [click here](http://tinyurl.com/engcom-slack) to join.
 
 Need to find a project? Check out the [Slack Channels](https://github.com/magento/magento2/wiki/Slack-Channels) (with listed project info) and the [Magento Community Portal](https://opensource.magento.com/).
