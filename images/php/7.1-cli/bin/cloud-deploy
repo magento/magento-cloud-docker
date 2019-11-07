@@ -14,8 +14,8 @@ if [[ "$MAGENTO_RUN_MODE" == "production" ]] ; then
         echo "Setting Varnish for FPC."
         output=$(magento-command config:set system/full_page_cache/caching_application 2)
         if [[ $? != 0 ]] ; then
-             print_error $output
-             #exit
+            echo "Notice: Varnish was not set as caching application of FPC"
+            echo $output
         else
             magento-command setup:config:set --http-cache-hosts=varnish
         fi
