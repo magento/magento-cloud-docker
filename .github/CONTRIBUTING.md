@@ -3,7 +3,7 @@
 Use the GitHub fork & pull model contribution model to submit your code contributions to the Magento Cloud Docker codebase.
 In this contribution model, you maintain your own [fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/working-with-forks) of the Magento Cloud Docker repository, and create a [pull request](https://help.github.com/articles/about-pull-requests/) to submit your proposed changes to the base repository. For details on the fork & pull contribution model, see the [Beginners guide](https://github.com/magento/magento2/wiki/Getting-Started).
 
-Contributions can take the form of new components or features, changes to existing features, tests, bug fixes, or optimizations. You can also contribute new or updated documentation.
+Contributions can take the form of new features, changes to existing features, tests, bug fixes, or optimizations. You can also contribute new or updated documentation.
 
 The Magento Cloud development team and community maintainers review all issues and contributions submitted by the developer community in first in, first out order (FIFO). During the review process, reviewers might notify a contributor to request clarification on the proposed changes.
 
