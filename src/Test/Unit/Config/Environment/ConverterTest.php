@@ -23,7 +23,7 @@ class ConverterTest extends TestCase
     /**
      * @inheritDoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->converter = new Converter();
     }

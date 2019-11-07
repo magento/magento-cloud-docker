@@ -31,7 +31,7 @@ class RelationshipTest extends TestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->configMock = $this->createMock(Config::class);
 
@@ -59,12 +59,11 @@ class RelationshipTest extends TestCase
         $this->assertArrayHasKey('rabbitmq', $relationships);
     }
 
-    /**
-     * @expectedExceptionMessage Configuration error
-     * @expectedException \Magento\CloudDocker\App\ConfigurationMismatchException
-     */
     public function testGetWithException()
     {
+        $this->expectException(ConfigurationMismatchException::class);
+        $this->expectExceptionMessage('Configuration error');
+
         $this->configMock->expects($this->any())
             ->method('getServiceVersion')
             ->willThrowException(new ConfigurationMismatchException('Configuration error'));

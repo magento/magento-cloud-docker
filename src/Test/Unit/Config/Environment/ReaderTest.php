@@ -37,7 +37,7 @@ class ReaderTest extends TestCase
     /**
      * @inheritDoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->directoryListMock = $this->createMock(DirectoryList::class);
         $this->filesystemMock = $this->createMock(Filesystem::class);
@@ -101,13 +101,11 @@ class ReaderTest extends TestCase
         $this->reader->read();
     }
 
-    /**
-     * @expectedException \Magento\CloudDocker\Filesystem\FilesystemException
-     * @expectedExceptionMessage Source file docker_root/config.php.dist does not exists
-     * @throws FilesystemException
-     */
     public function testExecuteNoSource()
     {
+        $this->expectException(FilesystemException::class);
+        $this->expectExceptionMessage('Source file docker_root/config.php.dist does not exists');
+
         $this->directoryListMock->method('getDockerRoot')
             ->willReturn('docker_root');
         $this->filesystemMock->expects($this->exactly(2))
