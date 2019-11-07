@@ -5,7 +5,7 @@ In this contribution model, you maintain your own [fork](https://help.github.com
 
 Contributions can take the form of new components or features, changes to existing features, tests, bug fixes, or optimizations. You can also contribute new or updated documentation.
 
-The Magento Cloud development team and community maintainers review all issues and contributions submitted by the developer community in first in, first out order (FIFO). During the review process, reviewers might notify a contributor to request clarification on the proposed changes. You have two weeks to respond to these requests. If we do not recieve a response, we close the pull request.
+The Magento Cloud development team and community maintainers review all issues and contributions submitted by the developer community in first in, first out order (FIFO). During the review process, reviewers might notify a contributor to request clarification on the proposed changes.
 
 ## Prerequisites
 
