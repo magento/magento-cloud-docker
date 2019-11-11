@@ -34,6 +34,7 @@ class ProductionBuilder implements BuilderInterface
     public const SERVICE_PHP_FPM = ServiceFactory::SERVICE_FPM;
 
     public const KEY_NO_CRON = 'no-cron';
+    public const KEY_EXPOSE_DB_PORT = 'expose-db-port';
 
     /**
      * @var ServiceFactory
@@ -114,6 +115,8 @@ class ProductionBuilder implements BuilderInterface
         $phpVersion = $this->config->get(ServiceInterface::NAME_PHP) ?: $this->getPhpVersion();
         $dbVersion = $this->config->get(ServiceInterface::NAME_DB)
             ?: $this->getServiceVersion(ServiceInterface::NAME_DB);
+        $hostPort = $this->config->get(self::KEY_EXPOSE_DB_PORT);
+        $dbPorts = $hostPort ? "$hostPort:3306" : '3306';
 
         $services = [
             'db' => $this->serviceFactory->create(
@@ -121,7 +124,7 @@ class ProductionBuilder implements BuilderInterface
                 $dbVersion,
                 [
                     'hostname' => 'db.magento2.docker',
-                    'ports' => [3306],
+                    'ports' => [$dbPorts],
                     'networks' => [
                         'magento' => [
                             'aliases' => [

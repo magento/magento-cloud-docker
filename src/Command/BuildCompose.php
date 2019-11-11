@@ -33,6 +33,7 @@ class BuildCompose extends Command
     private const OPTION_PHP = 'php';
     private const OPTION_NGINX = 'nginx';
     private const OPTION_DB = 'db';
+    private const OPTION_EXPOSE_DB_PORT = 'expose-db-port';
     private const OPTION_REDIS = 'redis';
     private const OPTION_ES = 'es';
     private const OPTION_RABBIT_MQ = 'rmq';
@@ -120,6 +121,12 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'DB version'
+            )
+            ->addOption(
+                self::OPTION_EXPOSE_DB_PORT,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Expose DB port'
             )
             ->addOption(
                 self::OPTION_REDIS,
@@ -215,6 +222,10 @@ class BuildCompose extends Command
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
             ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON)
         ]);
+
+        if($exposedDbPort = $input->getOption(self::OPTION_EXPOSE_DB_PORT)) {
+            $config->set(self::OPTION_EXPOSE_DB_PORT, $exposedDbPort);
+        }
 
         if (in_array(
             $input->getOption(self::OPTION_MODE),
