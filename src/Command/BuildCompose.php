@@ -43,7 +43,7 @@ class BuildCompose extends Command
     private const OPTION_NO_CRON = 'no-cron';
 
     /**
-     * Option key to service name map.
+     * Option key to name map.
      *
      * @var array
      */
@@ -55,6 +55,7 @@ class BuildCompose extends Command
         self::OPTION_ES => ServiceInterface::NAME_ELASTICSEARCH,
         self::OPTION_NODE => ServiceInterface::NAME_NODE,
         self::OPTION_RABBIT_MQ => ServiceInterface::NAME_RABBITMQ,
+        self::OPTION_EXPOSE_DB_PORT => ProductionBuilder::KEY_EXPOSE_DB_PORT
     ];
 
     /**
@@ -222,10 +223,6 @@ class BuildCompose extends Command
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
             ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON)
         ]);
-
-        if($exposedDbPort = $input->getOption(self::OPTION_EXPOSE_DB_PORT)) {
-            $config->set(self::OPTION_EXPOSE_DB_PORT, $exposedDbPort);
-        }
 
         if (in_array(
             $input->getOption(self::OPTION_MODE),
