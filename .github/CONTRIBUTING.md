@@ -19,7 +19,7 @@ You must have a [GitHub account](https://help.github.com/en/github/getting-start
 4. If your PR includes bug fixes, provide a step-by-step description of how to reproduce the bug in the pull request description.
 3. For PRs which include new logic or new features, you must also submit the following information along with the pull request
    * Unit/integration test coverage
-   * Proposed [documentation](https://devdocs.magento.com) updates: Submit developer documentation contributions from the [Magento DevDocs](https://github.com/magento/devdocs) repository. Submit updates to Magento user documentation from the [Magento Merchant documentation](https://github.com/magento/merchdocs) repository.
+   * Proposed documentation updates: Submit developer documentation contributions to the Magento DevDocs repository. Submit updates to Magento user documentation to the Magento Merchant documentation repository.
 4. For larger features or changes, [open an issue](https://github.com/magento/magento-cloud-docker/issues/new) to discuss the proposed changes prior to development. Discussing the updates in advance can prevent duplicate or unnecessary effort and allow other contributors to provide input.
 
 ## Contribution process
