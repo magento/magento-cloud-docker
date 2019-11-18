@@ -66,7 +66,7 @@ class BuildCompose extends Command
         self::OPTION_ES => ServiceInterface::NAME_ELASTICSEARCH,
         self::OPTION_NODE => ServiceInterface::NAME_NODE,
         self::OPTION_RABBIT_MQ => ServiceInterface::NAME_RABBITMQ,
-        self::OPTION_EXPOSE_DB_PORT => ProductionBuilder::KEY_EXPOSE_DB_PORT
+        self::OPTION_EXPOSE_DB_PORT => ProductionBuilder::KEY_EXPOSE_DB_PORT,
         self::OPTION_SELENIUM_VERSION => ServiceFactory::SERVICE_SELENIUM_VERSION,
         self::OPTION_SELENIUM_IMAGE => ServiceFactory::SERVICE_SELENIUM_IMAGE
     ];
