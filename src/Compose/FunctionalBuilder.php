@@ -12,7 +12,6 @@ use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\Config\Environment\Reader;
-use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceFactory;
@@ -34,7 +33,6 @@ class FunctionalBuilder extends ProductionBuilder
      * @param ServiceFactory $serviceFactory
      * @param Config $serviceConfig
      * @param FileList $fileList
-     * @param DirectoryList $directoryList
      * @param Converter $converter
      * @param ExtensionResolver $phpExtension
      * @param Reader $reader
@@ -43,7 +41,6 @@ class FunctionalBuilder extends ProductionBuilder
         ServiceFactory $serviceFactory,
         Config $serviceConfig,
         FileList $fileList,
-        DirectoryList $directoryList,
         Converter $converter,
         ExtensionResolver $phpExtension,
         Reader $reader
@@ -54,7 +51,6 @@ class FunctionalBuilder extends ProductionBuilder
             $serviceFactory,
             $serviceConfig,
             $fileList,
-            $directoryList,
             $converter,
             $phpExtension,
             $reader
@@ -86,6 +82,8 @@ class FunctionalBuilder extends ProductionBuilder
     public function setConfig(Repository $config): void
     {
         $config->set(self::KEY_NO_CRON, true);
+        $config->set(self::KEY_WITH_SELENIUM, false);
+        $config->set(self::KEY_NO_TMP_MOUNTS, true);
 
         parent::setConfig($config);
     }
@@ -185,13 +183,5 @@ class FunctionalBuilder extends ProductionBuilder
             ['xsl', 'redis'],
             in_array($phpVersion, ['7.0', '7.1']) ? ['mcrypt'] : []
         ));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getDockerMount(): array
-    {
-        return [];
     }
 }

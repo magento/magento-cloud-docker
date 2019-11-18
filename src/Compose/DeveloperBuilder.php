@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
+use Illuminate\Contracts\Config\Repository;
+
 /**
  * Developer compose configuration.
  *
@@ -25,6 +27,16 @@ class DeveloperBuilder extends ProductionBuilder
         self::SYNC_ENGINE_MUTAGEN,
         self::SYNC_ENGINE_NATIVE
     ];
+
+    /**
+     * @inheritDoc
+     */
+    public function setConfig(Repository $config): void
+    {
+        $config->set(self::KEY_NO_TMP_MOUNTS, true);
+
+        parent::setConfig($config);
+    }
 
     /**
      * @inheritDoc
@@ -91,13 +103,5 @@ class DeveloperBuilder extends ProductionBuilder
         $variables['MAGENTO_RUN_MODE'] = 'developer';
 
         return $variables;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getDockerMount(): array
-    {
-        return [];
     }
 }

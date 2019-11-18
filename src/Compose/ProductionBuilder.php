@@ -12,7 +12,6 @@ use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Environment\Reader;
-use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\Config;
@@ -35,6 +34,8 @@ class ProductionBuilder implements BuilderInterface
 
     public const KEY_NO_CRON = 'no-cron';
     public const KEY_EXPOSE_DB_PORT = 'expose-db-port';
+    public const KEY_NO_TMP_MOUNTS = 'no-tmp-mounts';
+    public const KEY_WITH_SELENIUM = 'with-selenium';
 
     /**
      * @var ServiceFactory
@@ -67,11 +68,6 @@ class ProductionBuilder implements BuilderInterface
     private $reader;
 
     /**
-     * @var DirectoryList
-     */
-    private $directoryList;
-
-    /**
      * @var Repository
      */
     private $config;
@@ -80,7 +76,6 @@ class ProductionBuilder implements BuilderInterface
      * @param ServiceFactory $serviceFactory
      * @param Config $serviceConfig
      * @param FileList $fileList
-     * @param DirectoryList $directoryList
      * @param Converter $converter
      * @param ExtensionResolver $phpExtension
      * @param Reader $reader
@@ -89,7 +84,6 @@ class ProductionBuilder implements BuilderInterface
         ServiceFactory $serviceFactory,
         Config $serviceConfig,
         FileList $fileList,
-        DirectoryList $directoryList,
         Converter $converter,
         ExtensionResolver $phpExtension,
         Reader $reader
@@ -97,7 +91,6 @@ class ProductionBuilder implements BuilderInterface
         $this->serviceFactory = $serviceFactory;
         $this->serviceConfig = $serviceConfig;
         $this->fileList = $fileList;
-        $this->directoryList = $directoryList;
         $this->converter = $converter;
         $this->phpExtension = $phpExtension;
         $this->reader = $reader;
@@ -209,8 +202,7 @@ class ProductionBuilder implements BuilderInterface
                 'depends_on' => $cliDepends,
                 'volumes' => array_merge(
                     $this->getMagentoBuildVolumes(false),
-                    $this->getComposerVolumes(),
-                    $this->getDockerMount()
+                    $this->getComposerVolumes()
                 ),
                 'networks' => [
                     'magento' => [
@@ -260,6 +252,23 @@ class ProductionBuilder implements BuilderInterface
                 'networks' => ['magento'],
             ]
         );
+
+        if ($this->hasSelenium()) {
+            $services['selenium'] = $this->serviceFactory->create(
+                ServiceInterface::NAME_SELENIUM,
+                $this->config->get(ServiceFactory::SERVICE_SELENIUM_VERSION, 'latest'),
+                [
+                    'hostname' => 'selenium.magento2.docker',
+                    'depends_on' => ['web'],
+                    'networks' => ['magento']
+                ],
+                $this->config->get(ServiceFactory::SERVICE_SELENIUM_IMAGE)
+            );
+        }
+
+        /**
+         * Generic service.
+         */
         $phpExtensions = $this->getPhpExtensions($phpVersion);
         $services['generic'] = $this->serviceFactory->create(
             ServiceFactory::SERVICE_GENERIC,
@@ -291,6 +300,16 @@ class ProductionBuilder implements BuilderInterface
                 ],
             ],
         ];
+    }
+
+    /**
+     * @return bool
+     */
+    private function hasSelenium(): bool
+    {
+        return $this->config->get(self::KEY_WITH_SELENIUM)
+            || $this->config->get(ServiceInterface::NAME_SELENIUM)
+            || $this->config->get(ServiceFactory::SERVICE_SELENIUM_IMAGE);
     }
 
     /**
@@ -417,7 +436,11 @@ class ProductionBuilder implements BuilderInterface
             'magento-db' => $volumeConfig,
         ];
 
-        if ($this->getDockerMount()) {
+        if ($this->hasSelenium()) {
+            $volumes['magento-dev'] = $volumeConfig;
+        }
+
+        if (!$this->config->get(self::KEY_NO_TMP_MOUNTS)) {
             $volumes['docker-tmp'] = [
                 'driver_opts' => [
                     'type' => 'none',
@@ -462,7 +485,7 @@ class ProductionBuilder implements BuilderInterface
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 
-        return [
+        $volumes = [
             'magento:' . self::DIR_MAGENTO . $flag,
             'magento-vendor:' . self::DIR_MAGENTO . '/vendor' . $flag,
             'magento-generated:' . self::DIR_MAGENTO . '/generated' . $flag,
@@ -471,6 +494,12 @@ class ProductionBuilder implements BuilderInterface
             'magento-static:' . self::DIR_MAGENTO . '/pub/static:delegated',
             'magento-media:' . self::DIR_MAGENTO . '/pub/media:delegated',
         ];
+
+        if ($this->hasSelenium()) {
+            $volumes[] = 'magento-dev:' . self::DIR_MAGENTO . '/dev:delegated';
+        }
+
+        return $volumes;
     }
 
     /**
@@ -481,11 +510,17 @@ class ProductionBuilder implements BuilderInterface
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 
-        return [
+        $volumes = [
             'magento:' . self::DIR_MAGENTO . $flag,
             'magento-vendor:' . self::DIR_MAGENTO . '/vendor' . $flag,
             'magento-generated:' . self::DIR_MAGENTO . '/generated' . $flag,
         ];
+
+        if ($this->hasSelenium()) {
+            $volumes[] = 'magento-dev:' . self::DIR_MAGENTO . '/dev:delegated';
+        }
+
+        return $volumes;
     }
 
     /***
@@ -511,7 +546,7 @@ class ProductionBuilder implements BuilderInterface
             throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
-        return array_merge([
+        $variables = [
             'PHP_MEMORY_LIMIT' => '2048M',
             'UPLOAD_MAX_FILESIZE' => '64M',
             'MAGENTO_ROOT' => self::DIR_MAGENTO,
@@ -519,7 +554,13 @@ class ProductionBuilder implements BuilderInterface
             'PHP_IDE_CONFIG' => 'serverName=magento_cloud_docker',
             # Docker host for developer environments, can be different for your OS
             'XDEBUG_CONFIG' => 'remote_host=host.docker.internal',
-        ], $envConfig);
+        ];
+
+        if ($this->hasSelenium()) {
+            $variables['MFTF_UTILS'] = 1;
+        }
+
+        return array_merge($variables, $envConfig);
     }
 
     /**
@@ -554,8 +595,12 @@ class ProductionBuilder implements BuilderInterface
     /**
      * @return array
      */
-    protected function getDockerMount(): array
+    private function getDockerMount(): array
     {
+        if ($this->config->get(self::KEY_NO_TMP_MOUNTS)) {
+            return [];
+        }
+
         return ['docker-mnt:/mnt', 'docker-tmp:/tmp'];
     }
 }
