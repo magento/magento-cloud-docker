@@ -17,6 +17,7 @@ use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
+use Magento\CloudDocker\Config\Reader as ConfigReader;
 
 /**
  * Production compose configuration.
@@ -73,12 +74,18 @@ class ProductionBuilder implements BuilderInterface
     private $config;
 
     /**
+     * @var ConfigReader
+     */
+    private $configReader;
+
+    /**
      * @param ServiceFactory $serviceFactory
      * @param Config $serviceConfig
      * @param FileList $fileList
      * @param Converter $converter
      * @param ExtensionResolver $phpExtension
      * @param Reader $reader
+     * @param ConfigReader $configReader
      */
     public function __construct(
         ServiceFactory $serviceFactory,
@@ -86,7 +93,8 @@ class ProductionBuilder implements BuilderInterface
         FileList $fileList,
         Converter $converter,
         ExtensionResolver $phpExtension,
-        Reader $reader
+        Reader $reader,
+        ConfigReader $configReader
     ) {
         $this->serviceFactory = $serviceFactory;
         $this->serviceConfig = $serviceConfig;
@@ -94,6 +102,7 @@ class ProductionBuilder implements BuilderInterface
         $this->converter = $converter;
         $this->phpExtension = $phpExtension;
         $this->reader = $reader;
+        $this->configReader = $configReader;
     }
 
     /**
@@ -374,6 +383,7 @@ class ProductionBuilder implements BuilderInterface
      * @param string $hostname
      * @return array
      * @throws ConfigurationMismatchException
+     * @throws FilesystemException
      */
     private function getCliService(
         string $version,
@@ -429,15 +439,17 @@ class ProductionBuilder implements BuilderInterface
             ],
             'magento-vendor' => $volumeConfig,
             'magento-generated' => $volumeConfig,
-            'magento-var' => $volumeConfig,
-            'magento-etc' => $volumeConfig,
-            'magento-static' => $volumeConfig,
-            'magento-media' => $volumeConfig,
             'magento-db' => $volumeConfig,
         ];
 
         if ($this->hasSelenium()) {
             $volumes['magento-dev'] = $volumeConfig;
+        }
+
+        foreach ($this->getMagentoVolumes() as $volume) {
+            $config = explode(':', $volume);
+            $volumeName = reset($config);
+            $volumes[$volumeName] = $volumes[$volumeName] ?? $volumeConfig;
         }
 
         if (!$this->config->get(self::KEY_NO_TMP_MOUNTS)) {
@@ -481,7 +493,7 @@ class ProductionBuilder implements BuilderInterface
      * @param bool $isReadOnly
      * @return array
      */
-    protected function getMagentoVolumes(bool $isReadOnly): array
+    protected function getDefaultMagentoVolumes(bool $isReadOnly): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 
@@ -489,10 +501,6 @@ class ProductionBuilder implements BuilderInterface
             'magento:' . self::DIR_MAGENTO . $flag,
             'magento-vendor:' . self::DIR_MAGENTO . '/vendor' . $flag,
             'magento-generated:' . self::DIR_MAGENTO . '/generated' . $flag,
-            'magento-var:' . self::DIR_MAGENTO . '/var:delegated',
-            'magento-etc:' . self::DIR_MAGENTO . '/app/etc:delegated',
-            'magento-static:' . self::DIR_MAGENTO . '/pub/static:delegated',
-            'magento-media:' . self::DIR_MAGENTO . '/pub/media:delegated',
         ];
 
         if ($this->hasSelenium()) {
@@ -602,5 +610,28 @@ class ProductionBuilder implements BuilderInterface
         }
 
         return ['docker-mnt:/mnt', 'docker-tmp:/tmp'];
+    }
+
+    /**
+     * Retrieve configured volumes.
+     *
+     * @param bool $isReadOnly
+     * @return array
+     * @throws FilesystemException
+     */
+    private function getMagentoVolumes(bool $isReadOnly = true) : array
+    {
+        $volumes = $this->getDefaultMagentoVolumes($isReadOnly);
+        $volumeConfiguration = $this->configReader->read()['mounts'];
+
+        foreach (array_keys($volumeConfiguration) as $volume) {
+            $volumes[] = sprintf(
+                '%s:%s:delegated',
+                'magento-' . str_replace('/', '-', $volume),
+                self::DIR_MAGENTO . '/' . $volume
+            );
+        }
+
+        return $volumes;
     }
 }

@@ -68,7 +68,8 @@ class Reader implements ReaderInterface
             'runtime' => [
                 'extensions' => $appConfig['runtime']['extensions'] ?? [],
                 'disabled_extensions' => $appConfig['runtime']['disabled_extensions'] ?? []
-            ]
+            ],
+            'mounts' => $appConfig['mounts'] ?? []
         ];
 
         foreach ($appConfig['relationships'] as $constraint) {

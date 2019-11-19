@@ -264,7 +264,8 @@ class ReaderTest extends TestCase
             'runtime' => [
                 'extensions' => [],
                 'disabled_extensions' => [],
-            ]
+            ],
+            'mounts' => []
         ], $this->reader->read());
     }
 }

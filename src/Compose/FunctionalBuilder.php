@@ -16,6 +16,7 @@ use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
+use Magento\CloudDocker\Config\Reader as ConfigReader;
 
 /**
  * Docker functional test builder.
@@ -36,6 +37,7 @@ class FunctionalBuilder extends ProductionBuilder
      * @param Converter $converter
      * @param ExtensionResolver $phpExtension
      * @param Reader $reader
+     * @param ConfigReader $configReader
      */
     public function __construct(
         ServiceFactory $serviceFactory,
@@ -43,7 +45,8 @@ class FunctionalBuilder extends ProductionBuilder
         FileList $fileList,
         Converter $converter,
         ExtensionResolver $phpExtension,
-        Reader $reader
+        Reader $reader,
+        ConfigReader $configReader
     ) {
         $this->fileList = $fileList;
 
@@ -53,7 +56,8 @@ class FunctionalBuilder extends ProductionBuilder
             $fileList,
             $converter,
             $phpExtension,
-            $reader
+            $reader,
+            $configReader
         );
     }
 
