@@ -11,13 +11,13 @@ use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Config\Environment\Reader;
+use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
-use Magento\CloudDocker\Config\Reader as ConfigReader;
+use Magento\CloudDocker\Config\Application\Reader as AppReader;
 
 /**
  * Production compose configuration.
@@ -64,9 +64,9 @@ class ProductionBuilder implements BuilderInterface
     private $phpExtension;
 
     /**
-     * @var Reader
+     * @var EnvReader
      */
-    private $reader;
+    private $envReader;
 
     /**
      * @var Repository
@@ -74,9 +74,9 @@ class ProductionBuilder implements BuilderInterface
     private $config;
 
     /**
-     * @var ConfigReader
+     * @var AppReader
      */
-    private $configReader;
+    private $appReader;
 
     /**
      * @param ServiceFactory $serviceFactory
@@ -84,8 +84,8 @@ class ProductionBuilder implements BuilderInterface
      * @param FileList $fileList
      * @param Converter $converter
      * @param ExtensionResolver $phpExtension
-     * @param Reader $reader
-     * @param ConfigReader $configReader
+     * @param EnvReader $envReader
+     * @param AppReader $appReader
      */
     public function __construct(
         ServiceFactory $serviceFactory,
@@ -93,16 +93,16 @@ class ProductionBuilder implements BuilderInterface
         FileList $fileList,
         Converter $converter,
         ExtensionResolver $phpExtension,
-        Reader $reader,
-        ConfigReader $configReader
+        EnvReader $envReader,
+        AppReader $appReader
     ) {
         $this->serviceFactory = $serviceFactory;
         $this->serviceConfig = $serviceConfig;
         $this->fileList = $fileList;
         $this->converter = $converter;
         $this->phpExtension = $phpExtension;
-        $this->reader = $reader;
-        $this->configReader = $configReader;
+        $this->envReader = $envReader;
+        $this->appReader = $appReader;
     }
 
     /**
@@ -549,7 +549,7 @@ class ProductionBuilder implements BuilderInterface
     protected function getVariables(): array
     {
         try {
-            $envConfig = $this->reader->read();
+            $envConfig = $this->envReader->read();
         } catch (FilesystemException $exception) {
             throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
         }
@@ -622,7 +622,7 @@ class ProductionBuilder implements BuilderInterface
     private function getMagentoVolumes(bool $isReadOnly = true) : array
     {
         $volumes = $this->getDefaultMagentoVolumes($isReadOnly);
-        $volumeConfiguration = $this->configReader->read()['mounts'];
+        $volumeConfiguration = $this->appReader->read()['mounts'];
 
         foreach (array_keys($volumeConfiguration) as $volume) {
             $volumes[] = sprintf(

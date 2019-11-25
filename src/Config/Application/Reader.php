@@ -5,12 +5,13 @@
  */
 declare(strict_types=1);
 
-namespace Magento\CloudDocker\Config;
+namespace Magento\CloudDocker\Config\Application;
 
 use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Symfony\Component\Yaml\Yaml;
+use Magento\CloudDocker\Config\ReaderInterface;
 
 /**
  * Read and combine infrastructure configuration.
