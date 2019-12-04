@@ -210,7 +210,7 @@ class ProductionBuilder implements BuilderInterface
                     $this->getDockerMount()
                 ),
                 'networks' => [
-                    'magento' => [
+                    'magento-build' => [
                         'aliases' => [
                             'web.magento2.docker',
                         ],
@@ -284,6 +284,9 @@ class ProductionBuilder implements BuilderInterface
             'volumes' => $this->getVolumesDefinition(),
             'networks' => [
                 'magento' => [
+                    'driver' => 'bridge',
+                ],
+                'magento-build' => [
                     'driver' => 'bridge',
                 ],
             ],
