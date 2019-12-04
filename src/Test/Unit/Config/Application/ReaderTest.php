@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Magento\CloudDocker\Test\Unit\Config;
+namespace Magento\CloudDocker\Test\Unit\Config\Application;
 
 use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\Config\Application\Reader;
