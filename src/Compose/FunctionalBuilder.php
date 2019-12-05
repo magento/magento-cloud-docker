@@ -11,11 +11,12 @@ use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Environment\Converter;
-use Magento\CloudDocker\Config\Environment\Reader;
+use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
+use Magento\CloudDocker\Config\Application\Reader as AppReader;
 
 /**
  * Docker functional test builder.
@@ -35,7 +36,8 @@ class FunctionalBuilder extends ProductionBuilder
      * @param FileList $fileList
      * @param Converter $converter
      * @param ExtensionResolver $phpExtension
-     * @param Reader $reader
+     * @param EnvReader $envReader
+     * @param AppReader $appReader
      */
     public function __construct(
         ServiceFactory $serviceFactory,
@@ -43,7 +45,8 @@ class FunctionalBuilder extends ProductionBuilder
         FileList $fileList,
         Converter $converter,
         ExtensionResolver $phpExtension,
-        Reader $reader
+        EnvReader $envReader,
+        AppReader $appReader
     ) {
         $this->fileList = $fileList;
 
@@ -53,7 +56,8 @@ class FunctionalBuilder extends ProductionBuilder
             $fileList,
             $converter,
             $phpExtension,
-            $reader
+            $envReader,
+            $appReader
         );
     }
 

@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Service;
 
-use Magento\CloudDocker\Config\Reader;
+use Magento\CloudDocker\Config\Application\Reader;
 use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\FilesystemException;
