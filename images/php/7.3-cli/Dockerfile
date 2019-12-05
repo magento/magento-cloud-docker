@@ -196,6 +196,7 @@ RUN ["chmod", "+x", \
     "/docker-entrypoint.sh", \
     "/usr/local/bin/magento-installer", \
     "/usr/local/bin/magento-command", \
+    "/usr/local/bin/mftf-command", \
     "/usr/local/bin/ece-command", \
     "/usr/local/bin/cloud-build", \
     "/usr/local/bin/cloud-deploy", \

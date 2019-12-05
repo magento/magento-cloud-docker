@@ -82,6 +82,8 @@ class FunctionalBuilder extends ProductionBuilder
     public function setConfig(Repository $config): void
     {
         $config->set(self::KEY_NO_CRON, true);
+        $config->set(self::KEY_WITH_SELENIUM, false);
+        $config->set(self::KEY_NO_TMP_MOUNTS, true);
 
         parent::setConfig($config);
     }
@@ -181,13 +183,5 @@ class FunctionalBuilder extends ProductionBuilder
             ['xsl', 'redis'],
             in_array($phpVersion, ['7.0', '7.1']) ? ['mcrypt'] : []
         ));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getDockerMount(): array
-    {
-        return [];
     }
 }

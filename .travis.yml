@@ -16,4 +16,3 @@ script:
   - ./vendor/bin/phpcs ./src --standard=./tests/static/phpcs-ruleset.xml -p -n
   - ./vendor/bin/phpmd ./src xml ./tests/static/phpmd-ruleset.xml
   - ./vendor/bin/phpunit --configuration ./tests/unit
-
