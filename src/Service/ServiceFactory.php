@@ -97,7 +97,7 @@ class ServiceFactory
             ]
         ],
         self::SERVICE_ELASTICSEARCH => [
-            'image' => 'magento/magento-cloud-docker-elasticsearch:%s-%s'
+            'image' => 'magento/magento-cloud-docker-elasticsearch:%s-%s',
         ],
         self::SERVICE_RABBIT_MQ => [
             'image' => 'rabbitmq:%s',

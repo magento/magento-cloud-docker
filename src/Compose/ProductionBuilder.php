@@ -12,7 +12,6 @@ use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Environment\Reader;
-use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\Config;
@@ -66,11 +65,6 @@ class ProductionBuilder implements BuilderInterface
     private $reader;
 
     /**
-     * @var DirectoryList
-     */
-    private $directoryList;
-
-    /**
      * @var Repository
      */
     private $config;
@@ -79,7 +73,6 @@ class ProductionBuilder implements BuilderInterface
      * @param ServiceFactory $serviceFactory
      * @param Config $serviceConfig
      * @param FileList $fileList
-     * @param DirectoryList $directoryList
      * @param Converter $converter
      * @param ExtensionResolver $phpExtension
      * @param Reader $reader
@@ -88,7 +81,6 @@ class ProductionBuilder implements BuilderInterface
         ServiceFactory $serviceFactory,
         Config $serviceConfig,
         FileList $fileList,
-        DirectoryList $directoryList,
         Converter $converter,
         ExtensionResolver $phpExtension,
         Reader $reader
@@ -96,7 +88,6 @@ class ProductionBuilder implements BuilderInterface
         $this->serviceFactory = $serviceFactory;
         $this->serviceConfig = $serviceConfig;
         $this->fileList = $fileList;
-        $this->directoryList = $directoryList;
         $this->converter = $converter;
         $this->phpExtension = $phpExtension;
         $this->reader = $reader;
@@ -116,56 +107,64 @@ class ProductionBuilder implements BuilderInterface
             ?: $this->getServiceVersion(ServiceInterface::NAME_DB);
 
         $services = [
-            'db' => $this->serviceFactory->create(
-                ServiceFactory::SERVICE_DB,
-                $dbVersion,
-                [
-                    'hostname' => 'db.magento2.docker',
-                    'ports' => [3306],
-                    'networks' => [
-                        'magento' => [
-                            'aliases' => [
-                                'db.magento2.docker',
-                            ],
-                        ],
+            'list' => [],
+            'cliDepends' => []
+        ];
+
+        $services['list']['db'] = $this->serviceFactory->create(
+            ServiceFactory::SERVICE_DB,
+            $dbVersion,
+            [
+                'hostname' => 'db.magento2.docker',
+                'ports' => [3306],
+                'networks' => [
+                    'magento'
+                ],
+                'volumes' => array_merge(
+                    [
+                        'magento-db:/var/lib/mysql',
+                        '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
                     ],
-                    'volumes' => array_merge(
-                        [
-                            'magento-db:/var/lib/mysql',
-                            '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
-                        ],
-                        $this->getDockerMount()
-                    )
-                ]
-            )
+                    $this->getDockerMount()
+                )
+            ]
+        );
+        $services['cliDepends']['db'] = [
+            'condition' => 'service_started'
         ];
 
         $redisVersion = $this->config->get(ServiceInterface::NAME_REDIS) ?:
             $this->getServiceVersion(ServiceInterface::NAME_REDIS);
 
         if ($redisVersion) {
-            $services['redis'] = $this->serviceFactory->create(
+            $services['list']['redis'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_REDIS,
                 $redisVersion,
                 ['networks' => ['magento']]
             );
+            $services['cliDepends']['redis'] = [
+                'condition' => 'service_started'
+            ];
         }
 
         $esVersion = $this->config->get(ServiceInterface::NAME_ELASTICSEARCH)
             ?: $this->getServiceVersion(ServiceInterface::NAME_ELASTICSEARCH);
 
         if ($esVersion) {
-            $services['elasticsearch'] = $this->serviceFactory->create(
+            $services['list']['elasticsearch'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_ELASTICSEARCH,
                 $esVersion,
                 ['networks' => ['magento']]
             );
+            $services['cliDepends']['elasticsearch'] = [
+                'condition' => 'service_healthy'
+            ];
         }
 
         $nodeVersion = $this->config->get(ServiceInterface::NAME_NODE);
 
         if ($nodeVersion) {
-            $services['node'] = $this->serviceFactory->create(
+            $services['list']['node'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_NODE,
                 $nodeVersion,
                 [
@@ -173,22 +172,28 @@ class ProductionBuilder implements BuilderInterface
                     'networks' => ['magento'],
                 ]
             );
+            $services['cliDepends']['node'] = [
+                'condition' => 'service_started'
+            ];
         }
 
         $rabbitMQVersion = $this->config->get(ServiceInterface::NAME_RABBITMQ)
             ?: $this->getServiceVersion(ServiceInterface::NAME_RABBITMQ);
 
         if ($rabbitMQVersion) {
-            $services['rabbitmq'] = $this->serviceFactory->create(
+            $services['list']['rabbitmq'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_RABBIT_MQ,
                 $rabbitMQVersion,
                 ['networks' => ['magento']]
             );
+            $services['cliDepends']['rabbitmq'] = [
+                'condition' => 'service_started'
+            ];
         }
 
-        $cliDepends = array_keys($services);
+        $cliDepends = $services['cliDepends'];
 
-        $services['fpm'] = $this->serviceFactory->create(
+        $services['list']['fpm'] = $this->serviceFactory->create(
             static::SERVICE_PHP_FPM,
             $phpVersion,
             [
@@ -198,28 +203,23 @@ class ProductionBuilder implements BuilderInterface
                 'networks' => ['magento'],
             ]
         );
-        $services['build'] = $this->serviceFactory->create(
+        $services['list']['build'] = $this->serviceFactory->create(
             static::SERVICE_PHP_CLI,
             $phpVersion,
             [
                 'hostname' => 'build.magento2.docker',
-                'depends_on' => $cliDepends,
                 'volumes' => array_merge(
                     $this->getMagentoBuildVolumes(false),
                     $this->getComposerVolumes(),
                     $this->getDockerMount()
                 ),
                 'networks' => [
-                    'magento' => [
-                        'aliases' => [
-                            'web.magento2.docker',
-                        ],
-                    ],
+                    'magento'
                 ],
             ]
         );
-        $services['deploy'] = $this->getCliService($phpVersion, true, $cliDepends, 'deploy.magento2.docker');
-        $services['web'] = $this->serviceFactory->create(
+        $services['list']['deploy'] = $this->getCliService($phpVersion, true, $cliDepends, 'deploy.magento2.docker');
+        $services['list']['web'] = $this->serviceFactory->create(
             ServiceFactory::SERVICE_NGINX,
             $this->config->get(ServiceInterface::NAME_NGINX, self::DEFAULT_NGINX_VERSION),
             [
@@ -227,15 +227,11 @@ class ProductionBuilder implements BuilderInterface
                 'depends_on' => ['fpm'],
                 'volumes' => $this->getMagentoVolumes(true),
                 'networks' => [
-                    'magento' => [
-                        'aliases' => [
-                            'web.magento2.docker',
-                        ],
-                    ],
+                    'magento'
                 ],
             ]
         );
-        $services['varnish'] = $this->serviceFactory->create(
+        $services['list']['varnish'] = $this->serviceFactory->create(
             ServiceFactory::SERVICE_VARNISH,
             self::DEFAULT_VARNISH_VERSION,
             [
@@ -249,7 +245,7 @@ class ProductionBuilder implements BuilderInterface
                 ],
             ]
         );
-        $services['tls'] = $this->serviceFactory->create(
+        $services['list']['tls'] = $this->serviceFactory->create(
             ServiceFactory::SERVICE_TLS,
             self::DEFAULT_TLS_VERSION,
             [
@@ -258,7 +254,7 @@ class ProductionBuilder implements BuilderInterface
             ]
         );
         $phpExtensions = $this->getPhpExtensions($phpVersion);
-        $services['generic'] = $this->serviceFactory->create(
+        $services['list']['generic'] = $this->serviceFactory->create(
             ServiceFactory::SERVICE_GENERIC,
             '',
             [
@@ -270,7 +266,7 @@ class ProductionBuilder implements BuilderInterface
         );
 
         if (!$this->config->get(self::KEY_NO_CRON, false)) {
-            $services['cron'] = $this->getCronCliService(
+            $services['list']['cron'] = $this->getCronCliService(
                 $phpVersion,
                 true,
                 $cliDepends,
@@ -279,8 +275,8 @@ class ProductionBuilder implements BuilderInterface
         }
 
         return [
-            'version' => '2',
-            'services' => $services,
+            'version' => '2.1',
+            'services' => $services['list'],
             'volumes' => $this->getVolumesDefinition(),
             'networks' => [
                 'magento' => [
@@ -371,11 +367,7 @@ class ProductionBuilder implements BuilderInterface
                     $this->getDockerMount()
                 ),
                 'networks' => [
-                    'magento' => [
-                        'aliases' => [
-                            $hostname,
-                        ],
-                    ],
+                    'magento'
                 ],
             ]
         );
