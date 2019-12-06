@@ -216,7 +216,7 @@ class ProductionBuilder implements BuilderInterface
                 'networks' => [
                     'magento-build' => [
                         'aliases' => [
-                            'web.magento2.docker',
+                            'build.magento2.docker',
                         ],
                     ],
                 ],
@@ -273,6 +273,7 @@ class ProductionBuilder implements BuilderInterface
                 ],
                 $this->config->get(ServiceFactory::SERVICE_SELENIUM_IMAGE)
             );
+            $services['test'] = $this->getCliService($phpVersion, true, $cliDepends, 'deploy.magento2.docker');
         }
 
         /**
