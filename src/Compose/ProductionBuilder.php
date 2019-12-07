@@ -273,7 +273,12 @@ class ProductionBuilder implements BuilderInterface
                 ],
                 $this->config->get(ServiceFactory::SERVICE_SELENIUM_IMAGE)
             );
-            $services['test'] = $this->getCliService($phpVersion, true, $cliDepends, 'deploy.magento2.docker');
+            $services['test'] = $this->getCliService(
+                $phpVersion,
+                false,
+                $cliDepends,
+                'test.magento2.docker'
+            );
         }
 
         /**
@@ -623,7 +628,7 @@ class ProductionBuilder implements BuilderInterface
      * @return array
      * @throws FilesystemException
      */
-    private function getMagentoVolumes(bool $isReadOnly = true) : array
+    private function getMagentoVolumes(bool $isReadOnly = true): array
     {
         $volumes = $this->getDefaultMagentoVolumes($isReadOnly);
         $volumeConfiguration = $this->appReader->read()['mounts'];
