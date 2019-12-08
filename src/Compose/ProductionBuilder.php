@@ -628,7 +628,7 @@ class ProductionBuilder implements BuilderInterface
      * @return array
      * @throws FilesystemException
      */
-    private function getMagentoVolumes(bool $isReadOnly = true): array
+    protected function getMagentoVolumes(bool $isReadOnly = true): array
     {
         $volumes = $this->getDefaultMagentoVolumes($isReadOnly);
         $volumeConfiguration = $this->appReader->read()['mounts'];
