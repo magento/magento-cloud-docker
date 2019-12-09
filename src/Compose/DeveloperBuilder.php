@@ -73,7 +73,7 @@ class DeveloperBuilder extends ProductionBuilder
     /**
      * @inheritDoc
      */
-    protected function getMagentoVolumes(bool $isReadOnly): array
+    protected function getMagentoVolumes(bool $isReadOnly = true): array
     {
         $target = self::DIR_MAGENTO;
 

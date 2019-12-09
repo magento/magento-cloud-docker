@@ -80,6 +80,7 @@ class FunctionalBuilder extends ProductionBuilder
 
         return $compose;
     }
+
     /**
      * @inheritDoc
      */
@@ -95,7 +96,7 @@ class FunctionalBuilder extends ProductionBuilder
     /**
      * @inheritDoc
      */
-    protected function getMagentoVolumes(bool $isReadOnly): array
+    protected function getMagentoVolumes(bool $isReadOnly = true): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 

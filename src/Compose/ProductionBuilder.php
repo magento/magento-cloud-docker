@@ -216,7 +216,7 @@ class ProductionBuilder implements BuilderInterface
                 'networks' => [
                     'magento-build' => [
                         'aliases' => [
-                            'web.magento2.docker',
+                            'build.magento2.docker',
                         ],
                     ],
                 ],
@@ -272,6 +272,12 @@ class ProductionBuilder implements BuilderInterface
                     'networks' => ['magento']
                 ],
                 $this->config->get(ServiceFactory::SERVICE_SELENIUM_IMAGE)
+            );
+            $services['test'] = $this->getCliService(
+                $phpVersion,
+                false,
+                $cliDepends,
+                'test.magento2.docker'
             );
         }
 
@@ -622,7 +628,7 @@ class ProductionBuilder implements BuilderInterface
      * @return array
      * @throws FilesystemException
      */
-    private function getMagentoVolumes(bool $isReadOnly = true) : array
+    protected function getMagentoVolumes(bool $isReadOnly = true): array
     {
         $volumes = $this->getDefaultMagentoVolumes($isReadOnly);
         $volumeConfiguration = $this->appReader->read()['mounts'];
