@@ -11,12 +11,12 @@ use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Environment\Converter;
-use Magento\CloudDocker\Config\Environment\Reader;
-use Magento\CloudDocker\Filesystem\DirectoryList;
+use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
+use Magento\CloudDocker\Config\Application\Reader as AppReader;
 
 /**
  * Docker functional test builder.
@@ -34,19 +34,19 @@ class FunctionalBuilder extends ProductionBuilder
      * @param ServiceFactory $serviceFactory
      * @param Config $serviceConfig
      * @param FileList $fileList
-     * @param DirectoryList $directoryList
      * @param Converter $converter
      * @param ExtensionResolver $phpExtension
-     * @param Reader $reader
+     * @param EnvReader $envReader
+     * @param AppReader $appReader
      */
     public function __construct(
         ServiceFactory $serviceFactory,
         Config $serviceConfig,
         FileList $fileList,
-        DirectoryList $directoryList,
         Converter $converter,
         ExtensionResolver $phpExtension,
-        Reader $reader
+        EnvReader $envReader,
+        AppReader $appReader
     ) {
         $this->fileList = $fileList;
 
@@ -54,10 +54,10 @@ class FunctionalBuilder extends ProductionBuilder
             $serviceFactory,
             $serviceConfig,
             $fileList,
-            $directoryList,
             $converter,
             $phpExtension,
-            $reader
+            $envReader,
+            $appReader
         );
     }
 
@@ -80,12 +80,15 @@ class FunctionalBuilder extends ProductionBuilder
 
         return $compose;
     }
+
     /**
      * @inheritDoc
      */
     public function setConfig(Repository $config): void
     {
         $config->set(self::KEY_NO_CRON, true);
+        $config->set(self::KEY_WITH_SELENIUM, false);
+        $config->set(self::KEY_NO_TMP_MOUNTS, true);
 
         parent::setConfig($config);
     }
@@ -93,7 +96,7 @@ class FunctionalBuilder extends ProductionBuilder
     /**
      * @inheritDoc
      */
-    protected function getMagentoVolumes(bool $isReadOnly): array
+    protected function getMagentoVolumes(bool $isReadOnly = true): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 
@@ -185,13 +188,5 @@ class FunctionalBuilder extends ProductionBuilder
             ['xsl', 'redis'],
             in_array($phpVersion, ['7.0', '7.1']) ? ['mcrypt'] : []
         ));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getDockerMount(): array
-    {
-        return [];
     }
 }
