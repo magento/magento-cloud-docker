@@ -5,12 +5,13 @@
  */
 declare(strict_types=1);
 
-namespace Magento\CloudDocker\Config;
+namespace Magento\CloudDocker\Config\Application;
 
 use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Symfony\Component\Yaml\Yaml;
+use Magento\CloudDocker\Config\ReaderInterface;
 
 /**
  * Read and combine infrastructure configuration.
@@ -68,7 +69,8 @@ class Reader implements ReaderInterface
             'runtime' => [
                 'extensions' => $appConfig['runtime']['extensions'] ?? [],
                 'disabled_extensions' => $appConfig['runtime']['disabled_extensions'] ?? []
-            ]
+            ],
+            'mounts' => $appConfig['mounts'] ?? []
         ];
 
         foreach ($appConfig['relationships'] as $constraint) {

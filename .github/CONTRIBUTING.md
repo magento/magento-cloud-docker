@@ -39,4 +39,3 @@ The full text is available in the repository [Wiki](https://github.com/magento/m
 If you have any questions, join us in [#cloud-docker](https://magentocommeng.slack.com/messages/CJ6F3F8NS) Slack chat. If you are not on our slack, [click here](http://tinyurl.com/engcom-slack) to join.
 
 Need to find a project? Check out the [Slack Channels](https://github.com/magento/magento2/wiki/Slack-Channels) (with listed project info) and the [Magento Community Portal](https://opensource.magento.com/).
-
