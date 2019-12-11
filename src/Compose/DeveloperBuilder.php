@@ -29,6 +29,11 @@ class DeveloperBuilder extends ProductionBuilder
     ];
 
     /**
+     * Cache Server which is used as TLS backend service address
+     */
+    public const TLS_BACKEND_SERVICE = 'web';
+
+    /**
      * @inheritDoc
      */
     public function setConfig(Repository $config): void

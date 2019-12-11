@@ -39,6 +39,11 @@ class ProductionBuilder implements BuilderInterface
     public const KEY_WITH_SELENIUM = 'with-selenium';
 
     /**
+     * Cache Server which is used as TLS backend service address
+     */
+    public const TLS_BACKEND_SERVICE = 'varnish';
+
+    /**
      * @var ServiceFactory
      */
     private $serviceFactory;
@@ -239,26 +244,31 @@ class ProductionBuilder implements BuilderInterface
                 ],
             ]
         );
-        $services['varnish'] = $this->serviceFactory->create(
-            ServiceFactory::SERVICE_VARNISH,
-            self::DEFAULT_VARNISH_VERSION,
-            [
-                'depends_on' => ['web'],
-                'networks' => [
-                    'magento' => [
-                        'aliases' => [
-                            'magento2.docker',
+
+        if (self::TLS_BACKEND_SERVICE == 'varnish') {
+            $services['varnish'] = $this->serviceFactory->create(
+                ServiceFactory::SERVICE_VARNISH,
+                self::DEFAULT_VARNISH_VERSION,
+                [
+                    'depends_on' => ['web'],
+                    'networks' => [
+                        'magento' => [
+                            'aliases' => [
+                                'magento2.docker',
+                            ],
                         ],
                     ],
-                ],
-            ]
-        );
+                ]
+            );
+        }
+
         $services['tls'] = $this->serviceFactory->create(
             ServiceFactory::SERVICE_TLS,
             self::DEFAULT_TLS_VERSION,
             [
                 'depends_on' => ['varnish'],
                 'networks' => ['magento'],
+                'environment' => ['HTTPS_UPSTREAM_SERVER_ADDRESS' => self::TLS_BACKEND_SERVICE],
             ]
         );
 
