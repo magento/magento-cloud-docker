@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Magento\CloudDocker\Config\Environment;
+namespace Magento\CloudDocker\Config\Environment\Shared;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
