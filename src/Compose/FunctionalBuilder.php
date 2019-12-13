@@ -171,7 +171,7 @@ class FunctionalBuilder implements BuilderInterface
                     ServiceFactory::SERVICE_NODE,
                     (string)$nodeVersion,
                     [
-                        'volumes' => $this->getMagentoVolumes($config, false)
+                        'volumes' => $this->getMagentoVolumes(false)
                     ]
                 ),
                 [self::NETWORK_MAGENTO],
@@ -199,7 +199,7 @@ class FunctionalBuilder implements BuilderInterface
                 ServiceFactory::SERVICE_FPM,
                 (string)$phpVersion,
                 [
-                    'volumes' => $this->getMagentoVolumes($config, true)
+                    'volumes' => $this->getMagentoVolumes(true)
                 ]
             ),
             [self::NETWORK_MAGENTO],
@@ -224,7 +224,7 @@ class FunctionalBuilder implements BuilderInterface
 
         $manager->addService(
             self::SERVICE_DEPLOY,
-            $this->getCliService($config, (string)$phpVersion, true),
+            $this->getCliService((string)$phpVersion, true),
             [self::NETWORK_MAGENTO],
             self::$cliDepends
         );
@@ -235,7 +235,7 @@ class FunctionalBuilder implements BuilderInterface
                 ServiceFactory::SERVICE_NGINX,
                 $config->get(ServiceInterface::NAME_NGINX, self::DEFAULT_NGINX_VERSION),
                 [
-                    'volumes' => $this->getMagentoVolumes($config, true)
+                    'volumes' => $this->getMagentoVolumes(true)
                 ]
             ),
             [self::NETWORK_MAGENTO],
@@ -299,7 +299,7 @@ class FunctionalBuilder implements BuilderInterface
     /**
      * @inheritDoc
      */
-    protected function getMagentoVolumes(Repository $config, bool $isReadOnly): array
+    protected function getMagentoVolumes(bool $isReadOnly): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 
@@ -355,14 +355,12 @@ class FunctionalBuilder implements BuilderInterface
     }
 
     /**
-     * @param Repository $config
      * @param string $version
      * @param bool $isReadOnly
      * @return array
      * @throws ConfigurationMismatchException
      */
     private function getCliService(
-        Repository $config,
         string $version,
         bool $isReadOnly
     ): array {
@@ -371,7 +369,7 @@ class FunctionalBuilder implements BuilderInterface
             $version,
             [
                 'volumes' => array_merge(
-                    $this->getMagentoVolumes($config, $isReadOnly),
+                    $this->getMagentoVolumes($isReadOnly),
                     $this->getComposerVolumes()
                 ),
             ]
@@ -387,5 +385,4 @@ class FunctionalBuilder implements BuilderInterface
             '~/.composer/cache:/root/.composer/cache:delegated',
         ];
     }
-
 }

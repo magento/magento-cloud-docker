@@ -9,6 +9,7 @@ namespace Magento\CloudDocker\Compose;
 
 use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Service\ServiceInterface;
 
 interface BuilderInterface
 {
@@ -32,9 +33,9 @@ interface BuilderInterface
     public const SERVICE_VARNISH = 'varnish';
     public const SERVICE_SELENIUM = 'selenium';
     public const SERVICE_TLS = 'tls';
-    public const SERVICE_RABBITMQ = 'rabbitmq';
-    public const SERVICE_REDIS = 'redis';
-    public const SERVICE_ELASTICSEARCH = 'elasticsearch';
+    public const SERVICE_RABBITMQ = ServiceInterface::NAME_RABBITMQ;
+    public const SERVICE_REDIS = ServiceInterface::NAME_REDIS;
+    public const SERVICE_ELASTICSEARCH = ServiceInterface::NAME_ELASTICSEARCH;
     public const SERVICE_NODE = 'node';
     public const SERVICE_CRON = 'cron';
     public const SERVICE_TEST = 'test';
