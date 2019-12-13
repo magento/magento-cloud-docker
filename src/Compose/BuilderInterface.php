@@ -37,6 +37,9 @@ interface BuilderInterface
     public const SERVICE_ELASTICSEARCH = 'elasticsearch';
     public const SERVICE_NODE = 'node';
     public const SERVICE_CRON = 'cron';
+    public const SERVICE_TEST = 'test';
+    public const SERVICE_VOLUMES_RO = 'volumes-ro';
+    public const SERVICE_VOLUMES_RW = 'volumes-rw';
 
     public const NETWORK_MAGENTO = 'magento';
     public const NETWORK_MAGENTO_BUILD = 'magento-build';
@@ -54,7 +57,9 @@ interface BuilderInterface
     public const VOLUME_DOCKER_MNT = 'docker-mnt';
 
     /**
-     * @return array
+     * @param Repository $config
+     * @return Manager
+     *
      * @throws ConfigurationMismatchException
      */
     public function build(Repository $config): Manager;

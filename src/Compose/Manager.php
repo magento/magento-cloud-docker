@@ -119,9 +119,16 @@ class Manager
      */
     public function getVolumes(): array
     {
-        ksort($this->volumes);
-
         return $this->volumes;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasVolume(string $name): bool
+    {
+        return isset($this->volumes[$name]);
     }
 
     /**

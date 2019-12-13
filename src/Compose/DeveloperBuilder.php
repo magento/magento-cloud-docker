@@ -84,27 +84,20 @@ class DeveloperBuilder implements BuilderInterface
             ];
         }
 
-        $manager->setVolumes([
+        $volumes = [
             self::VOLUME_MAGENTO_SYNC => $syncConfig,
             self::VOLUME_MAGENTO_DB => []
-        ]);
+        ];
+
+        if ($manager->hasVolume(self::VOLUME_MAGENTO_DEV)) {
+            $volumes[self::VOLUME_MAGENTO_DEV] = [];
+        }
+
+        $manager->setVolumes($volumes);
 
         $manager->updateServices([
-            self::SERVICE_BUILD => [
-                'volumes' => $this->getMagentoVolumes($config)
-            ],
-            self::SERVICE_DEPLOY => [
-                'volumes' => $this->getMagentoVolumes($config)
-            ],
-            self::SERVICE_FPM => [
-                'volumes' => $this->getMagentoVolumes($config)
-            ],
-            self::SERVICE_DB => [
-                'volumes' => $this->getMagentoVolumes($config)
-            ],
-            self::SERVICE_WEB => [
-                'volumes' => $this->getMagentoVolumes($config)
-            ]
+            self::SERVICE_VOLUMES_RO => ['volumes' => $this->getMagentoVolumes($config)],
+            self::SERVICE_VOLUMES_RW => ['volumes' => $this->getMagentoVolumes($config)]
         ]);
 
         if (!$config->get(self::KEY_NO_CRON, false)) {
