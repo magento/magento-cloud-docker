@@ -11,11 +11,13 @@ use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
+use Magento\CloudDocker\Config\Application\Reader as AppReader;
 
 /**
  * Production compose configuration.
@@ -71,9 +73,14 @@ class ProductionBuilder implements BuilderInterface
     private $phpExtension;
 
     /**
-     * @var Reader
+     * @var EnvReader
      */
-    private $reader;
+    private $envReader;
+
+    /**
+     * @var AppReader
+     */
+    private $appReader;
 
     /**
      * @var ManagerFactory
@@ -100,18 +107,20 @@ class ProductionBuilder implements BuilderInterface
         FileList $fileList,
         Converter $converter,
         ExtensionResolver $phpExtension,
-        Reader $reader,
         ManagerFactory $managerFactory,
-        Resolver $resolver
+        Resolver $resolver,
+        EnvReader $envReader,
+        AppReader $appReader
     ) {
         $this->serviceFactory = $serviceFactory;
         $this->serviceConfig = $serviceConfig;
         $this->fileList = $fileList;
         $this->converter = $converter;
         $this->phpExtension = $phpExtension;
-        $this->reader = $reader;
         $this->managerFactory = $managerFactory;
         $this->resolver = $resolver;
+        $this->envReader = $envReader;
+        $this->appReader = $appReader;
     }
 
     /**
@@ -315,6 +324,12 @@ class ProductionBuilder implements BuilderInterface
                 ),
                 [self::NETWORK_MAGENTO],
                 [self::SERVICE_WEB => []]
+            );
+            $services['test'] = $this->getCliService(
+                $phpVersion,
+                false,
+                $cliDepends,
+                'test.magento2.docker'
             );
         }
 
@@ -564,5 +579,28 @@ class ProductionBuilder implements BuilderInterface
             self::VOLUME_DOCKER_MNT . ':/mnt',
             self::VOLUME_DOCKER_TMP . ':/tmp'
         ];
+    }
+
+    /**
+     * Retrieve configured volumes.
+     *
+     * @param bool $isReadOnly
+     * @return array
+     * @throws FilesystemException
+     */
+    protected function getMagentoVolumes(bool $isReadOnly = true): array
+    {
+        $volumes = $this->getDefaultMagentoVolumes($isReadOnly);
+        $volumeConfiguration = $this->appReader->read()['mounts'];
+
+        foreach (array_keys($volumeConfiguration) as $volume) {
+            $volumes[] = sprintf(
+                '%s:%s:delegated',
+                'magento-' . str_replace('/', '-', $volume),
+                self::DIR_MAGENTO . '/' . $volume
+            );
+        }
+
+        return $volumes;
     }
 }
