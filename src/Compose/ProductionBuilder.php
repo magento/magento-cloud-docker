@@ -11,7 +11,6 @@ use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Config\Environment\Reader;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\Config;
@@ -82,6 +81,11 @@ class ProductionBuilder implements BuilderInterface
     private $managerFactory;
 
     /**
+     * @var Resolver
+     */
+    private $resolver;
+
+    /**
      * @param ServiceFactory $serviceFactory
      * @param Config $serviceConfig
      * @param FileList $fileList
@@ -97,7 +101,8 @@ class ProductionBuilder implements BuilderInterface
         Converter $converter,
         ExtensionResolver $phpExtension,
         Reader $reader,
-        ManagerFactory $managerFactory
+        ManagerFactory $managerFactory,
+        Resolver $resolver
     ) {
         $this->serviceFactory = $serviceFactory;
         $this->serviceConfig = $serviceConfig;
@@ -106,6 +111,7 @@ class ProductionBuilder implements BuilderInterface
         $this->phpExtension = $phpExtension;
         $this->reader = $reader;
         $this->managerFactory = $managerFactory;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -128,10 +134,12 @@ class ProductionBuilder implements BuilderInterface
         $manager->addNetwork(self::NETWORK_MAGENTO, ['driver' => 'bridge']);
         $manager->addNetwork(self::NETWORK_MAGENTO_BUILD, ['driver' => 'bridge']);
 
+        $rootPath = $this->resolver->getRootPath();
+
         $manager->addVolume(self::VOLUME_MAGENTO, [
             'driver_opts' => [
                 'type' => 'none',
-                'device' => $this->getRootPath(),
+                'device' => $rootPath,
                 'o' => 'bind'
             ]
         ]);
@@ -153,14 +161,14 @@ class ProductionBuilder implements BuilderInterface
             $manager->addVolume(self::VOLUME_DOCKER_TMP, [
                 'driver_opts' => [
                     'type' => 'none',
-                    'device' => $this->getRootPath() . '/.docker/tmp',
+                    'device' => $rootPath . '/.docker/tmp',
                     'o' => 'bind'
                 ]
             ]);
             $manager->addVolume(self::VOLUME_DOCKER_MNT, [
                 'driver_opts' => [
                     'type' => 'none',
-                    'device' => $this->getRootPath() . '/.docker/mnt',
+                    'device' => $rootPath . '/.docker/mnt',
                     'o' => 'bind'
                 ]
             ]);
@@ -443,23 +451,6 @@ class ProductionBuilder implements BuilderInterface
     public function getPath(): string
     {
         return $this->fileList->getMagentoDockerCompose();
-    }
-
-    /**
-     * @return string
-     */
-    private function getRootPath(): string
-    {
-        /**
-         * For Windows we'll define variable in .env file
-         *
-         * WINDOWS_PWD=//C/www/my-project
-         */
-        if (stripos(PHP_OS, 'win') === 0) {
-            return '${WINDOWS_PWD}';
-        }
-
-        return '${PWD}';
     }
 
     /**

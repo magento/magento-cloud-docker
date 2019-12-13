@@ -41,16 +41,21 @@ class DeveloperBuilder implements BuilderInterface
      */
     private $fileList;
 
-    private $config;
+    /**
+     * @var Resolver
+     */
+    private $resolver;
 
     /**
      * @param BuilderFactory $builderFactory
      * @param FileList $fileList
+     * @param Resolver $resolver
      */
-    public function __construct(BuilderFactory $builderFactory, FileList $fileList)
+    public function __construct(BuilderFactory $builderFactory, FileList $fileList, Resolver $resolver)
     {
         $this->builderFactory = $builderFactory;
         $this->fileList = $fileList;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -73,14 +78,13 @@ class DeveloperBuilder implements BuilderInterface
             $syncConfig = [
                 'driver_opts' => [
                     'type' => 'none',
-                    'device' => $this->getRootPath(),
+                    'device' => $this->resolver->getRootPath(),
                     'o' => 'bind'
                 ]
             ];
         }
 
-        $manager->cleanVolumes();
-        $manager->addVolumes([
+        $manager->setVolumes([
             self::VOLUME_MAGENTO_SYNC => $syncConfig,
             self::VOLUME_MAGENTO_DB => []
         ]);
@@ -135,22 +139,5 @@ class DeveloperBuilder implements BuilderInterface
         return [
             self::VOLUME_MAGENTO_SYNC . ':' . $target
         ];
-    }
-
-    /**
-     * @return string
-     */
-    private function getRootPath(): string
-    {
-        /**
-         * For Windows we'll define variable in .env file
-         *
-         * WINDOWS_PWD=//C/www/my-project
-         */
-        if (stripos(PHP_OS, 'win') === 0) {
-            return '${WINDOWS_PWD}';
-        }
-
-        return '${PWD}';
     }
 }

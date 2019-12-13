@@ -106,9 +106,12 @@ class Manager
         }
     }
 
-    public function cleanVolumes(): void
+    /**
+     * @param array $volumes
+     */
+    public function setVolumes(array $volumes): void
     {
-        $this->volumes = [];
+        $this->volumes = $volumes;
     }
 
     /**
