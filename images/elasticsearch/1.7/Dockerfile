@@ -4,8 +4,8 @@ RUN echo "xpack.security.enabled: false" >> /usr/share/elasticsearch/config/elas
 RUN plugin --install elasticsearch/elasticsearch-analysis-icu/2.7.0 && \
     plugin --install elasticsearch/elasticsearch-analysis-phonetic/2.7.0
 
-COPY docker-healthcheck /usr/local/bin/
+ADD docker-healthcheck.sh /docker-healthcheck.sh
 
-HEALTHCHECK CMD ["docker-healthcheck"]
+HEALTHCHECK --retries=3 CMD ["sh", "/docker-healthcheck.sh"]
 
 EXPOSE 9200 9300
