@@ -78,16 +78,6 @@ class Manager
     }
 
     /**
-     * @param array $services
-     */
-    public function updateServices(array $services): void
-    {
-        foreach ($services as $name => $extConfig) {
-            $this->updateService($name, $extConfig);
-        }
-    }
-
-    /**
      * @param string $name
      * @param array $config
      */
@@ -120,15 +110,6 @@ class Manager
     public function getVolumes(): array
     {
         return $this->volumes;
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function hasVolume(string $name): bool
-    {
-        return isset($this->volumes[$name]);
     }
 
     /**

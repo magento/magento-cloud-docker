@@ -53,7 +53,7 @@ class ProductionBuilder implements BuilderInterface
     private static $standaloneServices = [
         self::SERVICE_REDIS,
         self::SERVICE_ELASTICSEARCH,
-        self::SERVICE_RABBITMQ
+        self::SERVICE_RABBITMQ,
     ];
 
     /**
@@ -173,15 +173,13 @@ class ProductionBuilder implements BuilderInterface
                 'o' => 'bind'
             ]
         ]);
-        $manager->addVolumes([
-            self::VOLUME_MAGENTO_DB => []
-        ]);
+        $manager->addVolume(self::VOLUME_MAGENTO_DB, []);
 
         if ($this->hasSelenium($config)) {
             $manager->addVolume(self::VOLUME_MAGENTO_DEV, []);
         }
 
-        if (!$config->get(self::KEY_NO_TMP_MOUNTS)) {
+        if ($this->getMountVolumes($config)) {
             $manager->addVolume(self::VOLUME_DOCKER_TMP, [
                 'driver_opts' => [
                     'type' => 'none',
@@ -197,6 +195,20 @@ class ProductionBuilder implements BuilderInterface
                 ]
             ]);
         }
+
+        $volumesBuild = array_merge(
+            $this->getDefaultMagentoVolumes(false),
+            $this->getComposerVolumes()
+        );
+        $volumesRo = array_merge(
+            $this->getMagentoVolumes($config, true),
+            $this->getComposerVolumes()
+        );
+        $volumesRw = array_merge(
+            $this->getMagentoVolumes($config, false),
+            $this->getMountVolumes($config),
+            $this->getComposerVolumes()
+        );
 
         $manager->addService(
             self::SERVICE_DB,
@@ -224,10 +236,7 @@ class ProductionBuilder implements BuilderInterface
             if ($serviceVersion) {
                 $manager->addService(
                     $service,
-                    $this->serviceFactory->create(
-                        (string)$service,
-                        (string)$serviceVersion
-                    ),
+                    $this->serviceFactory->create((string)$service, (string)$serviceVersion),
                     [self::NETWORK_MAGENTO],
                     []
                 );
@@ -239,11 +248,7 @@ class ProductionBuilder implements BuilderInterface
         if ($nodeVersion) {
             $manager->addService(
                 self::SERVICE_NODE,
-                $this->serviceFactory->create(
-                    ServiceFactory::SERVICE_NODE,
-                    $nodeVersion,
-                    ['volumes_from' => [self::SERVICE_VOLUMES_RO]]
-                ),
+                $this->serviceFactory->create(ServiceFactory::SERVICE_NODE, $nodeVersion, ['volumes' => $volumesRo]),
                 [self::NETWORK_MAGENTO],
                 []
             );
@@ -251,11 +256,7 @@ class ProductionBuilder implements BuilderInterface
 
         $manager->addService(
             self::SERVICE_FPM,
-            $this->serviceFactory->create(
-                ServiceFactory::SERVICE_FPM,
-                $phpVersion,
-                ['volumes_from' => [self::SERVICE_VOLUMES_RO]]
-            ),
+            $this->serviceFactory->create(ServiceFactory::SERVICE_FPM, $phpVersion, ['volumes' => $volumesRo]),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_DB => []]
         );
@@ -264,7 +265,7 @@ class ProductionBuilder implements BuilderInterface
             $this->serviceFactory->create(
                 ServiceFactory::SERVICE_NGINX,
                 $config->get(ServiceInterface::NAME_NGINX, self::DEFAULT_NGINX_VERSION),
-                ['volumes_from' => [self::SERVICE_VOLUMES_RO]]
+                ['volumes' => $volumesRo]
             ),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_FPM => []]
@@ -287,10 +288,7 @@ class ProductionBuilder implements BuilderInterface
         );
         $manager->addService(
             self::SERVICE_TLS,
-            $this->serviceFactory->create(
-                ServiceFactory::SERVICE_TLS,
-                self::DEFAULT_TLS_VERSION
-            ),
+            $this->serviceFactory->create(ServiceFactory::SERVICE_TLS, self::DEFAULT_TLS_VERSION),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_VARNISH => []]
         );
@@ -309,11 +307,7 @@ class ProductionBuilder implements BuilderInterface
             );
             $manager->addService(
                 self::SERVICE_TEST,
-                $this->serviceFactory->create(
-                    ServiceFactory::SERVICE_CLI,
-                    $phpVersion,
-                    ['volumes_from' => [self::SERVICE_VOLUMES_RW]]
-                ),
+                $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $phpVersion, ['volumes' => $volumesRw]),
                 [self::NETWORK_MAGENTO],
                 self::$cliDepends
             );
@@ -341,26 +335,13 @@ class ProductionBuilder implements BuilderInterface
         );
         $manager->addService(
             self::SERVICE_BUILD,
-            $this->serviceFactory->create(
-                ServiceFactory::SERVICE_CLI,
-                $phpVersion,
-                [
-                    'volumes' => array_merge(
-                        $this->getDefaultMagentoVolumes(false),
-                        $this->getComposerVolumes()
-                    )
-                ]
-            ),
+            $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $phpVersion, ['volumes' => $volumesBuild]),
             [self::NETWORK_MAGENTO_BUILD],
             self::$cliDepends
         );
         $manager->addService(
             self::SERVICE_DEPLOY,
-            $this->serviceFactory->create(
-                ServiceFactory::SERVICE_CLI,
-                $phpVersion,
-                ['volumes_from' => [self::SERVICE_VOLUMES_RO]]
-            ),
+            $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $phpVersion, ['volumes' => $volumesRo]),
             [self::NETWORK_MAGENTO],
             self::$cliDepends
         );
@@ -368,42 +349,14 @@ class ProductionBuilder implements BuilderInterface
         if (!$config->get(self::KEY_NO_CRON, false)) {
             $manager->addService(
                 self::SERVICE_CRON,
-                $this->getCronCliService($phpVersion),
+                array_merge(
+                    $this->getCronCliService($phpVersion),
+                    ['volumes' => $volumesRo]
+                ),
                 [self::NETWORK_MAGENTO],
                 self::$cliDepends
             );
         }
-        $manager->addService(
-            self::SERVICE_VOLUMES_RO,
-            $this->serviceFactory->create(
-                ServiceFactory::SERVICE_GENERIC,
-                '',
-                [
-                    'volumes' => array_merge(
-                        $this->getMagentoVolumes($config, true),
-                        $this->getComposerVolumes()
-                    )
-                ]
-            ),
-            [],
-            []
-        );
-        $manager->addService(
-            self::SERVICE_VOLUMES_RW,
-            $this->serviceFactory->create(
-                ServiceFactory::SERVICE_GENERIC,
-                '',
-                [
-                    'volumes' => array_merge(
-                        $this->getMagentoVolumes($config, false),
-                        $this->getMountVolumes($config),
-                        $this->getComposerVolumes()
-                    ),
-                ]
-            ),
-            [],
-            []
-        );
 
         return $manager;
     }
@@ -426,14 +379,7 @@ class ProductionBuilder implements BuilderInterface
      */
     private function getCronCliService(string $version): array
     {
-        $config = $this->serviceFactory->create(
-            ServiceFactory::SERVICE_CLI,
-            $version,
-            [
-                'command' => 'run-cron',
-                'volumes_from' => [self::SERVICE_VOLUMES_RO]
-            ]
-        );
+        $config = $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $version, ['command' => 'run-cron']);
 
         if ($cronConfig = $this->serviceConfig->getCron()) {
             $preparedCronConfig = [];
@@ -512,13 +458,12 @@ class ProductionBuilder implements BuilderInterface
     private function getDefaultMagentoVolumes(bool $isReadOnly): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
-        $volumes = [
+
+        return [
             self::VOLUME_MAGENTO . ':' . self::DIR_MAGENTO . $flag,
             self::VOLUME_MAGENTO_VENDOR . ':' . self::DIR_MAGENTO . '/vendor' . $flag,
             self::VOLUME_MAGENTO_GENERATED . ':' . self::DIR_MAGENTO . '/generated' . $flag,
         ];
-
-        return $volumes;
     }
 
     /**

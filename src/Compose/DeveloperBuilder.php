@@ -88,10 +88,20 @@ class DeveloperBuilder implements BuilderInterface
             self::VOLUME_MAGENTO_SYNC => $syncConfig,
             self::VOLUME_MAGENTO_DB => []
         ]);
-        $manager->updateServices([
-            self::SERVICE_VOLUMES_RO => ['volumes' => $this->getMagentoVolumes($config)],
-            self::SERVICE_VOLUMES_RW => ['volumes' => $this->getMagentoVolumes($config)]
-        ]);
+
+        /**
+         * Gather all services except DB with specific volumes.
+         */
+        $services = array_diff_key(array_keys($manager->getServices()), [self::SERVICE_DB => []]);
+        $volumes = $this->getMagentoVolumes($config);
+
+        foreach ($services as $sName => $sConfig) {
+            if (empty($config['volumes'])) {
+                continue;
+            }
+
+            $manager->updateService($sName, ['volumes' => $volumes]);
+        }
 
         return $manager;
     }
