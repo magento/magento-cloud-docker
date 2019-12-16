@@ -82,7 +82,11 @@ class FunctionalBuilder implements BuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function build(Repository $config): Manager
     {

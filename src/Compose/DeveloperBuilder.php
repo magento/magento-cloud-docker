@@ -95,12 +95,16 @@ class DeveloperBuilder implements BuilderInterface
         $services = array_diff_key(array_keys($manager->getServices()), [self::SERVICE_DB => []]);
         $volumes = $this->getMagentoVolumes($config);
 
+        /**
+         * @var string $sName
+         * @var array $sConfig
+         */
         foreach ($services as $sName => $sConfig) {
-            if (empty($config['volumes'])) {
+            if (empty($sConfig['volumes'])) {
                 continue;
             }
 
-            $manager->updateService($sName, ['volumes' => $volumes]);
+            $manager->updateService((string)$sName, ['volumes' => $volumes]);
         }
 
         return $manager;

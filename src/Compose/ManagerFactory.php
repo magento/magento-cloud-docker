@@ -7,6 +7,11 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
+/**
+ * Creates instance of Manager
+ *
+ * @see Manager
+ */
 class ManagerFactory
 {
     public function create(): Manager

@@ -23,6 +23,8 @@ use Magento\CloudDocker\Service\ServiceInterface;
  * Production compose configuration.
  *
  * @codeCoverageIgnore
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class ProductionBuilder implements BuilderInterface
 {
@@ -156,45 +158,46 @@ class ProductionBuilder implements BuilderInterface
 
         $rootPath = $this->resolver->getRootPath();
 
-        foreach ($this->getMagentoVolumes($config, false) as $volume) {
-            $volumeConfig = explode(':', $volume);
-            $volumeName = reset($volumeConfig);
-
-            $manager->addVolume(
-                $volumeName,
-                $volumes[$volumeName] ?? []
-            );
-        }
-
-        $manager->addVolume(self::VOLUME_MAGENTO, [
-            'driver_opts' => [
-                'type' => 'none',
-                'device' => $rootPath,
-                'o' => 'bind'
-            ]
-        ]);
-        $manager->addVolume(self::VOLUME_MAGENTO_DB, []);
+        $volumes = [
+            self::VOLUME_MAGENTO => [
+                'driver_opts' => [
+                    'type' => 'none',
+                    'device' => $rootPath,
+                    'o' => 'bind'
+                ]
+            ],
+            self::VOLUME_MAGENTO_DB => []
+        ];
 
         if ($this->hasSelenium($config)) {
             $manager->addVolume(self::VOLUME_MAGENTO_DEV, []);
         }
 
         if ($this->getMountVolumes($config)) {
-            $manager->addVolume(self::VOLUME_DOCKER_TMP, [
+            $volumes[self::VOLUME_DOCKER_TMP] = [
                 'driver_opts' => [
                     'type' => 'none',
                     'device' => $rootPath . '/.docker/tmp',
                     'o' => 'bind'
                 ]
-            ]);
-            $manager->addVolume(self::VOLUME_DOCKER_MNT, [
+            ];
+            $volumes[self::VOLUME_DOCKER_MNT] = [
                 'driver_opts' => [
                     'type' => 'none',
                     'device' => $rootPath . '/.docker/mnt',
                     'o' => 'bind'
                 ]
-            ]);
+            ];
         }
+
+        foreach ($this->getMagentoVolumes($config, false) as $volume) {
+            $volumeConfig = explode(':', $volume);
+            $volumeName = reset($volumeConfig);
+
+            $volumes[$volumeName] = $volumes[$volumeName] ?? [];
+        }
+
+        $manager->addVolumes($volumes);
 
         $volumesBuild = array_merge(
             $this->getDefaultMagentoVolumes(false),
@@ -202,7 +205,7 @@ class ProductionBuilder implements BuilderInterface
         );
         $volumesRo = array_merge(
             $this->getMagentoVolumes($config, true),
-            $this->getComposerVolumes()
+            $this->getMountVolumes($config)
         );
         $volumesRw = array_merge(
             $this->getMagentoVolumes($config, false),
@@ -449,7 +452,6 @@ class ProductionBuilder implements BuilderInterface
     {
         return $this->serviceConfig->getServiceVersion($serviceName);
     }
-
 
     /**
      * @param bool $isReadOnly

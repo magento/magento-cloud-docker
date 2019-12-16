@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
+/**
+ * Compose configuration manager
+ */
 class Manager
 {
     public const DOMAIN = 'magento2.docker';

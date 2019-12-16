@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
+/**
+ * Resolver for system configuration.
+ */
 class Resolver
 {
     public function getRootPath(): string
