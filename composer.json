@@ -23,14 +23,17 @@
         "phpmd/phpmd": "@stable",
         "phpstan/phpstan": "^0.11",
         "phpunit/phpunit": "^7.2",
-        "squizlabs/php_codesniffer": "^3.0"
+        "squizlabs/php_codesniffer": "^3.0",
+        "codeception/codeception": "^2.5.3",
+        "consolidation/robo": "^1.2"
     },
     "bin": [
         "bin/ece-docker"
     ],
     "autoload": {
         "psr-4": {
-            "Magento\\CloudDocker\\": "src/"
+            "Magento\\CloudDocker\\": "src/",
+            "Magento\\CloudDocker\\Test\\Functional\\": "tests/functional/"
         }
     },
     "scripts": {

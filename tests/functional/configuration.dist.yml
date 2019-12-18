@@ -1,0 +1,19 @@
+Magento:
+  docker:
+    settings:
+      db:
+        host: 'db.magento2.docker'
+        port: '3306'
+        username: 'magento2'
+        password: 'magento2'
+        path: 'magento2'
+      repo:
+        url: 'https://github.com/magento/magento-cloud'
+        branch: 'master'
+      system:
+          magento_dir: '/app'
+          ece_dir: '/ece-tools'
+      env:
+        url:
+          base: 'http://magento2.docker/'
+          secure_base: 'https://magento2.docker/'
