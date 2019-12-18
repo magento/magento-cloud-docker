@@ -322,7 +322,7 @@ class Docker extends Module implements BuilderAwareInterface, ContainerAwareInte
             ]
         ];
         $config = json_decode(
-            file_get_contents(__DIR__ . '/../../../composer.json'),
+            file_get_contents(codecept_root_dir('composer.json')),
             true
         );
 
