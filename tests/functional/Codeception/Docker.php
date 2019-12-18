@@ -368,7 +368,7 @@ class Docker extends Module implements BuilderAwareInterface, ContainerAwareInte
         $commands = [];
         $repoConfig = [
             'type' => 'path',
-            'url' => $this->_getConfig('system_ece_tools_dir') . '/tests/functional/_data/packages/ece-tools-extend'
+            'url' => codecept_data_dir('packages/ece-tools-extend')
         ];
 
         $commands[] = $this->taskComposerConfig('composer')
@@ -487,7 +487,7 @@ class Docker extends Module implements BuilderAwareInterface, ContainerAwareInte
     public function uploadToContainer(string $source, string $destination, string $container): bool
     {
         if (strpos($source, '/') !== 0) {
-            $source = Configuration::dataDir() . $source;
+            $source = codecept_data_dir($source);
         }
 
         /** @var Result $result */
