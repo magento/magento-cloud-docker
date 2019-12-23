@@ -29,7 +29,7 @@ sub vcl_recv {
     }
 
     # Bypass debug session
-    if (req.http.Cookie ~ "(^|;\s*)(XDEBUG_SESSION=PHPSTORM)(;|$)") {
+    if (req.http.Cookie ~ "(^|;\s*)(XDEBUG_SESSION=.*)(;|$)") {
         return (pass);
     }
 
