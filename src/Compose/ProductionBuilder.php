@@ -34,6 +34,7 @@ class ProductionBuilder implements BuilderInterface
     public const SERVICE_PHP_FPM = ServiceFactory::SERVICE_FPM;
 
     public const KEY_NO_CRON = 'no-cron';
+    public const KEY_NO_VARNISH = 'no-varnish';
     public const KEY_EXPOSE_DB_PORT = 'expose-db-port';
     public const KEY_NO_TMP_MOUNTS = 'no-tmp-mounts';
     public const KEY_WITH_SELENIUM = 'with-selenium';
@@ -245,7 +246,7 @@ class ProductionBuilder implements BuilderInterface
             ]
         );
 
-        if (self::TLS_BACKEND_SERVICE == 'varnish') {
+        if (!$this->config->get(self::KEY_NO_VARNISH, false)) {
             $services['varnish'] = $this->serviceFactory->create(
                 ServiceFactory::SERVICE_VARNISH,
                 self::DEFAULT_VARNISH_VERSION,
@@ -262,13 +263,14 @@ class ProductionBuilder implements BuilderInterface
             );
         }
 
+        $tlsBackendService = $this->config->get(self::KEY_NO_VARNISH, false) ? 'web' : 'varnish';
         $services['tls'] = $this->serviceFactory->create(
             ServiceFactory::SERVICE_TLS,
             self::DEFAULT_TLS_VERSION,
             [
-                'depends_on' => ['varnish'],
+                'depends_on' => [$tlsBackendService],
                 'networks' => ['magento'],
-                'environment' => ['HTTPS_UPSTREAM_SERVER_ADDRESS' => self::TLS_BACKEND_SERVICE],
+                'environment' => ['HTTPS_UPSTREAM_SERVER_ADDRESS' => $tlsBackendService],
             ]
         );
 

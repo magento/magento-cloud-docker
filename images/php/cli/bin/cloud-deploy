@@ -8,7 +8,7 @@ echo "Running \"deploy\" hook."
 
 run-hooks deploy
 
-if [[ "$MAGENTO_RUN_MODE" == "production" ]]; then
+# check that Varnish exists and then run
     minor_magento_version=$(magento-command --version | sed "s/Magento CLI \([0-9]*\.[0-9]*\).*/\1/")
     if [[ "$minor_magento_version" != "2.1" ]]; then
         echo "Setting Varnish for FPC."
@@ -20,6 +20,6 @@ if [[ "$MAGENTO_RUN_MODE" == "production" ]]; then
             echo $output
         fi
     fi
-fi
+
 
 echo "Deployment finished."

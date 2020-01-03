@@ -51,6 +51,7 @@ class BuildCompose extends Command
     private const OPTION_MODE = 'mode';
     private const OPTION_SYNC_ENGINE = 'sync-engine';
     private const OPTION_NO_CRON = 'no-cron';
+    private const OPTION_NO_VARNISH = 'no-varnish';
     private const OPTION_WITH_SELENIUM = 'with-selenium';
 
     /**
@@ -215,6 +216,12 @@ class BuildCompose extends Command
                 'Remove cron container'
             )
             ->addOption(
+                self::OPTION_NO_VARNISH,
+                null,
+                InputOption::VALUE_NONE,
+                'Remove Varnish container'
+            )
+            ->addOption(
                 self::OPTION_WITH_SELENIUM,
                 null,
                 InputOption::VALUE_NONE
@@ -255,6 +262,7 @@ class BuildCompose extends Command
         $config->set([
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
             ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON),
+            ProductionBuilder::KEY_NO_VARNISH => $input->getOption(self::OPTION_NO_VARNISH),
             ProductionBuilder::KEY_WITH_SELENIUM => $input->getOption(self::OPTION_WITH_SELENIUM)
         ]);
 
