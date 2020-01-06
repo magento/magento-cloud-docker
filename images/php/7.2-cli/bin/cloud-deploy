@@ -9,8 +9,7 @@ echo "Running \"deploy\" hook."
 run-hooks deploy
 
 # check that Varnish exists
-varnish=$(curl -I varnish 2>&1 | grep -i "magento2")
-if [[ $varnish ]]; then
+if ( varnish=$(icurl -I varnish 2>&1 | grep -i "magento2") ); then
     minor_magento_version=$(magento-command --version | sed "s/Magento CLI \([0-9]*\.[0-9]*\).*/\1/")
     if [[ "$minor_magento_version" != "2.1" ]]; then
         echo "Setting Varnish for Magento FPC."
