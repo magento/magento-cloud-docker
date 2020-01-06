@@ -92,7 +92,7 @@ class DeveloperBuilder implements BuilderInterface
         /**
          * Gather all services except DB with specific volumes.
          */
-        $services = array_diff_key(array_keys($manager->getServices()), [self::SERVICE_DB => []]);
+        $services = $manager->getServices();
         $volumes = $this->getMagentoVolumes($config);
 
         /**
@@ -104,8 +104,18 @@ class DeveloperBuilder implements BuilderInterface
                 continue;
             }
 
-            $manager->updateService((string)$sName, ['volumes' => $volumes]);
+            $manager->updateService($sName, ['volumes' => $volumes]);
         }
+
+        $manager->updateService(self::SERVICE_DB, [
+            'volumes' => array_merge(
+                $volumes,
+                [
+                    self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+                    '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
+                ]
+            )
+        ]);
 
         return $manager;
     }
