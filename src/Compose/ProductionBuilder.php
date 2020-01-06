@@ -40,11 +40,6 @@ class ProductionBuilder implements BuilderInterface
     public const KEY_WITH_SELENIUM = 'with-selenium';
 
     /**
-     * Cache Server which is used as TLS backend service address
-     */
-    public const TLS_BACKEND_SERVICE = 'varnish';
-
-    /**
      * @var ServiceFactory
      */
     private $serviceFactory;

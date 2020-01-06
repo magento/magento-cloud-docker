@@ -94,9 +94,6 @@ class ServiceFactory
                 'ports' => [
                     '443:443'
                 ],
-                'external_links' => [
-                    'varnish:varnish'
-                ]
             ]
         ],
         self::SERVICE_REDIS => [
