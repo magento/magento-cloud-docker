@@ -28,6 +28,11 @@ sub vcl_recv {
         return (synth(200, "Purged"));
     }
 
+    # Bypass debug session
+    if (req.http.Cookie ~ "(^|;\s*)(XDEBUG_SESSION=.*)(;|$)") {
+        return (pass);
+    }
+
     if (req.method != "GET" &&
         req.method != "HEAD" &&
         req.method != "PUT" &&
