@@ -273,7 +273,8 @@ class ProductionBuilder implements BuilderInterface
             [self::NETWORK_MAGENTO],
             [self::SERVICE_FPM => []]
         );
-        if (!$this->config->get(self::KEY_NO_VARNISH, false)) {
+
+        if (!$config->get(self::KEY_NO_VARNISH, false)) {
             $manager->addService(
                 self::SERVICE_VARNISH,
                 $this->serviceFactory->create(
@@ -292,21 +293,18 @@ class ProductionBuilder implements BuilderInterface
             );
         }
 
-        $tlsBackendService = $this->config->get(self::KEY_NO_VARNISH, false) ? 'web' : 'varnish';
-        /**  $services['tls'] = $this->serviceFactory->create(
-            ServiceFactory::SERVICE_TLS,
-            self::DEFAULT_TLS_VERSION,
-            [
-                'depends_on' => [$tlsBackendService],
-                'networks' => ['magento'],
-                'environment' => ['HTTPS_UPSTREAM_SERVER_ADDRESS' => $tlsBackendService],
-            ]
-        );*/
+        $tlsBackendService = $config->get(self::KEY_NO_VARNISH, false) ? self::SERVICE_WEB : self::SERVICE_VARNISH;
         $manager->addService(
             self::SERVICE_TLS,
-            $this->serviceFactory->create(ServiceFactory::SERVICE_TLS, self::DEFAULT_TLS_VERSION),
+            $this->serviceFactory->create(
+                ServiceFactory::SERVICE_TLS,
+                self::DEFAULT_TLS_VERSION,
+                [
+                    'environment' => ['HTTPS_UPSTREAM_SERVER_ADDRESS' => $tlsBackendService],
+                ]
+            ),
             [self::NETWORK_MAGENTO],
-            [self::SERVICE_VARNISH => []]
+            [$tlsBackendService => []]
         );
 
         if ($this->hasSelenium($config)) {
