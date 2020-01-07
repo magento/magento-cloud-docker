@@ -70,13 +70,7 @@ class ServiceFactory
             'image' => 'magento/magento-cloud-docker-nginx',
             'pattern' => self::PATTERN_VERSIONED,
             'config' => [
-                'extends' => self::SERVICE_GENERIC
-            ]
-        ],
-        self::SERVICE_VARNISH => [
-            'image' => 'magento/magento-cloud-docker-varnish',
-            'pattern' => self::PATTERN_VERSIONED,
-            'config' => [
+                'extends' => self::SERVICE_GENERIC,
                 'environment' => [
                     'VIRTUAL_HOST=magento2.docker',
                     'VIRTUAL_PORT=80',
@@ -86,6 +80,10 @@ class ServiceFactory
                     '80:80'
                 ],
             ]
+        ],
+        self::SERVICE_VARNISH => [
+            'image' => 'magento/magento-cloud-docker-varnish',
+            'pattern' => self::PATTERN_VERSIONED,
         ],
         self::SERVICE_TLS => [
             'image' => 'magento/magento-cloud-docker-tls',
