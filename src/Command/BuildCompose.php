@@ -266,11 +266,16 @@ class BuildCompose extends Command
             $this->distGenerator->generate();
         }
 
-        $builder->setConfig($config);
+        $compose = $builder->build($config);
 
         $this->filesystem->put(
             $builder->getPath(),
-            Yaml::dump($builder->build(), 6, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
+            Yaml::dump([
+                'version' => $compose->getVersion(),
+                'services' => $compose->getServices(),
+                'volumes' => $compose->getVolumes(),
+                'networks' => $compose->getNetworks()
+            ], 6, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
         );
 
         $output->writeln('<info>Configuration was built.</info>');
