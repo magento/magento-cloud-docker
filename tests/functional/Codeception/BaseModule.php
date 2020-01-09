@@ -38,7 +38,7 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
     /**
      * The work directory name
      */
-    const WORK_DIR = 'workdir';
+    const WORK_DIR = '_workdir';
 
     /**
      * The artifact directory name

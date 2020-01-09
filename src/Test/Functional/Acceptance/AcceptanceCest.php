@@ -38,7 +38,7 @@ class AcceptanceCest
     public function testProductionMode(\CliTester $I): void
     {
         $I->runEceDockerCommand('build:compose --mode=production --no-cron');
-        $I->startEnvironment();
+        //$I->startEnvironment();
         $I->runBashCommand('whoami');
         $I->runBashCommand('ls -al');
         $I->runBashCommand('ls -al ..');
@@ -54,7 +54,7 @@ class AcceptanceCest
      */
     public function _after(\CliTester $I): void
     {
-        $I->stopEnvironment();
+        //$I->stopEnvironment();
         $I->removeDockerCompose();
         $I->removeWorkDir();
     }
