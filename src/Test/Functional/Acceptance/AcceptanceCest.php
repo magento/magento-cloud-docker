@@ -39,7 +39,9 @@ class AcceptanceCest
     {
         $I->runEceDockerCommand('build:compose --mode=production --no-cron');
         $I->startEnvironment();
+        $I->runBashCommand('whoami');
         $I->runBashCommand('ls -al');
+        $I->runBashCommand('ls -al ..');
 //        $I->runDockerComposeCommand('run build cloud-build');
 //        $I->runDockerComposeCommand('run deploy cloud-deploy');
 //        $I->amOnPage('/');
