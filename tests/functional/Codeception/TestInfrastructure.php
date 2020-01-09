@@ -196,7 +196,7 @@ class TestInfrastructure extends BaseModule
      * @param string $version
      * @return bool
      */
-    public function addEceDockerToComposer(string $version = '1.1.0'): bool
+    public function addArtifactEceDockerToComposer(string $version = '1.1.0'): bool
     {
         return $this->taskComposerRequire('composer')
             ->dependency('magento/magento-cloud-docker', $version)
@@ -205,6 +205,45 @@ class TestInfrastructure extends BaseModule
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
             ->dir($this->getWorkDirPath())
+            ->run()
+            ->wasSuccessful();
+    }
+
+    /**
+     * Adds ece-docker repo to composer.json
+     *
+     * @return bool
+     */
+    public function addEceDockerGitRepoToComposer(): bool
+    {
+        return $this->taskComposerConfig()
+            ->set('repositories.ece-docker', json_encode(
+                [
+                    'type' => 'vcs',
+                    'url' => $this->_getConfig('ece_docker_repo')
+                ]
+            ))->noInteraction()
+            ->printOutput($this->_getConfig('printOutput'))
+            ->interactive(false)
+            ->dir($this->getWorkDirPath())
+            ->run()
+            ->wasSuccessful();
+    }
+
+    /**
+     * Runs bash command
+     *
+     * @param string $command
+     * @return bool
+     * @throws \Robo\Exception\TaskException
+     */
+    public function runBashCommand(string $command): bool
+    {
+        return $this->taskExecStack()
+            ->printOutput($this->_getConfig('printOutput'))
+            ->interactive(false)
+            ->dir($this->getWorkDirPath())
+            ->exec($command)
             ->run()
             ->wasSuccessful();
     }

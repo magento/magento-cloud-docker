@@ -28,7 +28,7 @@ class AcceptanceCest
         $I->createArtifactsDir();
         $I->createEceDockerArtifact();
         $I->addArtifactsRepoToComposer();
-        $I->addEceDockerToComposer();
+        $I->addArtifactEceDockerToComposer();
         $I->composerUpdate();
     }
 
@@ -39,11 +39,12 @@ class AcceptanceCest
     {
         $I->runEceDockerCommand('build:compose --mode=production --no-cron');
         $I->startEnvironment();
-        $I->runDockerComposeCommand('run build cloud-build');
-        $I->runDockerComposeCommand('run deploy cloud-deploy');
-        $I->amOnPage('/');
-        $I->see('Home page');
-        $I->see('CMS homepage content goes here.');
+        $I->runBashCommand('ls -al');
+//        $I->runDockerComposeCommand('run build cloud-build');
+//        $I->runDockerComposeCommand('run deploy cloud-deploy');
+//        $I->amOnPage('/');
+//        $I->see('Home page');
+//        $I->see('CMS homepage content goes here.');
     }
 
     /**
