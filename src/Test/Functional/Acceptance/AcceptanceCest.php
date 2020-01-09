@@ -24,11 +24,11 @@ class AcceptanceCest
     {
         $I->cleanupWorkDir();
         $I->cloneTemplateToWorkDir(static::TEMPLATE_VERSION);
+        $I->createAuthJson();
         $I->createArtifactsDir();
         $I->createEceDockerArtifact();
         $I->addArtifactsRepoToComposer();
         $I->addEceDockerToComposer();
-        $I->createAuthJson();
         $I->composerUpdate();
     }
 
