@@ -95,4 +95,13 @@ trait Tasks
     {
         return $this->task(Tasks\RemoveDockerCompose::class);
     }
+
+    /**
+     * @param string $command
+     * @return Tasks\DockerCompose|CollectionBuilder
+     */
+    protected function taskDockerCompose(string $command): CollectionBuilder
+    {
+        return $this->task(Tasks\DockerCompose::class, $command);
+    }
 }

@@ -23,18 +23,8 @@ use Robo\Exception\TaskException;
 /**
  * Module for running commands on Docker environment
  */
-class Docker extends Module implements BuilderAwareInterface, ContainerAwareInterface
+class Docker extends BaseModule
 {
-    use ContainerAwareTrait;
-
-    use RoboTasks, CloudDockerTasks {
-        RoboTasks::getBuilder insteadof CloudDockerTasks;
-        RoboTasks::setBuilder insteadof CloudDockerTasks;
-        RoboTasks::collectionBuilder insteadof CloudDockerTasks;
-        RoboTasks::getBuiltTask insteadof CloudDockerTasks;
-        RoboTasks::task insteadof CloudDockerTasks;
-    }
-
     const BUILD_CONTAINER = 'build';
     const DEPLOY_CONTAINER = 'deploy';
 
@@ -87,6 +77,7 @@ class Docker extends Module implements BuilderAwareInterface, ContainerAwareInte
     public function stopEnvironment(): bool
     {
         return $this->taskEnvDown()
+            ->dir($this->getWorkDirPath())
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
             ->run()
@@ -102,8 +93,24 @@ class Docker extends Module implements BuilderAwareInterface, ContainerAwareInte
     public function startEnvironment(): bool
     {
         return $this->taskEnvUp()
+            ->dir($this->getWorkDirPath())
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
+            ->run()
+            ->stopOnFail()
+            ->wasSuccessful();
+    }
+
+    /**
+     * Run some docker-compose command
+     *
+     * @param string $command
+     * @return bool
+     */
+    public function runDockerComposeCommand(string $command): bool
+    {
+        return $this->taskDockerCompose($command)
+            ->dir($this->getWorkDirPath())
             ->run()
             ->stopOnFail()
             ->wasSuccessful();
@@ -117,6 +124,7 @@ class Docker extends Module implements BuilderAwareInterface, ContainerAwareInte
     public function removeDockerCompose(): bool
     {
         return $this->taskRemoveDockerCompose()
+            ->dir($this->getWorkDirPath())
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
             ->run()
@@ -135,6 +143,7 @@ class Docker extends Module implements BuilderAwareInterface, ContainerAwareInte
         $this->services = $services;
         /** @var Result $result */
         $result = $this->taskGenerateDockerCompose($services)
+            ->dir($this->getWorkDirPath())
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
             ->run()
@@ -154,6 +163,7 @@ class Docker extends Module implements BuilderAwareInterface, ContainerAwareInte
     {
         /** @var Result $result */
         $result = $this->taskEnvCleanUp($this->_getConfig('volumes'))
+            ->dir($this->getWorkDirPath())
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
             ->run()

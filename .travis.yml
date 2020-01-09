@@ -9,10 +9,22 @@ php:
   - '7.2'
   - '7.3'
 
+env:
+  matrix:
+    - TEST_SUITE=static-unit
+    - TEST_SUITE=functional
+
 install: composer update
 
+before_script:
+  - export COMPOSER_MAGENTO_USERNAME=${REPO_USERNAME}"
+  - export COMPOSER_MAGENTO_PASSWORD=${REPO_PASSWORD}
+  - echo "COMPOSER_GITHUB_TOKEN=${GITHUB_TOKEN}" >> ./.docker/composer.env
+  - if [ $XDEBUG == "true" ]; then echo "PHP_ENABLE_XDEBUG=true" >> ./.docker/global.env; fi;
+  - sudo /etc/init.d/mysql stop
+  - ./tests/travis/prepare_functional_parallel.sh
+
 script:
-  - ./vendor/bin/phpstan analyse -c ./tests/static/phpstan.neon
-  - ./vendor/bin/phpcs ./src --standard=./tests/static/phpcs-ruleset.xml -p -n
-  - ./vendor/bin/phpmd ./src xml ./tests/static/phpmd-ruleset.xml
-  - ./vendor/bin/phpunit --configuration ./tests/unit
+  - if [ $TEST_SUITE == "static-unit" ]; then ./tests/travis/static-unit.sh; fi
+  - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "functional" ]; then ./tests/travis/functional.sh; fi;
+
