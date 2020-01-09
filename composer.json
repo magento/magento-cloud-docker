@@ -14,10 +14,10 @@
         "composer/semver": "^1.0",
         "illuminate/config": "^5.5",
         "illuminate/filesystem": "^5.5",
-        "symfony/config": "^3.4||^4.0",
+        "symfony/config": "^2.8||^3.4||^4.0",
         "symfony/console": "^2.3||^4.0",
-        "symfony/dependency-injection": "^3.1||^4.0",
-        "symfony/yaml": "^3.3||^4.0"
+        "symfony/dependency-injection": "^2.8||^3.1||^4.0",
+        "symfony/yaml": "^2.8||^3.3||^4.0"
     },
     "require-dev": {
         "phpmd/phpmd": "@stable",
