@@ -1,4 +1,4 @@
-dist: trusty
+dist: xenial
 
 git:
   depth: false
@@ -6,6 +6,9 @@ git:
 addons:
   hosts:
     - magento2.docker
+
+services:
+  - docker
 
 language: php
 php:
@@ -25,5 +28,5 @@ before_script:
 
 script:
   - if [ $TEST_SUITE == "static-unit" ]; then ./tests/travis/static-unit.sh; fi
-  - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "functional" ]; then whoami && ./tests/travis/functional.sh; fi;
+  - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "functional" ]; then ./tests/travis/functional.sh; fi;
 
