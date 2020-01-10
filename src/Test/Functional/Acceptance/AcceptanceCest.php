@@ -41,11 +41,11 @@ class AcceptanceCest
         $I->startEnvironment();
         $I->runBashCommand('ls -al');
         $I->runBashCommand('ls -al ..');
-//        $I->runDockerComposeCommand('run build cloud-build');
-//        $I->runDockerComposeCommand('run deploy cloud-deploy');
-//        $I->amOnPage('/');
-//        $I->see('Home page');
-//        $I->see('CMS homepage content goes here.');
+        $I->runDockerComposeCommand('run build cloud-build');
+        $I->runDockerComposeCommand('run deploy cloud-deploy');
+        $I->amOnPage('/');
+        $I->see('Home page');
+        $I->see('CMS homepage content goes here.');
     }
 
     /**
