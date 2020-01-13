@@ -1,4 +1,4 @@
-dist: xenial
+dist: bionic
 
 git:
   depth: false
@@ -22,9 +22,6 @@ env:
     - TEST_SUITE=functional
 
 install: composer update
-
-before_script:
-  - sudo /etc/init.d/mysql stop
 
 script:
   - if [ $TEST_SUITE == "static-unit" ]; then ./tests/travis/static-unit.sh; fi
