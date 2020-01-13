@@ -53,6 +53,8 @@ class AcceptanceCest
      */
     public function _after(\CliTester $I): void
     {
+        $I->runBashCommand('docker ps');
+        $I->runBashCommand('docker-compose ps');
         $I->stopEnvironment();
         $I->removeDockerCompose();
         $I->removeWorkDir();
