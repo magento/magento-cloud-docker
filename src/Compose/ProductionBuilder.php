@@ -520,8 +520,8 @@ class ProductionBuilder implements BuilderInterface
         }
 
         return [
-            self::VOLUME_DOCKER_MNT . ':/mnt',
-            self::VOLUME_DOCKER_TMP . ':/tmp'
+            self::VOLUME_DOCKER_MNT . ':/mnt:rw',
+            self::VOLUME_DOCKER_TMP . ':/tmp:rw'
         ];
     }
 }

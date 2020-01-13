@@ -57,7 +57,7 @@ class AcceptanceCest
         $I->runBashCommand('docker ps');
         $I->runBashCommand('docker-compose ps');
         $I->stopEnvironment();
-        $I->removeDockerCompose();
-        $I->removeWorkDir();
+        //$I->removeDockerCompose();
+        //$I->removeWorkDir();
     }
 }
