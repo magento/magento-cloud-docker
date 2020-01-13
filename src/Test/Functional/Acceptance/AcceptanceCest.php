@@ -39,6 +39,8 @@ class AcceptanceCest
     {
         $I->runEceDockerCommand('build:compose --mode=production --no-cron');
         $I->startEnvironment();
+        $I->runBashCommand('ls -al');
+        $I->runBashCommand('ls -al ..');
         $I->runDockerComposeCommand('run build cloud-build');
         $I->runDockerComposeCommand('run deploy cloud-deploy');
         $I->amOnPage('/');
@@ -54,7 +56,11 @@ class AcceptanceCest
         $I->runBashCommand('docker-compose logs db');
         $I->runBashCommand('docker ps');
         $I->runBashCommand('docker-compose ps');
+        $I->runBashCommand('ls -al');
+        $I->runBashCommand('ls -al ..');
         $I->stopEnvironment();
+        $I->runBashCommand('ls -al');
+        $I->runBashCommand('ls -al ..');
         $I->removeDockerCompose();
         $I->removeWorkDir();
     }
