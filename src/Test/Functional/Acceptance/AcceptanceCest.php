@@ -53,6 +53,7 @@ class AcceptanceCest
      */
     public function _after(\CliTester $I): void
     {
+        $I->runBashCommand('docker-compose logs db');
         $I->runBashCommand('docker ps');
         $I->runBashCommand('docker-compose ps');
         $I->stopEnvironment();
