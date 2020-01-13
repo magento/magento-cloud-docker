@@ -225,7 +225,7 @@ class ProductionBuilder implements BuilderInterface
                             self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
                             '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
                         ],
-                        $this->getMountVolumes($config)
+                        [],//$this->getMountVolumes($config)
                     )
                 ]
             ),
@@ -520,8 +520,8 @@ class ProductionBuilder implements BuilderInterface
         }
 
         return [
-            self::VOLUME_DOCKER_MNT . ':/mnt:rw',
-            self::VOLUME_DOCKER_TMP . ':/tmp:rw'
+            self::VOLUME_DOCKER_MNT . ':/mnt',
+            self::VOLUME_DOCKER_TMP . ':/tmp'
         ];
     }
 }
