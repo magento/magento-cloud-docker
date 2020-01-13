@@ -220,13 +220,10 @@ class ProductionBuilder implements BuilderInterface
                 $dbVersion,
                 [
                     'ports' => [$dbPorts],
-                    'volumes' => array_merge(
-                        [
-                            self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
-                            '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
-                        ],
-                        [],//$this->getMountVolumes($config)
-                    )
+                    'volumes' => [
+                        self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+                        '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
+                    ],
                 ]
             ),
             [self::NETWORK_MAGENTO],
