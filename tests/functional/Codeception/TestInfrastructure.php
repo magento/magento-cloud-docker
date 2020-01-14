@@ -149,20 +149,25 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Creates ZIP file with magento-cloud-docker code
+     * Creates ZIP file with tested code
      *
+     * @param string $name
+     * @param array $skippedFiles
      * @return bool
      */
-    public function createEceDockerArtifact(): bool
+    public function createArtifactCurrentTestedCode(string $name, array $skippedFiles = []): bool
     {
-        $skipFiles = ['..', '.', 'vendor', '.git', '_workdir', 'vendor', 'composer.lock'];
+        $skippedFiles = array_merge(
+            ['..', '.', 'vendor', '.git', '_workdir', 'vendor', 'composer.lock'],
+            $skippedFiles
+        );
         $files = [];
 
-        foreach (array_diff(scandir(codecept_root_dir()), $skipFiles) as $file) {
+        foreach (array_diff(scandir(codecept_root_dir()), $skippedFiles) as $file) {
             $files[$file] = codecept_root_dir($file);
         }
 
-        return $this->taskPack($this->getArtifactsDir() . '/docker.zip')
+        return $this->taskPack($this->getArtifactsDir() . '/' . $name . '.zip')
             ->add($files)
             ->run()
             ->wasSuccessful();
@@ -191,15 +196,16 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Adds magento-cloud-docker to require section in composer.json
+     * Adds some dependency to require section in composer.json
      *
+     * @param string $name
      * @param string $version
      * @return bool
      */
-    public function addArtifactEceDockerToComposer(string $version = '1.1.0'): bool
+    public function addDependencyToComposer(string $name, string $version): bool
     {
         return $this->taskComposerRequire('composer')
-            ->dependency('magento/magento-cloud-docker', $version)
+            ->dependency($name, $version)
             ->noInteraction()
             ->option('--no-update')
             ->printOutput($this->_getConfig('printOutput'))

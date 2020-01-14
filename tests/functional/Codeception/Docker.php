@@ -7,17 +7,10 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Codeception;
 
-use Codeception\Module;
-use Magento\CloudDocker\Test\Functional\Robo\Tasks as CloudDockerTasks;
 use PHPUnit\Framework\Assert;
-use Robo\LoadAllTasks as RoboTasks;
 use Robo\Robo;
 use Robo\Result;
-use Codeception\Configuration;
 use Robo\Collection\CollectionBuilder;
-use Robo\Contract\BuilderAwareInterface;
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Robo\Exception\TaskException;
 
 /**

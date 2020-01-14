@@ -26,9 +26,9 @@ class AcceptanceCest
         $I->cloneTemplateToWorkDir(static::TEMPLATE_VERSION);
         $I->createAuthJson();
         $I->createArtifactsDir();
-        $I->createEceDockerArtifact();
+        $I->createArtifactCurrentTestedCode('docker');
         $I->addArtifactsRepoToComposer();
-        $I->addArtifactEceDockerToComposer();
+        $I->addDependencyToComposer('magento/magento-cloud-docker', '1.1.0');
         $I->composerUpdate();
     }
 
@@ -51,14 +51,8 @@ class AcceptanceCest
      */
     public function _after(\CliTester $I): void
     {
-        $I->runBashCommand('echo $(id -u)');
-        $I->runDockerComposeCommand('run build bash -c "echo $(id -u)"');
-        $I->runBashCommand('ls -al');
-        $I->runBashCommand('ls -al ..');
         $I->resetFilesOwner();
         $I->stopEnvironment();
-        $I->runBashCommand('ls -al');
-        $I->runBashCommand('ls -al ..');
         $I->removeDockerCompose();
         $I->removeWorkDir();
     }
