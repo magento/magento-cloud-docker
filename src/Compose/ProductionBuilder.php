@@ -433,7 +433,7 @@ class ProductionBuilder implements BuilderInterface
             # Name of your server in IDE
             'PHP_IDE_CONFIG' => 'serverName=magento_cloud_docker',
             # Docker host for developer environments, can be different for your OS
-            'XDEBUG_CONFIG' => 'remote_host=host.docker.internal',
+            'XDEBUG_CONFIG' => 'remote_host=host.docker.internal remote_connect_back=1',
         ];
 
         if ($this->hasSelenium($config)) {
