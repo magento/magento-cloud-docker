@@ -270,27 +270,38 @@ class ProductionBuilder implements BuilderInterface
             [self::NETWORK_MAGENTO],
             [self::SERVICE_FPM => []]
         );
-        $manager->addService(
-            self::SERVICE_VARNISH,
-            $this->serviceFactory->create(
-                ServiceFactory::SERVICE_VARNISH,
-                self::DEFAULT_VARNISH_VERSION,
-                [
-                    'networks' => [
-                        self::NETWORK_MAGENTO => [
-                            'aliases' => [Manager::DOMAIN]
+
+        if (!$config->get(self::KEY_NO_VARNISH, false)) {
+            $manager->addService(
+                self::SERVICE_VARNISH,
+                $this->serviceFactory->create(
+                    ServiceFactory::SERVICE_VARNISH,
+                    self::DEFAULT_VARNISH_VERSION,
+                    [
+                        'networks' => [
+                            self::NETWORK_MAGENTO => [
+                                'aliases' => [Manager::DOMAIN]
+                            ]
                         ]
                     ]
-                ]
-            ),
-            [],
-            [self::SERVICE_WEB => []]
-        );
+                ),
+                [],
+                [self::SERVICE_WEB => []]
+            );
+        }
+
+        $tlsBackendService = $config->get(self::KEY_NO_VARNISH, false) ? self::SERVICE_WEB : self::SERVICE_VARNISH;
         $manager->addService(
             self::SERVICE_TLS,
-            $this->serviceFactory->create(ServiceFactory::SERVICE_TLS, self::DEFAULT_TLS_VERSION),
+            $this->serviceFactory->create(
+                ServiceFactory::SERVICE_TLS,
+                self::DEFAULT_TLS_VERSION,
+                [
+                    'environment' => ['HTTPS_UPSTREAM_SERVER_ADDRESS' => $tlsBackendService],
+                ]
+            ),
             [self::NETWORK_MAGENTO],
-            [self::SERVICE_VARNISH => []]
+            [$tlsBackendService => []]
         );
 
         if ($this->hasSelenium($config)) {
