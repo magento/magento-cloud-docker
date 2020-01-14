@@ -14,7 +14,8 @@ USAGE="Magento Cloud Docker
   restart           restart containers
   ece-build         build application
   ece-deploy        deploy application
-  ece-redeploy      re-build and re-deploy application
+  ece-post-deploy   run post-deploy hooks
+  ece-redeploy      re-build, re-deploy, and run post-deploy
 
 \033[33mOptions:\033[0m
   -h            show this help text\n"
