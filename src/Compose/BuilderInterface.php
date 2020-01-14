@@ -27,6 +27,7 @@ interface BuilderInterface
     public const SERVICE_GENERIC = 'generic';
     public const SERVICE_DB = 'db';
     public const SERVICE_FPM = 'fpm';
+    public const SERVICE_FPM_XDEBUG = 'xdebug';
     public const SERVICE_BUILD = 'build';
     public const SERVICE_DEPLOY = 'deploy';
     public const SERVICE_WEB = 'web';

@@ -8,7 +8,16 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Compose;
 
 use Illuminate\Contracts\Config\Repository;
+use Magento\CloudDocker\Compose\Php\ExtensionResolver;
+use Magento\CloudDocker\Config\Environment\Converter;
+use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
+use Magento\CloudDocker\Config\Application\Reader as AppReader;
 use Magento\CloudDocker\Filesystem\FileList;
+use Magento\CloudDocker\Filesystem\FilesystemException;
+use Magento\CloudDocker\Service\Config;
+use Magento\CloudDocker\Service\ServiceFactory;
+use Magento\CloudDocker\Service\ServiceInterface;
 
 /**
  * Developer compose configuration.
@@ -32,9 +41,19 @@ class DeveloperBuilder implements BuilderInterface
     ];
 
     /**
-     * @var BuilderFactory
+     * @var ServiceFactory
      */
-    private $builderFactory;
+    private $serviceFactory;
+
+    /**
+     * @var Config
+     */
+    private $serviceConfig;
+
+    /**
+     * @var Converter
+     */
+    private $converter;
 
     /**
      * @var FileList
@@ -42,20 +61,54 @@ class DeveloperBuilder implements BuilderInterface
     private $fileList;
 
     /**
+     * @var ExtensionResolver
+     */
+    private $phpExtension;
+
+    /**
+     * @var BuilderFactory
+     */
+    private $builderFactory;
+
+    /**
      * @var Resolver
      */
     private $resolver;
 
     /**
-     * @param BuilderFactory $builderFactory
+     * @param ServiceFactory $serviceFactory
+     * @param Config $serviceConfig
      * @param FileList $fileList
+     * @param Converter $converter
+     * @param ExtensionResolver $phpExtension
+     * @param ManagerFactory $managerFactory
+     * @param BuilderFactory $builderFactory
      * @param Resolver $resolver
+     * @param EnvReader $envReader
+     * @param AppReader $appReader
      */
-    public function __construct(BuilderFactory $builderFactory, FileList $fileList, Resolver $resolver)
-    {
-        $this->builderFactory = $builderFactory;
+    public function __construct(
+        ServiceFactory $serviceFactory,
+        Config $serviceConfig,
+        FileList $fileList,
+        Converter $converter,
+        ExtensionResolver $phpExtension,
+        ManagerFactory $managerFactory,
+        BuilderFactory $builderFactory,
+        Resolver $resolver,
+        EnvReader $envReader,
+        AppReader $appReader
+    ) {
+        $this->serviceFactory = $serviceFactory;
+        $this->serviceConfig = $serviceConfig;
         $this->fileList = $fileList;
+        $this->converter = $converter;
+        $this->phpExtension = $phpExtension;
+        $this->managerFactory = $managerFactory;
+        $this->builderFactory = $builderFactory;
         $this->resolver = $resolver;
+        $this->envReader = $envReader;
+        $this->appReader = $appReader;
     }
 
     /**
@@ -69,6 +122,8 @@ class DeveloperBuilder implements BuilderInterface
 
         $syncEngine = $config->get(self::KEY_SYNC_ENGINE);
         $syncConfig = [];
+
+        $phpVersion = $config->get(ServiceInterface::NAME_PHP) ?: $this->serviceConfig->getPhpVersion();
 
         if ($syncEngine === self::SYNC_ENGINE_DOCKER_SYNC) {
             $syncConfig = ['external' => true];
@@ -84,6 +139,8 @@ class DeveloperBuilder implements BuilderInterface
             ];
         }
 
+
+
         $manager->setVolumes([
             self::VOLUME_MAGENTO_SYNC => $syncConfig,
             self::VOLUME_MAGENTO_DB => []
@@ -94,6 +151,24 @@ class DeveloperBuilder implements BuilderInterface
          */
         $services = $manager->getServices();
         $volumes = $this->getMagentoVolumes($config);
+
+        $phpExtensions = $this->getPhpExtensions((string)$phpVersion);
+        $phpExtensions[] = "xdebug";
+        $manager->addService(
+            self::SERVICE_FPM_XDEBUG,
+            $this->serviceFactory->create(
+                ServiceFactory::SERVICE_FPM_XDEBUG,
+                $phpVersion,
+                [
+                    'volumes' => $volumes,
+                    'environment' => $this->converter->convert(array_merge(
+                            ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
+                        ))
+            ]
+            ),
+            [self::NETWORK_MAGENTO],
+            [self::SERVICE_DB => []]
+        );
 
         /**
          * @var string $sName
@@ -143,4 +218,17 @@ class DeveloperBuilder implements BuilderInterface
             self::VOLUME_MAGENTO_SYNC . ':' . $target
         ];
     }
+
+    /**
+     * @inheritDoc
+     */
+    private function getPhpExtensions(string $phpVersion): array
+    {
+        return array_unique(array_merge(
+            ExtensionResolver::DEFAULT_PHP_EXTENSIONS,
+            ['xsl', 'redis'],
+            in_array($phpVersion, ['7.0', '7.1']) ? ['mcrypt'] : []
+        ));
+    }
+
 }

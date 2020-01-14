@@ -27,7 +27,8 @@ class GeneratePhp extends Command
     const SUPPORTED_VERSIONS = ['7.1', '7.2', '7.3'];
     const EDITION_CLI = 'cli';
     const EDITION_FPM = 'fpm';
-    const EDITIONS = [self::EDITION_CLI, self::EDITION_FPM];
+    const EDITION_XDEBUG = 'xdebug';
+    const EDITIONS = [self::EDITION_CLI, self::EDITION_FPM, self::EDITION_XDEBUG];
     const ARGUMENT_VERSION = 'version';
     const DEFAULT_PACKAGES_PHP_FPM = [
         'apt-utils',
