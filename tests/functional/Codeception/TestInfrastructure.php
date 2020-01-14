@@ -237,6 +237,19 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Gets dependency version for tested code by name
+     *
+     * @param string $name
+     * @return string
+     */
+    public function getDependencyVersion(string $name): string
+    {
+        $composer = json_decode(file_get_contents(codecept_root_dir('composer.json')), true);
+
+        return $composer['require'][$name] ?? '';
+    }
+
+    /**
      * Runs bash command
      *
      * @param string $command
