@@ -1,4 +1,6 @@
 #!/bin/bash
+mutagen terminate  --label-selector=magento-docker
+
 mutagen create \
        --label=magento-docker \
        --sync-mode=two-way-resolved \
