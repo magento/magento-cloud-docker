@@ -117,6 +117,16 @@ class Docker extends BaseModule
     }
 
     /**
+     * Resets file owner
+     *
+     * @return bool
+     */
+    public function resetFilesOwner(): bool
+    {
+        return $this->runDockerComposeCommand('run build bash -c "chown $(id -u):$(id -g) . -R"');
+    }
+
+    /**
      * Removes docker-compose.yml
      *
      * @return bool

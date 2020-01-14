@@ -39,8 +39,6 @@ class AcceptanceCest
     {
         $I->runEceDockerCommand('build:compose --mode=production --no-cron');
         $I->startEnvironment();
-        $I->runBashCommand('ls -al');
-        $I->runBashCommand('ls -al ..');
         $I->runDockerComposeCommand('run build cloud-build');
         $I->runDockerComposeCommand('run deploy cloud-deploy');
         $I->amOnPage('/');
@@ -53,11 +51,11 @@ class AcceptanceCest
      */
     public function _after(\CliTester $I): void
     {
-        $I->runBashCommand('docker-compose logs db');
-        $I->runBashCommand('docker ps');
-        $I->runBashCommand('docker-compose ps');
+        $I->runBashCommand('echo $(id -u)');
+        $I->runDockerComposeCommand('run build bash -c "echo $(id -u)"');
         $I->runBashCommand('ls -al');
         $I->runBashCommand('ls -al ..');
+        $I->resetFilesOwner();
         $I->stopEnvironment();
         $I->runBashCommand('ls -al');
         $I->runBashCommand('ls -al ..');
