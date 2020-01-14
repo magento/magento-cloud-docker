@@ -60,7 +60,10 @@ class ServiceFactory
             'ports' => [9000],[9001],
             'pattern' => '%s:%s-fpm-%s',
             'config' => [
-                'extends' => self::SERVICE_GENERIC
+                'extends' => self::SERVICE_GENERIC,
+                'ports' => [
+                    '9001:9001',
+                ]
             ]
         ],
         self::SERVICE_DB => [
