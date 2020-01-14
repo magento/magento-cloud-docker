@@ -20,6 +20,7 @@ interface BuilderInterface
     public const DEFAULT_TLS_VERSION = 'latest';
 
     public const KEY_NO_CRON = 'no-cron';
+    public const KEY_NO_VARNISH = 'no-varnish';
     public const KEY_EXPOSE_DB_PORT = 'expose-db-port';
     public const KEY_NO_TMP_MOUNTS = 'no-tmp-mounts';
     public const KEY_WITH_SELENIUM = 'with-selenium';
