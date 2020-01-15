@@ -16,7 +16,7 @@
         "illuminate/filesystem": "^5.5",
         "symfony/config": "^4.4",
         "symfony/console": "^2.8||^4.0",
-        "symfony/dependency-injection": "^2.8||^4.3",
+        "symfony/dependency-injection": "^3.3||^4.3",
         "symfony/yaml": "^3.3||^4.0"
     },
     "require-dev": {
