@@ -60,8 +60,7 @@ class TestInfrastructure extends BaseModule
      */
     public function cleanupWorkDir(): bool
     {
-        if (file_exists($this->getWorkDirPath()))
-        {
+        if (file_exists($this->getWorkDirPath())) {
             $this->removeWorkDir();
         }
 
@@ -297,6 +296,21 @@ class TestInfrastructure extends BaseModule
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
             ->dir($this->getWorkDirPath())
+            ->run()
+            ->wasSuccessful();
+    }
+
+    /**
+     * Copies files from _data to work directory
+     *
+     * @param string $source
+     * @param string $destination
+     * @return bool
+     */
+    public function copyToWorkDir(string $source, string $destination): bool
+    {
+        return $this->taskFilesystemStack()
+            ->copy(codecept_data_dir($source), $this->getWorkDirPath() . DIRECTORY_SEPARATOR . $destination, true)
             ->run()
             ->wasSuccessful();
     }

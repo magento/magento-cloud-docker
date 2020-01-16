@@ -74,6 +74,6 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
      */
     public function getArtifactsDir(): string
     {
-        return codecept_root_dir(self::WORK_DIR . '/' . self::ARTIFACTS_DIR);
+        return codecept_root_dir(self::WORK_DIR . DIRECTORY_SEPARATOR . self::ARTIFACTS_DIR);
     }
 }
