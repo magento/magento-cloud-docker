@@ -1,4 +1,8 @@
 #!/bin/bash
+mutagen terminate  --label-selector=magento-docker
+mutagen terminate  --label-selector=magento-docker-vendor
+
+
 mutagen create \
        --label=magento-docker \
        --sync-mode=two-way-resolved \
@@ -8,6 +12,7 @@ mutagen create \
        --ignore=/.magento \
        --ignore=/.docker \
        --ignore=/.github \
+       --ignore=/vendor \
        --ignore=*.sql \
        --ignore=*.gz \
        --ignore=*.zip \
@@ -15,3 +20,12 @@ mutagen create \
        --ignore-vcs \
        --symlink-mode=posix-raw \
        ./ docker://$(docker-compose ps -q fpm|awk '{print $1}')/app
+
+mutagen create \
+       --label=magento-docker-vendor \
+       --sync-mode=two-way-resolved \
+       --default-file-mode=0644 \
+       --default-directory-mode=0755 \
+       --symlink-mode=posix-raw \
+       ./vendor docker://$(docker-compose ps -q fpm|awk '{print $1}')/app/vendor
+
