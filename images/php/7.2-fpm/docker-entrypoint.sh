@@ -39,6 +39,9 @@ fi
 PHP_EXT_DIR=/usr/local/etc/php/conf.d
 PHP_EXT_COM_ON=docker-php-ext-enable
 
+# Add custom php.ini if it exists
+[ -f "/app/php.ini" ] && cp /app/php.ini ${PHP_EXT_DIR}/zzz-custom-php.ini
+
 [ -d ${PHP_EXT_DIR} ] && rm -f ${PHP_EXT_DIR}/docker-php-ext-*.ini
 
 if [ -x "$(command -v ${PHP_EXT_COM_ON})" ] && [ ! -z "${PHP_EXTENSIONS}" ]; then
