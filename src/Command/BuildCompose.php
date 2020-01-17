@@ -52,6 +52,7 @@ class BuildCompose extends Command
     private const OPTION_SYNC_ENGINE = 'sync-engine';
     private const OPTION_NO_CRON = 'no-cron';
     private const OPTION_WITH_SELENIUM = 'with-selenium';
+    private const OPTION_WITH_XDEBUG = 'with-xdebug';
 
     /**
      * Option key to config name map.
@@ -218,6 +219,12 @@ class BuildCompose extends Command
                 self::OPTION_WITH_SELENIUM,
                 null,
                 InputOption::VALUE_NONE
+            )
+            ->addOption(
+                self::OPTION_WITH_XDEBUG,
+                null,
+                InputOption::VALUE_NONE,
+                'Enables XDebug while in production mode. XDebug is enabled by default in development mode'
             );
 
         parent::configure();
@@ -253,8 +260,10 @@ class BuildCompose extends Command
         });
 
         $config->set([
+            DeveloperBuilder::MODE => $input->getOption(self::OPTION_MODE),
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
             ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON),
+            ProductionBuilder::KEY_WITH_XDEBUG => $input->getOption(self::OPTION_WITH_XDEBUG),
             ProductionBuilder::KEY_WITH_SELENIUM => $input->getOption(self::OPTION_WITH_SELENIUM)
         ]);
 

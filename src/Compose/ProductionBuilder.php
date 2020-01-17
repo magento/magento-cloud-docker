@@ -319,6 +319,28 @@ class ProductionBuilder implements BuilderInterface
         $phpExtensions = $this->phpExtension->get($phpVersion);
 
         /**
+         * Include Xdebug if --with-xdebug is set, or if it is in developer mode.
+         */
+        if ($config->get(self::KEY_WITH_XDEBUG, false) || $config->get("mode") == "developer") {
+            $manager->addService(
+                self::SERVICE_FPM_XDEBUG,
+                $this->serviceFactory->create(
+                    ServiceFactory::SERVICE_FPM_XDEBUG,
+                    $phpVersion,
+                    [
+                        'volumes' => $volumes,
+                        'environment' => $this->converter->convert(array_merge(
+                            ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
+                        ))
+                    ]
+                ),
+                [self::NETWORK_MAGENTO],
+                [self::SERVICE_DB => []]
+            );
+        }
+
+
+        /**
          * Generic service.
          */
         $manager->addService(
@@ -524,4 +546,5 @@ class ProductionBuilder implements BuilderInterface
             self::VOLUME_DOCKER_TMP . ':/tmp'
         ];
     }
+
 }
