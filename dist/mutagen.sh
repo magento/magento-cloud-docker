@@ -2,7 +2,6 @@
 mutagen terminate  --label-selector=magento-docker
 mutagen terminate  --label-selector=magento-docker-vendor
 
-
 mutagen create \
        --label=magento-docker \
        --sync-mode=two-way-resolved \
@@ -28,4 +27,3 @@ mutagen create \
        --default-directory-mode=0755 \
        --symlink-mode=posix-raw \
        ./vendor docker://$(docker-compose ps -q fpm|awk '{print $1}')/app/vendor
-
