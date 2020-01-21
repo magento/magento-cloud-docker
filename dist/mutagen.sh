@@ -1,6 +1,6 @@
 #!/bin/bash
-mutagen terminate  --label-selector=magento-docker
-mutagen terminate  --label-selector=magento-docker-vendor
+mutagen terminate --label-selector=magento-docker
+mutagen terminate --label-selector=magento-docker-vendor
 
 mutagen create \
        --label=magento-docker \
