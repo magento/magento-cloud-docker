@@ -462,13 +462,6 @@ class ProductionBuilder implements BuilderInterface
         }
 
         if (!$this->config->get(self::KEY_NO_TMP_MOUNTS)) {
-            $volumes['docker-tmp'] = [
-                'driver_opts' => [
-                    'type' => 'none',
-                    'device' => $rootPath . '/.docker/tmp',
-                    'o' => 'bind'
-                ]
-            ];
             $volumes['docker-mnt'] = [
                 'driver_opts' => [
                     'type' => 'none',
@@ -618,7 +611,7 @@ class ProductionBuilder implements BuilderInterface
             return [];
         }
 
-        return ['docker-mnt:/mnt', 'docker-tmp:/tmp'];
+        return ['docker-mnt:/mnt'];
     }
 
     /**
