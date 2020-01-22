@@ -80,9 +80,11 @@ class Generator
      * Create docker/config.php.dist file
      * generate MAGENTO_CLOUD_RELATIONSHIPS according to services enablements.
      *
+     * @param array $cloudVariables
+     * @param array $rawVariables
      * @throws ConfigurationMismatchException if can't obtain relationships
      */
-    public function generate()
+    public function generate(array $cloudVariables = [], array $rawVariables = [])
     {
         $configPath = $this->directoryList->getDockerRoot() . '/config.php.dist';
 
@@ -90,8 +92,9 @@ class Generator
             ['MAGENTO_CLOUD_RELATIONSHIPS' => $this->relationship->get()],
             self::$baseConfig
         );
+        $config = array_replace($config, $cloudVariables);
 
-        $this->saveConfig($configPath, $config);
+        $this->saveConfig($configPath, $config, $rawVariables);
     }
 
     /**
@@ -99,14 +102,20 @@ class Generator
      *
      * @param string $filePath
      * @param array $config
+     * @param array $rawVariables
      */
-    private function saveConfig(string $filePath, array $config)
+    private function saveConfig(string $filePath, array $config, array $rawVariables)
     {
         $result = "<?php\n\nreturn [";
         foreach ($config as $key => $value) {
             $result .= "\n    '{$key}' => ";
             $result .= 'base64_encode(json_encode(' . $this->phpFormatter->varExport($value, 2) . ')),';
         }
+
+        foreach ($rawVariables as $key => $value) {
+            $result .= "\n    '{$key}' => '{$value}'";
+        }
+
         $result .= "\n];\n";
 
         $this->filesystem->put($filePath, $result);

@@ -55,6 +55,12 @@ class BuildCompose extends Command
     private const OPTION_WITH_SELENIUM = 'with-selenium';
 
     /**
+     * Environment variables.
+     */
+    private const OPTION_ENV_CLOUD = 'env-cloud-vars';
+    private const OPTION_ENV_RAW = 'env-raw-vars';
+
+    /**
      * Option key to config name map.
      *
      * @var array
@@ -180,6 +186,18 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Selenium image'
+            )
+            ->addOption(
+                self::OPTION_ENV_CLOUD,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Cloud environment variables'
+            )
+            ->addOption(
+                self::OPTION_ENV_RAW,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Raw environment variables'
             );
 
         $this->addOption(
@@ -271,7 +289,13 @@ class BuildCompose extends Command
             [BuilderFactory::BUILDER_DEVELOPER, BuilderFactory::BUILDER_PRODUCTION],
             false
         )) {
-            $this->distGenerator->generate();
+            $cloudVars = $input->getOption(self::OPTION_ENV_CLOUD);
+            $rawVars = $input->getOption(self::OPTION_ENV_RAW);
+
+            $cloudVars = $cloudVars ? json_decode($cloudVars, true) : [];
+            $rawVars = $rawVars ? json_decode($rawVars, true) : [];
+
+            $this->distGenerator->generate($cloudVars, $rawVars);
         }
 
         $compose = $builder->build($config);
