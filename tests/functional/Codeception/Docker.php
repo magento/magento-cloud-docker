@@ -458,6 +458,7 @@ class Docker extends BaseModule
             ->interactive(false)
             ->source($this->_getConfig('system_magento_dir') . $source)
             ->destination($destination)
+            ->dir($this->getWorkDirPath())
             ->run();
 
         $this->output = $result->getMessage();
@@ -480,6 +481,7 @@ class Docker extends BaseModule
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
             ->exec(sprintf('mkdir -p %s', $this->_getConfig('system_magento_dir') . $path))
+            ->dir($this->getWorkDirPath())
             ->run();
 
         $this->output = $result->getMessage();
@@ -509,6 +511,7 @@ class Docker extends BaseModule
             ->interactive(false)
             ->source($source)
             ->destination($this->_getConfig('system_magento_dir') . $destination)
+            ->dir($this->getWorkDirPath())
             ->run();
 
         $this->output = $result->getMessage();
@@ -554,6 +557,7 @@ class Docker extends BaseModule
             ->envVars($this->prepareVariables($cloudVariables))
             ->envVars($rawVariables)
             ->exec(sprintf('php %s/bin/ece-tools %s', $this->_getConfig('system_ece_tools_dir'), $command))
+            ->dir($this->getWorkDirPath())
             ->run();
 
         $this->output = $result->getMessage();
@@ -595,6 +599,7 @@ class Docker extends BaseModule
             ->envVars($this->prepareVariables($cloudVariables))
             ->envVars($rawVariables)
             ->exec(sprintf('php %s/bin/magento %s', $this->_getConfig('system_magento_dir'), $command))
+            ->dir($this->getWorkDirPath())
             ->run();
 
         $this->output = $result->getMessage();
