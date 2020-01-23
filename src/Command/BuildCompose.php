@@ -292,8 +292,8 @@ class BuildCompose extends Command
             $cloudVars = $input->getOption(self::OPTION_ENV_CLOUD);
             $rawVars = $input->getOption(self::OPTION_ENV_RAW);
 
-            $cloudVars = $cloudVars ? json_decode($cloudVars, true) : [];
-            $rawVars = $rawVars ? json_decode($rawVars, true) : [];
+            $cloudVars = $cloudVars ? (array) json_decode($cloudVars, true) : [];
+            $rawVars = $rawVars ? (array) json_decode($rawVars, true) : [];
 
             $this->distGenerator->generate($cloudVars, $rawVars);
         }
