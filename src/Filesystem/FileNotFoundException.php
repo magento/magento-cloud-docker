@@ -9,6 +9,9 @@ namespace Magento\CloudDocker\Filesystem;
 
 use Magento\CloudDocker\App\GenericException;
 
+/**
+ * Exception for missing file.
+ */
 class FileNotFoundException extends GenericException
 {
 }

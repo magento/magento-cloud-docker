@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config\Application;
 
+use Magento\CloudDocker\Filesystem\FileNotFoundException;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
@@ -50,7 +51,7 @@ class Reader implements ReaderInterface
             $servicesConfig = Yaml::parse(
                 $this->filesystem->get($this->fileList->getServicesConfig())
             );
-        } catch (\Exception $exception) {
+        } catch (FileNotFoundException $exception) {
             throw new FilesystemException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
