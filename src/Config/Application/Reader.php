@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config\Application;
 
-use Illuminate\Filesystem\Filesystem;
+use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Symfony\Component\Yaml\Yaml;
@@ -74,7 +74,7 @@ class Reader implements ReaderInterface
         ];
 
         foreach ($appConfig['relationships'] as $constraint) {
-            list($name) = explode(':', $constraint);
+            [$name] = explode(':', $constraint);
 
             if (!isset($servicesConfig[$name]['type'])) {
                 throw new FilesystemException(sprintf(
@@ -83,7 +83,7 @@ class Reader implements ReaderInterface
                 ));
             }
 
-            list($service, $version) = explode(':', $servicesConfig[$name]['type']);
+            [$service, $version] = explode(':', $servicesConfig[$name]['type']);
 
             if (array_key_exists($service, $config['services'])) {
                 throw new FilesystemException(sprintf(

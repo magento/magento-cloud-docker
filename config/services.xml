@@ -16,6 +16,7 @@
         </service>
         <service id="Magento\CloudDocker\Filesystem\DirectoryList" autowire="false"/>
         <service id="Magento\CloudDocker\Filesystem\FilesystemException" autowire="false"/>
+        <service id="Magento\CloudDocker\Filesystem\FileNotFoundException" autowire="false"/>
         <service id="Magento\CloudDocker\Compose\DeveloperBuilder" shared="false"/>
         <service id="Magento\CloudDocker\Compose\ProductionBuilder" shared="false"/>
         <service id="Magento\CloudDocker\Compose\FunctionalBuilder" shared="false"/>

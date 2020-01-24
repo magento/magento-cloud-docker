@@ -7,12 +7,12 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Unit\Config\Dist;
 
-use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Dist\Formatter;
 use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Config\Relationship;
 use Magento\CloudDocker\Filesystem\DirectoryList;
+use Magento\CloudDocker\Filesystem\Filesystem;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
