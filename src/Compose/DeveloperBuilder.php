@@ -10,7 +10,6 @@ namespace Magento\CloudDocker\Compose;
 use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\Filesystem\FileList;
 
-
 /**
  * Developer compose configuration.
  *
@@ -33,34 +32,14 @@ class DeveloperBuilder implements BuilderInterface
     ];
 
     /**
-     * @var ServiceFactory
+     * @var BuilderFactory
      */
-    private $serviceFactory;
-
-    /**
-     * @var Config
-     */
-    private $serviceConfig;
-
-    /**
-     * @var Converter
-     */
-    private $converter;
+    private $builderFactory;
 
     /**
      * @var FileList
      */
     private $fileList;
-
-    /**
-     * @var ExtensionResolver
-     */
-    private $phpExtension;
-
-    /**
-     * @var BuilderFactory
-     */
-    private $builderFactory;
 
     /**
      * @var Resolver
@@ -119,7 +98,6 @@ class DeveloperBuilder implements BuilderInterface
         $services = $manager->getServices();
         $volumes = $this->getMagentoVolumes($config);
 
-
         /**
          * @var string $sName
          * @var array $sConfig
@@ -168,6 +146,4 @@ class DeveloperBuilder implements BuilderInterface
             self::VOLUME_MAGENTO_SYNC . ':' . $target
         ];
     }
-
-
 }
