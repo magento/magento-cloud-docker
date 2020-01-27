@@ -208,7 +208,7 @@ class Filesystem
      * @param string $path
      * @return bool
      */
-    public function exists($path)
+    public function exists($path): bool
     {
         return file_exists($path);
     }
