@@ -20,7 +20,6 @@
         <service id="Magento\CloudDocker\Compose\DeveloperBuilder" shared="false"/>
         <service id="Magento\CloudDocker\Compose\ProductionBuilder" shared="false"/>
         <service id="Magento\CloudDocker\Compose\FunctionalBuilder" shared="false"/>
-        <service id="Illuminate\Filesystem\Filesystem"/>
         <service id="Composer\Semver\VersionParser"/>
         <service id="Composer\Semver\Semver"/>
     </services>
