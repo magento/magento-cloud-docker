@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config\Dist;
 
-use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Config\Relationship;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 
