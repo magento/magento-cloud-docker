@@ -350,7 +350,6 @@ class ProductionBuilder implements BuilderInterface
             );
         }
 
-
         /**
          * Generic service.
          */
@@ -557,5 +556,4 @@ class ProductionBuilder implements BuilderInterface
             self::VOLUME_DOCKER_TMP . ':/tmp'
         ];
     }
-
 }
