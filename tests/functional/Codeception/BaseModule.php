@@ -46,6 +46,11 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
     const ARTIFACTS_DIR = 'artifacts';
 
     /**
+     * The file with app configuration
+     */
+    const MAGENTO_APP_YAML = '.magento.app.yaml';
+
+    /**
      * @inheritdoc
      */
     public function _initialize()

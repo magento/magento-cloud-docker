@@ -318,18 +318,25 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Changes configuration in the .magento.app.yaml file
+     * Returns array with app configuration
+     *
+     * @return array
+     */
+    public function readAppMagentoYaml(): array
+    {
+        return Yaml::parseFile($this->getWorkDirPath() . DIRECTORY_SEPARATOR . self::MAGENTO_APP_YAML);
+    }
+
+    /**
+     * Saves configuration in the .magento.app.yaml file
      *
      * @param array $data
      * @return bool
      */
-    public function changeAppMagentoYaml(array $data): bool
+    public function writeAppMagentoYaml(array $data): bool
     {
-        $pathToFile = $this->getWorkDirPath() . DIRECTORY_SEPARATOR . '.magento.app.yaml';
-
-        $dataFromFile = Yaml::parseFile($pathToFile);
-        return $this->taskWriteToFile($pathToFile)
-            ->line(Yaml::dump(array_replace($dataFromFile, $data), 10, 4, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK))
+        return $this->taskWriteToFile($this->getWorkDirPath() . DIRECTORY_SEPARATOR . self::MAGENTO_APP_YAML)
+            ->line(Yaml::dump($data, 10, 4, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK))
             ->run()
             ->wasSuccessful();
     }
