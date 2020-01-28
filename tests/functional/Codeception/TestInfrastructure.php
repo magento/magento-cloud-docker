@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Codeception;
 
+use Symfony\Component\Yaml\Yaml;
+
 /**
  * The module to work with test infrastructure
  */
@@ -311,6 +313,23 @@ class TestInfrastructure extends BaseModule
     {
         return $this->taskFilesystemStack()
             ->copy(codecept_data_dir($source), $this->getWorkDirPath() . DIRECTORY_SEPARATOR . $destination, true)
+            ->run()
+            ->wasSuccessful();
+    }
+
+    /**
+     * Changes configuration in the .magento.app.yaml file
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function changeAppMagentoYaml(array $data): bool
+    {
+        $pathToFile = $this->getWorkDirPath() . DIRECTORY_SEPARATOR . '.magento.app.yaml';
+
+        $dataFromFile = Yaml::parseFile($pathToFile);
+        return $this->taskWriteToFile($pathToFile)
+            ->line(Yaml::dump(array_replace($dataFromFile, $data), 10, 4, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK))
             ->run()
             ->wasSuccessful();
     }
