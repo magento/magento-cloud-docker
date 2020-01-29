@@ -303,20 +303,41 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Copies files from _data to work directory
+     * Copies file from _data to work directory
      *
      * @param string $source
      * @param string $destination
+     * @param bool $overwrite
      * @return bool
      */
-    public function copyToWorkDir(string $source, string $destination): bool
+    public function copyFileToWorkDir(string $source, string $destination, bool $overwrite = true): bool
     {
         if (strpos($source, '/') !== 0) {
             $source = codecept_data_dir($source);
         }
 
         return $this->taskFilesystemStack()
-            ->copy($source, $this->getWorkDirPath() . DIRECTORY_SEPARATOR . $destination, true)
+            ->copy($source, $this->getWorkDirPath() . DIRECTORY_SEPARATOR . $destination, $overwrite)
+            ->run()
+            ->wasSuccessful();
+    }
+
+    /**
+     * Copies directory from _data to work directory
+     *
+     * @param string $source
+     * @param string $destination
+     * @param bool $overwrite
+     * @return bool
+     */
+    public function copyDirToWorkDir(string $source, string $destination, bool $overwrite = true): bool
+    {
+        if (strpos($source, '/') !== 0) {
+            $source = codecept_data_dir($source);
+        }
+
+        return $this->taskCopyDir([$source => $this->getWorkDirPath() . DIRECTORY_SEPARATOR . $destination])
+            ->overwrite($overwrite)
             ->run()
             ->wasSuccessful();
     }
