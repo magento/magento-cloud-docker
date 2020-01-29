@@ -311,8 +311,12 @@ class TestInfrastructure extends BaseModule
      */
     public function copyToWorkDir(string $source, string $destination): bool
     {
+        if (strpos($source, '/') !== 0) {
+            $source = codecept_data_dir($source);
+        }
+
         return $this->taskFilesystemStack()
-            ->copy(codecept_data_dir($source), $this->getWorkDirPath() . DIRECTORY_SEPARATOR . $destination, true)
+            ->copy($source, $this->getWorkDirPath() . DIRECTORY_SEPARATOR . $destination, true)
             ->run()
             ->wasSuccessful();
     }
