@@ -51,6 +51,7 @@ class BuildCompose extends Command
     private const OPTION_MODE = 'mode';
     private const OPTION_SYNC_ENGINE = 'sync-engine';
     private const OPTION_NO_CRON = 'no-cron';
+    private const OPTION_NO_VARNISH = 'no-varnish';
     private const OPTION_WITH_SELENIUM = 'with-selenium';
 
     /**
@@ -206,13 +207,19 @@ class BuildCompose extends Command
                     'File sync engine. Works only with developer mode. Available: (%s)',
                     implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
                 ),
-                DeveloperBuilder::SYNC_ENGINE_DOCKER_SYNC
+                DeveloperBuilder::SYNC_ENGINE_NATIVE
             )
             ->addOption(
                 self::OPTION_NO_CRON,
                 null,
                 InputOption::VALUE_NONE,
                 'Remove cron container'
+            )
+            ->addOption(
+                self::OPTION_NO_VARNISH,
+                null,
+                InputOption::VALUE_NONE,
+                'Remove Varnish container'
             )
             ->addOption(
                 self::OPTION_WITH_SELENIUM,
@@ -255,6 +262,7 @@ class BuildCompose extends Command
         $config->set([
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
             ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON),
+            ProductionBuilder::KEY_NO_VARNISH => $input->getOption(self::OPTION_NO_VARNISH),
             ProductionBuilder::KEY_WITH_SELENIUM => $input->getOption(self::OPTION_WITH_SELENIUM)
         ]);
 
@@ -266,11 +274,16 @@ class BuildCompose extends Command
             $this->distGenerator->generate();
         }
 
-        $builder->setConfig($config);
+        $compose = $builder->build($config);
 
         $this->filesystem->put(
             $builder->getPath(),
-            Yaml::dump($builder->build(), 6, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
+            Yaml::dump([
+                'version' => $compose->getVersion(),
+                'services' => $compose->getServices(),
+                'volumes' => $compose->getVolumes(),
+                'networks' => $compose->getNetworks()
+            ], 6, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
         );
 
         $output->writeln('<info>Configuration was built.</info>');
