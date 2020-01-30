@@ -160,7 +160,7 @@ class TestInfrastructure extends BaseModule
     public function createArtifactCurrentTestedCode(string $name, string $version, array $skippedFiles = []): bool
     {
         $composerPath = codecept_root_dir('composer.json');
-        $composerRaw = file_get_contents($composerPath);
+        $composerRaw = trim(file_get_contents($composerPath));
         $composerArray = json_decode($composerRaw, true);
         $composerArray['version'] = $version;
 
