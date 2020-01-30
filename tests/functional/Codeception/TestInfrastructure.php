@@ -408,7 +408,7 @@ class TestInfrastructure extends BaseModule
     public function writeServicesYaml(array $data): bool
     {
         return $this->writeYamlConfiguration(
-            $this->getWorkDirPath() . DIRECTORY_SEPARATOR . self::MAGENTO_APP_YAML,
+            $this->getWorkDirPath() . DIRECTORY_SEPARATOR . self::MAGENTO_SERVICES_YAML,
             $data
         );
     }
