@@ -153,11 +153,23 @@ class TestInfrastructure extends BaseModule
      * Creates ZIP file with tested code
      *
      * @param string $name
+     * @param string $version
      * @param array $skippedFiles
      * @return bool
      */
-    public function createArtifactCurrentTestedCode(string $name, array $skippedFiles = []): bool
+    public function createArtifactCurrentTestedCode(string $name, string $version, array $skippedFiles = []): bool
     {
+        $composerPath = codecept_root_dir('composer.json');
+        $composerRaw = file_get_contents($composerPath);
+        $composerArray = json_decode($composerRaw, true);
+        $composerArray['version'] = $version;
+
+        // Set needed version
+        $resultTmpVersion = $this->taskWriteToFile($composerPath)
+            ->line(json_encode($composerArray))
+            ->run()
+            ->wasSuccessful();
+
         $skippedFiles = array_merge(
             ['..', '.', 'vendor', '.git', '_workdir', 'vendor', 'composer.lock'],
             $skippedFiles
@@ -168,10 +180,19 @@ class TestInfrastructure extends BaseModule
             $files[$file] = codecept_root_dir($file);
         }
 
-        return $this->taskPack($this->getArtifactsDir() . '/' . $name . '.zip')
+        // ZIP files
+        $resultZip = $this->taskPack($this->getArtifactsDir() . '/' . $name . '.zip')
             ->add($files)
             ->run()
             ->wasSuccessful();
+
+        // Revert original version
+        $resultRevert = $this->taskWriteToFile($composerPath)
+            ->line($composerRaw)
+            ->run()
+            ->wasSuccessful();
+
+        return $resultTmpVersion && $resultRevert && $resultZip;
     }
 
     /**
