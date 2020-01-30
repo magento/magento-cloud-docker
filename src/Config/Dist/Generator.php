@@ -108,6 +108,9 @@ class Generator
     {
         $result = "<?php\n\nreturn [";
         foreach ($config as $key => $value) {
+            if (isset($value['__remove_from_relationships'])) {
+                continue;
+            }
             $result .= "\n    '{$key}' => ";
             $result .= 'base64_encode(json_encode(' . $this->phpFormatter->varExport($value, 2) . ')),';
         }
