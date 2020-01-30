@@ -26,9 +26,9 @@ class AcceptanceCest
         $I->cloneTemplateToWorkDir(static::TEMPLATE_VERSION);
         $I->createAuthJson();
         $I->createArtifactsDir();
-        $I->createArtifactCurrentTestedCode('docker');
+        $I->createArtifactCurrentTestedCode('docker', '1.1.99');
         $I->addArtifactsRepoToComposer();
-        $I->addDependencyToComposer('magento/magento-cloud-docker', '1.1.0');
+        $I->addDependencyToComposer('magento/magento-cloud-docker', '1.1.99');
         $I->composerUpdate();
     }
 
