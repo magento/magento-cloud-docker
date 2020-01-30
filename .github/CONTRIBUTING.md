@@ -24,7 +24,7 @@ You must have a [GitHub account](https://help.github.com/en/github/getting-start
 
 ## Contribution process
 1. Search current [listed issues](https://github.com/magento/magento-cloud-docker/issues) (open or closed) for similar proposals of intended contribution before starting work on a new contribution.
-2. Review the [Contributor License Agreement](https://magento.com/legaldocuments/mca) if this is your first time contributing.
+2. Review and sign the [Contributor License Agreement (CLA)](https://opensource.adobe.com/cla.html) if this is your first time contributing. You only need to sign the CLA once.
 3. Create and test your work.
 4. Fork the Magento Cloud repository according to the [Fork A Repository instructions](https://devdocs.magento.com/guides/v2.3/contributor-guide/contributing.html#fork) and when you are ready to send us a pull request – follow the [Create A Pull Request instructions](https://devdocs.magento.com/guides/v2.3/contributor-guide/contributing.html#pull_request).
 5. After you submit the pull request, the Magento Cloud development team will review the contribution and collaborate with you as needed to incorporate your proposed changes.
