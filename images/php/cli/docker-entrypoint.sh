@@ -48,6 +48,10 @@ fi
 
 PHP_EXT_DIR=/usr/local/etc/php/conf.d
 
+# Substitute in php.ini values
+[ ! -z "${PHP_MEMORY_LIMIT}" ] && sed -i "s/!PHP_MEMORY_LIMIT!/${PHP_MEMORY_LIMIT}/" ${PHP_EXT_DIR}/zz-magento.ini
+[ ! -z "${UPLOAD_MAX_FILESIZE}" ] && sed -i "s/!UPLOAD_MAX_FILESIZE!/${UPLOAD_MAX_FILESIZE}/" ${PHP_EXT_DIR}/zz-magento.ini
+
 # Add custom php.ini if it exists
 [ -f "/app/php.ini" ] && cp /app/php.ini ${PHP_EXT_DIR}/zzz-custom-php.ini
 
@@ -60,9 +64,6 @@ if [ -x "$(command -v ${PHP_EXT_COM_ON})" ] && [ ! -z "${PHP_EXTENSIONS}" ]; the
       ${PHP_EXT_COM_ON} ${PHP_EXTENSIONS}
 fi
 
-# Substitute in php.ini values
-[ ! -z "${PHP_MEMORY_LIMIT}" ] && sed -i "s/!PHP_MEMORY_LIMIT!/${PHP_MEMORY_LIMIT}/" /usr/local/etc/php/conf.d/zz-magento.ini
-[ ! -z "${UPLOAD_MAX_FILESIZE}" ] && sed -i "s/!UPLOAD_MAX_FILESIZE!/${UPLOAD_MAX_FILESIZE}/" /usr/local/etc/php/conf.d/zz-magento.ini
 
 # Configure composer
 [ ! -z "${COMPOSER_GITHUB_TOKEN}" ] && \
