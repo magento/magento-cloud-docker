@@ -56,7 +56,6 @@ interface BuilderInterface
     public const VOLUME_MAGENTO_MEDIA = 'magento-media';
     public const VOLUME_MAGENTO_DB = 'magento-db';
     public const VOLUME_MAGENTO_DEV = 'magento-dev';
-    public const VOLUME_DOCKER_TMP = 'docker-tmp';
     public const VOLUME_DOCKER_MNT = 'docker-mnt';
 
     /**

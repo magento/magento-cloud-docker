@@ -174,13 +174,6 @@ class ProductionBuilder implements BuilderInterface
         }
 
         if ($this->getMountVolumes($config)) {
-            $volumes[self::VOLUME_DOCKER_TMP] = [
-                'driver_opts' => [
-                    'type' => 'none',
-                    'device' => $rootPath . '/.docker/tmp',
-                    'o' => 'bind'
-                ]
-            ];
             $volumes[self::VOLUME_DOCKER_MNT] = [
                 'driver_opts' => [
                     'type' => 'none',
@@ -553,7 +546,6 @@ class ProductionBuilder implements BuilderInterface
 
         return [
             self::VOLUME_DOCKER_MNT . ':/mnt',
-            self::VOLUME_DOCKER_TMP . ':/tmp'
         ];
     }
 }
