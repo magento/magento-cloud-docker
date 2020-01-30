@@ -51,6 +51,11 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
     const MAGENTO_APP_YAML = '.magento.app.yaml';
 
     /**
+     * The file with defined services
+     */
+    const MAGENTO_SERVICES_YAML = '.magento' . DIRECTORY_SEPARATOR . 'services.yaml';
+
+    /**
      * @inheritdoc
      */
     public function _initialize()

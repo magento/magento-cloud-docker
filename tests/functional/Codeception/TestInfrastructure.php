@@ -364,13 +364,13 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Returns array with app configuration
+     * Returns array from .magento.app.yaml
      *
      * @return array
      */
     public function readAppMagentoYaml(): array
     {
-        return Yaml::parseFile($this->getWorkDirPath() . DIRECTORY_SEPARATOR . self::MAGENTO_APP_YAML);
+        return $this->readYamlConfiguration($this->getWorkDirPath() . DIRECTORY_SEPARATOR . self::MAGENTO_APP_YAML);
     }
 
     /**
@@ -381,7 +381,55 @@ class TestInfrastructure extends BaseModule
      */
     public function writeAppMagentoYaml(array $data): bool
     {
-        return $this->taskWriteToFile($this->getWorkDirPath() . DIRECTORY_SEPARATOR . self::MAGENTO_APP_YAML)
+        return $this->writeYamlConfiguration(
+            $this->getWorkDirPath() . DIRECTORY_SEPARATOR . self::MAGENTO_APP_YAML,
+            $data
+        );
+    }
+
+    /**
+     * Returns array from .magento/services.yaml
+     *
+     * @return array
+     */
+    public function readServicesYaml(): array
+    {
+        return $this->readYamlConfiguration(
+            $this->getWorkDirPath() . DIRECTORY_SEPARATOR . self::MAGENTO_SERVICES_YAML
+        );
+    }
+
+    /**
+     * Saves configuration in the .magento/services.yaml file
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function writeServicesYaml(array $data): bool
+    {
+        return $this->writeYamlConfiguration(
+            $this->getWorkDirPath() . DIRECTORY_SEPARATOR . self::MAGENTO_APP_YAML,
+            $data
+        );
+    }
+
+    /**
+     * @param string $path
+     * @return array
+     */
+    private function readYamlConfiguration(string $path): array
+    {
+        return Yaml::parseFile($path);
+    }
+
+    /**
+     * @param string $path
+     * @param array $data
+     * @return bool
+     */
+    private function writeYamlConfiguration(string $path, array $data): bool
+    {
+        return $this->taskWriteToFile($path)
             ->line(Yaml::dump($data, 10, 4, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK))
             ->run()
             ->wasSuccessful();
