@@ -30,9 +30,16 @@ fi
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
 
+CRON_LOG=/var/log/cron.log
+
 if [ ! -z "${CRONTAB}" ]; then
     echo "${CRONTAB}" > /etc/cron.d/magento
 fi
+
+# Get rsyslog running for cron output
+touch $CRON_LOG
+echo "cron.* $CRON_LOG" > /etc/rsyslog.d/cron.conf
+service rsyslog start
 
 # Configure Sendmail if required
 if [ "$ENABLE_SENDMAIL" == "true" ]; then
@@ -45,6 +52,10 @@ PHP_EXT_DIR=/usr/local/etc/php/conf.d
 [ ! -z "${PHP_MEMORY_LIMIT}" ] && sed -i "s/!PHP_MEMORY_LIMIT!/${PHP_MEMORY_LIMIT}/" ${PHP_EXT_DIR}/zz-magento.ini
 [ ! -z "${UPLOAD_MAX_FILESIZE}" ] && sed -i "s/!UPLOAD_MAX_FILESIZE!/${UPLOAD_MAX_FILESIZE}/" ${PHP_EXT_DIR}/zz-magento.ini
 
+# Add custom php.ini if it exists
+[ -f "/app/php.ini" ] && cp /app/php.ini ${PHP_EXT_DIR}/zzz-custom-php.ini
+
+
 # Enable PHP extensions
 PHP_EXT_COM_ON=docker-php-ext-enable
 
@@ -53,7 +64,6 @@ PHP_EXT_COM_ON=docker-php-ext-enable
 if [ -x "$(command -v ${PHP_EXT_COM_ON})" ] && [ ! -z "${PHP_EXTENSIONS}" ]; then
       ${PHP_EXT_COM_ON} ${PHP_EXTENSIONS}
 fi
-
 
 # Configure composer
 [ ! -z "${COMPOSER_GITHUB_TOKEN}" ] && \
