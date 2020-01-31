@@ -30,12 +30,12 @@ class VolumeResolver
             ],
             BuilderInterface::VOLUME_MAGENTO_VENDOR => [
                 'path' => BuilderInterface::DIR_MAGENTO . '/vendor',
-                'volume' => 'vendor',
+                'volume' => '/vendor',
                 'mode' => $mode,
             ],
             BuilderInterface::VOLUME_MAGENTO_GENERATED => [
                 'path' => BuilderInterface::DIR_MAGENTO . '/generated',
-                'volume' => 'generated',
+                'volume' => '/generated',
                 'mode' => $mode
             ]
         ];
@@ -56,7 +56,7 @@ class VolumeResolver
 
             $volumes[$volumeName] = [
                 'path' => BuilderInterface::DIR_MAGENTO . '/' . $volume,
-                'volume' => $volume,
+                'volume' => '/' . $volume,
                 'mode' => 'rw'
             ];
         }

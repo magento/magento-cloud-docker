@@ -18,9 +18,8 @@ class Resolver
      * @param string $path
      * @return string
      */
-    public function getRootPath(string $path = ''): string
+    public function getRootPath(string $path = '/'): string
     {
-
         /**
          * For Windows we'll define variable in .env file
          *
@@ -30,6 +29,6 @@ class Resolver
             return '${WINDOWS_PWD}' . $path;
         }
 
-        return '${PWD}' . '/' . ltrim($path, '/');
+        return '${PWD}' . $path;
     }
 }

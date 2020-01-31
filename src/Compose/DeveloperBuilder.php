@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Compose;
 
 use Illuminate\Contracts\Config\Repository;
+use Magento\CloudDocker\Compose\ProductionBuilder\VolumeResolver;
 use Magento\CloudDocker\Filesystem\FileList;
 
 /**
@@ -44,15 +45,26 @@ class DeveloperBuilder implements BuilderInterface
     private $resolver;
 
     /**
+     * @var VolumeResolver
+     */
+    private $volumeResolver;
+
+    /**
      * @param BuilderFactory $builderFactory
      * @param FileList $fileList
      * @param Resolver $resolver
+     * @param VolumeResolver $volumeResolver
      */
-    public function __construct(BuilderFactory $builderFactory, FileList $fileList, Resolver $resolver)
-    {
+    public function __construct(
+        BuilderFactory $builderFactory,
+        FileList $fileList,
+        Resolver $resolver,
+        VolumeResolver $volumeResolver
+    ) {
         $this->builderFactory = $builderFactory;
         $this->fileList = $fileList;
         $this->resolver = $resolver;
+        $this->volumeResolver = $volumeResolver;
     }
 
     /**
@@ -120,6 +132,14 @@ class DeveloperBuilder implements BuilderInterface
                 ]
             )
         ]);
+        $manager->updateService(self::SERVICE_BUILD, [
+            'volumes' => array_merge(
+                $volumes,
+                $this->volumeResolver->normalize(
+                    $this->volumeResolver->getComposerVolumes()
+                )
+            )
+        ]);
 
         return $manager;
     }
@@ -144,7 +164,7 @@ class DeveloperBuilder implements BuilderInterface
         }
 
         return [
-            self::VOLUME_MAGENTO_SYNC . ':' . $target
+            self::VOLUME_MAGENTO_SYNC . ':' . $target . ':delegated',
         ];
     }
 }
