@@ -127,6 +127,8 @@ class ProductionBuilder implements BuilderInterface
      * @param EnvReader $envReader
      * @param AppReader $appReader
      * @param VolumeResolver $volumeResolver
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         ServiceFactory $serviceFactory,
@@ -171,8 +173,6 @@ class ProductionBuilder implements BuilderInterface
 
         $manager->addNetwork(self::NETWORK_MAGENTO, ['driver' => 'bridge']);
         $manager->addNetwork(self::NETWORK_MAGENTO_BUILD, ['driver' => 'bridge']);
-
-        $rootPath = $this->resolver->getRootPath();
 
         $volumes = [
             self::VOLUME_MAGENTO_DB => [],

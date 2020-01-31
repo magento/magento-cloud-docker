@@ -73,6 +73,16 @@ class BuildCompose extends Command
     ];
 
     /**
+     * Available engines per mode.
+     *
+     * @var array
+     */
+    private static $enginesMap = [
+        BuilderFactory::BUILDER_DEVELOPER => DeveloperBuilder::SYNC_ENGINES_LIST,
+        BuilderFactory::BUILDER_PRODUCTION => ProductionBuilder::SYNC_ENGINES_LIST
+    ];
+
+    /**
      * @var BuilderFactory
      */
     private $builderFactory;
@@ -241,29 +251,24 @@ class BuildCompose extends Command
         $mode = $input->getOption(self::OPTION_MODE);
         $syncEngine = $input->getOption(self::OPTION_SYNC_ENGINE);
 
-        $builder = $this->builderFactory->create($mode);
-        $config = $this->configFactory->create();
-
         if ($mode === BuilderFactory::BUILDER_DEVELOPER && $syncEngine === null) {
             $syncEngine = DeveloperBuilder::SYNC_ENGINE_NATIVE;
         } elseif ($mode === BuilderFactory::BUILDER_PRODUCTION && $syncEngine === null) {
             $syncEngine = ProductionBuilder::SYNC_ENGINE_MOUNT;
         }
 
-        $availableEngines = [
-            BuilderFactory::BUILDER_DEVELOPER => DeveloperBuilder::SYNC_ENGINES_LIST,
-            BuilderFactory::BUILDER_PRODUCTION => ProductionBuilder::SYNC_ENGINES_LIST
-        ];
-
-        if (isset($availableEngines[$mode])
-            && !in_array($syncEngine, $availableEngines[$mode], true)
+        if (isset(self::$enginesMap[$mode])
+            && !in_array($syncEngine, self::$enginesMap[$mode], true)
         ) {
             throw new GenericException(sprintf(
                 "File sync engine '%s' is not supported. Available: %s",
                 $syncEngine,
-                implode(', ', $availableEngines[$mode])
+                implode(', ', self::$enginesMap[$mode])
             ));
         }
+
+        $builder = $this->builderFactory->create($mode);
+        $config = $this->configFactory->create();
 
         array_walk(self::$optionsMap, static function ($key, $option) use ($config, $input) {
             if ($value = $input->getOption($option)) {

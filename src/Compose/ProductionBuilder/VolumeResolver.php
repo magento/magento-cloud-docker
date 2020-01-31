@@ -9,6 +9,9 @@ namespace Magento\CloudDocker\Compose\ProductionBuilder;
 
 use Magento\CloudDocker\Compose\BuilderInterface;
 
+/**
+ * Resolves the volume definitions.
+ */
 class VolumeResolver
 {
     /**
