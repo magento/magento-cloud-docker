@@ -205,9 +205,10 @@ class BuildCompose extends Command
                 InputOption::VALUE_REQUIRED,
                 sprintf(
                     'File sync engine. Works only with developer mode. Available: (%s)',
-                    implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
-                ),
-                DeveloperBuilder::SYNC_ENGINE_NATIVE
+                    implode(', ', array_unique(
+                        array_merge(DeveloperBuilder::SYNC_ENGINES_LIST, ProductionBuilder::SYNC_ENGINES_LIST)
+                    ))
+                )
             )
             ->addOption(
                 self::OPTION_NO_CRON,
@@ -237,19 +238,30 @@ class BuildCompose extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $type = $input->getOption(self::OPTION_MODE);
+        $mode = $input->getOption(self::OPTION_MODE);
         $syncEngine = $input->getOption(self::OPTION_SYNC_ENGINE);
 
-        $builder = $this->builderFactory->create($type);
+        $builder = $this->builderFactory->create($mode);
         $config = $this->configFactory->create();
 
-        if (BuilderFactory::BUILDER_DEVELOPER === $type
-            && !in_array($syncEngine, DeveloperBuilder::SYNC_ENGINES_LIST, true)
+        if ($mode === BuilderFactory::BUILDER_DEVELOPER && $syncEngine === null) {
+            $syncEngine = DeveloperBuilder::SYNC_ENGINE_NATIVE;
+        } elseif ($mode === BuilderFactory::BUILDER_PRODUCTION && $syncEngine === null) {
+            $syncEngine = ProductionBuilder::SYNC_ENGINE_MOUNT;
+        }
+
+        $availableEngines = [
+            BuilderFactory::BUILDER_DEVELOPER => DeveloperBuilder::SYNC_ENGINES_LIST,
+            BuilderFactory::BUILDER_PRODUCTION => ProductionBuilder::SYNC_ENGINES_LIST
+        ];
+
+        if (isset($availableEngines[$mode])
+            && !in_array($syncEngine, $availableEngines[$mode], true)
         ) {
             throw new GenericException(sprintf(
                 "File sync engine '%s' is not supported. Available: %s",
                 $syncEngine,
-                implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
+                implode(', ', $availableEngines[$mode])
             ));
         }
 

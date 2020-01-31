@@ -19,9 +19,6 @@ class DeveloperBuilder implements BuilderInterface
 {
     public const SYNC_ENGINE_DOCKER_SYNC = 'docker-sync';
     public const SYNC_ENGINE_MUTAGEN = 'mutagen';
-    public const SYNC_ENGINE_NATIVE = 'native';
-
-    public const KEY_SYNC_ENGINE = 'sync-engine';
 
     public const VOLUME_MAGENTO_SYNC = 'magento-sync';
 
@@ -86,7 +83,14 @@ class DeveloperBuilder implements BuilderInterface
 
         $manager->setVolumes([
             self::VOLUME_MAGENTO_SYNC => $syncConfig,
-            self::VOLUME_MAGENTO_DB => []
+            self::VOLUME_MAGENTO_DB => [],
+            self::VOLUME_DOCKER_ETRYPOINT => [
+                'driver_opts' => [
+                    'type' => 'none',
+                    'device' => $this->resolver->getRootPath('/.docker/mysql/docker-entrypoint-initdb.d'),
+                    'o' => 'bind'
+                ]
+            ]
         ]);
 
         /**
@@ -112,7 +116,7 @@ class DeveloperBuilder implements BuilderInterface
                 $volumes,
                 [
                     self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
-                    '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
+                    self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d'
                 ]
             )
         ]);
