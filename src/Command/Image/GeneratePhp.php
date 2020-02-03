@@ -8,9 +8,9 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Command\Image;
 
 use Composer\Semver\Semver;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Filesystem\FileNotFoundException;
+use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Symfony\Component\Console\Command\Command;

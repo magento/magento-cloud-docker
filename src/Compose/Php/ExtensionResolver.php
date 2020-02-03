@@ -255,6 +255,9 @@ class ExtensionResolver
                     self::EXTENSION_CONFIGURE_OPTIONS => ['--enable-opcache'],
                 ],
             ],
+            'pcov' => [
+                '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
+            ],
             'pdo_mysql' => [
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],

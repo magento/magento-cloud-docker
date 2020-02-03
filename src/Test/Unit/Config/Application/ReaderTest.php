@@ -7,9 +7,9 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Unit\Config\Application;
 
-use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\Config\Application\Reader;
 use Magento\CloudDocker\Filesystem\FileList;
+use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -54,7 +54,10 @@ class ReaderTest extends TestCase
         );
     }
 
-    public function testReadEmpty()
+    /**
+     * @throws FilesystemException
+     */
+    public function testReadEmpty(): void
     {
         $this->expectException(FilesystemException::class);
         $this->expectExceptionMessage('PHP version could not be parsed.');
@@ -66,7 +69,10 @@ class ReaderTest extends TestCase
         $this->reader->read();
     }
 
-    public function testReadWithPhp()
+    /**
+     * @throws FilesystemException
+     */
+    public function testReadWithPhp(): void
     {
         $this->expectException(FilesystemException::class);
         $this->expectExceptionMessage('Relationships could not be parsed.');
@@ -74,14 +80,17 @@ class ReaderTest extends TestCase
         $this->filesystemMock->expects($this->exactly(2))
             ->method('get')
             ->willReturnMap([
-                ['/root/.magento.app.yaml', false, Yaml::dump(['type' => 'php:7.1'])],
-                ['/root/.magento/services.yaml', false, Yaml::dump([])]
+                ['/root/.magento.app.yaml', Yaml::dump(['type' => 'php:7.1'])],
+                ['/root/.magento/services.yaml', Yaml::dump([])]
             ]);
 
         $this->reader->read();
     }
 
-    public function testReadWithMultipleSameServices()
+    /**
+     * @throws FilesystemException
+     */
+    public function testReadWithMultipleSameServices(): void
     {
         $this->expectException(FilesystemException::class);
         $this->expectExceptionMessage('Only one instance of service "elasticsearch" supported');
@@ -91,7 +100,6 @@ class ReaderTest extends TestCase
             ->willReturnMap([
                 [
                     '/root/.magento.app.yaml',
-                    false,
                     Yaml::dump([
                         'type' => 'php:7.1',
                         'relationships' => [
@@ -103,7 +111,6 @@ class ReaderTest extends TestCase
                 ],
                 [
                     '/root/.magento/services.yaml',
-                    false,
                     Yaml::dump([
                         'mysql' => [
                             'type' => 'mysql:10.0',
@@ -145,7 +152,10 @@ class ReaderTest extends TestCase
         ], $this->reader->read());
     }
 
-    public function testReadWithMissedService()
+    /**
+     * @throws FilesystemException
+     */
+    public function testReadWithMissedService(): void
     {
         $this->expectException(FilesystemException::class);
         $this->expectExceptionMessage('Service with name "myrabbitmq" could not be parsed');
@@ -155,7 +165,6 @@ class ReaderTest extends TestCase
             ->willReturnMap([
                 [
                     '/root/.magento.app.yaml',
-                    false,
                     Yaml::dump([
                         'type' => 'php:7.1',
                         'relationships' => [
@@ -167,7 +176,6 @@ class ReaderTest extends TestCase
                 ],
                 [
                     '/root/.magento/services.yaml',
-                    false,
                     Yaml::dump([
                         'mysql' => [
                             'type' => 'mysql:10.0',
@@ -184,29 +192,16 @@ class ReaderTest extends TestCase
         $this->reader->read();
     }
 
-    public function testReadBroken()
-    {
-        $this->expectException(FilesystemException::class);
-        $this->expectExceptionMessage('Some error');
-
-        $this->fileListMock->expects($this->once())
-            ->method('getAppConfig')
-            ->willThrowException(new \Exception('Some error'));
-
-        $this->reader->read();
-    }
-
     /**
-     * @throws FileSystemException
+     * @throws FilesystemException
      */
-    public function testRead()
+    public function testRead(): void
     {
         $this->filesystemMock->expects($this->exactly(2))
             ->method('get')
             ->willReturnMap([
                 [
                     '/root/.magento.app.yaml',
-                    false,
                     Yaml::dump([
                         'type' => 'php:7.1',
                         'relationships' => [
@@ -219,7 +214,6 @@ class ReaderTest extends TestCase
                 ],
                 [
                     '/root/.magento/services.yaml',
-                    false,
                     Yaml::dump([
                         'mysql' => [
                             'type' => 'mysql:10.0',
