@@ -72,7 +72,7 @@ class VolumeResolver
         return $volumes;
     }
 
-    /***
+    /**
      * @return array
      */
     public function getComposerVolumes(): array

@@ -23,7 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Builds Docker configuration for Magento project.
+ * Builds Docker configuration for Magento project
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
@@ -55,7 +55,7 @@ class BuildCompose extends Command
     private const OPTION_WITH_SELENIUM = 'with-selenium';
 
     /**
-     * Option key to config name map.
+     * Option key to config name map
      *
      * @var array
      */
@@ -73,7 +73,7 @@ class BuildCompose extends Command
     ];
 
     /**
-     * Available engines per mode.
+     * Available engines per mode
      *
      * @var array
      */
@@ -252,9 +252,9 @@ class BuildCompose extends Command
         $syncEngine = $input->getOption(self::OPTION_SYNC_ENGINE);
 
         if ($mode === BuilderFactory::BUILDER_DEVELOPER && $syncEngine === null) {
-            $syncEngine = DeveloperBuilder::SYNC_ENGINE_NATIVE;
+            $syncEngine = DeveloperBuilder::DEFAULT_SYNC_ENGINE;
         } elseif ($mode === BuilderFactory::BUILDER_PRODUCTION && $syncEngine === null) {
-            $syncEngine = ProductionBuilder::SYNC_ENGINE_MOUNT;
+            $syncEngine = ProductionBuilder::DEFAULT_SYNC_ENGINE;
         }
 
         if (isset(self::$enginesMap[$mode])

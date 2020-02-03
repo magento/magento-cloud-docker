@@ -20,6 +20,7 @@ class DeveloperBuilder implements BuilderInterface
 {
     public const SYNC_ENGINE_DOCKER_SYNC = 'docker-sync';
     public const SYNC_ENGINE_MUTAGEN = 'mutagen';
+    public const DEFAULT_SYNC_ENGINE = self::SYNC_ENGINE_NATIVE;
 
     public const VOLUME_MAGENTO_SYNC = 'magento-sync';
 

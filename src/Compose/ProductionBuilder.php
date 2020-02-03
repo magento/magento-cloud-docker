@@ -35,6 +35,7 @@ class ProductionBuilder implements BuilderInterface
     ];
 
     public const SYNC_ENGINE_MOUNT = 'mount';
+    public const DEFAULT_SYNC_ENGINE = self::SYNC_ENGINE_MOUNT;
 
     /**
      * @var array
