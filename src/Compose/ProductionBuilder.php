@@ -216,7 +216,8 @@ class ProductionBuilder implements BuilderInterface
                     'volumes' => array_merge(
                         [
                             self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
-                            '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
+                            '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d',
+                            '.docker/mysql/mariadb.conf.d:/etc/mysql/mariadb.conf.d',
                         ],
                         $this->getMountVolumes($config)
                     )
