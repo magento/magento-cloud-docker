@@ -5,18 +5,18 @@
  */
 declare(strict_types=1);
 
-namespace Magento\CloudDocker\Config\Application;
+namespace Magento\CloudDocker\Config\Compose;
 
+use Illuminate\Config\Repository;
 use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Symfony\Component\Yaml\Yaml;
-use Magento\CloudDocker\Config\ReaderInterface;
 
 /**
  * Read and combine infrastructure configuration.
  */
-class Reader implements ReaderInterface
+class CloudReader implements ReaderInterface
 {
     /**
      * @var FileList
@@ -41,8 +41,15 @@ class Reader implements ReaderInterface
     /**
      * @inheritdoc
      */
-    public function read(): array
+    public function read(): Repository
     {
+        $appConfigFile = $this->fileList->getAppConfig();
+        $servicesConfigFile = $this->fileList->getServicesConfig();
+
+        if (!$this->filesystem->exists($appConfigFile) || !$this->filesystem->exists($servicesConfigFile)) {
+            return new Repository();
+        }
+
         try {
             $appConfig = Yaml::parse(
                 $this->filesystem->get($this->fileList->getAppConfig())
@@ -63,18 +70,28 @@ class Reader implements ReaderInterface
         }
 
         $config = [
-            'type' => $appConfig['type'],
-            'crons' => $appConfig['crons'] ?? [],
-            'services' => [],
-            'runtime' => [
-                'extensions' => $appConfig['runtime']['extensions'] ?? [],
-                'disabled_extensions' => $appConfig['runtime']['disabled_extensions'] ?? []
-            ],
-            'mounts' => $appConfig['mounts'] ?? []
+            self::TYPE => $appConfig['type'],
+            self::SERVICES => [],
         ];
 
+        if (!empty($appConfig['crons'])) {
+            $config[self::CRONS] = $appConfig['crons'];
+        }
+
+        if (!empty($appConfig['mounts'])) {
+            $config[self::MOUNTS] = $appConfig['mounts'];
+        }
+
+        if (!empty($appConfig['runtime']['extensions'])) {
+            $config[self::RUNTIME_EXTENSIONS] = $appConfig['runtime']['extensions'];
+        }
+
+        if (!empty($appConfig['runtime']['disabled_extensions'])) {
+            $config[self::RUNTIME_DISABLED_EXTENSIONS] = $appConfig['runtime']['disabled_extensions'];
+        }
+
         foreach ($appConfig['relationships'] as $constraint) {
-            list($name) = explode(':', $constraint);
+            [$name] = explode(':', $constraint);
 
             if (!isset($servicesConfig[$name]['type'])) {
                 throw new FilesystemException(sprintf(
@@ -83,7 +100,7 @@ class Reader implements ReaderInterface
                 ));
             }
 
-            list($service, $version) = explode(':', $servicesConfig[$name]['type']);
+            [$service, $version] = explode(':', $servicesConfig[$name]['type']);
 
             if (array_key_exists($service, $config['services'])) {
                 throw new FilesystemException(sprintf(
@@ -92,12 +109,12 @@ class Reader implements ReaderInterface
                 ));
             }
 
-            $config['services'][$service] = [
+            $config[self::SERVICES][$service] = [
                 'service' => $service,
                 'version' => $version
             ];
         }
 
-        return $config;
+        return new Repository($config);
     }
 }

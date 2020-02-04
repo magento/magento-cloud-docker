@@ -9,7 +9,7 @@ namespace Magento\CloudDocker\Test\Unit\Service;
 
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Config\Application\Reader;
+use Magento\CloudDocker\Config\Compose\CloudReader;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceInterface;
@@ -27,7 +27,7 @@ class ConfigTest extends TestCase
     private $version;
 
     /**
-     * @var Reader|MockObject
+     * @var CloudReader|MockObject
      */
     private $readerMock;
 
@@ -36,7 +36,7 @@ class ConfigTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->readerMock = $this->createMock(Reader::class);
+        $this->readerMock = $this->createMock(CloudReader::class);
 
         $this->version = new Config($this->readerMock);
     }

@@ -12,6 +12,7 @@ use Magento\CloudDocker\App\GenericException;
 use Magento\CloudDocker\Compose\DeveloperBuilder;
 use Magento\CloudDocker\Compose\BuilderFactory;
 use Magento\CloudDocker\Compose\ProductionBuilder;
+use Magento\CloudDocker\Config\Compose;
 use Magento\CloudDocker\Config\ConfigFactory;
 use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Service\ServiceFactory;
@@ -93,21 +94,34 @@ class BuildCompose extends Command
     private $filesystem;
 
     /**
+     * @var Compose
+     */
+    private $config;
+
+    /**
+     * @var Compose\CloudReader
+     */
+    private $cloudReader;
+
+    /**
      * @param BuilderFactory $composeFactory
      * @param Generator $distGenerator
      * @param ConfigFactory $configFactory
      * @param Filesystem $filesystem
+     * @param Compose\CloudReader $cloudReader
      */
     public function __construct(
         BuilderFactory $composeFactory,
         Generator $distGenerator,
         ConfigFactory $configFactory,
-        Filesystem $filesystem
+        Filesystem $filesystem,
+        Compose\CloudReader $cloudReader
     ) {
         $this->builderFactory = $composeFactory;
         $this->distGenerator = $distGenerator;
         $this->configFactory = $configFactory;
         $this->filesystem = $filesystem;
+        $this->cloudReader = $cloudReader;
 
         parent::__construct();
     }
@@ -258,6 +272,11 @@ class BuildCompose extends Command
                 $config->set($key, $value);
             }
         });
+
+        $composeConfig = (new Compose([
+            $this->cloudReader,
+            new Compose\CliReader($input)
+        ]))->read();
 
         $config->set([
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,

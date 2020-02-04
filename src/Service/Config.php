@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Service;
 
-use Magento\CloudDocker\Config\Application\Reader;
+use Magento\CloudDocker\Config\Compose\CloudReader;
 use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\FilesystemException;
@@ -33,14 +33,14 @@ class Config
     ];
 
     /**
-     * @var Reader
+     * @var CloudReader
      */
     private $reader;
 
     /**
-     * @param Reader $reader
+     * @param CloudReader $reader
      */
-    public function __construct(Reader $reader)
+    public function __construct(CloudReader $reader)
     {
         $this->reader = $reader;
     }
@@ -107,7 +107,7 @@ class Config
     {
         try {
             $config = $this->reader->read();
-            list($type, $version) = explode(':', $config['type']);
+            [$type, $version] = explode(':', $config['type']);
         } catch (FilesystemException $exception) {
             throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
         }

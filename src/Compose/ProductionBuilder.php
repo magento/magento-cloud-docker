@@ -12,7 +12,7 @@ use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
-use Magento\CloudDocker\Config\Application\Reader as AppReader;
+use Magento\CloudDocker\Config\Compose\CloudReader as AppReader;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\Config;
