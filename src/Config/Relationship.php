@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config;
 
-use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Service\ServiceInterface;
 
@@ -72,11 +71,11 @@ class Relationship
      *
      * @throws ConfigurationMismatchException
      */
-    public function get(): array
+    public function get(Config $config): array
     {
         $relationships = [];
         foreach (self::$defaultConfiguration as $serviceName => $serviceConfig) {
-            if ($this->config->getServiceVersion($this->convertServiceName($serviceName))) {
+            if ($config->getServiceVersion($this->convertServiceName($serviceName))) {
                 $relationships[$serviceName] = $serviceConfig;
             }
         }

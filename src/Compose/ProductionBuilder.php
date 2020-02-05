@@ -9,13 +9,13 @@ namespace Magento\CloudDocker\Compose;
 
 use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
+use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
-use Magento\CloudDocker\Config\Compose\CloudReader as AppReader;
+use Magento\CloudDocker\Config\Reader\CloudReader as AppReader;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
-use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 
@@ -64,11 +64,6 @@ class ProductionBuilder implements BuilderInterface
     private $serviceFactory;
 
     /**
-     * @var Config
-     */
-    private $serviceConfig;
-
-    /**
      * @var Converter
      */
     private $converter;
@@ -105,7 +100,6 @@ class ProductionBuilder implements BuilderInterface
 
     /**
      * @param ServiceFactory $serviceFactory
-     * @param Config $serviceConfig
      * @param FileList $fileList
      * @param Converter $converter
      * @param ExtensionResolver $phpExtension
@@ -116,7 +110,6 @@ class ProductionBuilder implements BuilderInterface
      */
     public function __construct(
         ServiceFactory $serviceFactory,
-        Config $serviceConfig,
         FileList $fileList,
         Converter $converter,
         ExtensionResolver $phpExtension,
@@ -126,7 +119,6 @@ class ProductionBuilder implements BuilderInterface
         AppReader $appReader
     ) {
         $this->serviceFactory = $serviceFactory;
-        $this->serviceConfig = $serviceConfig;
         $this->fileList = $fileList;
         $this->converter = $converter;
         $this->phpExtension = $phpExtension;
@@ -143,14 +135,13 @@ class ProductionBuilder implements BuilderInterface
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public function build(Repository $config): Manager
+    public function build(Config $config): Manager
     {
         $manager = $this->managerFactory->create();
 
-        $phpVersion = $config->get(ServiceInterface::NAME_PHP) ?: $this->serviceConfig->getPhpVersion();
-        $dbVersion = $config->get(ServiceInterface::NAME_DB)
-            ?: $this->getServiceVersion(ServiceInterface::NAME_DB);
-        $hostPort = $config->get(self::KEY_EXPOSE_DB_PORT);
+        $phpVersion = $config->getPhpVersion();
+        $dbVersion = $config->getServiceVersion(ServiceInterface::NAME_DB);
+        $hostPort = $config->hasDbPortsExpose();
         $dbPorts = $hostPort ? "$hostPort:3306" : '3306';
 
         $manager->addNetwork(self::NETWORK_MAGENTO, ['driver' => 'bridge']);
@@ -169,7 +160,7 @@ class ProductionBuilder implements BuilderInterface
             self::VOLUME_MAGENTO_DB => []
         ];
 
-        if ($this->hasSelenium($config)) {
+        if ($this->hasSelenium()) {
             $manager->addVolume(self::VOLUME_MAGENTO_DEV, []);
         }
 
@@ -227,7 +218,7 @@ class ProductionBuilder implements BuilderInterface
         );
 
         foreach (self::$standaloneServices as $service) {
-            $serviceVersion = $config->get($service) ?: $this->getServiceVersion($service);
+            $serviceVersion = $config->getServiceVersion($service);
 
             if ($serviceVersion) {
                 $manager->addService(
@@ -300,7 +291,7 @@ class ProductionBuilder implements BuilderInterface
             [$tlsBackendService => []]
         );
 
-        if ($this->hasSelenium($config)) {
+        if ($config->hasSelenium()) {
             $manager->addService(
                 self::SERVICE_SELENIUM,
                 $this->serviceFactory->create(
@@ -353,11 +344,11 @@ class ProductionBuilder implements BuilderInterface
             self::$cliDepends
         );
 
-        if (!$config->get(self::KEY_NO_CRON, false)) {
+        if ($config->hasCron()) {
             $manager->addService(
                 self::SERVICE_CRON,
                 array_merge(
-                    $this->getCronCliService($phpVersion),
+                    $this->getCronCliService($phpVersion, $config->getCron()),
                     ['volumes' => $volumesRo]
                 ),
                 [self::NETWORK_MAGENTO],
@@ -369,42 +360,29 @@ class ProductionBuilder implements BuilderInterface
     }
 
     /**
-     * @param Repository $config
-     * @return bool
-     */
-    private function hasSelenium(Repository $config): bool
-    {
-        return $config->get(self::KEY_WITH_SELENIUM)
-            || $config->get(ServiceInterface::NAME_SELENIUM)
-            || $config->get(ServiceFactory::SERVICE_SELENIUM_IMAGE);
-    }
-
-    /**
      * @param string $version
+     * @param array $cronConfig
      * @return array
      * @throws ConfigurationMismatchException
      */
-    private function getCronCliService(string $version): array
+    private function getCronCliService(string $version, array $cronConfig): array
     {
         $config = $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $version, ['command' => 'run-cron']);
+        $preparedCronConfig = [];
 
-        if ($cronConfig = $this->serviceConfig->getCron()) {
-            $preparedCronConfig = [];
-
-            foreach ($cronConfig as $job) {
-                $preparedCronConfig[] = sprintf(
-                    '%s root cd %s && %s >> %s/var/log/cron.log',
-                    $job['spec'],
-                    self::DIR_MAGENTO,
-                    str_replace('php ', '/usr/local/bin/php ', $job['cmd']),
-                    self::DIR_MAGENTO
-                );
-            }
-
-            $config['environment'] = [
-                'CRONTAB' => implode(PHP_EOL, $preparedCronConfig)
-            ];
+        foreach ($cronConfig as $job) {
+            $preparedCronConfig[] = sprintf(
+                '%s root cd %s && %s >> %s/var/log/cron.log',
+                $job['spec'],
+                self::DIR_MAGENTO,
+                str_replace('php ', '/usr/local/bin/php ', $job['cmd']),
+                self::DIR_MAGENTO
+            );
         }
+
+        $config['environment'] = [
+            'CRONTAB' => implode(PHP_EOL, $preparedCronConfig)
+        ];
 
         return $config;
     }
@@ -418,11 +396,11 @@ class ProductionBuilder implements BuilderInterface
     }
 
     /**
-     * @param Repository $config
+     * @param Config $config
      * @return array
      * @throws ConfigurationMismatchException
      */
-    private function getVariables(Repository $config): array
+    private function getVariables(Config $config): array
     {
         try {
             $envConfig = $this->envReader->read();
@@ -440,21 +418,11 @@ class ProductionBuilder implements BuilderInterface
             'XDEBUG_CONFIG' => 'remote_host=host.docker.internal',
         ];
 
-        if ($this->hasSelenium($config)) {
+        if ($config->hasSelenium()) {
             $variables['MFTF_UTILS'] = 1;
         }
 
         return array_merge($variables, $envConfig);
-    }
-
-    /**
-     * @param string $serviceName
-     * @return string|null
-     * @throws ConfigurationMismatchException
-     */
-    private function getServiceVersion(string $serviceName): ?string
-    {
-        return $this->serviceConfig->getServiceVersion($serviceName);
     }
 
     /**
@@ -478,15 +446,10 @@ class ProductionBuilder implements BuilderInterface
      * @return array
      * @throws ConfigurationMismatchException
      */
-    private function getMagentoVolumes(Repository $config, bool $isReadOnly): array
+    private function getMagentoVolumes(Config $config, bool $isReadOnly): array
     {
         $volumes = $this->getDefaultMagentoVolumes($isReadOnly);
-
-        try {
-            $volumeConfiguration = $this->appReader->read()['mounts'] ?? [];
-        } catch (FilesystemException $exception) {
-            throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
-        }
+        $volumeConfiguration = $config->getMounts();
 
         foreach (array_keys($volumeConfiguration) as $volume) {
             $volumes[] = sprintf(
@@ -514,17 +477,16 @@ class ProductionBuilder implements BuilderInterface
     }
 
     /**
-     * @param Repository $config
+     * @param Config $config
      * @return array
+     * @throws ConfigurationMismatchException
      */
-    private function getMountVolumes(Repository $config): array
+    private function getMountVolumes(Config $config): array
     {
-        if ($config->get(self::KEY_NO_TMP_MOUNTS)) {
-            return [];
+        if ($config->hasTmpMounts()) {
+            return [self::VOLUME_DOCKER_MNT . ':/mnt'];
         }
 
-        return [
-            self::VOLUME_DOCKER_MNT . ':/mnt',
-        ];
+        return [];
     }
 }

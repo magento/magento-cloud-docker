@@ -5,14 +5,14 @@
  */
 declare(strict_types=1);
 
-namespace Magento\CloudDocker\Config\Compose;
+namespace Magento\CloudDocker\Config\Reader;
 
 use Illuminate\Config\Repository;
-use Magento\CloudDocker\Filesystem\FilesystemException;
+use Magento\CloudDocker\Service\ServiceInterface;
 
 interface ReaderInterface
 {
-    public const TYPE = 'type';
+    public const PHP = ServiceInterface::NAME_PHP;
     public const CRONS = 'crons';
     public const SERVICES = 'services';
     public const RUNTIME_EXTENSIONS = 'runtime.extensions';
@@ -22,7 +22,7 @@ interface ReaderInterface
     /**
      * @return Repository
      *
-     * @throws FilesystemException
+     * @throws ReaderException
      */
     public function read(): Repository;
 }

@@ -7,9 +7,9 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
-use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
+use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Service\ServiceFactory;
@@ -88,7 +88,7 @@ class FunctionalBuilder implements BuilderInterface
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public function build(Repository $config): Manager
+    public function build(Config $config): Manager
     {
         $manager = $this->managerFactory->create();
 

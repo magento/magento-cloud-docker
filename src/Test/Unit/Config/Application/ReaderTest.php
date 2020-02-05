@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Unit\Config\Application;
 
 use Illuminate\Filesystem\Filesystem;
-use Magento\CloudDocker\Config\Compose\CloudReader;
+use Magento\CloudDocker\Config\Reader\CloudReader;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use PHPUnit\Framework\MockObject\MockObject;

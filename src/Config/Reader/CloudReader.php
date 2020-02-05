@@ -5,12 +5,12 @@
  */
 declare(strict_types=1);
 
-namespace Magento\CloudDocker\Config\Compose;
+namespace Magento\CloudDocker\Config\Reader;
 
 use Illuminate\Config\Repository;
 use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\FileList;
-use Magento\CloudDocker\Filesystem\FilesystemException;
+use Magento\CloudDocker\Service\ServiceInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -58,21 +58,32 @@ class CloudReader implements ReaderInterface
                 $this->filesystem->get($this->fileList->getServicesConfig())
             );
         } catch (\Exception $exception) {
-            throw new FilesystemException($exception->getMessage(), $exception->getCode(), $exception);
+            throw new ReaderException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
         if (!isset($appConfig['type'])) {
-            throw new FilesystemException('PHP version could not be parsed.');
+            throw new ReaderException('PHP version could not be parsed.');
         }
 
         if (!isset($appConfig['relationships'])) {
-            throw new FilesystemException('Relationships could not be parsed.');
+            throw new ReaderException('Relationships could not be parsed.');
         }
 
         $config = [
-            self::TYPE => $appConfig['type'],
             self::SERVICES => [],
         ];
+
+        [$type, $version] = explode(':', $appConfig['type']);
+
+        if ($type !== ServiceInterface::NAME_PHP) {
+            throw new ReaderException(sprintf(
+                'Type "%s" is not supported',
+                $type
+            ));
+        }
+
+
+        $config[self::PHP] = rtrim($version, '-rc');
 
         if (!empty($appConfig['crons'])) {
             $config[self::CRONS] = $appConfig['crons'];
@@ -94,7 +105,7 @@ class CloudReader implements ReaderInterface
             [$name] = explode(':', $constraint);
 
             if (!isset($servicesConfig[$name]['type'])) {
-                throw new FilesystemException(sprintf(
+                throw new ReaderException(sprintf(
                     'Service with name "%s" could not be parsed',
                     $name
                 ));
@@ -103,7 +114,7 @@ class CloudReader implements ReaderInterface
             [$service, $version] = explode(':', $servicesConfig[$name]['type']);
 
             if (array_key_exists($service, $config['services'])) {
-                throw new FilesystemException(sprintf(
+                throw new ReaderException(sprintf(
                     'Only one instance of service "%s" supported',
                     $service
                 ));

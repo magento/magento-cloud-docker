@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Compose;
 
 use Illuminate\Contracts\Config\Repository;
+use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Filesystem\FileList;
 
 /**
@@ -61,7 +62,7 @@ class DeveloperBuilder implements BuilderInterface
     /**
      * @inheritDoc
      */
-    public function build(Repository $config): Manager
+    public function build(Config $config): Manager
     {
         $manager = $this->builderFactory
             ->create(BuilderFactory::BUILDER_PRODUCTION)

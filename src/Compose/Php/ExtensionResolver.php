@@ -9,26 +9,26 @@ namespace Magento\CloudDocker\Compose\Php;
 
 use Composer\Semver\Semver;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Service\Config;
+use Magento\CloudDocker\Config\Config;
 
 /**
  * Returns list of PHP extensions which will be enabled in Docker PHP container.
  */
 class ExtensionResolver
 {
-    const EXTENSION_OS_DEPENDENCIES = 'extension_os_dependencies';
-    const EXTENSION_PACKAGE_NAME = 'extension_package_name';
-    const EXTENSION_TYPE = 'extension_type';
-    const EXTENSION_TYPE_PECL = 'extension_type_pecl';
-    const EXTENSION_TYPE_CORE = 'extension_type_core';
-    const EXTENSION_TYPE_INSTALLATION_SCRIPT = 'extension_type_installation_script';
-    const EXTENSION_CONFIGURE_OPTIONS = 'extension_configure_options';
-    const EXTENSION_INSTALLATION_SCRIPT = 'extension_installation_script';
+    private const EXTENSION_OS_DEPENDENCIES = 'extension_os_dependencies';
+    private const EXTENSION_PACKAGE_NAME = 'extension_package_name';
+    private const EXTENSION_TYPE = 'extension_type';
+    private const EXTENSION_TYPE_PECL = 'extension_type_pecl';
+    private const EXTENSION_TYPE_CORE = 'extension_type_core';
+    private const EXTENSION_TYPE_INSTALLATION_SCRIPT = 'extension_type_installation_script';
+    private const EXTENSION_CONFIGURE_OPTIONS = 'extension_configure_options';
+    private const EXTENSION_INSTALLATION_SCRIPT = 'extension_installation_script';
 
     /**
      * Extensions which should be installed by default
      */
-    const DEFAULT_PHP_EXTENSIONS = [
+    private const DEFAULT_PHP_EXTENSIONS = [
         'bcmath',
         'bz2',
         'calendar',
@@ -51,7 +51,7 @@ class ExtensionResolver
     /**
      * Extensions which built-in and can't be uninstalled
      */
-    const BUILTIN_EXTENSIONS = [
+    private const BUILTIN_EXTENSIONS = [
         'ctype' => '>=7.0',
         'curl' => '>=7.0',
         'date' => '>=7.0',
@@ -84,7 +84,7 @@ class ExtensionResolver
     /**
      * Extensions which should be ignored
      */
-    const IGNORED_EXTENSIONS = ['blackfire', 'newrelic'];
+    private const IGNORED_EXTENSIONS = ['blackfire', 'newrelic'];
 
     /**
      * @var Semver
@@ -92,17 +92,10 @@ class ExtensionResolver
     private $semver;
 
     /**
-     * @var Config
-     */
-    private $config;
-
-    /**
-     * @param Config $config
      * @param Semver $semver
      */
-    public function __construct(Config $config, Semver $semver)
+    public function __construct(Semver $semver)
     {
-        $this->config = $config;
         $this->semver = $semver;
     }
 
@@ -113,14 +106,14 @@ class ExtensionResolver
      * @return array
      * @throws ConfigurationMismatchException
      */
-    public function get(string $phpVersion): array
+    public function get(Config $config, string $phpVersion): array
     {
         $enabledExtensions = array_unique(
-            array_merge(self::DEFAULT_PHP_EXTENSIONS, $this->config->getEnabledPhpExtensions())
+            array_merge(self::DEFAULT_PHP_EXTENSIONS, $config->getEnabledPhpExtensions())
         );
         $phpExtensions = array_diff(
             $enabledExtensions,
-            $this->config->getDisabledPhpExtensions(),
+            $config->getDisabledPhpExtensions(),
             self::IGNORED_EXTENSIONS
         );
         $messages = [];

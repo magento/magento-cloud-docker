@@ -9,6 +9,7 @@ namespace Magento\CloudDocker\Compose;
 
 use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Service\ServiceInterface;
 
 interface BuilderInterface
@@ -18,12 +19,6 @@ interface BuilderInterface
     public const DEFAULT_NGINX_VERSION = 'latest';
     public const DEFAULT_VARNISH_VERSION = 'latest';
     public const DEFAULT_TLS_VERSION = 'latest';
-
-    public const KEY_NO_CRON = 'no-cron';
-    public const KEY_NO_VARNISH = 'no-varnish';
-    public const KEY_EXPOSE_DB_PORT = 'expose-db-port';
-    public const KEY_NO_TMP_MOUNTS = 'no-tmp-mounts';
-    public const KEY_WITH_SELENIUM = 'with-selenium';
 
     public const SERVICE_GENERIC = 'generic';
     public const SERVICE_DB = 'db';
@@ -56,12 +51,12 @@ interface BuilderInterface
     public const VOLUME_DOCKER_MNT = 'docker-mnt';
 
     /**
-     * @param Repository $config
+     * @param Config $config
      * @return Manager
      *
      * @throws ConfigurationMismatchException
      */
-    public function build(Repository $config): Manager;
+    public function build(Config $config): Manager;
 
     /**
      * @return string

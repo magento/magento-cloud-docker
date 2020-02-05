@@ -11,12 +11,10 @@ use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\App\GenericException;
 use Magento\CloudDocker\Compose\DeveloperBuilder;
 use Magento\CloudDocker\Compose\BuilderFactory;
-use Magento\CloudDocker\Compose\ProductionBuilder;
-use Magento\CloudDocker\Config\Compose;
+use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\ConfigFactory;
 use Magento\CloudDocker\Config\Dist\Generator;
-use Magento\CloudDocker\Service\ServiceFactory;
-use Magento\CloudDocker\Service\ServiceInterface;
+use Magento\CloudDocker\Config\Reader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -31,47 +29,6 @@ use Symfony\Component\Yaml\Yaml;
 class BuildCompose extends Command
 {
     public const NAME = 'build:compose';
-
-    /**
-     * Services.
-     */
-    private const OPTION_PHP = 'php';
-    private const OPTION_NGINX = 'nginx';
-    private const OPTION_DB = 'db';
-    private const OPTION_EXPOSE_DB_PORT = 'expose-db-port';
-    private const OPTION_REDIS = 'redis';
-    private const OPTION_ES = 'es';
-    private const OPTION_RABBIT_MQ = 'rmq';
-    private const OPTION_SELENIUM_VERSION = 'selenium-version';
-    private const OPTION_SELENIUM_IMAGE = 'selenium-image';
-
-    /**
-     * State modifiers.
-     */
-    private const OPTION_NODE = 'node';
-    private const OPTION_MODE = 'mode';
-    private const OPTION_SYNC_ENGINE = 'sync-engine';
-    private const OPTION_NO_CRON = 'no-cron';
-    private const OPTION_NO_VARNISH = 'no-varnish';
-    private const OPTION_WITH_SELENIUM = 'with-selenium';
-
-    /**
-     * Option key to config name map.
-     *
-     * @var array
-     */
-    private static $optionsMap = [
-        self::OPTION_PHP => ServiceInterface::NAME_PHP,
-        self::OPTION_DB => ServiceInterface::NAME_DB,
-        self::OPTION_NGINX => ServiceInterface::NAME_NGINX,
-        self::OPTION_REDIS => ServiceInterface::NAME_REDIS,
-        self::OPTION_ES => ServiceInterface::NAME_ELASTICSEARCH,
-        self::OPTION_NODE => ServiceInterface::NAME_NODE,
-        self::OPTION_RABBIT_MQ => ServiceInterface::NAME_RABBITMQ,
-        self::OPTION_EXPOSE_DB_PORT => ProductionBuilder::KEY_EXPOSE_DB_PORT,
-        self::OPTION_SELENIUM_VERSION => ServiceFactory::SERVICE_SELENIUM_VERSION,
-        self::OPTION_SELENIUM_IMAGE => ServiceFactory::SERVICE_SELENIUM_IMAGE
-    ];
 
     /**
      * @var BuilderFactory
@@ -94,12 +51,12 @@ class BuildCompose extends Command
     private $filesystem;
 
     /**
-     * @var Compose
+     * @var Config
      */
     private $config;
 
     /**
-     * @var Compose\CloudReader
+     * @var Reader\CloudReader
      */
     private $cloudReader;
 
@@ -108,14 +65,14 @@ class BuildCompose extends Command
      * @param Generator $distGenerator
      * @param ConfigFactory $configFactory
      * @param Filesystem $filesystem
-     * @param Compose\CloudReader $cloudReader
+     * @param Reader\CloudReader $cloudReader
      */
     public function __construct(
         BuilderFactory $composeFactory,
         Generator $distGenerator,
         ConfigFactory $configFactory,
         Filesystem $filesystem,
-        Compose\CloudReader $cloudReader
+        Reader\CloudReader $cloudReader
     ) {
         $this->builderFactory = $composeFactory;
         $this->distGenerator = $distGenerator;
@@ -136,68 +93,68 @@ class BuildCompose extends Command
         $this->setName(self::NAME)
             ->setDescription('Build docker configuration')
             ->addOption(
-                self::OPTION_PHP,
+                Reader\CliReader::OPTION_PHP,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'PHP version'
             )
             ->addOption(
-                self::OPTION_NGINX,
+                Reader\CliReader::OPTION_NGINX,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Nginx version'
             )
             ->addOption(
-                self::OPTION_DB,
+                Reader\CliReader::OPTION_DB,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'DB version'
             )
             ->addOption(
-                self::OPTION_EXPOSE_DB_PORT,
+                Reader\CliReader::OPTION_EXPOSE_DB_PORT,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Expose DB port'
             )
             ->addOption(
-                self::OPTION_REDIS,
+                Reader\CliReader::OPTION_REDIS,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Redis version'
             )
             ->addOption(
-                self::OPTION_ES,
+                Reader\CliReader::OPTION_ES,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Elasticsearch version'
             )
             ->addOption(
-                self::OPTION_RABBIT_MQ,
+                Reader\CliReader::OPTION_RABBIT_MQ,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'RabbitMQ version'
             )
             ->addOption(
-                self::OPTION_NODE,
+                Reader\CliReader::OPTION_NODE,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Node.js version'
             )
             ->addOption(
-                self::OPTION_SELENIUM_VERSION,
+                Reader\CliReader::OPTION_SELENIUM_VERSION,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Selenium version'
             )
             ->addOption(
-                self::OPTION_SELENIUM_IMAGE,
+                Reader\CliReader::OPTION_SELENIUM_IMAGE,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Selenium image'
             );
 
         $this->addOption(
-            self::OPTION_MODE,
+            Reader\CliReader::OPTION_MODE,
             'm',
             InputOption::VALUE_REQUIRED,
             sprintf(
@@ -214,7 +171,7 @@ class BuildCompose extends Command
             BuilderFactory::BUILDER_PRODUCTION
         )
             ->addOption(
-                self::OPTION_SYNC_ENGINE,
+                Reader\CliReader::OPTION_SYNC_ENGINE,
                 null,
                 InputOption::VALUE_REQUIRED,
                 sprintf(
@@ -224,19 +181,24 @@ class BuildCompose extends Command
                 DeveloperBuilder::SYNC_ENGINE_NATIVE
             )
             ->addOption(
-                self::OPTION_NO_CRON,
+                Reader\CliReader::OPTION_NO_CRON,
                 null,
                 InputOption::VALUE_NONE,
                 'Remove cron container'
             )
             ->addOption(
-                self::OPTION_NO_VARNISH,
+                Reader\CliReader::OPTION_NO_VARNISH,
                 null,
                 InputOption::VALUE_NONE,
                 'Remove Varnish container'
             )
             ->addOption(
-                self::OPTION_WITH_SELENIUM,
+                Reader\CliReader::OPTION_WITH_SELENIUM,
+                null,
+                InputOption::VALUE_NONE
+            )
+            ->addOption(
+                Reader\CliReader::OPTION_NO_TMP_MOUNTS,
                 null,
                 InputOption::VALUE_NONE
             );
@@ -251,42 +213,17 @@ class BuildCompose extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $type = $input->getOption(self::OPTION_MODE);
-        $syncEngine = $input->getOption(self::OPTION_SYNC_ENGINE);
 
-        $builder = $this->builderFactory->create($type);
-        $config = $this->configFactory->create();
-
-        if (BuilderFactory::BUILDER_DEVELOPER === $type
-            && !in_array($syncEngine, DeveloperBuilder::SYNC_ENGINES_LIST, true)
-        ) {
-            throw new GenericException(sprintf(
-                "File sync engine '%s' is not supported. Available: %s",
-                $syncEngine,
-                implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
-            ));
-        }
-
-        array_walk(self::$optionsMap, static function ($key, $option) use ($config, $input) {
-            if ($value = $input->getOption($option)) {
-                $config->set($key, $value);
-            }
-        });
-
-        $composeConfig = (new Compose([
+        $builder = $this->builderFactory->create(
+            $input->getOption(Reader\CliReader::OPTION_MODE)
+        );
+        $config = $this->configFactory->create([
             $this->cloudReader,
-            new Compose\CliReader($input)
-        ]))->read();
-
-        $config->set([
-            DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
-            ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON),
-            ProductionBuilder::KEY_NO_VARNISH => $input->getOption(self::OPTION_NO_VARNISH),
-            ProductionBuilder::KEY_WITH_SELENIUM => $input->getOption(self::OPTION_WITH_SELENIUM)
+            new Reader\CliReader($input)
         ]);
-
+        die(var_dump($config->all()));
         if (in_array(
-            $input->getOption(self::OPTION_MODE),
+            $input->getOption(Reader\CliReader::OPTION_MODE),
             [BuilderFactory::BUILDER_DEVELOPER, BuilderFactory::BUILDER_PRODUCTION],
             false
         )) {

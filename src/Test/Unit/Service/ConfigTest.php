@@ -9,7 +9,7 @@ namespace Magento\CloudDocker\Test\Unit\Service;
 
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Config\Compose\CloudReader;
+use Magento\CloudDocker\Config\Reader\CloudReader;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceInterface;
