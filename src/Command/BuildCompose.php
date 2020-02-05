@@ -50,7 +50,7 @@ class BuildCompose extends Command
     private const OPTION_NODE = 'node';
     private const OPTION_MODE = 'mode';
     private const OPTION_SYNC_ENGINE = 'sync-engine';
-    private const OPTION_NO_CRON = 'no-cron';
+    private const OPTION_WITH_CRON = 'with-cron';
     private const OPTION_WITH_SELENIUM = 'with-selenium';
 
     /**
@@ -209,10 +209,16 @@ class BuildCompose extends Command
                 DeveloperBuilder::SYNC_ENGINE_DOCKER_SYNC
             )
             ->addOption(
-                self::OPTION_NO_CRON,
+                'no-cron',
                 null,
                 InputOption::VALUE_NONE,
-                'Remove cron container'
+                '(Deprecated) Remove cron container'
+            )
+            ->addOption(
+                self::OPTION_WITH_CRON,
+                null,
+                InputOption::VALUE_NONE,
+                'Add cron container'
             )
             ->addOption(
                 self::OPTION_WITH_SELENIUM,
@@ -254,7 +260,7 @@ class BuildCompose extends Command
 
         $config->set([
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
-            ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON),
+            ProductionBuilder::KEY_WITH_CRON=> $input->getOption(self::OPTION_WITH_CRON),
             ProductionBuilder::KEY_WITH_SELENIUM => $input->getOption(self::OPTION_WITH_SELENIUM)
         ]);
 
