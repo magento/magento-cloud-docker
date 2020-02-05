@@ -209,12 +209,6 @@ class BuildCompose extends Command
                 DeveloperBuilder::SYNC_ENGINE_DOCKER_SYNC
             )
             ->addOption(
-                'no-cron',
-                null,
-                InputOption::VALUE_NONE,
-                '(Deprecated) Remove cron container'
-            )
-            ->addOption(
                 self::OPTION_WITH_CRON,
                 null,
                 InputOption::VALUE_NONE,
