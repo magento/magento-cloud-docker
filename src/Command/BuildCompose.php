@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Command;
 
-use Illuminate\Filesystem\Filesystem;
+use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\App\GenericException;
 use Magento\CloudDocker\Compose\DeveloperBuilder;
 use Magento\CloudDocker\Compose\BuilderFactory;
@@ -207,7 +207,7 @@ class BuildCompose extends Command
                     'File sync engine. Works only with developer mode. Available: (%s)',
                     implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
                 ),
-                DeveloperBuilder::SYNC_ENGINE_DOCKER_SYNC
+                DeveloperBuilder::SYNC_ENGINE_NATIVE
             )
             ->addOption(
                 self::OPTION_NO_CRON,
