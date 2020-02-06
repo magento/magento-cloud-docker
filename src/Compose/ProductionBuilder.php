@@ -29,6 +29,7 @@ class ProductionBuilder implements BuilderInterface
     public const DEFAULT_NGINX_VERSION = 'latest';
     public const DEFAULT_VARNISH_VERSION = 'latest';
     public const DEFAULT_TLS_VERSION = 'latest';
+    public const DEFAULT_ALPINE_VERSION = 'latest';
 
     public const SERVICE_PHP_CLI = ServiceFactory::SERVICE_CLI;
     public const SERVICE_PHP_FPM = ServiceFactory::SERVICE_FPM;
@@ -287,7 +288,7 @@ class ProductionBuilder implements BuilderInterface
         $phpExtensions = $this->getPhpExtensions($phpVersion);
         $services['generic'] = $this->serviceFactory->create(
             ServiceFactory::SERVICE_GENERIC,
-            '',
+            self::DEFAULT_ALPINE_VERSION,
             [
                 'environment' => $this->converter->convert(array_merge(
                     $this->getVariables(),
