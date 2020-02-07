@@ -69,7 +69,7 @@ class BuildCompose extends Command
         self::OPTION_RABBIT_MQ => ServiceInterface::NAME_RABBITMQ,
         self::OPTION_EXPOSE_DB_PORT => ProductionBuilder::KEY_EXPOSE_DB_PORT,
         self::OPTION_SELENIUM_VERSION => ServiceFactory::SERVICE_SELENIUM_VERSION,
-        self::OPTION_SELENIUM_IMAGE => ServiceFactory::SERVICE_SELENIUM_IMAGE
+        self::OPTION_SELENIUM_IMAGE => ServiceFactory::SERVICE_SELENIUM_IMAGE,
     ];
 
     /**
@@ -219,6 +219,12 @@ class BuildCompose extends Command
                         array_merge(DeveloperBuilder::SYNC_ENGINES_LIST, ProductionBuilder::SYNC_ENGINES_LIST)
                     ))
                 )
+            )
+            ->addOption(
+                self::OPTION_WITH_CRON,
+                null,
+                InputOption::VALUE_NONE,
+                'Add cron container'
             )
             ->addOption(
                 self::OPTION_NO_VARNISH,

@@ -37,10 +37,6 @@ class ProductionBuilder implements BuilderInterface
     public const SYNC_ENGINE_MOUNT = 'mount';
     public const DEFAULT_SYNC_ENGINE = self::SYNC_ENGINE_MOUNT;
 
-    public const KEY_WITH_CRON = 'with-cron';
-    public const KEY_EXPOSE_DB_PORT = 'expose-db-port';
-    public const KEY_NO_TMP_MOUNTS = 'no-tmp-mounts';
-    public const KEY_WITH_SELENIUM = 'with-selenium';
     /**
      * @var array
      */
@@ -390,12 +386,15 @@ class ProductionBuilder implements BuilderInterface
             self::$cliDepends
         );
 
-        if ($this->config->get(self::KEY_WITH_CRON, false)) {
-            $services['cron'] = $this->getCronCliService(
-                $phpVersion,
-                true,
-                $cliDepends,
-                'cron.magento2.docker'
+        if ($config->get(self::KEY_WITH_CRON, false)) {
+            $manager->addService(
+                self::SERVICE_CRON,
+                array_merge(
+                    $this->getCronCliService($phpVersion),
+                    ['volumes' => $volumesRo]
+                ),
+                [self::NETWORK_MAGENTO],
+                self::$cliDepends
             );
         }
 
