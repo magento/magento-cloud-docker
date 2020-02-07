@@ -37,7 +37,7 @@ class AcceptanceCest
      */
     public function testProductionMode(\CliTester $I): void
     {
-        $I->runEceDockerCommand('build:compose --mode=production --no-cron');
+        $I->runEceDockerCommand('build:compose --mode=production');
         $I->startEnvironment();
         $I->runDockerComposeCommand('run build cloud-build');
         $I->runDockerComposeCommand('run deploy cloud-deploy');
