@@ -56,6 +56,7 @@ interface BuilderInterface
     public const VOLUME_MAGENTO_DEV = 'magento-dev';
     public const VOLUME_DOCKER_MNT = 'docker-mnt';
     public const VOLUME_DOCKER_ETRYPOINT = 'docker-entrypoint';
+    public const VOLUME_MARIADB_CONF = 'mariadb-conf';
 
     public const SYNC_ENGINE_NATIVE = 'native';
 
