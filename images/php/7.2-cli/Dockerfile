@@ -113,6 +113,7 @@ RUN pecl install -o -f \
   mailparse \
   msgpack \
   oauth \
+  pcov \
   propro \
   raphf \
   redis \
@@ -160,6 +161,7 @@ RUN docker-php-ext-enable \
   mysqli \
   oauth \
   opcache \
+  pcov \
   pdo_mysql \
   propro \
   pspell \
@@ -185,6 +187,7 @@ RUN docker-php-ext-enable \
 
 ADD etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
 ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
+ADD etc/php-pcov.ini /usr/local/etc/php/conf.d/zz-pcov-settings.ini
 ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 
 # Get composer installed to /usr/local/bin/composer
