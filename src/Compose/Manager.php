@@ -58,7 +58,7 @@ class Manager
 
         $this->services[$name] = [
             'config' => $config,
-            'depends_on' => $depends
+            'depends_on' => $depends,
         ];
     }
 
