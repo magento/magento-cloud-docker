@@ -68,7 +68,7 @@ class DeveloperBuilder implements BuilderInterface
             ->create(BuilderFactory::BUILDER_PRODUCTION)
             ->build($config);
 
-        $syncEngine = $config->get(self::KEY_SYNC_ENGINE);
+        $syncEngine = $config->getSyncEngine();
         $syncConfig = [];
 
         if ($syncEngine === self::SYNC_ENGINE_DOCKER_SYNC) {

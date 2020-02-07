@@ -14,13 +14,29 @@ namespace Magento\CloudDocker\Service;
  */
 interface ServiceInterface
 {
-    public const NAME_PHP = 'php';
-    public const NAME_DB = 'mysql';
-    public const NAME_NGINX = 'nginx';
-    public const NAME_REDIS = 'redis';
-    public const NAME_ELASTICSEARCH = 'elasticsearch';
-    public const NAME_RABBITMQ = 'rabbitmq';
-    public const NAME_NODE = 'node';
-    public const NAME_VARNISH = 'varnish';
-    public const NAME_SELENIUM = 'selenium';
+    public const SERVICE_PHP = 'php';
+    public const SERVICE_PHP_CLI = 'php-cli';
+    public const SERVICE_PHP_FPM = 'php-fpm';
+    public const SERVICE_DB = 'mysql';
+    public const SERVICE_NGINX = 'nginx';
+    public const SERVICE_REDIS = 'redis';
+    public const SERVICE_ELASTICSEARCH = 'elasticsearch';
+    public const SERVICE_RABBITMQ = 'rabbitmq';
+    public const SERVICE_NODE = 'node';
+    public const SERVICE_VARNISH = 'varnish';
+    public const SERVICE_SELENIUM = 'selenium';
+    public const SERVICE_TLS = 'tls';
+    public const SERVICE_GENERIC = 'generic';
+
+    public const DEFAULT_NGINX_VERSION = 'latest';
+    public const DEFAULT_VARNISH_VERSION = 'latest';
+    public const DEFAULT_TLS_VERSION = 'latest';
+
+    public const SELENIUM_IMAGE = 'selenium/standalone-chrome';
+    public const SELENIUM_VERSION = 'latest';
+
+    public const NGINX_IMAGE = 'magento/magento-cloud-docker-nginx';
+
+    public const REDIS_IMAGE = 'redis';
+    public const REDIS_VERSION = 'latest';
 }

@@ -14,7 +14,7 @@ use Magento\CloudDocker\Compose\BuilderFactory;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\ConfigFactory;
 use Magento\CloudDocker\Config\Dist\Generator;
-use Magento\CloudDocker\Config\Reader;
+use Magento\CloudDocker\Config\Source;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -56,29 +56,29 @@ class BuildCompose extends Command
     private $config;
 
     /**
-     * @var Reader\CloudReader
+     * @var Source\SourceFactory
      */
-    private $cloudReader;
+    private $sourceFactory;
 
     /**
      * @param BuilderFactory $composeFactory
      * @param Generator $distGenerator
      * @param ConfigFactory $configFactory
      * @param Filesystem $filesystem
-     * @param Reader\CloudReader $cloudReader
+     * @param Source\SourceFactory $sourceFactory
      */
     public function __construct(
         BuilderFactory $composeFactory,
         Generator $distGenerator,
         ConfigFactory $configFactory,
         Filesystem $filesystem,
-        Reader\CloudReader $cloudReader
+        Source\SourceFactory $sourceFactory
     ) {
         $this->builderFactory = $composeFactory;
         $this->distGenerator = $distGenerator;
         $this->configFactory = $configFactory;
         $this->filesystem = $filesystem;
-        $this->cloudReader = $cloudReader;
+        $this->sourceFactory = $sourceFactory;
 
         parent::__construct();
     }
@@ -93,68 +93,68 @@ class BuildCompose extends Command
         $this->setName(self::NAME)
             ->setDescription('Build docker configuration')
             ->addOption(
-                Reader\CliReader::OPTION_PHP,
+                Source\CliSource::OPTION_PHP,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'PHP version'
             )
             ->addOption(
-                Reader\CliReader::OPTION_NGINX,
+                Source\CliSource::OPTION_NGINX,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Nginx version'
             )
             ->addOption(
-                Reader\CliReader::OPTION_DB,
+                Source\CliSource::OPTION_DB,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'DB version'
             )
             ->addOption(
-                Reader\CliReader::OPTION_EXPOSE_DB_PORT,
+                Source\CliSource::OPTION_EXPOSE_DB_PORT,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Expose DB port'
             )
             ->addOption(
-                Reader\CliReader::OPTION_REDIS,
+                Source\CliSource::OPTION_REDIS,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Redis version'
             )
             ->addOption(
-                Reader\CliReader::OPTION_ES,
+                Source\CliSource::OPTION_ES,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Elasticsearch version'
             )
             ->addOption(
-                Reader\CliReader::OPTION_RABBIT_MQ,
+                Source\CliSource::OPTION_RABBIT_MQ,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'RabbitMQ version'
             )
             ->addOption(
-                Reader\CliReader::OPTION_NODE,
+                Source\CliSource::OPTION_NODE,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Node.js version'
             )
             ->addOption(
-                Reader\CliReader::OPTION_SELENIUM_VERSION,
+                Source\CliSource::OPTION_SELENIUM_VERSION,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Selenium version'
             )
             ->addOption(
-                Reader\CliReader::OPTION_SELENIUM_IMAGE,
+                Source\CliSource::OPTION_SELENIUM_IMAGE,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Selenium image'
             );
 
         $this->addOption(
-            Reader\CliReader::OPTION_MODE,
+            Source\CliSource::OPTION_MODE,
             'm',
             InputOption::VALUE_REQUIRED,
             sprintf(
@@ -171,7 +171,7 @@ class BuildCompose extends Command
             BuilderFactory::BUILDER_PRODUCTION
         )
             ->addOption(
-                Reader\CliReader::OPTION_SYNC_ENGINE,
+                Source\CliSource::OPTION_SYNC_ENGINE,
                 null,
                 InputOption::VALUE_REQUIRED,
                 sprintf(
@@ -181,24 +181,24 @@ class BuildCompose extends Command
                 DeveloperBuilder::SYNC_ENGINE_NATIVE
             )
             ->addOption(
-                Reader\CliReader::OPTION_NO_CRON,
+                Source\CliSource::OPTION_NO_CRON,
                 null,
                 InputOption::VALUE_NONE,
                 'Remove cron container'
             )
             ->addOption(
-                Reader\CliReader::OPTION_NO_VARNISH,
+                Source\CliSource::OPTION_NO_VARNISH,
                 null,
                 InputOption::VALUE_NONE,
                 'Remove Varnish container'
             )
             ->addOption(
-                Reader\CliReader::OPTION_WITH_SELENIUM,
+                Source\CliSource::OPTION_WITH_SELENIUM,
                 null,
                 InputOption::VALUE_NONE
             )
             ->addOption(
-                Reader\CliReader::OPTION_NO_TMP_MOUNTS,
+                Source\CliSource::OPTION_NO_TMP_MOUNTS,
                 null,
                 InputOption::VALUE_NONE
             );
@@ -213,21 +213,22 @@ class BuildCompose extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-
         $builder = $this->builderFactory->create(
-            $input->getOption(Reader\CliReader::OPTION_MODE)
+            $input->getOption(Source\CliSource::OPTION_MODE)
         );
         $config = $this->configFactory->create([
-            $this->cloudReader,
-            new Reader\CliReader($input)
+            $this->sourceFactory->get(Source\BaseSource::class),
+            $this->sourceFactory->get(Source\CloudBaseSource::class),
+            $this->sourceFactory->get(Source\CloudSource::class),
+            new Source\CliSource($input)
         ]);
-        die(var_dump($config->all()));
+
         if (in_array(
-            $input->getOption(Reader\CliReader::OPTION_MODE),
+            $config->getMode(),
             [BuilderFactory::BUILDER_DEVELOPER, BuilderFactory::BUILDER_PRODUCTION],
-            false
+            true
         )) {
-            $this->distGenerator->generate();
+            $this->distGenerator->generate($config);
         }
 
         $compose = $builder->build($config);

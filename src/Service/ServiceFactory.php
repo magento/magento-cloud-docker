@@ -17,21 +17,6 @@ use Magento\CloudDocker\Filesystem\FileList;
  */
 class ServiceFactory
 {
-    public const SERVICE_GENERIC = 'generic';
-    public const SERVICE_CLI = 'php-cli';
-    public const SERVICE_FPM = 'php-fpm';
-    public const SERVICE_REDIS = 'redis';
-    public const SERVICE_DB = 'db';
-    public const SERVICE_NGINX = 'nginx';
-    public const SERVICE_VARNISH = 'varnish';
-    public const SERVICE_ELASTICSEARCH = 'elasticsearch';
-    public const SERVICE_RABBIT_MQ = 'rabbitmq';
-    public const SERVICE_TLS = 'tls';
-    public const SERVICE_NODE = 'node';
-    public const SERVICE_SELENIUM = 'selenium';
-    public const SERVICE_SELENIUM_IMAGE = 'selenium-image';
-    public const SERVICE_SELENIUM_VERSION = 'selenium-version';
-
     private const PATTERN_STD = '%s:%s';
     private const PATTERN_VERSIONED = '%s:%s-%s';
 
@@ -39,22 +24,22 @@ class ServiceFactory
      * @var array
      */
     private static $config = [
-        self::SERVICE_CLI => [
+        ServiceInterface::SERVICE_PHP_CLI => [
             'image' => 'magento/magento-cloud-docker-php',
             'pattern' => '%s:%s-cli-%s',
             'config' => [
-                'extends' => self::SERVICE_GENERIC
+                'extends' => ServiceInterface::SERVICE_GENERIC
             ]
         ],
-        self::SERVICE_FPM => [
+        ServiceInterface::SERVICE_PHP_FPM => [
             'image' => 'magento/magento-cloud-docker-php',
             'ports' => [9000],
             'pattern' => '%s:%s-fpm-%s',
             'config' => [
-                'extends' => self::SERVICE_GENERIC
+                'extends' => ServiceInterface::SERVICE_GENERIC
             ]
         ],
-        self::SERVICE_DB => [
+        ServiceInterface::SERVICE_DB => [
             'image' => 'mariadb',
             'pattern' => self::PATTERN_STD,
             'config' => [
@@ -66,11 +51,11 @@ class ServiceFactory
                 ]
             ]
         ],
-        self::SERVICE_NGINX => [
-            'image' => 'magento/magento-cloud-docker-nginx',
+        ServiceInterface::SERVICE_NGINX => [
+            'image' => ServiceInterface::NGINX_IMAGE,
             'pattern' => self::PATTERN_VERSIONED,
             'config' => [
-                'extends' => self::SERVICE_GENERIC,
+                'extends' => ServiceInterface::SERVICE_GENERIC,
                 'environment' => [
                     'VIRTUAL_HOST=magento2.docker',
                     'VIRTUAL_PORT=80',
@@ -81,11 +66,11 @@ class ServiceFactory
                 ],
             ]
         ],
-        self::SERVICE_VARNISH => [
+        ServiceInterface::SERVICE_VARNISH => [
             'image' => 'magento/magento-cloud-docker-varnish',
             'pattern' => self::PATTERN_VERSIONED,
         ],
-        self::SERVICE_TLS => [
+        ServiceInterface::SERVICE_TLS => [
             'image' => 'magento/magento-cloud-docker-tls',
             'pattern' => self::PATTERN_VERSIONED,
             'versions' => ['latest'],
@@ -95,8 +80,8 @@ class ServiceFactory
                 ],
             ]
         ],
-        self::SERVICE_REDIS => [
-            'image' => 'redis',
+        ServiceInterface::SERVICE_REDIS => [
+            'image' => ServiceInterface::REDIS_IMAGE,
             'pattern' => self::PATTERN_STD,
             'config' => [
                 'volumes' => [
@@ -105,28 +90,28 @@ class ServiceFactory
                 'ports' => [6379],
             ]
         ],
-        self::SERVICE_ELASTICSEARCH => [
+        ServiceInterface::SERVICE_ELASTICSEARCH => [
             'image' => 'magento/magento-cloud-docker-elasticsearch',
             'pattern' => self::PATTERN_VERSIONED
         ],
-        self::SERVICE_RABBIT_MQ => [
+        ServiceInterface::SERVICE_RABBITMQ => [
             'image' => 'rabbitmq',
             'pattern' => self::PATTERN_STD
         ],
-        self::SERVICE_NODE => [
+        ServiceInterface::SERVICE_NODE => [
             'image' => 'node',
             'pattern' => self::PATTERN_STD
         ],
-        self::SERVICE_GENERIC => [
+        ServiceInterface::SERVICE_GENERIC => [
             'image' => 'alpine',
             'pattern' => '%s'
         ],
-        self::SERVICE_SELENIUM => [
-            'image' => 'selenium/standalone-chrome',
+        ServiceInterface::SERVICE_SELENIUM => [
+            'image' => ServiceInterface::SELENIUM_IMAGE,
             'pattern' => self::PATTERN_STD,
             'config' => [
                 'ports' => [4444],
-                'extends' => self::SERVICE_GENERIC
+                'extends' => ServiceInterface::SERVICE_GENERIC
             ]
         ]
     ];
@@ -179,5 +164,22 @@ class ServiceFactory
             $defaultConfig,
             $config
         );
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     * @throws ConfigurationMismatchException
+     */
+    public function getImage(string $name): string
+    {
+        if (isset(self::$config[$name]['image'])) {
+            return $this->create($name, '')['image'];
+        }
+
+        throw new ConfigurationMismatchException(sprintf(
+            'Image for %s cannot be resolved',
+            $name
+        ));
     }
 }

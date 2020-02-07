@@ -16,12 +16,12 @@
         </service>
         <service id="Magento\CloudDocker\Filesystem\DirectoryList" autowire="false"/>
         <service id="Magento\CloudDocker\Filesystem\FilesystemException" autowire="false"/>
-        <service id="Magento\CloudDocker\Config\Reader\ReaderException" autowire="false"/>
+        <service id="Magento\CloudDocker\Config\Source\SourceException" autowire="false"/>
         <service id="Magento\CloudDocker\Compose\DeveloperBuilder" shared="false"/>
         <service id="Magento\CloudDocker\Compose\ProductionBuilder" shared="false"/>
         <service id="Magento\CloudDocker\Compose\FunctionalBuilder" shared="false"/>
         <service id="Magento\CloudDocker\Config\Config" autowire="false"/>
-        <service id="Magento\CloudDocker\Config\Reader\CliReader" autowire="false"/>
+        <service id="Magento\CloudDocker\Config\Source\CliSource" autowire="false"/>
         <service id="Illuminate\Filesystem\Filesystem"/>
         <service id="Composer\Semver\VersionParser"/>
         <service id="Composer\Semver\Semver"/>

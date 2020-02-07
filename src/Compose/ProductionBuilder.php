@@ -13,7 +13,6 @@ use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
-use Magento\CloudDocker\Config\Reader\CloudReader as AppReader;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\ServiceFactory;
@@ -84,11 +83,6 @@ class ProductionBuilder implements BuilderInterface
     private $envReader;
 
     /**
-     * @var AppReader
-     */
-    private $appReader;
-
-    /**
      * @var ManagerFactory
      */
     private $managerFactory;
@@ -106,7 +100,6 @@ class ProductionBuilder implements BuilderInterface
      * @param ManagerFactory $managerFactory
      * @param Resolver $resolver
      * @param EnvReader $envReader
-     * @param AppReader $appReader
      */
     public function __construct(
         ServiceFactory $serviceFactory,
@@ -115,8 +108,7 @@ class ProductionBuilder implements BuilderInterface
         ExtensionResolver $phpExtension,
         ManagerFactory $managerFactory,
         Resolver $resolver,
-        EnvReader $envReader,
-        AppReader $appReader
+        EnvReader $envReader
     ) {
         $this->serviceFactory = $serviceFactory;
         $this->fileList = $fileList;
@@ -125,7 +117,6 @@ class ProductionBuilder implements BuilderInterface
         $this->managerFactory = $managerFactory;
         $this->resolver = $resolver;
         $this->envReader = $envReader;
-        $this->appReader = $appReader;
     }
 
     /**
@@ -139,8 +130,8 @@ class ProductionBuilder implements BuilderInterface
     {
         $manager = $this->managerFactory->create();
 
-        $phpVersion = $config->getPhpVersion();
-        $dbVersion = $config->getServiceVersion(ServiceInterface::NAME_DB);
+        $phpVersion = $config->getServiceVersion(ServiceInterface::SERVICE_PHP);
+        $dbVersion = $config->getServiceVersion(ServiceInterface::SERVICE_DB);
         $hostPort = $config->hasDbPortsExpose();
         $dbPorts = $hostPort ? "$hostPort:3306" : '3306';
 
@@ -160,7 +151,7 @@ class ProductionBuilder implements BuilderInterface
             self::VOLUME_MAGENTO_DB => []
         ];
 
-        if ($this->hasSelenium()) {
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_SELENIUM)) {
             $manager->addVolume(self::VOLUME_MAGENTO_DEV, []);
         }
 
@@ -200,7 +191,7 @@ class ProductionBuilder implements BuilderInterface
         $manager->addService(
             self::SERVICE_DB,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_DB,
+                ServiceInterface::SERVICE_DB,
                 $dbVersion,
                 [
                     'ports' => [$dbPorts],
@@ -218,24 +209,26 @@ class ProductionBuilder implements BuilderInterface
         );
 
         foreach (self::$standaloneServices as $service) {
-            $serviceVersion = $config->getServiceVersion($service);
-
-            if ($serviceVersion) {
-                $manager->addService(
-                    $service,
-                    $this->serviceFactory->create((string)$service, (string)$serviceVersion),
-                    [self::NETWORK_MAGENTO],
-                    []
-                );
+            if (!$config->hasServiceEnabled($service)) {
+                continue;
             }
+
+            $manager->addService(
+                $service,
+                $this->serviceFactory->create((string)$service, (string)$config->getServiceVersion($service)),
+                [self::NETWORK_MAGENTO],
+                []
+            );
         }
 
-        $nodeVersion = $config->get(ServiceInterface::NAME_NODE);
-
-        if ($nodeVersion) {
+        if ($config->hasServiceEnabled(self::SERVICE_NODE)) {
             $manager->addService(
                 self::SERVICE_NODE,
-                $this->serviceFactory->create(ServiceFactory::SERVICE_NODE, $nodeVersion, ['volumes' => $volumesRo]),
+                $this->serviceFactory->create(
+                    ServiceInterface::SERVICE_NODE,
+                    $config->getServiceVersion(ServiceInterface::SERVICE_NODE),
+                    ['volumes' => $volumesRo]
+                ),
                 [self::NETWORK_MAGENTO],
                 []
             );
@@ -243,27 +236,27 @@ class ProductionBuilder implements BuilderInterface
 
         $manager->addService(
             self::SERVICE_FPM,
-            $this->serviceFactory->create(ServiceFactory::SERVICE_FPM, $phpVersion, ['volumes' => $volumesRo]),
+            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_FPM, $phpVersion, ['volumes' => $volumesRo]),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_DB => []]
         );
         $manager->addService(
             self::SERVICE_WEB,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_NGINX,
-                $config->get(ServiceInterface::NAME_NGINX, self::DEFAULT_NGINX_VERSION),
+                ServiceInterface::SERVICE_NGINX,
+                $config->getServiceVersion(ServiceInterface::SERVICE_NGINX),
                 ['volumes' => $volumesRo]
             ),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_FPM => []]
         );
 
-        if (!$config->get(self::KEY_NO_VARNISH, false)) {
+        if ($config->hasServiceEnabled(self::SERVICE_VARNISH)) {
             $manager->addService(
                 self::SERVICE_VARNISH,
                 $this->serviceFactory->create(
-                    ServiceFactory::SERVICE_VARNISH,
-                    self::DEFAULT_VARNISH_VERSION,
+                    ServiceInterface::SERVICE_VARNISH,
+                    $config->getServiceVersion(ServiceInterface::SERVICE_VARNISH),
                     [
                         'networks' => [
                             self::NETWORK_MAGENTO => [
@@ -277,12 +270,14 @@ class ProductionBuilder implements BuilderInterface
             );
         }
 
-        $tlsBackendService = $config->get(self::KEY_NO_VARNISH, false) ? self::SERVICE_WEB : self::SERVICE_VARNISH;
+        $tlsBackendService = $config->hasServiceEnabled(ServiceInterface::SERVICE_VARNISH)
+            ? self::SERVICE_VARNISH
+            : self::SERVICE_WEB;
         $manager->addService(
             self::SERVICE_TLS,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_TLS,
-                self::DEFAULT_TLS_VERSION,
+                ServiceInterface::SERVICE_TLS,
+                $config->getServiceVersion(ServiceInterface::SERVICE_TLS),
                 [
                     'environment' => ['HTTPS_UPSTREAM_SERVER_ADDRESS' => $tlsBackendService],
                 ]
@@ -295,23 +290,24 @@ class ProductionBuilder implements BuilderInterface
             $manager->addService(
                 self::SERVICE_SELENIUM,
                 $this->serviceFactory->create(
-                    ServiceInterface::NAME_SELENIUM,
-                    $config->get(ServiceFactory::SERVICE_SELENIUM_VERSION, 'latest'),
+                    ServiceInterface::SERVICE_SELENIUM,
+                    $config->getServiceVersion(ServiceInterface::SERVICE_SELENIUM),
                     [],
-                    $config->get(ServiceFactory::SERVICE_SELENIUM_IMAGE)
+                    $config->getServiceImage(ServiceInterface::SERVICE_SELENIUM)
                 ),
                 [self::NETWORK_MAGENTO],
                 [self::SERVICE_WEB => []]
             );
             $manager->addService(
                 self::SERVICE_TEST,
-                $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $phpVersion, ['volumes' => $volumesRw]),
+                $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $phpVersion,
+                    ['volumes' => $volumesRw]),
                 [self::NETWORK_MAGENTO],
                 self::$cliDepends
             );
         }
 
-        $phpExtensions = $this->phpExtension->get($phpVersion);
+        $phpExtensions = $this->phpExtension->get($config);
 
         /**
          * Generic service.
@@ -319,7 +315,7 @@ class ProductionBuilder implements BuilderInterface
         $manager->addService(
             self::SERVICE_GENERIC,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_GENERIC,
+                ServiceInterface::SERVICE_GENERIC,
                 '',
                 [
                     'environment' => $this->converter->convert(array_merge(
@@ -333,13 +329,13 @@ class ProductionBuilder implements BuilderInterface
         );
         $manager->addService(
             self::SERVICE_BUILD,
-            $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $phpVersion, ['volumes' => $volumesBuild]),
+            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $phpVersion, ['volumes' => $volumesBuild]),
             [self::NETWORK_MAGENTO_BUILD],
             self::$cliDepends
         );
         $manager->addService(
             self::SERVICE_DEPLOY,
-            $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $phpVersion, ['volumes' => $volumesRo]),
+            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $phpVersion, ['volumes' => $volumesRo]),
             [self::NETWORK_MAGENTO],
             self::$cliDepends
         );
@@ -348,7 +344,7 @@ class ProductionBuilder implements BuilderInterface
             $manager->addService(
                 self::SERVICE_CRON,
                 array_merge(
-                    $this->getCronCliService($phpVersion, $config->getCron()),
+                    $this->getCronCliService($phpVersion, $config->getCronJobs()),
                     ['volumes' => $volumesRo]
                 ),
                 [self::NETWORK_MAGENTO],
@@ -367,7 +363,7 @@ class ProductionBuilder implements BuilderInterface
      */
     private function getCronCliService(string $version, array $cronConfig): array
     {
-        $config = $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $version, ['command' => 'run-cron']);
+        $config = $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $version, ['command' => 'run-cron']);
         $preparedCronConfig = [];
 
         foreach ($cronConfig as $job) {
@@ -459,7 +455,7 @@ class ProductionBuilder implements BuilderInterface
             );
         }
 
-        if ($this->hasSelenium($config)) {
+        if ($config->hasSelenium()) {
             $volumes[] = self::VOLUME_MAGENTO_DEV . ':' . self::DIR_MAGENTO . '/dev:delegated';
         }
 

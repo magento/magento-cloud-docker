@@ -9,25 +9,33 @@ namespace Magento\CloudDocker\Config;
 
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Config\Reader\CliReader;
-use Magento\CloudDocker\Config\Reader\CloudReader;
-use Magento\CloudDocker\Config\Reader\ReaderException;
-use Magento\CloudDocker\Config\Reader\ReaderInterface;
+use Magento\CloudDocker\Config\Source\CliSource;
+use Magento\CloudDocker\Config\Source\SourceException;
+use Magento\CloudDocker\Config\Source\SourceInterface;
 use Magento\CloudDocker\Service\ServiceInterface;
 
+/**
+ * Source configuration
+ */
 class Config
 {
     /**
-     * @var ReaderInterface
+     * @var SourceInterface
      */
-    private $readers;
+    private $sources;
 
     /**
-     * @param ReaderInterface[] $readers
+     * @var Repository
+     */
+    private $data;
+
+    /**
+     * @param SourceInterface[] $readers
      */
     public function __construct(array $readers = [])
     {
-        $this->readers = $readers;
+        $this->sources = $readers;
+        $this->data = new Repository();
     }
 
     /***
@@ -36,35 +44,61 @@ class Config
      */
     public function all(): Repository
     {
+        if ($this->data->all()) {
+            return $this->data;
+        }
+
         $data = [];
 
         try {
-            foreach ($this->readers as $reader) {
-                $data = array_replace($data, $reader->read()->all());
+            foreach ($this->sources as $source) {
+                $data = array_replace_recursive(
+                    $data,
+                    $source->read()->all()
+                );
             }
-        } catch (ReaderException $exception) {
+        } catch (SourceException $exception) {
             throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
-        return new Repository($data);
+        return $this->data = new Repository($data);
+    }
+
+    /**
+     * @param string $key
+     * @return mixed
+     * @throws ConfigurationMismatchException
+     */
+    public function get(string $key)
+    {
+        return $this->all()->get($key);
+    }
+
+    /**
+     * @return string
+     * @throws ConfigurationMismatchException
+     */
+    public function getSyncEngine(): string
+    {
+        return $this->all()->get(SourceInterface::CONFIG_SYNC_ENGINE, '');
     }
 
     /**
      * @return mixed
      * @throws ConfigurationMismatchException
      */
-    public function getPhpVersion()
+    public function getMode(): string
     {
-        return $this->all()->get(ReaderInterface::PHP);
+        return $this->all()->get(SourceInterface::CONFIG_MODE, '');
     }
 
     /**
      * @return array
      * @throws ConfigurationMismatchException
      */
-    public function getCron(): array
+    public function getCronJobs(): array
     {
-        return $this->all()->get(ReaderInterface::CRONS) ?? [];
+        return $this->all()->get(SourceInterface::CRON_JOBS, []);
     }
 
     /**
@@ -73,74 +107,64 @@ class Config
      */
     public function hasCron(): bool
     {
-        return (bool)$this->getCron();
+        return (bool)$this->all()->get(SourceInterface::CRON_ENABLED);
     }
 
     /**
-     * List of services which can be configured in Cloud docker
-     *
-     * @var array
+     * @param string $name
+     * @param string $type
+     * @return string
      */
-    private static $configurableServices = [
-        ServiceInterface::NAME_PHP => 'php',
-        ServiceInterface::NAME_DB => 'mysql',
-        ServiceInterface::NAME_NGINX => 'nginx',
-        ServiceInterface::NAME_REDIS => 'redis',
-        ServiceInterface::NAME_ELASTICSEARCH => 'elasticsearch',
-        ServiceInterface::NAME_RABBITMQ => 'rabbitmq',
-        ServiceInterface::NAME_NODE => 'node'
-    ];
+    private function getKey(string $name, string $type): string
+    {
+        return SourceInterface::SERVICES . '.' . $name . '.' . $type;
+    }
 
     /**
-     * @var CloudReader
-     */
-    private $reader;
-
-    /**
-     * Retrieves service versions set in configuration files.
-     * Returns null if neither of services is configured or provided in $customVersions.
-     *
-     * Example of return:
-     *
-     * ```php
-     *  [
-     *      'elasticsearch' => '5.6',
-     *      'db' => '10.0'
-     *  ];
-     * ```
-     *
-     * @param \Illuminate\Contracts\Config\Repository $customVersions custom version which overwrite values from
-     *     configuration files
-     * @return array List of services
+     * @param string $name
+     * @return bool
      * @throws ConfigurationMismatchException
      */
-    public function getAllServiceVersions(Repository $customVersions): array
+    public function hasServiceEnabled(string $name): bool
     {
-        $configuredVersions = [];
+        $key = $this->getKey($name, 'enabled');
 
-        foreach (self::$configurableServices as $serviceName) {
-            $version = $customVersions->get($serviceName) ?: $this->getServiceVersion($serviceName);
-            if ($version) {
-                $configuredVersions[$serviceName] = $version;
-            }
+        return (bool)$this->all()->get($key);
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     * @throws ConfigurationMismatchException
+     */
+    public function getServiceVersion(string $name): string
+    {
+        $key = $this->getKey($name, 'version');
+
+        if (!$this->all()->has($key)) {
+            throw new ConfigurationMismatchException(sprintf(
+                'Service version for %s is not defined',
+                $key
+            ));
         }
 
-        return $configuredVersions;
+        return $this->all()->get($key);
     }
 
     /**
-     * Retrieves service version set in configuration files.
-     * Returns null if service was not configured.
-     *
-     * @param string $serviceName Name of service version need to retrieve
-     * @return string|null
+     * @param string $name
+     * @return string
      * @throws ConfigurationMismatchException
      */
-    public function getServiceVersion(string $serviceName): ?string
+    public function getServiceImage(string $name): string
     {
-        return $serviceName === ServiceInterface::NAME_PHP
-            ? $this->getPhpVersion()
-            : $this->all()->get('services.' . $serviceName . '.version');
+        $key = $this->getKey($name, 'image');
+
+        if (!$this->all()->has($key)) {
+            throw new ConfigurationMismatchException('Service image is not defined');
+        }
+
+        return $this->all()->get($key);
     }
 
     /**
@@ -149,7 +173,7 @@ class Config
      */
     public function getMounts(): array
     {
-        return $this->all()->get(ReaderInterface::MOUNTS, []);
+        return $this->all()->get(SourceInterface::MOUNTS, []);
     }
 
     /**
@@ -158,20 +182,7 @@ class Config
      */
     public function hasTmpMounts(): bool
     {
-        return $this->all()->get(CliReader::OPTION_NO_TMP_MOUNTS) ? false : true;
-    }
-
-    /**
-     * @return bool
-     * @throws ConfigurationMismatchException
-     */
-    public function hasSelenium(): bool
-    {
-        $config = $this->all();
-
-        return $config->get(CliReader::OPTION_WITH_SELENIUM)
-            || $config->get(CliReader::OPTION_SELENIUM_IMAGE)
-            || $config->get(CliReader::OPTION_SELENIUM_VERSION);
+        return (bool)$this->all()->get(SourceInterface::CONFIG_TMP_MOUNTS);
     }
 
     /**
@@ -180,7 +191,7 @@ class Config
      */
     public function hasDbPortsExpose(): bool
     {
-        return (bool)$this->all()->get(CliReader::OPTION_EXPOSE_DB_PORT);
+        return (bool)$this->all()->get(CliSource::OPTION_EXPOSE_DB_PORT, false);
     }
 
     /**
@@ -189,7 +200,7 @@ class Config
      */
     public function getEnabledPhpExtensions(): array
     {
-        return $this->all()->get(ReaderInterface::RUNTIME_EXTENSIONS);
+        return $this->all()->get(SourceInterface::PHP_EXTENSIONS, []);
     }
 
     /**
@@ -198,6 +209,15 @@ class Config
      */
     public function getDisabledPhpExtensions(): array
     {
-        return $this->all()->get(ReaderInterface::RUNTIME_DISABLED_EXTENSIONS);
+        return $this->all()->get(SourceInterface::PHP_DISABLED_EXTENSIONS, []);
+    }
+
+    /**
+     * @return bool
+     * @throws ConfigurationMismatchException
+     */
+    public function hasSelenium(): bool
+    {
+        return $this->hasServiceEnabled(ServiceInterface::SERVICE_SELENIUM);
     }
 }

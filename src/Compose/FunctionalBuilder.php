@@ -92,13 +92,13 @@ class FunctionalBuilder implements BuilderInterface
     {
         $manager = $this->managerFactory->create();
 
-        $phpVersion = $config->get(ServiceInterface::NAME_PHP) ?: null;
+        $phpVersion = $config->getServiceVersion(ServiceInterface::SERVICE_PHP);
 
         if (!$phpVersion) {
             throw new ConfigurationMismatchException('PHP version not set');
         }
 
-        $dbVersion = $config->get(ServiceInterface::NAME_DB) ?: null;
+        $dbVersion = $config->getServiceVersion(ServiceInterface::SERVICE_DB);
 
         if (!$dbVersion) {
             throw new ConfigurationMismatchException('DB version not set');
@@ -125,7 +125,7 @@ class FunctionalBuilder implements BuilderInterface
         $manager->addService(
             self::SERVICE_DB,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_DB,
+                ServiceInterface::SERVICE_DB,
                 (string)$dbVersion,
                 [
                     'ports' => ['3306:3306'],
@@ -138,42 +138,36 @@ class FunctionalBuilder implements BuilderInterface
             []
         );
 
-        $redisVersion = $config->get(ServiceInterface::NAME_REDIS) ?: null;
-
-        if ($redisVersion) {
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_REDIS)) {
             $manager->addService(
                 self::SERVICE_REDIS,
                 $this->serviceFactory->create(
-                    ServiceFactory::SERVICE_REDIS,
-                    (string)$redisVersion
+                    ServiceInterface::SERVICE_REDIS,
+                    $config->getServiceVersion(ServiceInterface::SERVICE_REDIS)
                 ),
                 [self::NETWORK_MAGENTO],
                 []
             );
         }
 
-        $esVersion = $config->get(ServiceInterface::NAME_ELASTICSEARCH) ?: null;
-
-        if ($esVersion) {
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_ELASTICSEARCH)) {
             $manager->addService(
                 self::SERVICE_ELASTICSEARCH,
                 $this->serviceFactory->create(
-                    ServiceFactory::SERVICE_ELASTICSEARCH,
-                    (string)$esVersion
+                    ServiceInterface::SERVICE_ELASTICSEARCH,
+                    $config->getServiceVersion(ServiceInterface::SERVICE_ELASTICSEARCH)
                 ),
                 [self::NETWORK_MAGENTO],
                 []
             );
         }
 
-        $nodeVersion = $config->get(ServiceInterface::NAME_NODE) ?: null;
-
-        if ($nodeVersion) {
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_NODE)) {
             $manager->addService(
                 self::SERVICE_NODE,
                 $this->serviceFactory->create(
-                    ServiceFactory::SERVICE_NODE,
-                    (string)$nodeVersion,
+                    ServiceInterface::SERVICE_NODE,
+                    $config->getServiceVersion(ServiceInterface::SERVICE_NODE),
                     [
                         'volumes' => $this->getMagentoVolumes(false)
                     ]
@@ -183,14 +177,12 @@ class FunctionalBuilder implements BuilderInterface
             );
         }
 
-        $rabbitMQVersion = $config->get(ServiceInterface::NAME_RABBITMQ) ?: null;
-
-        if ($rabbitMQVersion) {
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_RABBITMQ)) {
             $manager->addService(
                 self::SERVICE_RABBITMQ,
                 $this->serviceFactory->create(
-                    ServiceFactory::SERVICE_RABBIT_MQ,
-                    (string)$rabbitMQVersion
+                    ServiceInterface::SERVICE_RABBITMQ,
+                    $config->getServiceVersion(ServiceInterface::SERVICE_RABBITMQ)
                 ),
                 [self::NETWORK_MAGENTO],
                 []
@@ -200,7 +192,7 @@ class FunctionalBuilder implements BuilderInterface
         $manager->addService(
             self::SERVICE_FPM,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_FPM,
+                ServiceInterface::SERVICE_PHP_FPM,
                 (string)$phpVersion,
                 [
                     'volumes' => $this->getMagentoVolumes(true)
@@ -213,7 +205,7 @@ class FunctionalBuilder implements BuilderInterface
         $manager->addService(
             self::SERVICE_BUILD,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_CLI,
+                ServiceInterface::SERVICE_PHP_CLI,
                 (string)$phpVersion,
                 [
                     'volumes' => array_merge(
@@ -236,8 +228,8 @@ class FunctionalBuilder implements BuilderInterface
         $manager->addService(
             self::SERVICE_WEB,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_NGINX,
-                $config->get(ServiceInterface::NAME_NGINX, self::DEFAULT_NGINX_VERSION),
+                ServiceInterface::SERVICE_NGINX,
+                $config->getServiceVersion(ServiceInterface::SERVICE_NGINX),
                 [
                     'volumes' => $this->getMagentoVolumes(true)
                 ]
@@ -249,8 +241,8 @@ class FunctionalBuilder implements BuilderInterface
         $manager->addService(
             self::SERVICE_VARNISH,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_VARNISH,
-                self::DEFAULT_VARNISH_VERSION
+                ServiceInterface::SERVICE_VARNISH,
+                $config->getServiceVersion(ServiceInterface::SERVICE_VARNISH)
             ),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_WEB => []]
@@ -259,8 +251,8 @@ class FunctionalBuilder implements BuilderInterface
         $manager->addService(
             self::SERVICE_TLS,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_TLS,
-                self::DEFAULT_TLS_VERSION,
+                ServiceInterface::SERVICE_TLS,
+                $config->getServiceVersion(ServiceInterface::SERVICE_TLS),
                 [
                     'networks' => [
                         self::NETWORK_MAGENTO => [
@@ -281,7 +273,7 @@ class FunctionalBuilder implements BuilderInterface
         $manager->addService(
             self::SERVICE_GENERIC,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_GENERIC,
+                ServiceInterface::SERVICE_GENERIC,
                 '',
                 [
                     'environment' => $this->converter->convert(array_merge(
@@ -369,7 +361,7 @@ class FunctionalBuilder implements BuilderInterface
         bool $isReadOnly
     ): array {
         return $this->serviceFactory->create(
-            ServiceFactory::SERVICE_CLI,
+            ServiceInterface::SERVICE_PHP_CLI,
             $version,
             [
                 'volumes' => array_merge(

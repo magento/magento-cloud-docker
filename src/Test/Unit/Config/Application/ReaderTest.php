@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Unit\Config\Application;
 
 use Illuminate\Filesystem\Filesystem;
-use Magento\CloudDocker\Config\Reader\CloudReader;
+use Magento\CloudDocker\Config\Source\CloudSource;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -21,7 +21,7 @@ use Symfony\Component\Yaml\Yaml;
 class ReaderTest extends TestCase
 {
     /**
-     * @var CloudReader
+     * @var CloudSource
      */
     private $reader;
 
@@ -48,7 +48,7 @@ class ReaderTest extends TestCase
         $this->fileListMock->method('getServicesConfig')
             ->willReturn('/root/.magento/services.yaml');
 
-        $this->reader = new CloudReader(
+        $this->reader = new CloudSource(
             $this->fileListMock,
             $this->filesystemMock
         );

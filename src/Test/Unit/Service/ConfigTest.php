@@ -9,7 +9,7 @@ namespace Magento\CloudDocker\Test\Unit\Service;
 
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Config\Reader\CloudReader;
+use Magento\CloudDocker\Config\Source\CloudSource;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceInterface;
@@ -27,7 +27,7 @@ class ConfigTest extends TestCase
     private $version;
 
     /**
-     * @var CloudReader|MockObject
+     * @var CloudSource|MockObject
      */
     private $readerMock;
 
@@ -36,7 +36,7 @@ class ConfigTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->readerMock = $this->createMock(CloudReader::class);
+        $this->readerMock = $this->createMock(CloudSource::class);
 
         $this->version = new Config($this->readerMock);
     }
@@ -47,21 +47,21 @@ class ConfigTest extends TestCase
     public function testGetAllServiceVersions()
     {
         $customVersions = [
-            ServiceInterface::NAME_DB => 'db.version1',
-            ServiceInterface::NAME_ELASTICSEARCH => 'es.version1',
+            ServiceInterface::SERVICE_DB => 'db.version1',
+            ServiceInterface::SERVICE_ELASTICSEARCH => 'es.version1',
         ];
         $configVersions = [
             'services' => [
-                ServiceInterface::NAME_ELASTICSEARCH => ['version' => 'es.version2'],
-                ServiceInterface::NAME_RABBITMQ => ['version' => 'rabbitmq.version2'],
+                ServiceInterface::SERVICE_ELASTICSEARCH => ['version' => 'es.version2'],
+                ServiceInterface::SERVICE_RABBITMQ => ['version' => 'rabbitmq.version2'],
             ],
             'type' => 'php:7.0',
         ];
         $result = [
-            ServiceInterface::NAME_DB => 'db.version1',
-            ServiceInterface::NAME_ELASTICSEARCH => 'es.version1',
-            ServiceInterface::NAME_RABBITMQ => 'rabbitmq.version2',
-            ServiceInterface::NAME_PHP => '7.0'
+            ServiceInterface::SERVICE_DB => 'db.version1',
+            ServiceInterface::SERVICE_ELASTICSEARCH => 'es.version1',
+            ServiceInterface::SERVICE_RABBITMQ => 'rabbitmq.version2',
+            ServiceInterface::SERVICE_PHP => '7.0'
 
         ];
         $customConfigs = new Repository($customVersions);
@@ -97,7 +97,7 @@ class ConfigTest extends TestCase
         $this->readerMock->expects($this->once())
             ->method('read')
             ->willReturn(['type' => 'notphp:1']);
-        $this->version->getServiceVersion(ServiceInterface::NAME_PHP);
+        $this->version->getServiceVersion(ServiceInterface::SERVICE_PHP);
     }
 
     public function testGetServiceVersionException()
@@ -108,7 +108,7 @@ class ConfigTest extends TestCase
         $this->readerMock->expects($this->once())
             ->method('read')
             ->willThrowException($exception);
-        $this->version->getServiceVersion(ServiceInterface::NAME_RABBITMQ);
+        $this->version->getServiceVersion(ServiceInterface::SERVICE_RABBITMQ);
     }
 
     /**
@@ -229,25 +229,25 @@ class ConfigTest extends TestCase
         return [
             [
                 ['type' => 'php:7.1'],
-                ServiceInterface::NAME_PHP,
+                ServiceInterface::SERVICE_PHP,
                 7.1
             ],
             [
                 [
                     'type' => 'php:7.1',
                     'services' => [
-                        ServiceInterface::NAME_ELASTICSEARCH => [
+                        ServiceInterface::SERVICE_ELASTICSEARCH => [
                             'version' => '6.7'
                         ]
                     ]
                 ],
-                ServiceInterface::NAME_ELASTICSEARCH,
+                ServiceInterface::SERVICE_ELASTICSEARCH,
                 6.7
             ],
             [
                 [
                     'services' => [
-                        ServiceInterface::NAME_ELASTICSEARCH => [
+                        ServiceInterface::SERVICE_ELASTICSEARCH => [
                             'version' => '6.7'
                         ]
                     ]

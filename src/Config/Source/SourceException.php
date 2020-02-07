@@ -5,10 +5,13 @@
  */
 declare(strict_types=1);
 
-namespace Magento\CloudDocker\Config\Reader;
+namespace Magento\CloudDocker\Config\Source;
 
 use Magento\CloudDocker\App\GenericException;
 
-class ReaderException extends GenericException
+/**
+ * Exception for source parse errors.
+ */
+class SourceException extends GenericException
 {
 }

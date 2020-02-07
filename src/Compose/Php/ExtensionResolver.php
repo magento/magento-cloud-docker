@@ -10,6 +10,7 @@ namespace Magento\CloudDocker\Compose\Php;
 use Composer\Semver\Semver;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Config;
+use Magento\CloudDocker\Service\ServiceInterface;
 
 /**
  * Returns list of PHP extensions which will be enabled in Docker PHP container.
@@ -28,7 +29,7 @@ class ExtensionResolver
     /**
      * Extensions which should be installed by default
      */
-    private const DEFAULT_PHP_EXTENSIONS = [
+    public const DEFAULT_PHP_EXTENSIONS = [
         'bcmath',
         'bz2',
         'calendar',
@@ -102,12 +103,13 @@ class ExtensionResolver
     /**
      * Returns list of PHP extensions which will be enabled in Docker PHP container.
      *
-     * @param string $phpVersion
+     * @param Config $config
      * @return array
      * @throws ConfigurationMismatchException
      */
-    public function get(Config $config, string $phpVersion): array
+    public function get(Config $config): array
     {
+        $phpVersion = $config->getServiceVersion(ServiceInterface::SERVICE_PHP);
         $enabledExtensions = array_unique(
             array_merge(self::DEFAULT_PHP_EXTENSIONS, $config->getEnabledPhpExtensions())
         );

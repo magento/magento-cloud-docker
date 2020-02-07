@@ -9,6 +9,7 @@ namespace Magento\CloudDocker\Config\Dist;
 
 use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Relationship;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 
@@ -80,18 +81,17 @@ class Generator
      * Create docker/config.php.dist file
      * generate MAGENTO_CLOUD_RELATIONSHIPS according to services enablements.
      *
-     * @throws ConfigurationMismatchException if can't obtain relationships
+     * @param Config $config
+     * @throws ConfigurationMismatchException
      */
-    public function generate()
+    public function generate(Config $config)
     {
         $configPath = $this->directoryList->getDockerRoot() . '/config.php.dist';
 
-        $config = array_merge(
-            ['MAGENTO_CLOUD_RELATIONSHIPS' => $this->relationship->get()],
-            self::$baseConfig
+        $this->saveConfig(
+            $configPath,
+            array_merge(['MAGENTO_CLOUD_RELATIONSHIPS' => $this->relationship->get($config)], self::$baseConfig)
         );
-
-        $this->saveConfig($configPath, $config);
     }
 
     /**
