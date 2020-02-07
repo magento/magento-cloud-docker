@@ -323,9 +323,9 @@ class ProductionBuilder implements BuilderInterface
         $phpExtensions = $this->phpExtension->get($phpVersion);
 
         /**
-         * Include Xdebug if --with-xdebug is set, or if it is in developer mode.
+         * Include Xdebug if --with-xdebug is set
          */
-        if ($config->get(self::KEY_WITH_XDEBUG, false) || $config->get("mode") == "developer") {
+        if ($config->get(self::KEY_WITH_XDEBUG, false)) {
             $manager->addService(
                 self::SERVICE_FPM_XDEBUG,
                 $this->serviceFactory->create(
