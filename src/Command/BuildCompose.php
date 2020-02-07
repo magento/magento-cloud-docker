@@ -50,7 +50,7 @@ class BuildCompose extends Command
     private const OPTION_NODE = 'node';
     private const OPTION_MODE = 'mode';
     private const OPTION_SYNC_ENGINE = 'sync-engine';
-    private const OPTION_NO_CRON = 'no-cron';
+    private const OPTION_WITH_CRON = 'with-cron';
     private const OPTION_NO_VARNISH = 'no-varnish';
     private const OPTION_WITH_SELENIUM = 'with-selenium';
 
@@ -69,7 +69,7 @@ class BuildCompose extends Command
         self::OPTION_RABBIT_MQ => ServiceInterface::NAME_RABBITMQ,
         self::OPTION_EXPOSE_DB_PORT => ProductionBuilder::KEY_EXPOSE_DB_PORT,
         self::OPTION_SELENIUM_VERSION => ServiceFactory::SERVICE_SELENIUM_VERSION,
-        self::OPTION_SELENIUM_IMAGE => ServiceFactory::SERVICE_SELENIUM_IMAGE
+        self::OPTION_SELENIUM_IMAGE => ServiceFactory::SERVICE_SELENIUM_IMAGE,
     ];
 
     /**
@@ -221,10 +221,10 @@ class BuildCompose extends Command
                 )
             )
             ->addOption(
-                self::OPTION_NO_CRON,
+                self::OPTION_WITH_CRON,
                 null,
                 InputOption::VALUE_NONE,
-                'Remove cron container'
+                'Add cron container'
             )
             ->addOption(
                 self::OPTION_NO_VARNISH,
@@ -278,7 +278,7 @@ class BuildCompose extends Command
 
         $config->set([
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
-            ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON),
+            ProductionBuilder::KEY_WITH_CRON=> $input->getOption(self::OPTION_WITH_CRON),
             ProductionBuilder::KEY_NO_VARNISH => $input->getOption(self::OPTION_NO_VARNISH),
             ProductionBuilder::KEY_WITH_SELENIUM => $input->getOption(self::OPTION_WITH_SELENIUM)
         ]);
