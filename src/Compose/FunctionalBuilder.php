@@ -11,103 +11,311 @@ use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Environment\Converter;
-use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
 use Magento\CloudDocker\Filesystem\FileList;
-use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
-use Magento\CloudDocker\Config\Application\Reader as AppReader;
 
 /**
  * Docker functional test builder.
  *
  * @codeCoverageIgnore
  */
-class FunctionalBuilder extends ProductionBuilder
+class FunctionalBuilder implements BuilderInterface
 {
+    /**
+     * @var array
+     */
+    private static $cliDepends = [
+        self::SERVICE_DB => [
+            'condition' => 'service_started'
+        ],
+        self::SERVICE_REDIS => [
+            'condition' => 'service_started'
+        ],
+        self::SERVICE_ELASTICSEARCH => [
+            'condition' => 'service_healthy'
+        ],
+        self::SERVICE_NODE => [
+            'condition' => 'service_started'
+        ],
+        self::SERVICE_RABBITMQ => [
+            'condition' => 'service_started'
+        ]
+    ];
+
+    /**
+     * @var ServiceFactory
+     */
+    private $serviceFactory;
+
+    /**
+     * @var Converter
+     */
+    private $converter;
+
     /**
      * @var FileList
      */
     private $fileList;
 
     /**
+     * @var ManagerFactory
+     */
+    private $managerFactory;
+
+    /**
      * @param ServiceFactory $serviceFactory
-     * @param Config $serviceConfig
      * @param FileList $fileList
      * @param Converter $converter
-     * @param ExtensionResolver $phpExtension
-     * @param EnvReader $envReader
-     * @param AppReader $appReader
+     * @param ManagerFactory $managerFactory
      */
     public function __construct(
         ServiceFactory $serviceFactory,
-        Config $serviceConfig,
         FileList $fileList,
         Converter $converter,
-        ExtensionResolver $phpExtension,
-        EnvReader $envReader,
-        AppReader $appReader
+        ManagerFactory $managerFactory
     ) {
+        $this->serviceFactory = $serviceFactory;
         $this->fileList = $fileList;
+        $this->converter = $converter;
+        $this->managerFactory = $managerFactory;
+    }
 
-        parent::__construct(
-            $serviceFactory,
-            $serviceConfig,
-            $fileList,
-            $converter,
-            $phpExtension,
-            $envReader,
-            $appReader
+    /**
+     * {@inheritdoc}
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
+    public function build(Repository $config): Manager
+    {
+        $manager = $this->managerFactory->create();
+
+        $phpVersion = $config->get(ServiceInterface::NAME_PHP) ?: null;
+
+        if (!$phpVersion) {
+            throw new ConfigurationMismatchException('PHP version not set');
+        }
+
+        $dbVersion = $config->get(ServiceInterface::NAME_DB) ?: null;
+
+        if (!$dbVersion) {
+            throw new ConfigurationMismatchException('DB version not set');
+        }
+
+        $manager->addNetwork(self::NETWORK_MAGENTO, ['driver' => 'bridge']);
+        $manager->addNetwork(self::NETWORK_MAGENTO_BUILD, ['driver' => 'bridge']);
+
+        $manager->addVolumes([
+            self::VOLUME_MAGENTO => [],
+            self::VOLUME_MAGENTO_VENDOR => [],
+            self::VOLUME_MAGENTO_GENERATED => [],
+            self::VOLUME_MAGENTO_VAR => [],
+            self::VOLUME_MAGENTO_ETC => [],
+            self::VOLUME_MAGENTO_STATIC => [],
+            self::VOLUME_MAGENTO_MEDIA => [],
+            self::VOLUME_MAGENTO_DB => [],
+            'magento-build-var' => [],
+            'magento-build-etc' => [],
+            'magento-build-static' => [],
+            'magento-build-media' => []
+        ]);
+
+        $manager->addService(
+            self::SERVICE_DB,
+            $this->serviceFactory->create(
+                ServiceFactory::SERVICE_DB,
+                (string)$dbVersion,
+                [
+                    'ports' => ['3306:3306'],
+                    'volumes' => [
+                        self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+                    ]
+                ]
+            ),
+            [self::NETWORK_MAGENTO],
+            []
         );
+
+        $redisVersion = $config->get(ServiceInterface::NAME_REDIS) ?: null;
+
+        if ($redisVersion) {
+            $manager->addService(
+                self::SERVICE_REDIS,
+                $this->serviceFactory->create(
+                    ServiceFactory::SERVICE_REDIS,
+                    (string)$redisVersion
+                ),
+                [self::NETWORK_MAGENTO],
+                []
+            );
+        }
+
+        $esVersion = $config->get(ServiceInterface::NAME_ELASTICSEARCH) ?: null;
+
+        if ($esVersion) {
+            $manager->addService(
+                self::SERVICE_ELASTICSEARCH,
+                $this->serviceFactory->create(
+                    ServiceFactory::SERVICE_ELASTICSEARCH,
+                    (string)$esVersion
+                ),
+                [self::NETWORK_MAGENTO],
+                []
+            );
+        }
+
+        $nodeVersion = $config->get(ServiceInterface::NAME_NODE) ?: null;
+
+        if ($nodeVersion) {
+            $manager->addService(
+                self::SERVICE_NODE,
+                $this->serviceFactory->create(
+                    ServiceFactory::SERVICE_NODE,
+                    (string)$nodeVersion,
+                    [
+                        'volumes' => $this->getMagentoVolumes(false)
+                    ]
+                ),
+                [self::NETWORK_MAGENTO],
+                []
+            );
+        }
+
+        $rabbitMQVersion = $config->get(ServiceInterface::NAME_RABBITMQ) ?: null;
+
+        if ($rabbitMQVersion) {
+            $manager->addService(
+                self::SERVICE_RABBITMQ,
+                $this->serviceFactory->create(
+                    ServiceFactory::SERVICE_RABBIT_MQ,
+                    (string)$rabbitMQVersion
+                ),
+                [self::NETWORK_MAGENTO],
+                []
+            );
+        }
+
+        $manager->addService(
+            self::SERVICE_FPM,
+            $this->serviceFactory->create(
+                ServiceFactory::SERVICE_FPM,
+                (string)$phpVersion,
+                [
+                    'volumes' => $this->getMagentoVolumes(true)
+                ]
+            ),
+            [self::NETWORK_MAGENTO],
+            [self::SERVICE_DB => []]
+        );
+
+        $manager->addService(
+            self::SERVICE_BUILD,
+            $this->serviceFactory->create(
+                ServiceFactory::SERVICE_CLI,
+                (string)$phpVersion,
+                [
+                    'volumes' => array_merge(
+                        $this->getMagentoBuildVolumes(false),
+                        $this->getComposerVolumes()
+                    ),
+                ]
+            ),
+            [self::NETWORK_MAGENTO_BUILD],
+            []
+        );
+
+        $manager->addService(
+            self::SERVICE_DEPLOY,
+            $this->getCliService((string)$phpVersion, true),
+            [self::NETWORK_MAGENTO],
+            self::$cliDepends
+        );
+
+        $manager->addService(
+            self::SERVICE_WEB,
+            $this->serviceFactory->create(
+                ServiceFactory::SERVICE_NGINX,
+                $config->get(ServiceInterface::NAME_NGINX, self::DEFAULT_NGINX_VERSION),
+                [
+                    'volumes' => $this->getMagentoVolumes(true)
+                ]
+            ),
+            [self::NETWORK_MAGENTO],
+            [self::SERVICE_FPM => []]
+        );
+
+        $manager->addService(
+            self::SERVICE_VARNISH,
+            $this->serviceFactory->create(
+                ServiceFactory::SERVICE_VARNISH,
+                self::DEFAULT_VARNISH_VERSION
+            ),
+            [self::NETWORK_MAGENTO],
+            [self::SERVICE_WEB => []]
+        );
+
+        $manager->addService(
+            self::SERVICE_TLS,
+            $this->serviceFactory->create(
+                ServiceFactory::SERVICE_TLS,
+                self::DEFAULT_TLS_VERSION,
+                [
+                    'networks' => [
+                        self::NETWORK_MAGENTO => [
+                            'aliases' => [Manager::DOMAIN]
+                        ]
+                    ]
+                ]
+            ),
+            [self::NETWORK_MAGENTO],
+            [self::SERVICE_VARNISH => []]
+        );
+
+        /**
+         * Generic service.
+         */
+        $phpExtensions = $this->getPhpExtensions((string)$phpVersion);
+
+        $manager->addService(
+            self::SERVICE_GENERIC,
+            $this->serviceFactory->create(
+                ServiceFactory::SERVICE_GENERIC,
+                '',
+                [
+                    'environment' => $this->converter->convert(array_merge(
+                        ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
+                    )),
+                    'env_file' => [
+                        './.docker/composer.env',
+                        './.docker/global.env'
+                    ]
+                ]
+            ),
+            [],
+            []
+        );
+
+        return $manager;
     }
 
     /**
      * @inheritDoc
      */
-    public function build(): array
-    {
-        $compose = parent::build();
-        $compose['services']['generic']['env_file'] = [
-            './.docker/composer.env',
-            './.docker/global.env'
-        ];
-        $compose['services']['db']['ports'] = ['3306:3306'];
-        $compose['volumes']['magento'] = [];
-        $compose['volumes']['magento-build-var'] = [];
-        $compose['volumes']['magento-build-etc'] = [];
-        $compose['volumes']['magento-build-static'] = [];
-        $compose['volumes']['magento-build-media'] = [];
-
-        return $compose;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setConfig(Repository $config): void
-    {
-        $config->set(self::KEY_WITH_SELENIUM, false);
-        $config->set(self::KEY_NO_TMP_MOUNTS, true);
-
-        parent::setConfig($config);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getMagentoVolumes(bool $isReadOnly = true): array
+    protected function getMagentoVolumes(bool $isReadOnly): array
     {
         $flag = $isReadOnly ? ':ro' : ':rw';
 
         return [
             '.:/ece-tools',
-            'magento:' . self::DIR_MAGENTO . $flag,
-            'magento-vendor:' . self::DIR_MAGENTO . '/vendor' . $flag,
-            'magento-generated:' . self::DIR_MAGENTO . '/generated' . $flag,
-            'magento-var:' . self::DIR_MAGENTO . '/var:delegated',
-            'magento-etc:' . self::DIR_MAGENTO . '/app/etc:delegated',
-            'magento-static:' . self::DIR_MAGENTO . '/pub/static:delegated',
-            'magento-media:' . self::DIR_MAGENTO . '/pub/media:delegated',
+            self::VOLUME_MAGENTO . ':' . self::DIR_MAGENTO . $flag,
+            self::VOLUME_MAGENTO_VENDOR . ':' . self::DIR_MAGENTO . '/vendor' . $flag,
+            self::VOLUME_MAGENTO_GENERATED . ':' . self::DIR_MAGENTO . '/generated' . $flag,
+            self::VOLUME_MAGENTO_VAR . ':' . self::DIR_MAGENTO . '/var:delegated',
+            self::VOLUME_MAGENTO_ETC . ':' . self::DIR_MAGENTO . '/app/etc:delegated',
+            self::VOLUME_MAGENTO_STATIC . ':' . self::DIR_MAGENTO . '/pub/static:delegated',
+            self::VOLUME_MAGENTO_MEDIA . ':' . self::DIR_MAGENTO . '/pub/media:delegated',
         ];
     }
 
@@ -120,53 +328,14 @@ class FunctionalBuilder extends ProductionBuilder
 
         return [
             '.:/ece-tools',
-            'magento:' . self::DIR_MAGENTO . $flag,
-            'magento-vendor:' . self::DIR_MAGENTO . '/vendor' . $flag,
-            'magento-generated:' . self::DIR_MAGENTO . '/generated' . $flag,
-            'magento-build-var:' . self::DIR_MAGENTO . '/var:delegated',
-            'magento-build-etc:' . self::DIR_MAGENTO . '/app/etc:delegated',
+            self::VOLUME_MAGENTO . ':' . self::DIR_MAGENTO . $flag,
+            self::VOLUME_MAGENTO_VENDOR . ':' . self::DIR_MAGENTO . '/vendor' . $flag,
+            self::VOLUME_MAGENTO_GENERATED . ':' . self::DIR_MAGENTO . '/generated' . $flag,
+            self::VOLUME_MAGENTO_VAR . ':' . self::DIR_MAGENTO . '/var:delegated',
+            self::VOLUME_MAGENTO_ETC . ':' . self::DIR_MAGENTO . '/app/etc:delegated',
             'magento-build-static:' . self::DIR_MAGENTO . '/pub/static:delegated',
             'magento-build-media:' . self::DIR_MAGENTO . '/pub/media:delegated',
         ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getVariables(): array
-    {
-        return [];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getServiceVersion(string $serviceName): ?string
-    {
-        $mapDefaultVersion = [
-            ServiceInterface::NAME_DB => '10.2',
-            ServiceInterface::NAME_PHP => '7.2',
-            ServiceInterface::NAME_NGINX => self::DEFAULT_NGINX_VERSION,
-            ServiceInterface::NAME_VARNISH => self::DEFAULT_VARNISH_VERSION,
-            ServiceInterface::NAME_ELASTICSEARCH => null,
-            ServiceInterface::NAME_NODE => null,
-            ServiceInterface::NAME_RABBITMQ => null,
-            ServiceInterface::NAME_REDIS => null,
-        ];
-
-        if (!array_key_exists($serviceName, $mapDefaultVersion)) {
-            throw new ConfigurationMismatchException(sprintf('Type "%s" is not supported', $serviceName));
-        }
-
-        return $mapDefaultVersion[$serviceName];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getPhpVersion(): string
-    {
-        return $this->getServiceVersion(ServiceInterface::NAME_PHP);
     }
 
     /**
@@ -180,12 +349,44 @@ class FunctionalBuilder extends ProductionBuilder
     /**
      * @inheritDoc
      */
-    protected function getPhpExtensions(string $phpVersion): array
+    private function getPhpExtensions(string $phpVersion): array
     {
         return array_unique(array_merge(
             ExtensionResolver::DEFAULT_PHP_EXTENSIONS,
             ['xsl', 'redis'],
             in_array($phpVersion, ['7.0', '7.1']) ? ['mcrypt'] : []
         ));
+    }
+
+    /**
+     * @param string $version
+     * @param bool $isReadOnly
+     * @return array
+     * @throws ConfigurationMismatchException
+     */
+    private function getCliService(
+        string $version,
+        bool $isReadOnly
+    ): array {
+        return $this->serviceFactory->create(
+            ServiceFactory::SERVICE_CLI,
+            $version,
+            [
+                'volumes' => array_merge(
+                    $this->getMagentoVolumes($isReadOnly),
+                    $this->getComposerVolumes()
+                ),
+            ]
+        );
+    }
+
+    /***
+     * @return array
+     */
+    private function getComposerVolumes(): array
+    {
+        return [
+            '~/.composer/cache:/root/.composer/cache:delegated',
+        ];
     }
 }
