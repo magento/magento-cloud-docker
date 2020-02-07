@@ -183,7 +183,14 @@ class ProductionBuilder implements BuilderInterface
                     'device' => $this->resolver->getRootPath('/.docker/mysql/docker-entrypoint-initdb.d'),
                     'o' => 'bind'
                 ]
-            ]
+            ],
+            self::VOLUME_MARIADB_CONF => [
+                'driver_opts' => [
+                    'type' => 'none',
+                    'device' => $this->resolver->getRootPath('/.docker/mysql/mariadb.conf.d'),
+                    'o' => 'bind',
+                ],
+            ],
         ];
 
         if ($this->hasSelenium($config)) {
@@ -220,6 +227,16 @@ class ProductionBuilder implements BuilderInterface
             $volumes[$volumeName] = $syncConfig;
         }
 
+        if ($config->get(self::KEY_SYNC_ENGINE) === self::SYNC_ENGINE_MOUNT) {
+            $volumes[self::VOLUME_MAGENTO] = [
+                'driver_opts' => [
+                    'type' => 'none',
+                    'device' => $this->resolver->getRootPath(),
+                    'o' => 'bind'
+                ]
+            ];
+        }
+
         $manager->addVolumes($volumes);
 
         $volumesBuild = $this->volumeResolver->normalize(array_merge(
@@ -249,7 +266,8 @@ class ProductionBuilder implements BuilderInterface
                     'volumes' => array_merge(
                         [
                             self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
-                            self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d'
+                            self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d',
+                            self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
                         ],
                         $volumesMount
                     )
