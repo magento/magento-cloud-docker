@@ -65,14 +65,16 @@ class Docker extends BaseModule
     /**
      * Stops Docker env
      *
+     * @param $keepVolumes bool
      * @return bool
      */
-    public function stopEnvironment(): bool
+    public function stopEnvironment(bool $keepVolumes = false): bool
     {
         return $this->taskEnvDown()
             ->dir($this->getWorkDirPath())
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
+            ->keepVolumes($keepVolumes)
             ->run()
             ->stopOnFail()
             ->wasSuccessful();

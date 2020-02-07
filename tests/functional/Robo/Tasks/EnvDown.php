@@ -20,11 +20,16 @@ class EnvDown extends BaseTask implements CommandInterface
     use ExecOneCommand;
 
     /**
+     * @var bool
+     */
+    private $keepVolumes = false;
+
+    /**
      * @inheritdoc
      */
     public function getCommand(): string
     {
-        return 'docker-compose down -v --remove-orphans';
+        return 'docker-compose down --remove-orphans';
     }
 
     /**
@@ -32,6 +37,20 @@ class EnvDown extends BaseTask implements CommandInterface
      */
     public function run(): Result
     {
-        return $this->executeCommand($this->getCommand());
+        $command = $this->getCommand();
+        $command .= $this->keepVolumes ? '' : ' -v';
+
+        return $this->executeCommand($command);
+    }
+
+    /**
+     * @param bool $value
+     * @return EnvDown
+     */
+    public function keepVolumes(bool $value): self
+    {
+        $this->keepVolumes = $value;
+
+        return $this;
     }
 }
