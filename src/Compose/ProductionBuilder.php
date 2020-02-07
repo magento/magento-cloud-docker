@@ -34,7 +34,7 @@ class ProductionBuilder implements BuilderInterface
     public const SERVICE_PHP_CLI = ServiceFactory::SERVICE_CLI;
     public const SERVICE_PHP_FPM = ServiceFactory::SERVICE_FPM;
 
-    public const KEY_NO_CRON = 'no-cron';
+    public const KEY_WITH_CRON = 'with-cron';
     public const KEY_EXPOSE_DB_PORT = 'expose-db-port';
     public const KEY_NO_TMP_MOUNTS = 'no-tmp-mounts';
     public const KEY_WITH_SELENIUM = 'with-selenium';
@@ -297,7 +297,7 @@ class ProductionBuilder implements BuilderInterface
             ]
         );
 
-        if (!$this->config->get(self::KEY_NO_CRON, false)) {
+        if ($this->config->get(self::KEY_WITH_CRON, false)) {
             $services['cron'] = $this->getCronCliService(
                 $phpVersion,
                 true,
