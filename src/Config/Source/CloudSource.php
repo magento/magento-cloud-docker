@@ -109,8 +109,11 @@ class CloudSource implements SourceInterface
             ]);
         }
 
-        if (!empty($appConfig['mounts'])) {
-            $repository[self::MOUNTS] = $appConfig['mounts'];
+        foreach ($appConfig['mounts'] ?? [] as $mountName => $mountData) {
+            $repository->set(self::MOUNTS . '.' . $mountName, [
+                'path' => $mountName,
+                'orig' => $mountData
+            ]);
         }
 
         if (!empty($appConfig['runtime']['extensions'])) {
