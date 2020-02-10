@@ -158,14 +158,14 @@ class DeveloperBuilder implements BuilderInterface
      */
     private function getMagentoVolumes(Repository $config): array
     {
-        $target = self::DIR_MAGENTO;
-
         if ($config->get(self::KEY_SYNC_ENGINE) !== self::SYNC_ENGINE_NATIVE) {
-            $target .= ':nocopy';
+            return [
+                self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':nocopy'
+            ];
         }
 
         return [
-            self::VOLUME_MAGENTO_SYNC . ':' . $target . ':delegated',
+            self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':delegated',
         ];
     }
 }

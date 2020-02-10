@@ -404,7 +404,7 @@ class ProductionBuilder implements BuilderInterface
             self::$cliDepends
         );
 
-        if (!$config->get(self::KEY_NO_CRON, false)) {
+        if ($config->get(self::KEY_WITH_CRON, false)) {
             $manager->addService(
                 self::SERVICE_CRON,
                 array_merge(
