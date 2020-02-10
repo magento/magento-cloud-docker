@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Compose;
 
 use Illuminate\Contracts\Config\Repository;
+use Magento\CloudDocker\Compose\ProductionBuilder\VolumeResolver;
 use Magento\CloudDocker\Filesystem\FileList;
 
 /**
@@ -19,9 +20,7 @@ class DeveloperBuilder implements BuilderInterface
 {
     public const SYNC_ENGINE_DOCKER_SYNC = 'docker-sync';
     public const SYNC_ENGINE_MUTAGEN = 'mutagen';
-    public const SYNC_ENGINE_NATIVE = 'native';
-
-    public const KEY_SYNC_ENGINE = 'sync-engine';
+    public const DEFAULT_SYNC_ENGINE = self::SYNC_ENGINE_NATIVE;
 
     public const VOLUME_MAGENTO_SYNC = 'magento-sync';
 
@@ -47,15 +46,26 @@ class DeveloperBuilder implements BuilderInterface
     private $resolver;
 
     /**
+     * @var VolumeResolver
+     */
+    private $volumeResolver;
+
+    /**
      * @param BuilderFactory $builderFactory
      * @param FileList $fileList
      * @param Resolver $resolver
+     * @param VolumeResolver $volumeResolver
      */
-    public function __construct(BuilderFactory $builderFactory, FileList $fileList, Resolver $resolver)
-    {
+    public function __construct(
+        BuilderFactory $builderFactory,
+        FileList $fileList,
+        Resolver $resolver,
+        VolumeResolver $volumeResolver
+    ) {
         $this->builderFactory = $builderFactory;
         $this->fileList = $fileList;
         $this->resolver = $resolver;
+        $this->volumeResolver = $volumeResolver;
     }
 
     /**
@@ -86,7 +96,14 @@ class DeveloperBuilder implements BuilderInterface
 
         $manager->setVolumes([
             self::VOLUME_MAGENTO_SYNC => $syncConfig,
-            self::VOLUME_MAGENTO_DB => []
+            self::VOLUME_MAGENTO_DB => [],
+            self::VOLUME_DOCKER_ETRYPOINT => [
+                'driver_opts' => [
+                    'type' => 'none',
+                    'device' => $this->resolver->getRootPath('/.docker/mysql/docker-entrypoint-initdb.d'),
+                    'o' => 'bind'
+                ]
+            ]
         ]);
 
         /**
@@ -112,8 +129,16 @@ class DeveloperBuilder implements BuilderInterface
                 $volumes,
                 [
                     self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
-                    '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
+                    self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d'
                 ]
+            )
+        ]);
+        $manager->updateService(self::SERVICE_BUILD, [
+            'volumes' => array_merge(
+                $volumes,
+                $this->volumeResolver->normalize(
+                    $this->volumeResolver->getComposerVolumes()
+                )
             )
         ]);
 
@@ -133,14 +158,14 @@ class DeveloperBuilder implements BuilderInterface
      */
     private function getMagentoVolumes(Repository $config): array
     {
-        $target = self::DIR_MAGENTO;
-
         if ($config->get(self::KEY_SYNC_ENGINE) !== self::SYNC_ENGINE_NATIVE) {
-            $target .= ':nocopy';
+            return [
+                self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':nocopy'
+            ];
         }
 
         return [
-            self::VOLUME_MAGENTO_SYNC . ':' . $target
+            self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':delegated',
         ];
     }
 }
