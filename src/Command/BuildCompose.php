@@ -231,7 +231,7 @@ class BuildCompose extends Command
                 self::OPTION_WITH_XDEBUG,
                 null,
                 InputOption::VALUE_NONE,
-                'Enables XDebug while in production mode. XDebug is enabled by default in development mode'
+                'Enables XDebug'
             );
 
         parent::configure();
@@ -267,7 +267,6 @@ class BuildCompose extends Command
         });
 
         $config->set([
-            DeveloperBuilder::MODE => $input->getOption(self::OPTION_MODE),
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
             ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON),
             ProductionBuilder::KEY_WITH_XDEBUG => $input->getOption(self::OPTION_WITH_XDEBUG),
