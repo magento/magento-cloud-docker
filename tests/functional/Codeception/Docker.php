@@ -434,6 +434,7 @@ class Docker extends BaseModule
 
         /** @var Result $result */
         $result = $this->taskBash($container)
+            ->dir($this->getWorkDirPath())
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
             ->exec('rm -rf ' . $pathsToCleanup)
