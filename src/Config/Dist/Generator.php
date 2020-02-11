@@ -7,11 +7,11 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config\Dist;
 
-use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Relationship;
 use Magento\CloudDocker\Filesystem\DirectoryList;
+use Magento\CloudDocker\Filesystem\Filesystem;
 
 /**
  * Creates docker/config.php.dist file
@@ -84,7 +84,7 @@ class Generator
      * @param Config $config
      * @throws ConfigurationMismatchException
      */
-    public function generate(Config $config)
+    public function generate(Config $config): void
     {
         $configPath = $this->directoryList->getDockerRoot() . '/config.php.dist';
 
@@ -100,7 +100,7 @@ class Generator
      * @param string $filePath
      * @param array $config
      */
-    private function saveConfig(string $filePath, array $config)
+    private function saveConfig(string $filePath, array $config): void
     {
         $result = "<?php\n\nreturn [";
         foreach ($config as $key => $value) {

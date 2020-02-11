@@ -9,6 +9,9 @@ namespace Magento\CloudDocker\Config\Source;
 
 use Illuminate\Config\Repository;
 
+/**
+ * The very base source for most of other sources
+ */
 class BaseSource implements SourceInterface
 {
     public function read(): Repository
@@ -16,7 +19,8 @@ class BaseSource implements SourceInterface
         $config = new Repository();
 
         $config->set([
-            self::CONFIG_SYNC_ENGINE => 'native'
+            self::CONFIG_SYNC_ENGINE => 'native',
+            self::CRON_ENABLED => false
         ]);
 
         return $config;

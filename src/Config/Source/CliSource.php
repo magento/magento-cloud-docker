@@ -35,7 +35,7 @@ class CliSource implements SourceInterface
      */
     public const OPTION_NODE = 'node';
     public const OPTION_MODE = 'mode';
-    public const OPTION_NO_CRON = 'no-cron';
+    public const OPTION_WITH_CRON = 'with-cron';
     public const OPTION_NO_VARNISH = 'no-varnish';
     public const OPTION_WITH_SELENIUM = 'with-selenium';
     public const OPTION_NO_TMP_MOUNTS = 'no-tmp-mounts';
@@ -70,7 +70,10 @@ class CliSource implements SourceInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function read(): Repository
     {
@@ -127,8 +130,8 @@ class CliSource implements SourceInterface
             $repository->set(self::CONFIG_TMP_MOUNTS, false);
         }
 
-        if ($this->input->getOption(self::OPTION_NO_CRON)) {
-            $repository->set(self::CRON_ENABLED, false);
+        if ($this->input->getOption(self::OPTION_WITH_CRON)) {
+            $repository->set(self::CRON_ENABLED, true);
         }
 
         if ($this->input->getOption(self::OPTION_NO_VARNISH)) {

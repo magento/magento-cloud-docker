@@ -9,6 +9,11 @@ namespace Magento\CloudDocker\Config\Source;
 
 use Psr\Container\ContainerInterface;
 
+/**
+ * The factory class for sources
+ *
+ * @see SourceInterface
+ */
 class SourceFactory
 {
     /**

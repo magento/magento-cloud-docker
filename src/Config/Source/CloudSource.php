@@ -8,15 +8,15 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Config\Source;
 
 use Illuminate\Config\Repository;
-use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\FileList;
+use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Read and combine infrastructure configuration
+ * Source to read Magento Cloud configs
  */
 class CloudSource implements SourceInterface
 {
@@ -58,7 +58,11 @@ class CloudSource implements SourceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
+     *
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function read(): Repository
     {

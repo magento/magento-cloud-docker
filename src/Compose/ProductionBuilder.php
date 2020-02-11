@@ -300,8 +300,11 @@ class ProductionBuilder implements BuilderInterface
             );
             $manager->addService(
                 self::SERVICE_TEST,
-                $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $phpVersion,
-                    ['volumes' => $volumesRw]),
+                $this->serviceFactory->create(
+                    ServiceInterface::SERVICE_PHP_CLI,
+                    $phpVersion,
+                    ['volumes' => $volumesRw]
+                ),
                 [self::NETWORK_MAGENTO],
                 self::$cliDepends
             );
@@ -437,7 +440,7 @@ class ProductionBuilder implements BuilderInterface
     }
 
     /**
-     * @param Repository $config
+     * @param Config $config
      * @param bool $isReadOnly
      * @return array
      * @throws ConfigurationMismatchException

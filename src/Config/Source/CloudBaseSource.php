@@ -13,7 +13,7 @@ use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 
 /**
- * Base predefined set for Cloud
+ * Base predefined set for Magento Cloud
  */
 class CloudBaseSource implements SourceInterface
 {

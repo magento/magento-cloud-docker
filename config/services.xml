@@ -23,7 +23,6 @@
         <service id="Magento\CloudDocker\Compose\FunctionalBuilder" shared="false"/>
         <service id="Magento\CloudDocker\Config\Config" autowire="false"/>
         <service id="Magento\CloudDocker\Config\Source\CliSource" autowire="false"/>
-        <service id="Illuminate\Filesystem\Filesystem"/>
         <service id="Composer\Semver\VersionParser"/>
         <service id="Composer\Semver\Semver"/>
     </services>

@@ -10,7 +10,7 @@ namespace Magento\CloudDocker\Config\Source;
 use Magento\CloudDocker\App\GenericException;
 
 /**
- * Exception for source parse errors.
+ * Exception for source parse errors
  */
 class SourceException extends GenericException
 {

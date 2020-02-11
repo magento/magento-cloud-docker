@@ -17,14 +17,14 @@ use Magento\CloudDocker\Service\ServiceInterface;
  */
 class ExtensionResolver
 {
-    private const EXTENSION_OS_DEPENDENCIES = 'extension_os_dependencies';
-    private const EXTENSION_PACKAGE_NAME = 'extension_package_name';
-    private const EXTENSION_TYPE = 'extension_type';
-    private const EXTENSION_TYPE_PECL = 'extension_type_pecl';
-    private const EXTENSION_TYPE_CORE = 'extension_type_core';
-    private const EXTENSION_TYPE_INSTALLATION_SCRIPT = 'extension_type_installation_script';
-    private const EXTENSION_CONFIGURE_OPTIONS = 'extension_configure_options';
-    private const EXTENSION_INSTALLATION_SCRIPT = 'extension_installation_script';
+    public const EXTENSION_OS_DEPENDENCIES = 'extension_os_dependencies';
+    public const EXTENSION_PACKAGE_NAME = 'extension_package_name';
+    public const EXTENSION_TYPE = 'extension_type';
+    public const EXTENSION_TYPE_PECL = 'extension_type_pecl';
+    public const EXTENSION_TYPE_CORE = 'extension_type_core';
+    public const EXTENSION_TYPE_INSTALLATION_SCRIPT = 'extension_type_installation_script';
+    public const EXTENSION_CONFIGURE_OPTIONS = 'extension_configure_options';
+    public const EXTENSION_INSTALLATION_SCRIPT = 'extension_installation_script';
 
     /**
      * Extensions which should be installed by default

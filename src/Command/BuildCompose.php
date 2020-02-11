@@ -7,14 +7,13 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Command;
 
-use Illuminate\Filesystem\Filesystem;
 use Magento\CloudDocker\App\GenericException;
 use Magento\CloudDocker\Compose\DeveloperBuilder;
 use Magento\CloudDocker\Compose\BuilderFactory;
-use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\ConfigFactory;
 use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Config\Source;
+use Magento\CloudDocker\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -49,11 +48,6 @@ class BuildCompose extends Command
      * @var Filesystem
      */
     private $filesystem;
-
-    /**
-     * @var Config
-     */
-    private $config;
 
     /**
      * @var Source\SourceFactory
@@ -181,10 +175,10 @@ class BuildCompose extends Command
                 DeveloperBuilder::SYNC_ENGINE_NATIVE
             )
             ->addOption(
-                Source\CliSource::OPTION_NO_CRON,
+                Source\CliSource::OPTION_WITH_CRON,
                 null,
                 InputOption::VALUE_NONE,
-                'Remove cron container'
+                'Add cron container'
             )
             ->addOption(
                 Source\CliSource::OPTION_NO_VARNISH,

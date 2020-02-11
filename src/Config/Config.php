@@ -20,7 +20,7 @@ use Magento\CloudDocker\Service\ServiceInterface;
 class Config
 {
     /**
-     * @var SourceInterface
+     * @var SourceInterface[]
      */
     private $sources;
 
@@ -84,7 +84,7 @@ class Config
     }
 
     /**
-     * @return mixed
+     * @return string
      * @throws ConfigurationMismatchException
      */
     public function getMode(): string
