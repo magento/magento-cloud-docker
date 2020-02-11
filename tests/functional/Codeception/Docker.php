@@ -107,7 +107,6 @@ class Docker extends BaseModule
         return $this->taskDockerCompose($command)
             ->dir($this->getWorkDirPath())
             ->run()
-            ->stopOnFail()
             ->wasSuccessful();
     }
 
