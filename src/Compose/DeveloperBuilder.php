@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
-use Illuminate\Contracts\Config\Repository;
+use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Filesystem\FileList;
 
@@ -21,8 +21,6 @@ class DeveloperBuilder implements BuilderInterface
     public const SYNC_ENGINE_DOCKER_SYNC = 'docker-sync';
     public const SYNC_ENGINE_MUTAGEN = 'mutagen';
     public const SYNC_ENGINE_NATIVE = 'native';
-
-    public const KEY_SYNC_ENGINE = 'sync-engine';
 
     public const VOLUME_MAGENTO_SYNC = 'magento-sync';
 
@@ -130,13 +128,15 @@ class DeveloperBuilder implements BuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * @param Config $config
+     * @return array
+     * @throws ConfigurationMismatchException
      */
-    private function getMagentoVolumes(Repository $config): array
+    private function getMagentoVolumes(Config $config): array
     {
         $target = self::DIR_MAGENTO;
 
-        if ($config->get(self::KEY_SYNC_ENGINE) !== self::SYNC_ENGINE_NATIVE) {
+        if ($config->getSyncEngine() !== self::SYNC_ENGINE_NATIVE) {
             $target .= ':nocopy';
         }
 
