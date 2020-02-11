@@ -104,10 +104,13 @@ class Docker extends BaseModule
      */
     public function runDockerComposeCommand(string $command): bool
     {
-        return $this->taskDockerCompose($command)
+        $result = $this->taskDockerCompose($command)
             ->dir($this->getWorkDirPath())
-            ->run()
-            ->wasSuccessful();
+            ->run();
+
+        $this->output = $result->getMessage();
+
+        return $result->wasSuccessful();
     }
 
     /**
