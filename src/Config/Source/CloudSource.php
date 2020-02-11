@@ -41,7 +41,8 @@ class CloudSource implements SourceInterface
     private static $map = [
         ServiceInterface::SERVICE_DB => ['db', 'database', 'mysql'],
         ServiceInterface::SERVICE_ELASTICSEARCH => ['elasticsearch', 'es'],
-        ServiceInterface::SERVICE_REDIS => ['redis']
+        ServiceInterface::SERVICE_REDIS => ['redis'],
+        ServiceInterface::SERVICE_RABBITMQ => ['rmq', 'rabbitmq']
     ];
 
     /**
@@ -138,7 +139,7 @@ class CloudSource implements SourceInterface
 
             foreach (self::$map as $service => $possibleNames) {
                 if (in_array($parsedService, $possibleNames, true)) {
-                    if ($repository->has('services.' . $service)) {
+                    if ($repository->has(self::SERVICES . '.' . $service)) {
                         throw new SourceException(sprintf(
                             'Only one instance of service "%s" supported',
                             $service

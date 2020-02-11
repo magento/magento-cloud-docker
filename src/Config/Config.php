@@ -30,11 +30,11 @@ class Config
     private $data;
 
     /**
-     * @param SourceInterface[] $readers
+     * @param SourceInterface[] $sources
      */
-    public function __construct(array $readers = [])
+    public function __construct(array $sources = [])
     {
-        $this->sources = $readers;
+        $this->sources = $sources;
         $this->data = new Repository();
     }
 
