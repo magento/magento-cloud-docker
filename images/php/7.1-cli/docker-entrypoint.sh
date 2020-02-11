@@ -41,12 +41,15 @@ touch $CRON_LOG
 echo "cron.* $CRON_LOG" > /etc/rsyslog.d/cron.conf
 service rsyslog start
 
+PHP_EXT_DIR=/usr/local/etc/php/conf.d
+
 # Configure Sendmail if required
 if [ "$ENABLE_SENDMAIL" == "true" ]; then
+    sed -i "s/!SENDMAIL_PATH!/\/usr\/sbin\/sendmail -t -i/" ${PHP_EXT_DIR}/zz-mail.ini
     /etc/init.d/sendmail start
+else
+    sed -i "s/!SENDMAIL_PATH!/\"true > \/dev\/null\"/" ${PHP_EXT_DIR}/zz-mail.ini
 fi
-
-PHP_EXT_DIR=/usr/local/etc/php/conf.d
 
 # Substitute in php.ini values
 [ ! -z "${PHP_MEMORY_LIMIT}" ] && sed -i "s/!PHP_MEMORY_LIMIT!/${PHP_MEMORY_LIMIT}/" ${PHP_EXT_DIR}/zz-magento.ini
@@ -63,6 +66,7 @@ PHP_EXT_COM_ON=docker-php-ext-enable
 if [ -x "$(command -v ${PHP_EXT_COM_ON})" ] && [ ! -z "${PHP_EXTENSIONS}" ]; then
       ${PHP_EXT_COM_ON} ${PHP_EXTENSIONS}
 fi
+
 
 # Configure composer
 [ ! -z "${COMPOSER_GITHUB_TOKEN}" ] && \
