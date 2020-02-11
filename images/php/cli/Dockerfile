@@ -42,6 +42,7 @@ RUN npm install -g grunt-cli
 
 ADD etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
 ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
+ADD etc/php-pcov.ini /usr/local/etc/php/conf.d/zz-pcov-settings.ini
 ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 
 # Get composer installed to /usr/local/bin/composer
