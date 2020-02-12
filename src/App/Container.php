@@ -9,6 +9,7 @@ namespace Magento\CloudDocker\App;
 
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\FileLocator;
 use Exception;
@@ -32,6 +33,10 @@ class Container implements ContainerInterface
     public function __construct(string $root, string $magentoRoot, string $eceToolsRoot = null)
     {
         $container = new ContainerBuilder();
+        $container->set('container', $this);
+        $container->setDefinition('container', new Definition(__CLASS__))
+            ->setArguments([$root, $magentoRoot, $eceToolsRoot]);
+
         $container->set(DirectoryList::class, new DirectoryList(
             $root,
             $magentoRoot,

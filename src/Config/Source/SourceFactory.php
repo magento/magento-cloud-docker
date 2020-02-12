@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config\Source;
 
-use Psr\Container\ContainerInterface;
+use Magento\CloudDocker\App\ContainerInterface;
 
 /**
  * The factory class for sources
@@ -29,8 +29,12 @@ class SourceFactory
         $this->container = $container;
     }
 
-    public function get(string $object): SourceInterface
+    /**
+     * @param string $object
+     * @return SourceInterface
+     */
+    public function create(string $object): SourceInterface
     {
-        return $this->container->get($object);
+        return $this->container->create($object);
     }
 }

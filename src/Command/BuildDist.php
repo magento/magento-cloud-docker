@@ -70,13 +70,10 @@ class BuildDist extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        /**
-         * TODO: Replace get() with create()
-         */
         $config = $this->configFactory->create([
-            $this->sourceFactory->get(Source\BaseSource::class),
-            $this->sourceFactory->get(Source\CloudBaseSource::class),
-            $this->sourceFactory->get(Source\CloudSource::class)
+            $this->sourceFactory->create(Source\BaseSource::class),
+            $this->sourceFactory->create(Source\CloudBaseSource::class),
+            $this->sourceFactory->create(Source\CloudSource::class)
         ]);
 
         $this->distGenerator->generate($config);

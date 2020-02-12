@@ -210,13 +210,10 @@ class BuildCompose extends Command
         $builder = $this->builderFactory->create(
             $input->getOption(Source\CliSource::OPTION_MODE)
         );
-        /**
-         * TODO: Replace get() with create()
-         */
         $config = $this->configFactory->create([
-            $this->sourceFactory->get(Source\BaseSource::class),
-            $this->sourceFactory->get(Source\CloudBaseSource::class),
-            $this->sourceFactory->get(Source\CloudSource::class),
+            $this->sourceFactory->create(Source\BaseSource::class),
+            $this->sourceFactory->create(Source\CloudBaseSource::class),
+            $this->sourceFactory->create(Source\CloudSource::class),
             new Source\CliSource($input)
         ]);
 
