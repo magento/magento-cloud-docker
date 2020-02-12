@@ -28,13 +28,14 @@ class BuildComposeTest extends TestCase
 {
     /**
      * @param string $directory
+     * @param array $options
      *
      * @throws GenericException
      * @throws ReflectionException
      *
      * @dataProvider buildDataProvider
      */
-    public function testBuild(string $directory): void
+    public function testBuild(string $directory, array $options): void
     {
         $container = Container::getInstance(__DIR__ . '/_files', $directory);
         /** @var Filesystem $filesystem */
@@ -52,9 +53,7 @@ class BuildComposeTest extends TestCase
         $inputMock = $this->getMockForAbstractClass(InputInterface::class);
 
         $inputMock->method('getOption')
-            ->willReturnMap([
-                [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION]
-            ]);
+            ->willReturnMap($options);
         /** @var MockObject|OutputInterface $outputMock */
         $outputMock = $this->getMockForAbstractClass(OutputInterface::class);
 
@@ -73,7 +72,17 @@ class BuildComposeTest extends TestCase
     {
         return [
             'cloud-base' => [
-                __DIR__ . '/_files/cloud_base'
+                __DIR__ . '/_files/cloud_base',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION]
+                ]
+            ],
+            'cloud-base-mftf' => [
+                __DIR__ . '/_files/cloud_base_mftf',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_SELENIUM, true]
+                ]
             ]
         ];
     }

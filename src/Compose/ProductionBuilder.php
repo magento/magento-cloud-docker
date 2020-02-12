@@ -12,9 +12,7 @@ use Magento\CloudDocker\Compose\ProductionBuilder\VolumeResolver;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
 use Magento\CloudDocker\Filesystem\FileList;
-use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 
@@ -86,11 +84,6 @@ class ProductionBuilder implements BuilderInterface
     private $phpExtension;
 
     /**
-     * @var EnvReader
-     */
-    private $envReader;
-
-    /**
      * @var ManagerFactory
      */
     private $managerFactory;
@@ -112,7 +105,6 @@ class ProductionBuilder implements BuilderInterface
      * @param ExtensionResolver $phpExtension
      * @param ManagerFactory $managerFactory
      * @param Resolver $resolver
-     * @param EnvReader $envReader
      * @param VolumeResolver $volumeResolver
      */
     public function __construct(
@@ -122,7 +114,6 @@ class ProductionBuilder implements BuilderInterface
         ExtensionResolver $phpExtension,
         ManagerFactory $managerFactory,
         Resolver $resolver,
-        EnvReader $envReader,
         VolumeResolver $volumeResolver
     ) {
         $this->serviceFactory = $serviceFactory;
@@ -131,7 +122,6 @@ class ProductionBuilder implements BuilderInterface
         $this->phpExtension = $phpExtension;
         $this->managerFactory = $managerFactory;
         $this->resolver = $resolver;
-        $this->envReader = $envReader;
         $this->volumeResolver = $volumeResolver;
     }
 
@@ -369,7 +359,7 @@ class ProductionBuilder implements BuilderInterface
                 '',
                 [
                     'environment' => $this->converter->convert(array_merge(
-                        $this->getVariables($config),
+                        $config->getVariables(),
                         ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
                     ))
                 ]
@@ -439,35 +429,5 @@ class ProductionBuilder implements BuilderInterface
     public function getPath(): string
     {
         return $this->fileList->getMagentoDockerCompose();
-    }
-
-    /**
-     * @param Config $config
-     * @return array
-     * @throws ConfigurationMismatchException
-     */
-    private function getVariables(Config $config): array
-    {
-        try {
-            $envConfig = $this->envReader->read();
-        } catch (FilesystemException $exception) {
-            throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
-        }
-
-        $variables = [
-            'PHP_MEMORY_LIMIT' => '2048M',
-            'UPLOAD_MAX_FILESIZE' => '64M',
-            'MAGENTO_ROOT' => self::DIR_MAGENTO,
-            # Name of your server in IDE
-            'PHP_IDE_CONFIG' => 'serverName=magento_cloud_docker',
-            # Docker host for developer environments, can be different for your OS
-            'XDEBUG_CONFIG' => 'remote_host=host.docker.internal',
-        ];
-
-        if ($config->hasSelenium()) {
-            $variables['MFTF_UTILS'] = 1;
-        }
-
-        return array_merge($variables, $envConfig);
     }
 }

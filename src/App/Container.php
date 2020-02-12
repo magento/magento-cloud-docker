@@ -32,27 +32,27 @@ class Container implements ContainerInterface
      */
     public function __construct(string $root, string $magentoRoot, string $eceToolsRoot = null)
     {
-        $container = new ContainerBuilder();
-        $container->set('container', $this);
-        $container->setDefinition('container', new Definition(__CLASS__))
+        $containerBuilder = new ContainerBuilder();
+        $containerBuilder->set('container', $this);
+        $containerBuilder->setDefinition('container', new Definition(__CLASS__))
             ->setArguments([$root, $magentoRoot, $eceToolsRoot]);
 
-        $container->set(DirectoryList::class, new DirectoryList(
+        $containerBuilder->set(DirectoryList::class, new DirectoryList(
             $root,
             $magentoRoot,
             $eceToolsRoot
         ));
 
         try {
-            $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
+            $loader = new XmlFileLoader($containerBuilder, new FileLocator([__DIR__ . '/../../config']));
             $loader->load('services.xml');
         } catch (Exception $exception) {
             throw new ContainerException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
-        $container->compile();
+        $containerBuilder->compile();
 
-        $this->container = $container;
+        $this->container = $containerBuilder;
     }
 
     /**

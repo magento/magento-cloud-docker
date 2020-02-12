@@ -220,4 +220,19 @@ class Config
     {
         return $this->hasServiceEnabled(ServiceInterface::SERVICE_SELENIUM);
     }
+
+    /**
+     * @return array
+     * @throws ConfigurationMismatchException
+     */
+    public function getVariables(): array
+    {
+        $config = $this->all();
+
+        if ($this->hasSelenium()) {
+            $config->set(SourceInterface::VARIABLES . '.' . 'MFTF_UTILS', 1);
+        }
+
+        return $config->get(SourceInterface::VARIABLES);
+    }
 }

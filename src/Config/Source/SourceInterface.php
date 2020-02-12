@@ -12,6 +12,8 @@ use Magento\CloudDocker\Service\ServiceInterface;
 
 interface SourceInterface
 {
+    public const DIR_MAGENTO = '/app';
+
     public const MOUNTS = 'mounts';
 
     /**
@@ -92,6 +94,8 @@ interface SourceInterface
     public const CONFIG_SYNC_ENGINE = 'config.sync_engine';
     public const CONFIG_TMP_MOUNTS = 'config.tmp_mounts';
     public const CONFIG_MODE = 'config.mode';
+
+    public const VARIABLES = 'variables';
 
     /**
      * @return Repository

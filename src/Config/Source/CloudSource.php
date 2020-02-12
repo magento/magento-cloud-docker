@@ -11,9 +11,11 @@ use Illuminate\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\Filesystem;
+use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 use Symfony\Component\Yaml\Yaml;
+use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
 
 /**
  * Source to read Magento Cloud configs
@@ -36,6 +38,11 @@ class CloudSource implements SourceInterface
     private $serviceFactory;
 
     /**
+     * @var EnvReader
+     */
+    private $envReader;
+
+    /**
      * @var array
      */
     private static $map = [
@@ -49,12 +56,18 @@ class CloudSource implements SourceInterface
      * @param FileList $fileList
      * @param Filesystem $filesystem
      * @param ServiceFactory $serviceFactory
+     * @param EnvReader $envReader
      */
-    public function __construct(FileList $fileList, Filesystem $filesystem, ServiceFactory $serviceFactory)
-    {
+    public function __construct(
+        FileList $fileList,
+        Filesystem $filesystem,
+        ServiceFactory $serviceFactory,
+        EnvReader $envReader
+    ) {
         $this->fileList = $fileList;
         $this->filesystem = $filesystem;
         $this->serviceFactory = $serviceFactory;
+        $this->envReader = $envReader;
     }
 
     /**
@@ -161,6 +174,14 @@ class CloudSource implements SourceInterface
                     }
                 }
             }
+        }
+
+        try {
+            if ($variables = $this->envReader->read()) {
+                $repository->set(self::VARIABLES, $variables);
+            }
+        } catch (FilesystemException $exception) {
+            throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
         return $repository;
