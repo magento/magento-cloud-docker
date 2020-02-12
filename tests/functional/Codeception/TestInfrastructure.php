@@ -182,7 +182,7 @@ class TestInfrastructure extends BaseModule
 
         // ZIP files
         $resultZip = $this->taskPack($this->getArtifactsDir() . '/' . $name . '.zip')
-            ->add($files)
+            ->add(array_diff($files, ['..', '.']))
             ->run()
             ->wasSuccessful();
 
