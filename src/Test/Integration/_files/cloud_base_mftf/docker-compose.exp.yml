@@ -236,7 +236,6 @@ services:
       elasticsearch:
         condition: service_healthy
 volumes:
-  magento-dev: {  }
   magento:
     driver_opts:
       type: none
@@ -247,6 +246,11 @@ volumes:
     driver_opts:
       type: none
       device: '${PWD}/.docker/mysql/mariadb.conf.d'
+      o: bind
+  docker-entrypoint:
+    driver_opts:
+      type: none
+      device: '${PWD}/.docker/mysql/docker-entrypoint-initdb.d'
       o: bind
   docker-mnt:
     driver_opts:
@@ -259,6 +263,7 @@ volumes:
   magento-app-etc: {  }
   magento-pub-media: {  }
   magento-pub-static: {  }
+  magento-dev: {  }
 networks:
   magento:
     driver: bridge

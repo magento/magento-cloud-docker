@@ -160,6 +160,13 @@ class ProductionBuilder implements BuilderInterface
                     'o' => 'bind',
                 ],
             ],
+            self::VOLUME_DOCKER_ETRYPOINT => [
+                'driver_opts' => [
+                    'type' => 'none',
+                    'device' => $this->resolver->getRootPath('/.docker/mysql/docker-entrypoint-initdb.d'),
+                    'o' => 'bind'
+                ]
+            ]
         ];
 
         if ($config->hasServiceEnabled(ServiceInterface::SERVICE_SELENIUM)) {
@@ -205,7 +212,7 @@ class ProductionBuilder implements BuilderInterface
             ];
         }
 
-        $manager->addVolumes($volumes);
+        $manager->setVolumes($volumes);
 
         $volumesBuild = $this->volumeResolver->normalize(array_merge(
             $this->volumeResolver->getDefaultMagentoVolumes(false),
