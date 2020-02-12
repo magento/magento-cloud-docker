@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
-use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
+use Magento\CloudDocker\Compose\ProductionBuilder\VolumeResolver;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
@@ -46,6 +46,14 @@ class ProductionBuilder implements BuilderInterface
         self::SERVICE_RABBITMQ => [
             'condition' => 'service_started'
         ]
+    ];
+
+    public const SYNC_ENGINE_MOUNT = 'mount';
+    public const DEFAULT_SYNC_ENGINE = self::SYNC_ENGINE_MOUNT;
+
+    public const SYNC_ENGINES_LIST = [
+        self::SYNC_ENGINE_NATIVE,
+        self::SYNC_ENGINE_MOUNT
     ];
 
     /**
@@ -93,6 +101,11 @@ class ProductionBuilder implements BuilderInterface
     private $resolver;
 
     /**
+     * @var VolumeResolver
+     */
+    private $volumeResolver;
+
+    /**
      * @param ServiceFactory $serviceFactory
      * @param FileList $fileList
      * @param Converter $converter
@@ -100,6 +113,7 @@ class ProductionBuilder implements BuilderInterface
      * @param ManagerFactory $managerFactory
      * @param Resolver $resolver
      * @param EnvReader $envReader
+     * @param VolumeResolver $volumeResolver
      */
     public function __construct(
         ServiceFactory $serviceFactory,
@@ -108,7 +122,8 @@ class ProductionBuilder implements BuilderInterface
         ExtensionResolver $phpExtension,
         ManagerFactory $managerFactory,
         Resolver $resolver,
-        EnvReader $envReader
+        EnvReader $envReader,
+        VolumeResolver $volumeResolver
     ) {
         $this->serviceFactory = $serviceFactory;
         $this->fileList = $fileList;
@@ -117,6 +132,7 @@ class ProductionBuilder implements BuilderInterface
         $this->managerFactory = $managerFactory;
         $this->resolver = $resolver;
         $this->envReader = $envReader;
+        $this->volumeResolver = $volumeResolver;
     }
 
     /**
@@ -138,54 +154,84 @@ class ProductionBuilder implements BuilderInterface
         $manager->addNetwork(self::NETWORK_MAGENTO, ['driver' => 'bridge']);
         $manager->addNetwork(self::NETWORK_MAGENTO_BUILD, ['driver' => 'bridge']);
 
-        $rootPath = $this->resolver->getRootPath();
-
         $volumes = [
             self::VOLUME_MAGENTO => [
                 'driver_opts' => [
                     'type' => 'none',
-                    'device' => $rootPath,
+                    'device' => $this->resolver->getRootPath(),
                     'o' => 'bind'
                 ]
             ],
-            self::VOLUME_MAGENTO_DB => []
+            self::VOLUME_MAGENTO_DB => [],
+            self::VOLUME_MARIADB_CONF => [
+                'driver_opts' => [
+                    'type' => 'none',
+                    'device' => $this->resolver->getRootPath('/.docker/mysql/mariadb.conf.d'),
+                    'o' => 'bind',
+                ],
+            ],
         ];
 
         if ($config->hasServiceEnabled(ServiceInterface::SERVICE_SELENIUM)) {
             $manager->addVolume(self::VOLUME_MAGENTO_DEV, []);
         }
 
-        if ($this->getMountVolumes($config)) {
+        $mounts = $config->getMounts();
+        $hasSelenium = $config->hasSelenium();
+        $hasTmpMounts = $config->hasTmpMounts();
+
+        if ($hasTmpMounts) {
             $volumes[self::VOLUME_DOCKER_MNT] = [
                 'driver_opts' => [
                     'type' => 'none',
-                    'device' => $rootPath . '/.docker/mnt',
+                    'device' => $this->resolver->getRootPath('/.docker/mnt'),
                     'o' => 'bind'
                 ]
             ];
         }
 
-        foreach ($this->getMagentoVolumes($config, false) as $volume) {
-            $volumeConfig = explode(':', $volume);
-            $volumeName = reset($volumeConfig);
+        foreach ($this->volumeResolver->getMagentoVolumes($mounts, false, $hasSelenium) as $volumeName => $volume) {
+            $syncConfig = [];
 
-            $volumes[$volumeName] = $volumes[$volumeName] ?? [];
+            if (!empty($volume['volume']) && $config->getSyncEngine() === self::SYNC_ENGINE_NATIVE) {
+                $syncConfig = [
+                    'driver_opts' => [
+                        'type' => 'none',
+                        'device' => $this->resolver->getRootPath($volume['volume']),
+                        'o' => 'bind'
+                    ]
+                ];
+            }
+            $volumes[$volumeName] = $syncConfig;
+        }
+
+        if ($config->getSyncEngine() === self::SYNC_ENGINE_MOUNT) {
+            $volumes[self::VOLUME_MAGENTO] = [
+                'driver_opts' => [
+                    'type' => 'none',
+                    'device' => $this->resolver->getRootPath(),
+                    'o' => 'bind'
+                ]
+            ];
         }
 
         $manager->addVolumes($volumes);
 
-        $volumesBuild = array_merge(
-            $this->getDefaultMagentoVolumes(false),
-            $this->getComposerVolumes()
-        );
-        $volumesRo = array_merge(
-            $this->getMagentoVolumes($config, true),
-            $this->getMountVolumes($config)
-        );
-        $volumesRw = array_merge(
-            $this->getMagentoVolumes($config, false),
-            $this->getMountVolumes($config),
-            $this->getComposerVolumes()
+        $volumesBuild = $this->volumeResolver->normalize(array_merge(
+            $this->volumeResolver->getDefaultMagentoVolumes(false),
+            $this->volumeResolver->getComposerVolumes()
+        ));
+        $volumesRo = $this->volumeResolver->normalize(array_merge(
+            $this->volumeResolver->getMagentoVolumes($mounts, true, $hasSelenium),
+            $this->volumeResolver->getMountVolumes($hasTmpMounts)
+        ));
+        $volumesRw = $this->volumeResolver->normalize(array_merge(
+            $this->volumeResolver->getMagentoVolumes($mounts, false, $hasSelenium),
+            $this->volumeResolver->getMountVolumes($hasTmpMounts),
+            $this->volumeResolver->getComposerVolumes()
+        ));
+        $volumesMount = $this->volumeResolver->normalize(
+            $this->volumeResolver->getMountVolumes($hasTmpMounts)
         );
 
         $manager->addService(
@@ -198,9 +244,10 @@ class ProductionBuilder implements BuilderInterface
                     'volumes' => array_merge(
                         [
                             self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
-                            '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
+                            self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d',
+                            self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
                         ],
-                        $this->getMountVolumes($config)
+                        $volumesMount
                     )
                 ]
             ),
@@ -422,70 +469,5 @@ class ProductionBuilder implements BuilderInterface
         }
 
         return array_merge($variables, $envConfig);
-    }
-
-    /**
-     * @param bool $isReadOnly
-     * @return array
-     */
-    private function getDefaultMagentoVolumes(bool $isReadOnly): array
-    {
-        $flag = $isReadOnly ? ':ro' : ':rw';
-
-        return [
-            self::VOLUME_MAGENTO . ':' . self::DIR_MAGENTO . $flag,
-            self::VOLUME_MAGENTO_VENDOR . ':' . self::DIR_MAGENTO . '/vendor' . $flag,
-            self::VOLUME_MAGENTO_GENERATED . ':' . self::DIR_MAGENTO . '/generated' . $flag,
-        ];
-    }
-
-    /**
-     * @param Config $config
-     * @param bool $isReadOnly
-     * @return array
-     * @throws ConfigurationMismatchException
-     */
-    private function getMagentoVolumes(Config $config, bool $isReadOnly): array
-    {
-        $volumes = $this->getDefaultMagentoVolumes($isReadOnly);
-        $volumeConfiguration = $config->getMounts();
-
-        foreach (array_keys($volumeConfiguration) as $volume) {
-            $volumes[] = sprintf(
-                '%s:%s:delegated',
-                'magento-' . str_replace('/', '-', $volume),
-                self::DIR_MAGENTO . '/' . $volume
-            );
-        }
-
-        if ($config->hasSelenium()) {
-            $volumes[] = self::VOLUME_MAGENTO_DEV . ':' . self::DIR_MAGENTO . '/dev:delegated';
-        }
-
-        return $volumes;
-    }
-
-    /***
-     * @return array
-     */
-    private function getComposerVolumes(): array
-    {
-        return [
-            '~/.composer/cache:/root/.composer/cache:delegated',
-        ];
-    }
-
-    /**
-     * @param Config $config
-     * @return array
-     * @throws ConfigurationMismatchException
-     */
-    private function getMountVolumes(Config $config): array
-    {
-        if ($config->hasTmpMounts()) {
-            return [self::VOLUME_DOCKER_MNT . ':/mnt'];
-        }
-
-        return [];
     }
 }

@@ -20,7 +20,7 @@ class DeveloperBuilder implements BuilderInterface
 {
     public const SYNC_ENGINE_DOCKER_SYNC = 'docker-sync';
     public const SYNC_ENGINE_MUTAGEN = 'mutagen';
-    public const SYNC_ENGINE_NATIVE = 'native';
+    public const DEFAULT_SYNC_ENGINE = self::SYNC_ENGINE_NATIVE;
 
     public const VOLUME_MAGENTO_SYNC = 'magento-sync';
 
@@ -134,14 +134,14 @@ class DeveloperBuilder implements BuilderInterface
      */
     private function getMagentoVolumes(Config $config): array
     {
-        $target = self::DIR_MAGENTO;
-
         if ($config->getSyncEngine() !== self::SYNC_ENGINE_NATIVE) {
-            $target .= ':nocopy';
+            return [
+                self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':nocopy'
+            ];
         }
 
         return [
-            self::VOLUME_MAGENTO_SYNC . ':' . $target
+            self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':delegated',
         ];
     }
 }

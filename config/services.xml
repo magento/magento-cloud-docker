@@ -15,6 +15,7 @@
             </argument>
         </service>
         <service id="Magento\CloudDocker\Filesystem\DirectoryList" autowire="false"/>
+        <service id="Magento\CloudDocker\App\Container" autowire="false"/>
         <service id="Magento\CloudDocker\Filesystem\FilesystemException" autowire="false"/>
         <service id="Magento\CloudDocker\Config\Source\SourceException" autowire="false"/>
         <service id="Magento\CloudDocker\Filesystem\FileNotFoundException" autowire="false"/>

@@ -10,6 +10,7 @@ namespace Magento\CloudDocker\Config\Source;
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\Compose\BuilderFactory;
 use Magento\CloudDocker\Compose\DeveloperBuilder;
+use Magento\CloudDocker\Compose\ProductionBuilder;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -57,6 +58,16 @@ class CliSource implements SourceInterface
     ];
 
     /**
+     * Available engines per mode
+     *
+     * @var array
+     */
+    private static $enginesMap = [
+        BuilderFactory::BUILDER_DEVELOPER => DeveloperBuilder::SYNC_ENGINES_LIST,
+        BuilderFactory::BUILDER_PRODUCTION => ProductionBuilder::SYNC_ENGINES_LIST
+    ];
+
+    /**
      * @var InputInterface
      */
     private $input;
@@ -82,13 +93,19 @@ class CliSource implements SourceInterface
         $mode = $this->input->getOption(self::OPTION_MODE);
         $syncEngine = $this->input->getOption(self::OPTION_SYNC_ENGINE);
 
-        if (BuilderFactory::BUILDER_DEVELOPER === $mode
-            && !in_array($syncEngine, DeveloperBuilder::SYNC_ENGINES_LIST, true)
+        if ($mode === BuilderFactory::BUILDER_DEVELOPER && $syncEngine === null) {
+            $syncEngine = DeveloperBuilder::DEFAULT_SYNC_ENGINE;
+        } elseif ($mode === BuilderFactory::BUILDER_PRODUCTION && $syncEngine === null) {
+            $syncEngine = ProductionBuilder::DEFAULT_SYNC_ENGINE;
+        }
+
+        if (isset(self::$enginesMap[$mode])
+            && !in_array($syncEngine, self::$enginesMap[$mode], true)
         ) {
             throw new SourceException(sprintf(
                 "File sync engine '%s' is not supported. Available: %s",
                 $syncEngine,
-                implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
+                implode(', ', self::$enginesMap[$mode])
             ));
         }
 
