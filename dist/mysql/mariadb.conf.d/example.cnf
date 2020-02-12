@@ -1,0 +1,20 @@
+#
+# This directory will be mounted in the 'db' service as '/etc/mysql/mariadb.conf.d'
+# and read by /etc/mysql/conf.d/mariadb.cnf.
+# All *.cnf files from the configuration directory will be applied to MariaDB configuration
+#
+
+[client]
+#
+# Default is Latin1, if you need UTF-8 set this (also in server section)
+#default-character-set = utf8
+#
+
+[mysqld]
+#
+# * Character sets
+#
+# Default is Latin1, if you need UTF-8 set all this (also in client section)
+#
+#character_set_server   = utf8
+#collation_server       = utf8_general_ci

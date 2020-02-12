@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config\Environment\Shared;
 
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Filesystem\Filesystem;
+use Magento\CloudDocker\Filesystem\FileNotFoundException;
+use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Config\ReaderInterface;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\FilesystemException;

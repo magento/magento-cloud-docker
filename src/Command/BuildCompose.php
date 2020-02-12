@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Command;
 
-use Illuminate\Filesystem\Filesystem;
+use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\App\GenericException;
 use Magento\CloudDocker\Compose\DeveloperBuilder;
 use Magento\CloudDocker\Compose\BuilderFactory;
@@ -23,7 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Builds Docker configuration for Magento project.
+ * Builds Docker configuration for Magento project
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
@@ -50,13 +50,13 @@ class BuildCompose extends Command
     private const OPTION_NODE = 'node';
     private const OPTION_MODE = 'mode';
     private const OPTION_SYNC_ENGINE = 'sync-engine';
-    private const OPTION_NO_CRON = 'no-cron';
+    private const OPTION_WITH_CRON = 'with-cron';
     private const OPTION_NO_VARNISH = 'no-varnish';
     private const OPTION_WITH_SELENIUM = 'with-selenium';
     private const OPTION_WITH_XDEBUG = 'with-xdebug';
 
     /**
-     * Option key to config name map.
+     * Option key to config name map
      *
      * @var array
      */
@@ -70,7 +70,17 @@ class BuildCompose extends Command
         self::OPTION_RABBIT_MQ => ServiceInterface::NAME_RABBITMQ,
         self::OPTION_EXPOSE_DB_PORT => ProductionBuilder::KEY_EXPOSE_DB_PORT,
         self::OPTION_SELENIUM_VERSION => ServiceFactory::SERVICE_SELENIUM_VERSION,
-        self::OPTION_SELENIUM_IMAGE => ServiceFactory::SERVICE_SELENIUM_IMAGE
+        self::OPTION_SELENIUM_IMAGE => ServiceFactory::SERVICE_SELENIUM_IMAGE,
+    ];
+
+    /**
+     * Available engines per mode
+     *
+     * @var array
+     */
+    private static $enginesMap = [
+        BuilderFactory::BUILDER_DEVELOPER => DeveloperBuilder::SYNC_ENGINES_LIST,
+        BuilderFactory::BUILDER_PRODUCTION => ProductionBuilder::SYNC_ENGINES_LIST
     ];
 
     /**
@@ -206,15 +216,16 @@ class BuildCompose extends Command
                 InputOption::VALUE_REQUIRED,
                 sprintf(
                     'File sync engine. Works only with developer mode. Available: (%s)',
-                    implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
-                ),
-                DeveloperBuilder::SYNC_ENGINE_NATIVE
+                    implode(', ', array_unique(
+                        array_merge(DeveloperBuilder::SYNC_ENGINES_LIST, ProductionBuilder::SYNC_ENGINES_LIST)
+                    ))
+                )
             )
             ->addOption(
-                self::OPTION_NO_CRON,
+                self::OPTION_WITH_CRON,
                 null,
                 InputOption::VALUE_NONE,
-                'Remove cron container'
+                'Add cron container'
             )
             ->addOption(
                 self::OPTION_NO_VARNISH,
@@ -244,21 +255,27 @@ class BuildCompose extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $type = $input->getOption(self::OPTION_MODE);
+        $mode = $input->getOption(self::OPTION_MODE);
         $syncEngine = $input->getOption(self::OPTION_SYNC_ENGINE);
 
-        $builder = $this->builderFactory->create($type);
-        $config = $this->configFactory->create();
+        if ($mode === BuilderFactory::BUILDER_DEVELOPER && $syncEngine === null) {
+            $syncEngine = DeveloperBuilder::DEFAULT_SYNC_ENGINE;
+        } elseif ($mode === BuilderFactory::BUILDER_PRODUCTION && $syncEngine === null) {
+            $syncEngine = ProductionBuilder::DEFAULT_SYNC_ENGINE;
+        }
 
-        if (BuilderFactory::BUILDER_DEVELOPER === $type
-            && !in_array($syncEngine, DeveloperBuilder::SYNC_ENGINES_LIST, true)
+        if (isset(self::$enginesMap[$mode])
+            && !in_array($syncEngine, self::$enginesMap[$mode], true)
         ) {
             throw new GenericException(sprintf(
                 "File sync engine '%s' is not supported. Available: %s",
                 $syncEngine,
-                implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
+                implode(', ', self::$enginesMap[$mode])
             ));
         }
+
+        $builder = $this->builderFactory->create($mode);
+        $config = $this->configFactory->create();
 
         array_walk(self::$optionsMap, static function ($key, $option) use ($config, $input) {
             if ($value = $input->getOption($option)) {
@@ -268,8 +285,8 @@ class BuildCompose extends Command
 
         $config->set([
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
-            ProductionBuilder::KEY_NO_CRON => $input->getOption(self::OPTION_NO_CRON),
             ProductionBuilder::KEY_WITH_XDEBUG => $input->getOption(self::OPTION_WITH_XDEBUG),
+            ProductionBuilder::KEY_WITH_CRON=> $input->getOption(self::OPTION_WITH_CRON),
             ProductionBuilder::KEY_NO_VARNISH => $input->getOption(self::OPTION_NO_VARNISH),
             ProductionBuilder::KEY_WITH_SELENIUM => $input->getOption(self::OPTION_WITH_SELENIUM)
         ]);

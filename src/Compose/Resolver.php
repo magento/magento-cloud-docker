@@ -12,7 +12,13 @@ namespace Magento\CloudDocker\Compose;
  */
 class Resolver
 {
-    public function getRootPath(): string
+    /**
+     * Resolves correct root path.
+     *
+     * @param string $path
+     * @return string
+     */
+    public function getRootPath(string $path = '/'): string
     {
         /**
          * For Windows we'll define variable in .env file
@@ -20,9 +26,9 @@ class Resolver
          * WINDOWS_PWD=//C/www/my-project
          */
         if (stripos(PHP_OS, 'win') === 0) {
-            return '${WINDOWS_PWD}';
+            return '${WINDOWS_PWD}' . $path;
         }
 
-        return '${PWD}';
+        return '${PWD}' . $path;
     }
 }
