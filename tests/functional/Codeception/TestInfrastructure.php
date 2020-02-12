@@ -196,6 +196,24 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Creates ZIP file with code from codeception data directory
+     *
+     * @param string $name
+     * @param string $path
+     * @return bool
+     */
+    public function createArtifact(string $name, string $path): bool
+    {
+        $files = scandir(codecept_data_dir($path));
+
+        // ZIP files
+        return $this->taskPack($this->getArtifactsDir() . '/' . $name . '.zip')
+            ->add($files)
+            ->run()
+            ->wasSuccessful();
+    }
+
+    /**
      * Adds repo with artifacts to composer.json
      *
      * @return bool
