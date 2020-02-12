@@ -182,7 +182,7 @@ class TestInfrastructure extends BaseModule
 
         // ZIP files
         $resultZip = $this->taskPack($this->getArtifactsDir() . '/' . $name . '.zip')
-            ->add(array_diff($files, ['..', '.']))
+            ->add($files)
             ->run()
             ->wasSuccessful();
 
@@ -204,11 +204,9 @@ class TestInfrastructure extends BaseModule
      */
     public function createArtifact(string $name, string $path): bool
     {
-        $files = scandir(codecept_data_dir($path));
-
         // ZIP files
         return $this->taskPack($this->getArtifactsDir() . '/' . $name . '.zip')
-            ->add($files)
+            ->add(array_diff(scandir(codecept_data_dir($path)), ['..', '.']))
             ->run()
             ->wasSuccessful();
     }
