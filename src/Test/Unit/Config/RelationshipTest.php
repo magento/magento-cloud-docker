@@ -43,7 +43,7 @@ class RelationshipTest extends TestCase
      */
     public function testGet()
     {
-        $this->configMock->expects($this->exactly(4))
+        $this->configMock->expects($this->exactly(6))
             ->method('getServiceVersion')
             ->willReturnMap([
                 ['mysql', '10'],

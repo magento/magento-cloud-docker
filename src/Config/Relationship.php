@@ -17,6 +17,9 @@ use Magento\CloudDocker\Service\ServiceInterface;
  */
 class Relationship
 {
+    public const RELATIONSHIP_DATABASE = 'database';
+    public const RELATIONSHIP_DATABASE_SALES = 'database-sales';
+    public const RELATIONSHIP_DATABASE_QUOTE = 'database-quote';
     /**
      * @var Config
      */
@@ -28,9 +31,27 @@ class Relationship
      * @var array
      */
     private static $defaultConfiguration = [
-        'database' => [
+        self::RELATIONSHIP_DATABASE => [
             [
                 'host' => 'db',
+                'path' => 'magento2',
+                'password' => 'magento2',
+                'username' => 'magento2',
+                'port' => '3306'
+            ],
+        ],
+        self::RELATIONSHIP_DATABASE_SALES => [
+            [
+                'host' => 'db-sales',
+                'path' => 'magento2',
+                'password' => 'magento2',
+                'username' => 'magento2',
+                'port' => '3306'
+            ],
+        ],
+        self::RELATIONSHIP_DATABASE_QUOTE => [
+            [
+                'host' => 'db-quote',
                 'path' => 'magento2',
                 'password' => 'magento2',
                 'username' => 'magento2',
@@ -93,7 +114,9 @@ class Relationship
     private function convertServiceName(string $serviceName): string
     {
         $map = [
-            'database' => ServiceInterface::NAME_DB
+            'database' => ServiceInterface::NAME_DB,
+            'database-sales' => ServiceInterface::NAME_DB,
+            'database-quote' => ServiceInterface::NAME_DB,
         ];
 
         return $map[$serviceName] ?? $serviceName;

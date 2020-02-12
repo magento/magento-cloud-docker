@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Command;
 
+use Magento\CloudDocker\Command\BuildCompose\SplitDbOptionValidator;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\App\GenericException;
 use Magento\CloudDocker\Compose\DeveloperBuilder;
@@ -53,6 +54,7 @@ class BuildCompose extends Command
     private const OPTION_WITH_CRON = 'with-cron';
     private const OPTION_NO_VARNISH = 'no-varnish';
     private const OPTION_WITH_SELENIUM = 'with-selenium';
+    public const OPTION_SPLIT_DB = 'split-db';
 
     /**
      * Option key to config name map
@@ -103,21 +105,29 @@ class BuildCompose extends Command
     private $filesystem;
 
     /**
+     * @var SplitDbOptionValidator
+     */
+    private $splitDbOptionValidator;
+
+    /**
      * @param BuilderFactory $composeFactory
      * @param Generator $distGenerator
      * @param ConfigFactory $configFactory
      * @param Filesystem $filesystem
+     * @param SplitDbOptionValidator $splitDbOptionValidator
      */
     public function __construct(
         BuilderFactory $composeFactory,
         Generator $distGenerator,
         ConfigFactory $configFactory,
-        Filesystem $filesystem
+        Filesystem $filesystem,
+        SplitDbOptionValidator $splitDbOptionValidator
     ) {
         $this->builderFactory = $composeFactory;
         $this->distGenerator = $distGenerator;
         $this->configFactory = $configFactory;
         $this->filesystem = $filesystem;
+        $this->splitDbOptionValidator = $splitDbOptionValidator;
 
         parent::__construct();
     }
@@ -190,6 +200,13 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Selenium image'
+            )
+            ->addOption(
+                self::OPTION_SPLIT_DB,
+                null,
+                InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
+                'Adds additional database services for a split database architecture',
+                []
             );
 
         $this->addOption(
@@ -248,6 +265,10 @@ class BuildCompose extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        $splitDbTypes = $input->getOption(self::OPTION_SPLIT_DB);
+
+        $this->splitDbOptionValidator->validate($splitDbTypes);
+
         $mode = $input->getOption(self::OPTION_MODE);
         $syncEngine = $input->getOption(self::OPTION_SYNC_ENGINE);
 
@@ -277,8 +298,9 @@ class BuildCompose extends Command
         });
 
         $config->set([
+            ProductionBuilder::SPLIT_DB => $splitDbTypes,
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
-            ProductionBuilder::KEY_WITH_CRON=> $input->getOption(self::OPTION_WITH_CRON),
+            ProductionBuilder::KEY_WITH_CRON => $input->getOption(self::OPTION_WITH_CRON),
             ProductionBuilder::KEY_NO_VARNISH => $input->getOption(self::OPTION_NO_VARNISH),
             ProductionBuilder::KEY_WITH_SELENIUM => $input->getOption(self::OPTION_WITH_SELENIUM)
         ]);
@@ -288,7 +310,7 @@ class BuildCompose extends Command
             [BuilderFactory::BUILDER_DEVELOPER, BuilderFactory::BUILDER_PRODUCTION],
             false
         )) {
-            $this->distGenerator->generate();
+            $this->distGenerator->generate($config);
         }
 
         $compose = $builder->build($config);

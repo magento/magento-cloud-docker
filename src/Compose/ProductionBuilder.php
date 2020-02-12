@@ -36,6 +36,10 @@ class ProductionBuilder implements BuilderInterface
 
     public const SYNC_ENGINE_MOUNT = 'mount';
     public const DEFAULT_SYNC_ENGINE = self::SYNC_ENGINE_MOUNT;
+    public const SPLIT_DB = 'split-db';
+    public const SPLIT_DB_QUOTE = 'quote';
+    public const SPLIT_DB_SALES = 'sales';
+    public const SPLIT_DB_TYPES = [self::SPLIT_DB_QUOTE, self::SPLIT_DB_SALES];
 
     /**
      * @var array
@@ -276,6 +280,74 @@ class ProductionBuilder implements BuilderInterface
             [self::NETWORK_MAGENTO],
             []
         );
+
+        $splitDbTypes = $config->get(self::SPLIT_DB);
+
+        if (in_array(self::SPLIT_DB_QUOTE, $splitDbTypes)) {
+            $manager->addVolumes([
+                self::VOLUME_DOCKER_ETRYPOINT_QUOTE => [
+                    'driver_opts' => [
+                        'type' => 'none',
+                        'device' => $this->resolver->getRootPath('/.docker/mysql-quote/docker-entrypoint-initdb.d'),
+                        'o' => 'bind'
+                    ]
+                ],
+            ]);
+
+            $manager->addService(
+                self::SERVICE_DB_QUOTE,
+                $this->serviceFactory->create(
+                    ServiceFactory::SERVICE_DB,
+                    $dbVersion,
+                    [
+                        'ports' => [$dbPorts],
+                        'volumes' => array_merge(
+                            [
+                                self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+                                self::VOLUME_DOCKER_ETRYPOINT_QUOTE . ':/docker-entrypoint-initdb.d',
+                                self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
+                            ],
+                            $volumesMount
+                        )
+                    ]
+                ),
+                [self::NETWORK_MAGENTO],
+                []
+            );
+        }
+
+        if (in_array(self::SPLIT_DB_SALES, $splitDbTypes)) {
+            $manager->addVolumes([
+                self::VOLUME_DOCKER_ETRYPOINT_SALES => [
+                    'driver_opts' => [
+                        'type' => 'none',
+                        'device' => $this->resolver->getRootPath('/.docker/mysql-sales/docker-entrypoint-initdb.d'),
+                        'o' => 'bind'
+                    ]
+                ],
+            ]);
+
+            $manager->addService(
+                self::SERVICE_DB_SALES,
+                $this->serviceFactory->create(
+                    ServiceFactory::SERVICE_DB,
+                    $dbVersion,
+                    [
+                        'ports' => [$dbPorts],
+                        'volumes' => array_merge(
+                            [
+                                self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+                                self::VOLUME_DOCKER_ETRYPOINT_SALES . ':/docker-entrypoint-initdb.d',
+                                self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
+                            ],
+                            $volumesMount
+                        )
+                    ]
+                ),
+                [self::NETWORK_MAGENTO],
+                []
+            );
+        }
 
         foreach (self::$standaloneServices as $service) {
             $serviceVersion = $config->get($service) ?: $this->getServiceVersion($service);

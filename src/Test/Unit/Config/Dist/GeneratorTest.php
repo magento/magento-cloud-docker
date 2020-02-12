@@ -7,7 +7,10 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Unit\Config\Dist;
 
+use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Compose\ProductionBuilder;
+use Magento\CloudDocker\Config\ConfigFactory;
 use Magento\CloudDocker\Config\Dist\Formatter;
 use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Config\Relationship;
@@ -47,6 +50,11 @@ class GeneratorTest extends TestCase
     private $distGenerator;
 
     /**
+     * @var MockObject|Repository
+     */
+    private $configMock;
+
+    /**
      * @inheritdoc
      */
     protected function setUp(): void
@@ -55,6 +63,7 @@ class GeneratorTest extends TestCase
         $this->filesystemMock = $this->createMock(Filesystem::class);
         $this->relationshipMock = $this->createMock(Relationship::class);
         $this->formatterMock = $this->createMock(Formatter::class);
+        $this->configMock = $this->createMock(Repository::class);
 
         $this->distGenerator = new Generator(
             $this->directoryListMock,
@@ -69,6 +78,10 @@ class GeneratorTest extends TestCase
      */
     public function testGenerate()
     {
+        $this->configMock->expects($this->once())
+            ->method('get')
+            ->with(ProductionBuilder::SPLIT_DB)
+            ->willReturn([]);
         $rootDir = '/path/to/docker';
         $this->directoryListMock->expects($this->once())
             ->method('getDockerRoot')
@@ -118,7 +131,7 @@ class GeneratorTest extends TestCase
             ->method('put')
             ->with($rootDir . '/config.php.dist', $this->getConfigForUpdate());
 
-        $this->distGenerator->generate();
+        $this->distGenerator->generate($this->configMock);
     }
 
     /**
@@ -140,6 +153,10 @@ TEXT;
 
     public function testGenerateFileSystemException()
     {
+        $this->configMock->expects($this->once())
+            ->method('get')
+            ->with(ProductionBuilder::SPLIT_DB)
+            ->willReturn([]);
         $this->expectException(ConfigurationMismatchException::class);
         $this->expectExceptionMessage('file system error');
 
@@ -147,6 +164,6 @@ TEXT;
             ->method('put')
             ->willThrowException(new ConfigurationMismatchException('file system error'));
 
-        $this->distGenerator->generate();
+        $this->distGenerator->generate($this->configMock);
     }
 }
