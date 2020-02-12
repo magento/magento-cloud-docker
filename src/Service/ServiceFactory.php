@@ -57,7 +57,6 @@ class ServiceFactory
         ],
         self::SERVICE_FPM_XDEBUG => [
             'image' => 'magento/magento-cloud-docker-php',
-            'ports' => [9000],[9001],
             'pattern' => '%s:%s-fpm-%s',
             'config' => [
                 'extends' => self::SERVICE_GENERIC,
