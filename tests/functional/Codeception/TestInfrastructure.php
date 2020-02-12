@@ -204,9 +204,15 @@ class TestInfrastructure extends BaseModule
      */
     public function createArtifact(string $name, string $path): bool
     {
+        $path = trim($path, '/');
+        $files = [];
+        foreach (array_diff(scandir(codecept_data_dir($path)), ['..', '.']) as $file) {
+            $files[$file] = codecept_data_dir($path . '/' . $file);
+        }
+
         // ZIP files
         return $this->taskPack($this->getArtifactsDir() . '/' . $name . '.zip')
-            ->add(array_diff(scandir(codecept_data_dir($path)), ['..', '.']))
+            ->add($files)
             ->run()
             ->wasSuccessful();
     }
