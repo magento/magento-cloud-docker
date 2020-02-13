@@ -15,7 +15,7 @@ class AcceptanceCest
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.3.3';
+    protected const TEMPLATE_VERSION = 'master';
 
     /**
      * @param \CliTester $I
@@ -34,6 +34,7 @@ class AcceptanceCest
 
     /**
      * @param \CliTester $I
+     * @throws \Robo\Exception\TaskException
      */
     public function testProductionMode(\CliTester $I): void
     {

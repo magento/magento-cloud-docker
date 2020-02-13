@@ -21,6 +21,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
+use Illuminate\Contracts\Config\Repository as RepositoryInterface;
 
 /**
  * Builds Docker configuration for Magento project
@@ -285,7 +286,6 @@ class BuildCompose extends Command
             ));
         }
 
-        $builder = $this->builderFactory->create($mode);
         $config = $this->configFactory->create();
 
         array_walk(self::$optionsMap, static function ($key, $option) use ($config, $input) {
@@ -301,6 +301,18 @@ class BuildCompose extends Command
             ProductionBuilder::KEY_WITH_SELENIUM => $input->getOption(self::OPTION_WITH_SELENIUM)
         ]);
 
+        $this->generateDist($input);
+        $this->buildCompose($mode, $config);
+
+        $output->writeln('<info>Configuration was built.</info>');
+    }
+
+    /**
+     * @param InputInterface $input
+     * @throws \Magento\CloudDocker\App\ConfigurationMismatchException
+     */
+    private function generateDist(InputInterface $input): void
+    {
         if (in_array(
             $input->getOption(self::OPTION_MODE),
             [BuilderFactory::BUILDER_DEVELOPER, BuilderFactory::BUILDER_PRODUCTION],
@@ -314,7 +326,16 @@ class BuildCompose extends Command
 
             $this->distGenerator->generate($cloudVars, $rawVars);
         }
+    }
 
+    /**
+     * @param $mode
+     * @param RepositoryInterface $config
+     * @throws \Magento\CloudDocker\App\ConfigurationMismatchException
+     */
+    private function buildCompose($mode, RepositoryInterface $config): void
+    {
+        $builder = $this->builderFactory->create($mode);
         $compose = $builder->build($config);
 
         $this->filesystem->put(
@@ -326,7 +347,5 @@ class BuildCompose extends Command
                 'networks' => $compose->getNetworks()
             ], 6, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
         );
-
-        $output->writeln('<info>Configuration was built.</info>');
     }
 }

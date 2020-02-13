@@ -23,6 +23,10 @@ env:
 
 install: composer update
 
+before_script:
+  - echo "COMPOSER_MAGENTO_USERNAME=${REPO_USERNAME}" >> ./.env && echo "COMPOSER_MAGENTO_PASSWORD=${REPO_PASSWORD}" >> ./.env
+  - echo "COMPOSER_GITHUB_TOKEN=${GITHUB_TOKEN}" >> ./.env
+
 script:
   - if [ $TEST_SUITE == "static-unit" ]; then ./tests/travis/static-unit.sh; fi
   - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "functional" ]; then ./tests/travis/functional.sh; fi;

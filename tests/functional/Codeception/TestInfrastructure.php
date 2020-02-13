@@ -8,12 +8,22 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Codeception;
 
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Dotenv\Dotenv;
 
 /**
  * The module to work with test infrastructure
  */
 class TestInfrastructure extends BaseModule
 {
+    /**
+     * @inheritdoc
+     */
+    public function _initialize()
+    {
+        parent::_initialize();
+        $dotenv = new Dotenv();
+        $dotenv->load(codecept_root_dir('.env'));
+    }
     /**
      * Creates the work directory
      *
@@ -131,15 +141,15 @@ class TestInfrastructure extends BaseModule
         $auth = [
             'http-basic' => [
                 'repo.magento.com' => [
-                    'username' => getenv('REPO_USERNAME'),
-                    'password' => getenv('REPO_PASSWORD'),
+                    'username' => getenv('COMPOSER_MAGENTO_USERNAME'),
+                    'password' => getenv('COMPOSER_MAGENTO_PASSWORD'),
                 ]
             ],
         ];
 
-        if (getenv('GITHUB_TOKEN')) {
+        if (getenv('COMPOSER_GITHUB_TOKEN')) {
             $auth['github-oauth'] = [
-                'github.com' => getenv('GITHUB_TOKEN'),
+                'github.com' => getenv('COMPOSER_GITHUB_TOKEN'),
             ];
         }
 
@@ -260,17 +270,64 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Removes dependency from require section in composer.json
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function removeDependencyFromComposer(string $name): bool
+    {
+        return $this->taskComposerRemove('composer')
+            ->arg($name)
+            ->dir($this->getWorkDirPath())
+            ->noInteraction()
+            ->option('--no-update')
+            ->printOutput($this->_getConfig('printOutput'))
+            ->run()
+            ->wasSuccessful();
+    }
+
+    /**
      * Adds ece-docker repo to composer.json
      *
      * @return bool
      */
     public function addEceDockerGitRepoToComposer(): bool
     {
+        return $this->addGitRepoToComposer('mcd');
+    }
+
+    /**
+     * Adds cloud-components repo to composer.json
+     *
+     * @return bool
+     */
+    public function addCloudComponentsGitRepoToComposer(): bool
+    {
+        return $this->addGitRepoToComposer('mcc');
+    }
+
+    /**
+     * Adds cloud-patches repo to composer.json
+     *
+     * @return bool
+     */
+    public function addCloudPatchesGitRepoToComposer(): bool
+    {
+        return $this->addGitRepoToComposer('mcp');
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    private function addGitRepoToComposer(string $name): bool
+    {
         return $this->taskComposerConfig()
-            ->set('repositories.ece-docker', json_encode(
+            ->set('repositories.' . $name, json_encode(
                 [
                     'type' => 'vcs',
-                    'url' => $this->_getConfig('ece_docker_repo')
+                    'url' => $this->_getConfig($name . '_repo')
                 ]
             ))->noInteraction()
             ->printOutput($this->_getConfig('printOutput'))
