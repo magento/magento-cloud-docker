@@ -122,7 +122,7 @@ class Docker extends BaseModule
     public function resetFilesOwner(): bool
     {
         return $this->runDockerComposeCommand(
-            'run build bash -c "chown $(id -u):$(id -g) . /root/.composer/cache -R"'
+            'run build bash -c "chown -R $(id -u):$(id -g) . /root/.composer/cache"'
         );
     }
 
