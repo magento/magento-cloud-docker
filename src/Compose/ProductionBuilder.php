@@ -282,9 +282,12 @@ class ProductionBuilder implements BuilderInterface
         );
 
         $splitDbTypes = $config->get(self::SPLIT_DB);
+        $cliDepends = self::$cliDepends;
 
         if (in_array(self::SPLIT_DB_QUOTE, $splitDbTypes)) {
+            $cliDepends = array_merge($cliDepends, [self::SERVICE_DB_QUOTE => ['condition' => 'service_started']]);
             $manager->addVolumes([
+                self::VOLUME_MAGENTO_DB_QUOTE => [],
                 self::VOLUME_DOCKER_ETRYPOINT_QUOTE => [
                     'driver_opts' => [
                         'type' => 'none',
@@ -303,7 +306,7 @@ class ProductionBuilder implements BuilderInterface
                         'ports' => [$dbPorts],
                         'volumes' => array_merge(
                             [
-//                                self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+                                self::VOLUME_MAGENTO_DB_QUOTE . ':/var/lib/mysql',
                                 self::VOLUME_DOCKER_ETRYPOINT_QUOTE . ':/docker-entrypoint-initdb.d',
                                 self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
                             ],
@@ -317,7 +320,9 @@ class ProductionBuilder implements BuilderInterface
         }
 
         if (in_array(self::SPLIT_DB_SALES, $splitDbTypes)) {
+            $cliDepends = array_merge($cliDepends, [self::SERVICE_DB_SALES => ['condition' => 'service_started']]);
             $manager->addVolumes([
+                self::VOLUME_MAGENTO_DB_SALES => [],
                 self::VOLUME_DOCKER_ETRYPOINT_SALES => [
                     'driver_opts' => [
                         'type' => 'none',
@@ -336,7 +341,7 @@ class ProductionBuilder implements BuilderInterface
                         'ports' => [$dbPorts],
                         'volumes' => array_merge(
                             [
-//                                self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+                                self::VOLUME_MAGENTO_DB_SALES . ':/var/lib/mysql',
                                 self::VOLUME_DOCKER_ETRYPOINT_SALES . ':/docker-entrypoint-initdb.d',
                                 self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
                             ],
@@ -439,7 +444,7 @@ class ProductionBuilder implements BuilderInterface
                 self::SERVICE_TEST,
                 $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $phpVersion, ['volumes' => $volumesRw]),
                 [self::NETWORK_MAGENTO],
-                self::$cliDepends
+                $cliDepends
             );
         }
 
@@ -467,13 +472,13 @@ class ProductionBuilder implements BuilderInterface
             self::SERVICE_BUILD,
             $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $phpVersion, ['volumes' => $volumesBuild]),
             [self::NETWORK_MAGENTO_BUILD],
-            self::$cliDepends
+            $cliDepends
         );
         $manager->addService(
             self::SERVICE_DEPLOY,
             $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $phpVersion, ['volumes' => $volumesRo]),
             [self::NETWORK_MAGENTO],
-            self::$cliDepends
+            $cliDepends
         );
 
         if ($config->get(self::KEY_WITH_CRON, false)) {
@@ -484,7 +489,7 @@ class ProductionBuilder implements BuilderInterface
                     ['volumes' => $volumesRo]
                 ),
                 [self::NETWORK_MAGENTO],
-                self::$cliDepends
+                $cliDepends
             );
         }
 
