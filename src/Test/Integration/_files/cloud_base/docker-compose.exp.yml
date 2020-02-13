@@ -164,33 +164,6 @@ services:
         condition: service_started
       elasticsearch:
         condition: service_healthy
-  cron:
-    hostname: cron.magento2.docker
-    image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
-    extends: generic
-    command: run-cron
-    environment:
-      CRONTAB: '* * * * * root cd /app && /usr/local/bin/php bin/magento cron:run >> /app/var/log/cron.log'
-    volumes:
-      - 'magento:/app:ro'
-      - 'magento-vendor:/app/vendor:ro'
-      - 'magento-generated:/app/generated:ro'
-      - 'magento-var:/app/var:rw'
-      - 'magento-app-etc:/app/app/etc:rw'
-      - 'magento-pub-media:/app/pub/media:rw'
-      - 'magento-pub-static:/app/pub/static:rw'
-      - 'docker-mnt:/mnt:delegated'
-    networks:
-      magento:
-        aliases:
-          - cron.magento2.docker
-    depends_on:
-      db:
-        condition: service_started
-      redis:
-        condition: service_started
-      elasticsearch:
-        condition: service_healthy
 volumes:
   magento:
     driver_opts:

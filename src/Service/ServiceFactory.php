@@ -52,7 +52,8 @@ class ServiceFactory
             ]
         ],
         ServiceInterface::SERVICE_NGINX => [
-            'image' => ServiceInterface::NGINX_IMAGE,
+            'image' => 'magento/magento-cloud-docker-nginx',
+            'version' => 'latest',
             'pattern' => self::PATTERN_VERSIONED,
             'config' => [
                 'extends' => ServiceInterface::SERVICE_GENERIC,
@@ -68,12 +69,13 @@ class ServiceFactory
         ],
         ServiceInterface::SERVICE_VARNISH => [
             'image' => 'magento/magento-cloud-docker-varnish',
+            'version' => 'latest',
             'pattern' => self::PATTERN_VERSIONED,
         ],
         ServiceInterface::SERVICE_TLS => [
             'image' => 'magento/magento-cloud-docker-tls',
+            'version' => 'latest',
             'pattern' => self::PATTERN_VERSIONED,
-            'versions' => ['latest'],
             'config' => [
                 'ports' => [
                     '443:443'
@@ -81,7 +83,7 @@ class ServiceFactory
             ]
         ],
         ServiceInterface::SERVICE_REDIS => [
-            'image' => ServiceInterface::REDIS_IMAGE,
+            'image' => 'redis',
             'pattern' => self::PATTERN_STD,
             'config' => [
                 'volumes' => [
@@ -107,7 +109,8 @@ class ServiceFactory
             'pattern' => '%s'
         ],
         ServiceInterface::SERVICE_SELENIUM => [
-            'image' => ServiceInterface::SELENIUM_IMAGE,
+            'image' => 'selenium/standalone-chrome',
+            'version' => 'latest',
             'pattern' => self::PATTERN_STD,
             'config' => [
                 'ports' => [4444],
@@ -171,14 +174,31 @@ class ServiceFactory
      * @return string
      * @throws ConfigurationMismatchException
      */
-    public function getImage(string $name): string
+    public function getDefaultImage(string $name): string
     {
         if (isset(self::$config[$name]['image'])) {
-            return $this->create($name, '')['image'];
+            return self::$config[$name]['image'];
         }
 
         throw new ConfigurationMismatchException(sprintf(
-            'Image for %s cannot be resolved',
+            'Default image for %s cannot be resolved',
+            $name
+        ));
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     * @throws ConfigurationMismatchException
+     */
+    public function getDefaultVersion(string $name): string
+    {
+        if (isset(self::$config[$name]['version'])) {
+            return self::$config[$name]['version'];
+        }
+
+        throw new ConfigurationMismatchException(sprintf(
+            'Default version for %s cannot be resolved',
             $name
         ));
     }

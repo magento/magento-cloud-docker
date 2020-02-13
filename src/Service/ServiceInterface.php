@@ -28,15 +28,4 @@ interface ServiceInterface
     public const SERVICE_TLS = 'tls';
     public const SERVICE_GENERIC = 'generic';
 
-    public const DEFAULT_NGINX_VERSION = 'latest';
-    public const DEFAULT_VARNISH_VERSION = 'latest';
-    public const DEFAULT_TLS_VERSION = 'latest';
-
-    public const SELENIUM_IMAGE = 'selenium/standalone-chrome';
-    public const SELENIUM_VERSION = 'latest';
-
-    public const NGINX_IMAGE = 'magento/magento-cloud-docker-nginx';
-
-    public const REDIS_IMAGE = 'redis';
-    public const REDIS_VERSION = 'latest';
 }

@@ -81,7 +81,8 @@ class BuildComposeTest extends TestCase
                 __DIR__ . '/_files/cloud_base_mftf',
                 [
                     [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
-                    [CliSource::OPTION_WITH_SELENIUM, true]
+                    [CliSource::OPTION_WITH_SELENIUM, true],
+                    [CliSource::OPTION_WITH_CRON, true]
                 ]
             ]
         ];

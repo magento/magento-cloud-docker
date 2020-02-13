@@ -1,16 +1,9 @@
-# This file describes an application. You can have multiple applications
-# in the same project.
-
-
-# The name of this app. Must be unique within a project.
 name: mymagento
 
-# The toolstack used to build the application.
 type: php:7.3
 build:
   flavor: composer
 
-# Enable extensions required by Magento 2
 runtime:
   extensions:
     - redis
@@ -20,81 +13,18 @@ runtime:
     - newrelic
     - sodium
 
-# The relationships of the application with services or other applications.
-# The left-hand side is the name of the relationship as it will be exposed
-# to the application in the environment variable. The right-hand
-# side is in the form `<service name>:<endpoint name>`.
 relationships:
   database: "mysql:mysql"
   redis: "redis:redis"
   elasticsearch: "elasticsearch:elasticsearch"
 
-# The configuration of app when it is exposed to the web.
-web:
-  locations:
-    "/":
-      # The public directory of the app, relative to its root.
-      root: "pub"
-      # The front-controller script to send non-static requests to.
-      passthru: "/index.php"
-      index:
-        - index.php
-      expires: -1
-      scripts: true
-      allow: false
-      rules:
-        \.(css|js|map|hbs|gif|jpe?g|png|tiff|wbmp|ico|jng|bmp|svgz|midi?|mp?ga|mp2|mp3|m4a|ra|weba|3gpp?|mp4|mpe?g|mpe|ogv|mov|webm|flv|mng|asx|asf|wmv|avi|ogx|swf|jar|ttf|eot|woff|otf|html?)$:
-          allow: true
-        ^/sitemap(.*)\.xml$:
-          passthru: "/media/sitemap$1.xml"
-    "/media":
-      root: "pub/media"
-      allow: true
-      scripts: false
-      expires: 1y
-      passthru: "/get.php"
-    "/static":
-      root: "pub/static"
-      allow: true
-      scripts: false
-      expires: 1y
-      passthru: "/front-static.php"
-      rules:
-        ^/static/version\d+/(?<resource>.*)$:
-          passthru: "/static/$resource"
-
-
-# The size of the persistent disk of the application (in MB).
-disk: 2048
-
-# The mounts that will be performed when the package is deployed.
 mounts:
   "var": "shared:files/var"
   "app/etc": "shared:files/etc"
   "pub/media": "shared:files/media"
   "pub/static": "shared:files/static"
 
-hooks:
-  # We run build hooks before your application has been packaged.
-  build: |
-    set -e
-    php ./vendor/bin/ece-tools build:generate
-    php ./vendor/bin/ece-tools build:transfer
-  # We run deploy hook after your application has been deployed and started.
-  deploy: |
-    php ./vendor/bin/ece-tools deploy
-  # We run post deploy hook to clean and warm the cache. Available with ECE-Tools 2002.0.10.
-  post_deploy: |
-    php ./vendor/bin/ece-tools post-deploy
-# Default Magento 2 cron jobs
 crons:
   cronrun:
     spec: "* * * * *"
     cmd: "php bin/magento cron:run"
-
-# Environment variables
-variables:
-  env:
-    CONFIG__DEFAULT__PAYPAL_ONBOARDING__MIDDLEMAN_DOMAIN: 'payment-broker.magento.com'
-    CONFIG__STORES__DEFAULT__PAYMENT__BRAINTREE__CHANNEL: 'Magento_Enterprise_Cloud_BT'
-    CONFIG__STORES__DEFAULT__PAYPAL__NOTATION_CODE: 'Magento_Enterprise_Cloud'

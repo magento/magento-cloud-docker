@@ -23,6 +23,16 @@ class CloudBaseSource implements SourceInterface
     private $serviceFactory;
 
     /**
+     * @var array
+     */
+    private static $services = [
+        ServiceInterface::SERVICE_SELENIUM => false,
+        ServiceInterface::SERVICE_NGINX => true,
+        ServiceInterface::SERVICE_TLS => true,
+        ServiceInterface::SERVICE_VARNISH => true
+    ];
+
+    /**
      * @param ServiceFactory $serviceFactory
      */
     public function __construct(ServiceFactory $serviceFactory)
@@ -38,28 +48,28 @@ class CloudBaseSource implements SourceInterface
         $repository = new Repository();
 
         $repository->set([
-            self::SERVICES_SELENIUM_ENABLED => false,
-            self::SERVICES_SELENIUM_IMAGE => ServiceInterface::SELENIUM_IMAGE,
-            self::SERVICES_SELENIUM_VERSION => ServiceInterface::SELENIUM_VERSION,
-            self::SERVICES_NGINX_ENABLED => true,
-            self::SERVICES_NGINX_VERSION => ServiceInterface::DEFAULT_NGINX_VERSION,
-            self::SERVICES_NGINX_IMAGE => true,
-            self::CONFIG_TMP_MOUNTS => true
+            self::CONFIG_TMP_MOUNTS => true,
+            self::VARIABLES => [
+                'PHP_MEMORY_LIMIT' => '2048M',
+                'UPLOAD_MAX_FILESIZE' => '64M',
+                'MAGENTO_ROOT' => self::DIR_MAGENTO,
+                # Name of your server in IDE
+                'PHP_IDE_CONFIG' => 'serverName=magento_cloud_docker',
+                # Docker host for developer environments, can be different for your OS
+                'XDEBUG_CONFIG' => 'remote_host=host.docker.internal',
+            ]
         ]);
 
         try {
-            $repository->set([
-                self::SERVICES_VARNISH_ENABLED => true,
-                self::SERVICES_VARNISH_IMAGE => $this->serviceFactory->getImage(
-                    ServiceInterface::SERVICE_VARNISH
-                ),
-                self::SERVICES_VARNISH_VERSION => ServiceInterface::DEFAULT_VARNISH_VERSION,
-                self::SERVICES_TLS_ENABLED => true,
-                self::SERVICES_TLS_VERSION => ServiceInterface::DEFAULT_TLS_VERSION,
-                self::SERVICES_TLS_IMAGE => $this->serviceFactory->getImage(
-                    ServiceInterface::SERVICE_TLS
-                )
-            ]);
+            foreach (self::$services as $service => $status) {
+                $path = self::SERVICES . '.' . $service . '.';
+
+                $repository->set([
+                    $path . 'enabled' => $status,
+                    $path . 'image' => $this->serviceFactory->getDefaultImage($service),
+                    $path . 'version' => $this->serviceFactory->getDefaultVersion($service)
+                ]);
+            }
         } catch (ConfigurationMismatchException $exception) {
             throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
         }

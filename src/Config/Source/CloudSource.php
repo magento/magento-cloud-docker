@@ -122,7 +122,6 @@ class CloudSource implements SourceInterface
 
         if (!empty($appConfig['crons'])) {
             $repository->set([
-                self::CRON_ENABLED => true,
                 self::CRON_JOBS => $appConfig['crons']
             ]);
         }
@@ -165,9 +164,9 @@ class CloudSource implements SourceInterface
 
                     try {
                         $repository->set([
+                            self::SERVICES . '.' . $service . '.enabled' => true,
                             self::SERVICES . '.' . $service . '.version' => $version,
-                            self::SERVICES . '.' . $service . '.image' => $this->serviceFactory->getImage($service),
-                            self::SERVICES . '.' . $service . '.enabled' => true
+                            self::SERVICES . '.' . $service . '.image' => $this->serviceFactory->getDefaultImage($service)
                         ]);
                     } catch (ConfigurationMismatchException $exception) {
                         throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
