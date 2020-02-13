@@ -222,7 +222,6 @@ class BuildCompose extends Command
                     [
                         BuilderFactory::BUILDER_DEVELOPER,
                         BuilderFactory::BUILDER_PRODUCTION,
-                        BuilderFactory::BUILDER_FUNCTIONAL,
                     ]
                 )
             ),

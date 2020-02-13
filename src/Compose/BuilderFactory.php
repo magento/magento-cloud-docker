@@ -19,7 +19,6 @@ class BuilderFactory
 {
     public const BUILDER_DEVELOPER = 'developer';
     public const BUILDER_PRODUCTION = 'production';
-    public const BUILDER_FUNCTIONAL = 'functional';
 
     /**
      * @var array
