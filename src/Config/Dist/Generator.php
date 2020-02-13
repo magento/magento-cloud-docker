@@ -102,7 +102,6 @@ class Generator
             self::SPLIT_DB_TYPE_MAP,
             array_flip($splitDbTypes)
         );
-
         $resultConfig = array_merge(
             [
                 'MAGENTO_CLOUD_RELATIONSHIPS' => array_diff_key(

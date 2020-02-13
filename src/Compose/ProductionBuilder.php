@@ -303,7 +303,7 @@ class ProductionBuilder implements BuilderInterface
                         'ports' => [$dbPorts],
                         'volumes' => array_merge(
                             [
-                                self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+//                                self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
                                 self::VOLUME_DOCKER_ETRYPOINT_QUOTE . ':/docker-entrypoint-initdb.d',
                                 self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
                             ],
@@ -336,7 +336,7 @@ class ProductionBuilder implements BuilderInterface
                         'ports' => [$dbPorts],
                         'volumes' => array_merge(
                             [
-                                self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+//                                self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
                                 self::VOLUME_DOCKER_ETRYPOINT_SALES . ':/docker-entrypoint-initdb.d',
                                 self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
                             ],

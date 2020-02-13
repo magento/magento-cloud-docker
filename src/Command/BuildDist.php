@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Command;
 
 use Magento\CloudDocker\App\GenericException;
-use Magento\CloudDocker\App\GenericExceptionx;
 use Magento\CloudDocker\Command\BuildCompose\SplitDbOptionValidator;
 use Magento\CloudDocker\Compose\ProductionBuilder;
 use Magento\CloudDocker\Config\ConfigFactory;
