@@ -10,6 +10,9 @@ namespace Magento\CloudDocker\Config\Source;
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\Service\ServiceInterface;
 
+/**
+ * The generic source interface
+ */
 interface SourceInterface
 {
     public const DIR_MAGENTO = '/app';
@@ -34,16 +37,11 @@ interface SourceInterface
      */
     public const SERVICES_VARNISH = self::SERVICES . '.' . ServiceInterface::SERVICE_VARNISH;
     public const SERVICES_VARNISH_ENABLED = self::SERVICES_VARNISH . '.enabled';
-    public const SERVICES_VARNISH_IMAGE = self::SERVICES_VARNISH . '.image';
-    public const SERVICES_VARNISH_VERSION = self::SERVICES_VARNISH . '.version';
 
     /**
      * TLS
      */
     public const SERVICES_TLS = self::SERVICES . '.' . ServiceInterface::SERVICE_TLS;
-    public const SERVICES_TLS_ENABLED = self::SERVICES_TLS . '.enabled';
-    public const SERVICES_TLS_VERSION = self::SERVICES_TLS . '.version';
-    public const SERVICES_TLS_IMAGE = self::SERVICES_TLS . '.image';
 
     /**
      * DB
@@ -54,9 +52,6 @@ interface SourceInterface
      * Nginx
      */
     public const SERVICES_NGINX = self::SERVICES . '.' . ServiceInterface::SERVICE_NGINX;
-    public const SERVICES_NGINX_ENABLED = self::SERVICES_NGINX . '.enabled';
-    public const SERVICES_NGINX_VERSION = self::SERVICES_NGINX . '.version';
-    public const SERVICES_NGINX_IMAGE = self::SERVICES_NGINX . '.image';
 
     /**
      * Redis
