@@ -166,7 +166,9 @@ class CloudSource implements SourceInterface
                         $repository->set([
                             self::SERVICES . '.' . $service . '.enabled' => true,
                             self::SERVICES . '.' . $service . '.version' => $version,
-                            self::SERVICES . '.' . $service . '.image' => $this->serviceFactory->getDefaultImage($service)
+                            self::SERVICES . '.' . $service . '.image' => $this->serviceFactory->getDefaultImage(
+                                $service
+                            )
                         ]);
                     } catch (ConfigurationMismatchException $exception) {
                         throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
