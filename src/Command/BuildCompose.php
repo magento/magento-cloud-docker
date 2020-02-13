@@ -329,7 +329,7 @@ class BuildCompose extends Command
     }
 
     /**
-     * @param $mode
+     * @param string $mode
      * @param RepositoryInterface $config
      * @throws \Magento\CloudDocker\App\ConfigurationMismatchException
      */
