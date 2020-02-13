@@ -121,7 +121,9 @@ class Docker extends BaseModule
      */
     public function resetFilesOwner(): bool
     {
-        return $this->runDockerComposeCommand('run build bash -c "chown $(id -u):$(id -g) . -R"');
+        return $this->runDockerComposeCommand(
+            'run build bash -c "chown $(id -u):$(id -g) . /root/.composer/cache -R"'
+        );
     }
 
     /**
@@ -294,23 +296,6 @@ class Docker extends BaseModule
             'username' => $this->_getConfig('db_username'),
             'port' => $this->_getConfig('db_port'),
         ];
-    }
-
-    /**
-     * Prepares environment variables
-     *
-     * @param array $variables
-     * @return array
-     */
-    private function prepareVariables(array $variables): array
-    {
-        $variables = array_replace($this->getDefaultVariables(), $variables);
-
-        foreach ($variables as $varName => $varValue) {
-            $variables[$varName] = base64_encode(json_encode($varValue));
-        }
-
-        return $variables;
     }
 
     /**
