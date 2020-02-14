@@ -106,6 +106,10 @@ class CloudSource implements SourceInterface
         }
 
         [$type, $version] = explode(':', $appConfig['type']);
+        /**
+         * RC versions are not supported
+         */
+        $version = rtrim($version, '-rc');
 
         if ($type !== ServiceInterface::SERVICE_PHP) {
             throw new SourceException(sprintf(
@@ -115,43 +119,26 @@ class CloudSource implements SourceInterface
         }
 
         $repository = new Repository();
-        $repository->set([
-            self::PHP_ENABLED => true,
-            self::PHP_VERSION => rtrim($version, '-rc')
-        ]);
 
-        try {
-            $repository->set([
-                self::SERVICES_XDEBUG . '.enabled' => false,
-                self::SERVICES_XDEBUG . '.image' => $this->serviceFactory->getDefaultImage(
-                    ServiceInterface::SERVICE_FPM_XDEBUG
-                ),
-                self::SERVICES_XDEBUG . '.version' => $version
-            ]);
-        } catch (ConfigurationMismatchException $exception) {
-            throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
-        }
-
-        if (!empty($appConfig['crons'])) {
-            $repository->set([
-                self::CRON_JOBS => $appConfig['crons']
-            ]);
-        }
-
-        foreach ($appConfig['mounts'] ?? [] as $mountName => $mountData) {
-            $repository->set(self::MOUNTS . '.' . $mountName, [
-                'path' => $mountName,
-                'orig' => $mountData
-            ]);
-        }
-
-        if (!empty($appConfig['runtime']['extensions'])) {
-            $repository[self::PHP_EXTENSIONS] = $appConfig['runtime']['extensions'];
-        }
-
-        if (!empty($appConfig['runtime']['disabled_extensions'])) {
-            $repository[self::PHP_DISABLED_EXTENSIONS] = $appConfig['runtime']['disabled_extensions'];
-        }
+        $repository = $this->addPhp(
+            $repository,
+            $version,
+            $appConfig['runtime']['extensions'] ?? [],
+            $appConfig['runtime']['disabled_extensions'] ?? []
+        );
+        $repository = $this->addXdebug(
+            $repository,
+            $version
+        );
+        $repository = $this->addCronJobs(
+            $repository,
+            $appConfig['crons'] ?? []
+        );
+        $repository = $this->addVariables($repository);
+        $repository = $this->addMounts(
+            $repository,
+            $appConfig['mounts'] ?? []
+        );
 
         foreach ($appConfig['relationships'] as $constraint) {
             [$name] = explode(':', $constraint);
@@ -166,35 +153,132 @@ class CloudSource implements SourceInterface
             [$parsedService, $version] = explode(':', $servicesConfig[$name]['type']);
 
             foreach (self::$map as $service => $possibleNames) {
-                if (in_array($parsedService, $possibleNames, true)) {
-                    if ($repository->has(self::SERVICES . '.' . $service)) {
-                        throw new SourceException(sprintf(
-                            'Only one instance of service "%s" supported',
-                            $service
-                        ));
-                    }
+                if (!in_array($parsedService, $possibleNames, true)) {
+                    continue;
+                }
 
-                    try {
-                        $repository->set([
-                            self::SERVICES . '.' . $service . '.enabled' => true,
-                            self::SERVICES . '.' . $service . '.version' => $version,
-                            self::SERVICES . '.' . $service . '.image' => $this->serviceFactory->getDefaultImage(
-                                $service
-                            )
-                        ]);
-                    } catch (ConfigurationMismatchException $exception) {
-                        throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
-                    }
+                if ($repository->has(self::SERVICES . '.' . $service)) {
+                    throw new SourceException(sprintf(
+                        'Only one instance of service "%s" supported',
+                        $service
+                    ));
+                }
+
+                try {
+                    $repository->set([
+                        self::SERVICES . '.' . $service . '.enabled' => true,
+                        self::SERVICES . '.' . $service . '.version' => $version,
+                        self::SERVICES . '.' . $service . '.image' => $this->serviceFactory->getDefaultImage(
+                            $service
+                        )
+                    ]);
+                } catch (ConfigurationMismatchException $exception) {
+                    throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
                 }
             }
         }
 
+        return $repository;
+    }
+
+    /**
+     * @param Repository $repository
+     * @return Repository
+     * @throws SourceException
+     */
+    private function addVariables(Repository $repository): Repository
+    {
         try {
             if ($variables = $this->envReader->read()) {
                 $repository->set(self::VARIABLES, $variables);
             }
         } catch (FilesystemException $exception) {
             throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
+        }
+
+        return $repository;
+    }
+
+    /**
+     * @param Repository $repository
+     * @param string $version
+     * @param array $extensions
+     * @param array $disabledExtensions
+     * @return Repository
+     */
+    private function addPhp(
+        Repository $repository,
+        string $version,
+        array $extensions,
+        array $disabledExtensions
+    ): Repository {
+        $repository->set([
+            self::PHP_ENABLED => true,
+            self::PHP_VERSION => $version
+        ]);
+
+        if ($extensions) {
+            $repository[self::PHP_EXTENSIONS] = $extensions;
+        }
+
+        if ($disabledExtensions) {
+            $repository[self::PHP_DISABLED_EXTENSIONS] = $disabledExtensions;
+        }
+
+        return $repository;
+    }
+
+    /**
+     * @param Repository $repository
+     * @param string $version
+     * @return Repository
+     * @throws SourceException
+     */
+    private function addXdebug(Repository $repository, string $version): Repository
+    {
+        try {
+            $repository->set([
+                self::SERVICES_XDEBUG . '.enabled' => false,
+                self::SERVICES_XDEBUG . '.image' => $this->serviceFactory->getDefaultImage(
+                    ServiceInterface::SERVICE_FPM_XDEBUG
+                ),
+                self::SERVICES_XDEBUG . '.version' => $version
+            ]);
+        } catch (ConfigurationMismatchException $exception) {
+            throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
+        }
+
+        return $repository;
+    }
+
+    /**
+     * @param Repository $repository
+     * @param array $jobs
+     * @return Repository
+     */
+    private function addCronJobs(Repository $repository, array $jobs): Repository
+    {
+        if ($jobs) {
+            $repository->set([
+                self::CRON_JOBS => $jobs
+            ]);
+        }
+
+        return $repository;
+    }
+
+    /**
+     * @param Repository $repository
+     * @param array $mounts
+     * @return Repository
+     */
+    private function addMounts(Repository $repository, array $mounts): Repository
+    {
+        foreach ($mounts as $mountName => $mountData) {
+            $repository->set(self::MOUNTS . '.' . $mountName, [
+                'path' => $mountName,
+                'orig' => $mountData
+            ]);
         }
 
         return $repository;
