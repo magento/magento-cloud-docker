@@ -73,6 +73,11 @@ interface SourceInterface
      */
     public const SERVICES_RMQ = self::SERVICES . '.' . ServiceInterface::SERVICE_RABBITMQ;
 
+    /**
+     * PHP Xdebug
+     */
+    public const SERVICES_XDEBUG = self::SERVICES . '.' . ServiceInterface::SERVICE_FPM_XDEBUG;
+
     public const CRON = 'cron';
     public const CRON_JOBS = self::CRON . '.jobs';
     public const CRON_ENABLED = self::CRON . '.enabled';

@@ -41,6 +41,7 @@ class CliSource implements SourceInterface
     public const OPTION_WITH_SELENIUM = 'with-selenium';
     public const OPTION_NO_TMP_MOUNTS = 'no-tmp-mounts';
     public const OPTION_SYNC_ENGINE = 'sync-engine';
+    public const OPTION_WITH_XDEBUG = 'with-xdebug';
 
     /**
      * Option key to config name map.
@@ -153,6 +154,12 @@ class CliSource implements SourceInterface
 
         if ($this->input->getOption(self::OPTION_NO_VARNISH)) {
             $repository->set(self::SERVICES_VARNISH_ENABLED, false);
+        }
+
+        if ($this->input->getOption(self::OPTION_WITH_XDEBUG)) {
+            $repository->set([
+                self::SERVICES_XDEBUG . '.enabled' => true
+            ]);
         }
 
         return $repository;

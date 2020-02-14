@@ -120,6 +120,18 @@ class CloudSource implements SourceInterface
             self::PHP_VERSION => rtrim($version, '-rc')
         ]);
 
+        try {
+            $repository->set([
+                self::SERVICES_XDEBUG . '.enabled' => false,
+                self::SERVICES_XDEBUG . '.image' => $this->serviceFactory->getDefaultImage(
+                    ServiceInterface::SERVICE_FPM_XDEBUG
+                ),
+                self::SERVICES_XDEBUG . '.version' => $version
+            ]);
+        } catch (ConfigurationMismatchException $exception) {
+            throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
+        }
+
         if (!empty($appConfig['crons'])) {
             $repository->set([
                 self::CRON_JOBS => $appConfig['crons']

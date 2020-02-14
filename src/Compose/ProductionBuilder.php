@@ -359,11 +359,11 @@ class ProductionBuilder implements BuilderInterface
         /**
          * Include Xdebug if --with-xdebug is set
          */
-        if ($config->get(self::KEY_WITH_XDEBUG, false)) {
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)) {
             $manager->addService(
                 self::SERVICE_FPM_XDEBUG,
                 $this->serviceFactory->create(
-                    ServiceFactory::SERVICE_FPM_XDEBUG,
+                    ServiceInterface::SERVICE_FPM_XDEBUG,
                     $phpVersion,
                     [
                         'volumes' => $volumes,

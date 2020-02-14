@@ -39,11 +39,11 @@ class ServiceFactory
                 'extends' => ServiceInterface::SERVICE_GENERIC
             ]
         ],
-        self::SERVICE_FPM_XDEBUG => [
+        ServiceInterface::SERVICE_FPM_XDEBUG => [
             'image' => 'magento/magento-cloud-docker-php',
             'pattern' => '%s:%s-fpm-%s',
             'config' => [
-                'extends' => self::SERVICE_GENERIC,
+                'extends' => ServiceInterface::SERVICE_GENERIC,
                 'ports' => [
                     '9001:9001',
                 ]

@@ -17,6 +17,7 @@ interface ServiceInterface
     public const SERVICE_PHP = 'php';
     public const SERVICE_PHP_CLI = 'php-cli';
     public const SERVICE_PHP_FPM = 'php-fpm';
+    public const SERVICE_FPM_XDEBUG = 'php-fpm-xdebug';
     public const SERVICE_DB = 'mysql';
     public const SERVICE_NGINX = 'nginx';
     public const SERVICE_REDIS = 'redis';

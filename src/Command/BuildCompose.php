@@ -197,7 +197,7 @@ class BuildCompose extends Command
                 InputOption::VALUE_NONE
             )
             ->addOption(
-                self::OPTION_WITH_XDEBUG,
+                Source\CliSource::OPTION_WITH_XDEBUG,
                 null,
                 InputOption::VALUE_NONE,
                 'Enables XDebug'
