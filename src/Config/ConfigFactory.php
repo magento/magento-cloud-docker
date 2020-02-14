@@ -13,11 +13,11 @@ namespace Magento\CloudDocker\Config;
 class ConfigFactory
 {
     /**
-     * @param array $readers
+     * @param array $sources
      * @return Config
      */
-    public function create(array $readers): Config
+    public function create(array $sources): Config
     {
-        return new Config($readers);
+        return new Config($sources);
     }
 }

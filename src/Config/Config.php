@@ -80,7 +80,11 @@ class Config
      */
     public function getSyncEngine(): string
     {
-        return $this->all()->get(SourceInterface::CONFIG_SYNC_ENGINE, '');
+        if (!$this->all()->has(SourceInterface::CONFIG_SYNC_ENGINE)) {
+            throw new ConfigurationMismatchException('Sync engine is not defined');
+        }
+
+        return $this->all()->get(SourceInterface::CONFIG_SYNC_ENGINE);
     }
 
     /**
@@ -89,7 +93,11 @@ class Config
      */
     public function getMode(): string
     {
-        return $this->all()->get(SourceInterface::CONFIG_MODE, '');
+        if (!$this->all()->has(SourceInterface::CONFIG_MODE)) {
+            throw new ConfigurationMismatchException('Mode is not defined');
+        }
+
+        return $this->all()->get(SourceInterface::CONFIG_MODE);
     }
 
     /**
