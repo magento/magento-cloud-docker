@@ -70,6 +70,8 @@ class Docker extends BaseModule
      */
     public function stopEnvironment(bool $keepVolumes = false): bool
     {
+        $this->resetFilesOwner();
+
         return $this->taskEnvDown()
             ->dir($this->getWorkDirPath())
             ->printOutput($this->_getConfig('printOutput'))
