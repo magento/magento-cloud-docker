@@ -195,6 +195,12 @@ class BuildCompose extends Command
                 Source\CliSource::OPTION_NO_TMP_MOUNTS,
                 null,
                 InputOption::VALUE_NONE
+            )
+            ->addOption(
+                self::OPTION_WITH_XDEBUG,
+                null,
+                InputOption::VALUE_NONE,
+                'Enables XDebug'
             );
 
         parent::configure();
