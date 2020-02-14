@@ -54,6 +54,7 @@ class BuildCompose extends Command
     private const OPTION_WITH_CRON = 'with-cron';
     private const OPTION_NO_VARNISH = 'no-varnish';
     private const OPTION_WITH_SELENIUM = 'with-selenium';
+    private const OPTION_WITH_XDEBUG = 'with-xdebug';
 
     /**
      * Environment variables.
@@ -254,6 +255,12 @@ class BuildCompose extends Command
                 self::OPTION_WITH_SELENIUM,
                 null,
                 InputOption::VALUE_NONE
+            )
+            ->addOption(
+                self::OPTION_WITH_XDEBUG,
+                null,
+                InputOption::VALUE_NONE,
+                'Enables XDebug'
             );
 
         parent::configure();
@@ -295,6 +302,7 @@ class BuildCompose extends Command
 
         $config->set([
             DeveloperBuilder::KEY_SYNC_ENGINE => $syncEngine,
+            ProductionBuilder::KEY_WITH_XDEBUG => $input->getOption(self::OPTION_WITH_XDEBUG),
             ProductionBuilder::KEY_WITH_CRON=> $input->getOption(self::OPTION_WITH_CRON),
             ProductionBuilder::KEY_NO_VARNISH => $input->getOption(self::OPTION_NO_VARNISH),
             ProductionBuilder::KEY_WITH_SELENIUM => $input->getOption(self::OPTION_WITH_SELENIUM)

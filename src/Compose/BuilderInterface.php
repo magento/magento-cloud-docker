@@ -22,6 +22,7 @@ interface BuilderInterface
     public const KEY_NO_VARNISH = 'no-varnish';
     public const KEY_EXPOSE_DB_PORT = 'expose-db-port';
     public const KEY_NO_TMP_MOUNTS = 'no-tmp-mounts';
+    public const KEY_WITH_XDEBUG = 'with-xdebug';
     public const KEY_WITH_SELENIUM = 'with-selenium';
     public const KEY_SYNC_ENGINE = 'sync-engine';
     public const KEY_WITH_CRON = 'with-cron';
@@ -29,6 +30,7 @@ interface BuilderInterface
     public const SERVICE_GENERIC = 'generic';
     public const SERVICE_DB = 'db';
     public const SERVICE_FPM = 'fpm';
+    public const SERVICE_FPM_XDEBUG = 'fpm_xdebug';
     public const SERVICE_BUILD = 'build';
     public const SERVICE_DEPLOY = 'deploy';
     public const SERVICE_WEB = 'web';

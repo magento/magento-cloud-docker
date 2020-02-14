@@ -20,6 +20,7 @@ class ServiceFactory
     public const SERVICE_GENERIC = 'generic';
     public const SERVICE_CLI = 'php-cli';
     public const SERVICE_FPM = 'php-fpm';
+    public const SERVICE_FPM_XDEBUG = 'xdebug';
     public const SERVICE_REDIS = 'redis';
     public const SERVICE_DB = 'db';
     public const SERVICE_NGINX = 'nginx';
@@ -52,6 +53,16 @@ class ServiceFactory
             'pattern' => '%s:%s-fpm-%s',
             'config' => [
                 'extends' => self::SERVICE_GENERIC
+            ]
+        ],
+        self::SERVICE_FPM_XDEBUG => [
+            'image' => 'magento/magento-cloud-docker-php',
+            'pattern' => '%s:%s-fpm-%s',
+            'config' => [
+                'extends' => self::SERVICE_GENERIC,
+                'ports' => [
+                    '9001:9001',
+                ]
             ]
         ],
         self::SERVICE_DB => [

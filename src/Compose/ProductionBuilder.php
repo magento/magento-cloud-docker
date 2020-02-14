@@ -374,6 +374,27 @@ class ProductionBuilder implements BuilderInterface
         $phpExtensions = $this->phpExtension->get($phpVersion);
 
         /**
+         * Include Xdebug if --with-xdebug is set
+         */
+        if ($config->get(self::KEY_WITH_XDEBUG, false)) {
+            $manager->addService(
+                self::SERVICE_FPM_XDEBUG,
+                $this->serviceFactory->create(
+                    ServiceFactory::SERVICE_FPM_XDEBUG,
+                    $phpVersion,
+                    [
+                        'volumes' => $volumes,
+                        'environment' => $this->converter->convert(array_merge(
+                            ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
+                        ))
+                    ]
+                ),
+                [self::NETWORK_MAGENTO],
+                [self::SERVICE_DB => []]
+            );
+        }
+
+        /**
          * Generic service.
          */
         $manager->addService(
@@ -488,7 +509,7 @@ class ProductionBuilder implements BuilderInterface
             # Name of your server in IDE
             'PHP_IDE_CONFIG' => 'serverName=magento_cloud_docker',
             # Docker host for developer environments, can be different for your OS
-            'XDEBUG_CONFIG' => 'remote_host=host.docker.internal',
+            'XDEBUG_CONFIG' => 'remote_host=host.docker.internal remote_connect_back=1',
         ];
 
         if ($this->hasSelenium($config)) {
