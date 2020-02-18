@@ -16,6 +16,7 @@ use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 use Symfony\Component\Yaml\Yaml;
 use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
+use Exception;
 
 /**
  * Source to read Magento Cloud configs
@@ -71,11 +72,7 @@ class CloudSource implements SourceInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @SuppressWarnings(PHPMD.NPathComplexity)
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     * @inheritdoc
      */
     public function read(): Repository
     {
@@ -89,9 +86,6 @@ class CloudSource implements SourceInterface
         try {
             $appConfig = Yaml::parse(
                 $this->filesystem->get($this->fileList->getAppConfig())
-            );
-            $servicesConfig = Yaml::parse(
-                $this->filesystem->get($this->fileList->getServicesConfig())
             );
         } catch (\Exception $exception) {
             throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
@@ -139,8 +133,31 @@ class CloudSource implements SourceInterface
             $repository,
             $appConfig['mounts'] ?? []
         );
+        $repository = $this->addRelationships(
+            $repository,
+            $appConfig['relationships'] ?? []
+        );
 
-        foreach ($appConfig['relationships'] as $constraint) {
+        return $repository;
+    }
+
+    /**
+     * @param Repository $repository
+     * @param array $relationships
+     * @return Repository
+     * @throws SourceException
+     */
+    private function addRelationships(Repository $repository, array $relationships): Repository
+    {
+        try {
+            $servicesConfig = Yaml::parse(
+                $this->filesystem->get($this->fileList->getServicesConfig())
+            );
+        } catch (Exception $exception) {
+            throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
+        }
+
+        foreach ($relationships as $constraint) {
             [$name] = explode(':', $constraint);
 
             if (!isset($servicesConfig[$name]['type'])) {
