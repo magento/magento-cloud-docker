@@ -44,7 +44,7 @@ class CliSource implements SourceInterface
     public const OPTION_WITH_XDEBUG = 'with-xdebug';
 
     /**
-     * Option key to config name map.
+     * Option key to config name map
      *
      * @var array
      */

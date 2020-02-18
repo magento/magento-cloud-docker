@@ -72,7 +72,7 @@ class Container implements ContainerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function create(string $abstract, array $params = [])
     {

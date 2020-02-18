@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\App;
 
 /**
- * Container exception
+ * Container generic exception
  */
 class ContainerException extends GenericException
 {
