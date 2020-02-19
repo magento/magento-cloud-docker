@@ -72,7 +72,7 @@ class CloudSource implements SourceInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function read(): Repository
     {

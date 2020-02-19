@@ -366,7 +366,7 @@ class ProductionBuilder implements BuilderInterface
                     ServiceInterface::SERVICE_FPM_XDEBUG,
                     $phpVersion,
                     [
-                        'volumes' => $volumes,
+                        'volumes' => $volumesRo,
                         'environment' => $this->converter->convert(array_merge(
                             ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
                         ))
