@@ -8,7 +8,9 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Compose;
 
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Config;
+use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\Filesystem\FileList;
 
 /**
@@ -46,15 +48,34 @@ class DeveloperBuilder implements BuilderInterface
     private $resolver;
 
     /**
+     * @var Converter
+     */
+    private $converter;
+
+    /**
+     * @var ExtensionResolver
+     */
+    private $extensionResolver;
+
+    /**
      * @param BuilderFactory $builderFactory
      * @param FileList $fileList
      * @param Resolver $resolver
+     * @param Converter $converter
+     * @param ExtensionResolver $extensionResolver
      */
-    public function __construct(BuilderFactory $builderFactory, FileList $fileList, Resolver $resolver)
-    {
+    public function __construct(
+        BuilderFactory $builderFactory,
+        FileList $fileList,
+        Resolver $resolver,
+        Converter $converter,
+        ExtensionResolver $extensionResolver
+    ) {
         $this->builderFactory = $builderFactory;
         $this->fileList = $fileList;
         $this->resolver = $resolver;
+        $this->converter = $converter;
+        $this->extensionResolver = $extensionResolver;
     }
 
     /**
@@ -129,6 +150,13 @@ class DeveloperBuilder implements BuilderInterface
                     self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
                 ]
             )
+        ]);
+        $manager->updateService(self::SERVICE_GENERIC, [
+            'environment' => $this->converter->convert(array_merge(
+                $config->getVariables(),
+                ['MAGENTO_RUN_MODE' => 'developer'],
+                ['PHP_EXTENSIONS' => implode(' ', $this->extensionResolver->get($config))]
+            ))
         ]);
 
         return $manager;
