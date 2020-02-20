@@ -292,7 +292,10 @@ class ProductionBuilder implements BuilderInterface
                 [
                     'volumes' => $volumesRo,
                     'environment' => [
-                        'WITH_XDEBUG' => (int)$config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)
+                        'VIRTUAL_HOST=magento2.docker',
+                        'VIRTUAL_PORT=80',
+                        'HTTPS_METHOD=noredirect',
+                        'WITH_XDEBUG=' . (int)$config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)
                     ]
                 ]
             ),

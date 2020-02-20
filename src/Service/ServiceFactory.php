@@ -67,11 +67,6 @@ class ServiceFactory
             'pattern' => self::PATTERN_VERSIONED,
             'config' => [
                 'extends' => ServiceInterface::SERVICE_GENERIC,
-                'environment' => [
-                    'VIRTUAL_HOST=magento2.docker',
-                    'VIRTUAL_PORT=80',
-                    'HTTPS_METHOD=noredirect',
-                ],
                 'ports' => [
                     '80:80'
                 ],
