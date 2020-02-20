@@ -130,7 +130,7 @@ class ServiceFactory
         ],
         self::SERVICE_GENERIC => [
             'image' => 'alpine',
-            'pattern' => '%s'
+            'pattern' => self::PATTERN_STD
         ],
         self::SERVICE_SELENIUM => [
             'image' => 'selenium/standalone-chrome',

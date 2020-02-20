@@ -18,6 +18,7 @@ interface BuilderInterface
     public const DEFAULT_NGINX_VERSION = 'latest';
     public const DEFAULT_VARNISH_VERSION = 'latest';
     public const DEFAULT_TLS_VERSION = 'latest';
+    public const DEFAULT_ALPINE_VERSION = 'latest';
 
     public const KEY_NO_VARNISH = 'no-varnish';
     public const KEY_EXPOSE_DB_PORT = 'expose-db-port';

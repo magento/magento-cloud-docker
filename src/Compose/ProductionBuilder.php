@@ -401,7 +401,7 @@ class ProductionBuilder implements BuilderInterface
             self::SERVICE_GENERIC,
             $this->serviceFactory->create(
                 ServiceFactory::SERVICE_GENERIC,
-                '',
+                self::DEFAULT_ALPINE_VERSION,
                 [
                     'environment' => $this->converter->convert(array_merge(
                         $this->getVariables($config),
