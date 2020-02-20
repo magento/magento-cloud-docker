@@ -7,22 +7,17 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config;
 
-use Illuminate\Config\Repository;
-use Illuminate\Contracts\Config\Repository as RepositoryInterface;
-
 /**
  * Creates instances of config repository.
  */
 class ConfigFactory
 {
     /**
-     * Creates instances of Repository.
-     *
-     * @param array $items The config array
-     * @return RepositoryInterface
+     * @param array $sources
+     * @return Config
      */
-    public function create(array $items = []): RepositoryInterface
+    public function create(array $sources): Config
     {
-        return new Repository(['items' => $items]);
+        return new Config($sources);
     }
 }

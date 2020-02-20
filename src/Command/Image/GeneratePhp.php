@@ -23,19 +23,21 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GeneratePhp extends Command
 {
-    const NAME = 'image:generate:php';
-    const SUPPORTED_VERSIONS = ['7.1', '7.2', '7.3'];
-    const EDITION_CLI = 'cli';
-    const EDITION_FPM = 'fpm';
-    const EDITIONS = [self::EDITION_CLI, self::EDITION_FPM];
-    const ARGUMENT_VERSION = 'version';
-    const DEFAULT_PACKAGES_PHP_FPM = [
+    private const NAME = 'image:generate:php';
+    private const SUPPORTED_VERSIONS = ['7.1', '7.2', '7.3'];
+
+    private const EDITION_CLI = 'cli';
+    private const EDITION_FPM = 'fpm';
+    private const EDITIONS = [self::EDITION_CLI, self::EDITION_FPM];
+
+    private const ARGUMENT_VERSION = 'version';
+    private const DEFAULT_PACKAGES_PHP_FPM = [
         'apt-utils',
         'sendmail-bin',
         'sendmail',
         'sudo'
     ];
-    const DEFAULT_PACKAGES_PHP_CLI = [
+    private const DEFAULT_PACKAGES_PHP_CLI = [
         'apt-utils',
         'cron',
         'git',
@@ -53,7 +55,7 @@ class GeneratePhp extends Command
         'vim',
     ];
 
-    const PHP_EXTENSIONS_ENABLED_BY_DEFAULT = [
+    private const PHP_EXTENSIONS_ENABLED_BY_DEFAULT = [
         'bcmath',
         'bz2',
         'calendar',
@@ -76,7 +78,7 @@ class GeneratePhp extends Command
         'zip',
     ];
 
-    const DOCKERFILE = 'Dockerfile';
+    private const DOCKERFILE = 'Dockerfile';
 
     /**
      * @var Filesystem

@@ -29,20 +29,23 @@
     ],
     "autoload": {
         "psr-4": {
-            "Magento\\CloudDocker\\": "src/"
+            "Magento\\CloudDocker\\": "src/",
+            "Magento\\CloudDocker\\Test\\Integration\\": "tests/integration"
         }
     },
     "scripts": {
-        "test": [
-            "@phpstan",
-            "@phpcs",
-            "@phpmd",
-            "@phpunit"
+        "test:all": [
+            "@test:phpstan",
+            "@test:phpcs",
+            "@test:phpmd",
+            "@test:unit",
+            "@test:integration"
         ],
-        "phpstan": "phpstan analyse -c tests/static/phpstan.neon",
-        "phpcs": "phpcs src --standard=tests/static/phpcs-ruleset.xml -p -n",
-        "phpmd": "phpmd src xml tests/static/phpmd-ruleset.xml",
-        "phpunit": "phpunit --configuration tests/unit"
+        "test:phpstan": "phpstan analyse -c tests/static/phpstan.neon",
+        "test:phpcs": "phpcs src --standard=tests/static/phpcs-ruleset.xml -p -n",
+        "test:phpmd": "phpmd src xml tests/static/phpmd-ruleset.xml",
+        "test:unit": "phpunit --configuration tests/unit",
+        "test:integration": "phpunit --configuration tests/integration"
     },
     "config": {
         "sort-packages": true
