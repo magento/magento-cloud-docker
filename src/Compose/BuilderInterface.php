@@ -29,6 +29,8 @@ interface BuilderInterface
 
     public const SERVICE_GENERIC = 'generic';
     public const SERVICE_DB = 'db';
+    public const SERVICE_DB_QUOTE = 'db-quote';
+    public const SERVICE_DB_SALES = 'db-sales';
     public const SERVICE_FPM = 'fpm';
     public const SERVICE_FPM_XDEBUG = 'fpm_xdebug';
     public const SERVICE_BUILD = 'build';
@@ -55,9 +57,13 @@ interface BuilderInterface
     public const VOLUME_MAGENTO_STATIC = 'magento-static';
     public const VOLUME_MAGENTO_MEDIA = 'magento-media';
     public const VOLUME_MAGENTO_DB = 'magento-db';
+    public const VOLUME_MAGENTO_DB_QUOTE = 'magento-db-quote';
+    public const VOLUME_MAGENTO_DB_SALES = 'magento-db-sales';
     public const VOLUME_MAGENTO_DEV = 'magento-dev';
     public const VOLUME_DOCKER_MNT = 'docker-mnt';
     public const VOLUME_DOCKER_ETRYPOINT = 'docker-entrypoint';
+    public const VOLUME_DOCKER_ETRYPOINT_QUOTE = 'docker-entrypoint-quote';
+    public const VOLUME_DOCKER_ETRYPOINT_SALES = 'docker-entrypoint-sales';
     public const VOLUME_MARIADB_CONF = 'mariadb-conf';
 
     public const SYNC_ENGINE_NATIVE = 'native';

@@ -11,12 +11,22 @@ use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Config\Relationship;
 use Magento\CloudDocker\Filesystem\DirectoryList;
+use Magento\CloudDocker\Compose\ProductionBuilder;
+use Illuminate\Contracts\Config\Repository as RepositoryInterface;
 
 /**
  * Creates docker/config.php.dist file
  */
 class Generator
 {
+    /**
+     * Split Db types to relationships name map
+     */
+    private const SPLIT_DB_TYPE_MAP = [
+        ProductionBuilder::SPLIT_DB_QUOTE => 'database-quote',
+        ProductionBuilder::SPLIT_DB_SALES => 'database-sales',
+    ];
+
     /**
      * @var DirectoryList
      */
@@ -80,18 +90,30 @@ class Generator
      * Create docker/config.php.dist file
      * generate MAGENTO_CLOUD_RELATIONSHIPS according to services enablements.
      *
+     * @param RepositoryInterface $config
+     *
      * @throws ConfigurationMismatchException if can't obtain relationships
      */
-    public function generate()
+    public function generate(RepositoryInterface $config)
     {
-        $configPath = $this->directoryList->getDockerRoot() . '/config.php.dist';
-
-        $config = array_merge(
-            ['MAGENTO_CLOUD_RELATIONSHIPS' => $this->relationship->get()],
+        $splitDbTypes = $config->get(ProductionBuilder::SPLIT_DB);
+        $disabledSplitDbRelationships = array_diff_key(
+            self::SPLIT_DB_TYPE_MAP,
+            array_flip($splitDbTypes)
+        );
+        $resultConfig = array_merge(
+            [
+                'MAGENTO_CLOUD_RELATIONSHIPS' => array_diff_key(
+                    $this->relationship->get(),
+                    array_flip($disabledSplitDbRelationships)
+                )
+            ],
             self::$baseConfig
         );
 
-        $this->saveConfig($configPath, $config);
+        $configPath = $this->directoryList->getDockerRoot() . '/config.php.dist';
+
+        $this->saveConfig($configPath, $resultConfig);
     }
 
     /**
