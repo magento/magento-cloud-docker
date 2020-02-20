@@ -312,7 +312,10 @@ class ProductionBuilder implements BuilderInterface
             $this->serviceFactory->create(
                 ServiceFactory::SERVICE_NGINX,
                 $config->get(ServiceInterface::NAME_NGINX, self::DEFAULT_NGINX_VERSION),
-                ['volumes' => $volumesRo]
+                [
+                    'volumes' => $volumesRo,
+                    'environment' => ['WITH_XDEBUG' => (int)$config->get(self::KEY_WITH_XDEBUG, false)]
+                ]
             ),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_FPM => []]
