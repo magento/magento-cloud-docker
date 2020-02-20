@@ -16,7 +16,6 @@ XDEBUG_UPSTREAM_FILE="/etc/nginx/conf.d/xdebug/upstream.conf"
 [ ! -z "${UPLOAD_MAX_FILESIZE}" ] && sed -i "s/!UPLOAD_MAX_FILESIZE!/${UPLOAD_MAX_FILESIZE}/" $VHOST_FILE
 [ "${WITH_XDEBUG}" == "1" ] && sed -i "s/#include_xdebug_upstream/include/" $NGINX_FILE
 
-
 # Check if the nginx syntax is fine, then launch.
 nginx -t
 
