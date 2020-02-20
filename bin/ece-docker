@@ -6,13 +6,5 @@
  */
 $container = require __DIR__ . '/../bootstrap.php';
 
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use Symfony\Component\Config\FileLocator;
-
-$loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../config'));
-$loader->load('services.xml');
-
-$container->compile();
-
 $application = new Magento\CloudDocker\Application($container);
 $application->run();

@@ -7,26 +7,13 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
-use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Service\ServiceInterface;
 
 interface BuilderInterface
 {
     public const DIR_MAGENTO = '/app';
-
-    public const DEFAULT_NGINX_VERSION = 'latest';
-    public const DEFAULT_VARNISH_VERSION = 'latest';
-    public const DEFAULT_TLS_VERSION = 'latest';
-    public const DEFAULT_ALPINE_VERSION = 'latest';
-
-    public const KEY_NO_VARNISH = 'no-varnish';
-    public const KEY_EXPOSE_DB_PORT = 'expose-db-port';
-    public const KEY_NO_TMP_MOUNTS = 'no-tmp-mounts';
-    public const KEY_WITH_XDEBUG = 'with-xdebug';
-    public const KEY_WITH_SELENIUM = 'with-selenium';
-    public const KEY_SYNC_ENGINE = 'sync-engine';
-    public const KEY_WITH_CRON = 'with-cron';
 
     public const SERVICE_GENERIC = 'generic';
     public const SERVICE_DB = 'db';
@@ -38,9 +25,9 @@ interface BuilderInterface
     public const SERVICE_VARNISH = 'varnish';
     public const SERVICE_SELENIUM = 'selenium';
     public const SERVICE_TLS = 'tls';
-    public const SERVICE_RABBITMQ = ServiceInterface::NAME_RABBITMQ;
-    public const SERVICE_REDIS = ServiceInterface::NAME_REDIS;
-    public const SERVICE_ELASTICSEARCH = ServiceInterface::NAME_ELASTICSEARCH;
+    public const SERVICE_RABBITMQ = ServiceInterface::SERVICE_RABBITMQ;
+    public const SERVICE_REDIS = ServiceInterface::SERVICE_REDIS;
+    public const SERVICE_ELASTICSEARCH = ServiceInterface::SERVICE_ELASTICSEARCH;
     public const SERVICE_NODE = 'node';
     public const SERVICE_CRON = 'cron';
     public const SERVICE_TEST = 'test';
@@ -64,12 +51,12 @@ interface BuilderInterface
     public const SYNC_ENGINE_NATIVE = 'native';
 
     /**
-     * @param Repository $config
+     * @param Config $config
      * @return Manager
      *
      * @throws ConfigurationMismatchException
      */
-    public function build(Repository $config): Manager;
+    public function build(Config $config): Manager;
 
     /**
      * @return string

@@ -7,16 +7,12 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
-use Illuminate\Contracts\Config\Repository;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Compose\ProductionBuilder\VolumeResolver;
+use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
-use Magento\CloudDocker\Config\Application\Reader as AppReader;
 use Magento\CloudDocker\Filesystem\FileList;
-use Magento\CloudDocker\Filesystem\FilesystemException;
-use Magento\CloudDocker\Service\Config;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 
@@ -29,14 +25,6 @@ use Magento\CloudDocker\Service\ServiceInterface;
  */
 class ProductionBuilder implements BuilderInterface
 {
-    public const SYNC_ENGINES_LIST = [
-        self::SYNC_ENGINE_NATIVE,
-        self::SYNC_ENGINE_MOUNT
-    ];
-
-    public const SYNC_ENGINE_MOUNT = 'mount';
-    public const DEFAULT_SYNC_ENGINE = self::SYNC_ENGINE_MOUNT;
-
     /**
      * @var array
      */
@@ -58,6 +46,14 @@ class ProductionBuilder implements BuilderInterface
         ]
     ];
 
+    public const SYNC_ENGINE_MOUNT = 'mount';
+    public const DEFAULT_SYNC_ENGINE = self::SYNC_ENGINE_MOUNT;
+
+    public const SYNC_ENGINES_LIST = [
+        self::SYNC_ENGINE_NATIVE,
+        self::SYNC_ENGINE_MOUNT
+    ];
+
     /**
      * @var array
      */
@@ -73,11 +69,6 @@ class ProductionBuilder implements BuilderInterface
     private $serviceFactory;
 
     /**
-     * @var Config
-     */
-    private $serviceConfig;
-
-    /**
      * @var Converter
      */
     private $converter;
@@ -91,16 +82,6 @@ class ProductionBuilder implements BuilderInterface
      * @var ExtensionResolver
      */
     private $phpExtension;
-
-    /**
-     * @var EnvReader
-     */
-    private $envReader;
-
-    /**
-     * @var AppReader
-     */
-    private $appReader;
 
     /**
      * @var ManagerFactory
@@ -119,39 +100,28 @@ class ProductionBuilder implements BuilderInterface
 
     /**
      * @param ServiceFactory $serviceFactory
-     * @param Config $serviceConfig
      * @param FileList $fileList
      * @param Converter $converter
      * @param ExtensionResolver $phpExtension
      * @param ManagerFactory $managerFactory
      * @param Resolver $resolver
-     * @param EnvReader $envReader
-     * @param AppReader $appReader
      * @param VolumeResolver $volumeResolver
-     *
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         ServiceFactory $serviceFactory,
-        Config $serviceConfig,
         FileList $fileList,
         Converter $converter,
         ExtensionResolver $phpExtension,
         ManagerFactory $managerFactory,
         Resolver $resolver,
-        EnvReader $envReader,
-        AppReader $appReader,
         VolumeResolver $volumeResolver
     ) {
         $this->serviceFactory = $serviceFactory;
-        $this->serviceConfig = $serviceConfig;
         $this->fileList = $fileList;
         $this->converter = $converter;
         $this->phpExtension = $phpExtension;
         $this->managerFactory = $managerFactory;
         $this->resolver = $resolver;
-        $this->envReader = $envReader;
-        $this->appReader = $appReader;
         $this->volumeResolver = $volumeResolver;
     }
 
@@ -162,28 +132,27 @@ class ProductionBuilder implements BuilderInterface
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public function build(Repository $config): Manager
+    public function build(Config $config): Manager
     {
         $manager = $this->managerFactory->create();
 
-        $phpVersion = $config->get(ServiceInterface::NAME_PHP) ?: $this->serviceConfig->getPhpVersion();
-        $dbVersion = $config->get(ServiceInterface::NAME_DB)
-            ?: $this->getServiceVersion(ServiceInterface::NAME_DB);
-        $hostPort = $config->get(self::KEY_EXPOSE_DB_PORT);
+        $phpVersion = $config->getServiceVersion(ServiceInterface::SERVICE_PHP);
+        $dbVersion = $config->getServiceVersion(ServiceInterface::SERVICE_DB);
+        $hostPort = $config->hasDbPortsExpose();
         $dbPorts = $hostPort ? "$hostPort:3306" : '3306';
 
         $manager->addNetwork(self::NETWORK_MAGENTO, ['driver' => 'bridge']);
         $manager->addNetwork(self::NETWORK_MAGENTO_BUILD, ['driver' => 'bridge']);
 
         $volumes = [
-            self::VOLUME_MAGENTO_DB => [],
-            self::VOLUME_DOCKER_ETRYPOINT => [
+            self::VOLUME_MAGENTO => [
                 'driver_opts' => [
                     'type' => 'none',
-                    'device' => $this->resolver->getRootPath('/.docker/mysql/docker-entrypoint-initdb.d'),
+                    'device' => $this->resolver->getRootPath(),
                     'o' => 'bind'
                 ]
             ],
+            self::VOLUME_MAGENTO_DB => [],
             self::VOLUME_MARIADB_CONF => [
                 'driver_opts' => [
                     'type' => 'none',
@@ -191,13 +160,24 @@ class ProductionBuilder implements BuilderInterface
                     'o' => 'bind',
                 ],
             ],
+            self::VOLUME_DOCKER_ETRYPOINT => [
+                'driver_opts' => [
+                    'type' => 'none',
+                    'device' => $this->resolver->getRootPath('/.docker/mysql/docker-entrypoint-initdb.d'),
+                    'o' => 'bind'
+                ]
+            ]
         ];
 
-        if ($this->hasSelenium($config)) {
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_SELENIUM)) {
             $manager->addVolume(self::VOLUME_MAGENTO_DEV, []);
         }
 
-        if ($this->volumeResolver->getMountVolumes($config->has(self::KEY_NO_TMP_MOUNTS))) {
+        $mounts = $config->getMounts();
+        $hasSelenium = $config->hasSelenium();
+        $hasTmpMounts = $config->hasTmpMounts();
+
+        if ($hasTmpMounts) {
             $volumes[self::VOLUME_DOCKER_MNT] = [
                 'driver_opts' => [
                     'type' => 'none',
@@ -207,14 +187,10 @@ class ProductionBuilder implements BuilderInterface
             ];
         }
 
-        $mounts = $this->appReader->read()['mounts'] ?? [];
-        $hasSelenium = $this->hasSelenium($config);
-        $excludeTmpMounts = (bool)$config->get(self::KEY_NO_TMP_MOUNTS);
-
         foreach ($this->volumeResolver->getMagentoVolumes($mounts, false, $hasSelenium) as $volumeName => $volume) {
             $syncConfig = [];
 
-            if (!empty($volume['volume']) && $config->get(self::KEY_SYNC_ENGINE) === self::SYNC_ENGINE_NATIVE) {
+            if (!empty($volume['volume']) && $config->getSyncEngine() === self::SYNC_ENGINE_NATIVE) {
                 $syncConfig = [
                     'driver_opts' => [
                         'type' => 'none',
@@ -223,11 +199,10 @@ class ProductionBuilder implements BuilderInterface
                     ]
                 ];
             }
-
             $volumes[$volumeName] = $syncConfig;
         }
 
-        if ($config->get(self::KEY_SYNC_ENGINE) === self::SYNC_ENGINE_MOUNT) {
+        if ($config->getSyncEngine() === self::SYNC_ENGINE_MOUNT) {
             $volumes[self::VOLUME_MAGENTO] = [
                 'driver_opts' => [
                     'type' => 'none',
@@ -237,7 +212,7 @@ class ProductionBuilder implements BuilderInterface
             ];
         }
 
-        $manager->addVolumes($volumes);
+        $manager->setVolumes($volumes);
 
         $volumesBuild = $this->volumeResolver->normalize(array_merge(
             $this->volumeResolver->getDefaultMagentoVolumes(false),
@@ -245,21 +220,21 @@ class ProductionBuilder implements BuilderInterface
         ));
         $volumesRo = $this->volumeResolver->normalize(array_merge(
             $this->volumeResolver->getMagentoVolumes($mounts, true, $hasSelenium),
-            $this->volumeResolver->getMountVolumes($excludeTmpMounts)
+            $this->volumeResolver->getMountVolumes($hasTmpMounts)
         ));
         $volumesRw = $this->volumeResolver->normalize(array_merge(
             $this->volumeResolver->getMagentoVolumes($mounts, false, $hasSelenium),
-            $this->volumeResolver->getMountVolumes($excludeTmpMounts),
+            $this->volumeResolver->getMountVolumes($hasTmpMounts),
             $this->volumeResolver->getComposerVolumes()
         ));
         $volumesMount = $this->volumeResolver->normalize(
-            $this->volumeResolver->getMountVolumes($excludeTmpMounts)
+            $this->volumeResolver->getMountVolumes($hasTmpMounts)
         );
 
         $manager->addService(
             self::SERVICE_DB,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_DB,
+                ServiceInterface::SERVICE_DB,
                 $dbVersion,
                 [
                     'ports' => [$dbPorts],
@@ -278,24 +253,26 @@ class ProductionBuilder implements BuilderInterface
         );
 
         foreach (self::$standaloneServices as $service) {
-            $serviceVersion = $config->get($service) ?: $this->getServiceVersion($service);
-
-            if ($serviceVersion) {
-                $manager->addService(
-                    $service,
-                    $this->serviceFactory->create((string)$service, (string)$serviceVersion),
-                    [self::NETWORK_MAGENTO],
-                    []
-                );
+            if (!$config->hasServiceEnabled($service)) {
+                continue;
             }
+
+            $manager->addService(
+                $service,
+                $this->serviceFactory->create((string)$service, (string)$config->getServiceVersion($service)),
+                [self::NETWORK_MAGENTO],
+                []
+            );
         }
 
-        $nodeVersion = $config->get(ServiceInterface::NAME_NODE);
-
-        if ($nodeVersion) {
+        if ($config->hasServiceEnabled(self::SERVICE_NODE)) {
             $manager->addService(
                 self::SERVICE_NODE,
-                $this->serviceFactory->create(ServiceFactory::SERVICE_NODE, $nodeVersion, ['volumes' => $volumesRo]),
+                $this->serviceFactory->create(
+                    ServiceInterface::SERVICE_NODE,
+                    $config->getServiceVersion(ServiceInterface::SERVICE_NODE),
+                    ['volumes' => $volumesRo]
+                ),
                 [self::NETWORK_MAGENTO],
                 []
             );
@@ -303,27 +280,27 @@ class ProductionBuilder implements BuilderInterface
 
         $manager->addService(
             self::SERVICE_FPM,
-            $this->serviceFactory->create(ServiceFactory::SERVICE_FPM, $phpVersion, ['volumes' => $volumesRo]),
+            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_FPM, $phpVersion, ['volumes' => $volumesRo]),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_DB => []]
         );
         $manager->addService(
             self::SERVICE_WEB,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_NGINX,
-                $config->get(ServiceInterface::NAME_NGINX, self::DEFAULT_NGINX_VERSION),
+                ServiceInterface::SERVICE_NGINX,
+                $config->getServiceVersion(ServiceInterface::SERVICE_NGINX),
                 ['volumes' => $volumesRo]
             ),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_FPM => []]
         );
 
-        if (!$config->get(self::KEY_NO_VARNISH, false)) {
+        if ($config->hasServiceEnabled(self::SERVICE_VARNISH)) {
             $manager->addService(
                 self::SERVICE_VARNISH,
                 $this->serviceFactory->create(
-                    ServiceFactory::SERVICE_VARNISH,
-                    self::DEFAULT_VARNISH_VERSION,
+                    ServiceInterface::SERVICE_VARNISH,
+                    $config->getServiceVersion(ServiceInterface::SERVICE_VARNISH),
                     [
                         'networks' => [
                             self::NETWORK_MAGENTO => [
@@ -337,12 +314,14 @@ class ProductionBuilder implements BuilderInterface
             );
         }
 
-        $tlsBackendService = $config->get(self::KEY_NO_VARNISH, false) ? self::SERVICE_WEB : self::SERVICE_VARNISH;
+        $tlsBackendService = $config->hasServiceEnabled(ServiceInterface::SERVICE_VARNISH)
+            ? self::SERVICE_VARNISH
+            : self::SERVICE_WEB;
         $manager->addService(
             self::SERVICE_TLS,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_TLS,
-                self::DEFAULT_TLS_VERSION,
+                ServiceInterface::SERVICE_TLS,
+                $config->getServiceVersion(ServiceInterface::SERVICE_TLS),
                 [
                     'environment' => ['HTTPS_UPSTREAM_SERVER_ADDRESS' => $tlsBackendService],
                 ]
@@ -351,39 +330,43 @@ class ProductionBuilder implements BuilderInterface
             [$tlsBackendService => []]
         );
 
-        if ($this->hasSelenium($config)) {
+        if ($config->hasSelenium()) {
             $manager->addService(
                 self::SERVICE_SELENIUM,
                 $this->serviceFactory->create(
-                    ServiceInterface::NAME_SELENIUM,
-                    $config->get(ServiceFactory::SERVICE_SELENIUM_VERSION, 'latest'),
+                    ServiceInterface::SERVICE_SELENIUM,
+                    $config->getServiceVersion(ServiceInterface::SERVICE_SELENIUM),
                     [],
-                    $config->get(ServiceFactory::SERVICE_SELENIUM_IMAGE)
+                    $config->getServiceImage(ServiceInterface::SERVICE_SELENIUM)
                 ),
                 [self::NETWORK_MAGENTO],
                 [self::SERVICE_WEB => []]
             );
             $manager->addService(
                 self::SERVICE_TEST,
-                $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $phpVersion, ['volumes' => $volumesRw]),
+                $this->serviceFactory->create(
+                    ServiceInterface::SERVICE_PHP_CLI,
+                    $phpVersion,
+                    ['volumes' => $volumesRw]
+                ),
                 [self::NETWORK_MAGENTO],
                 self::$cliDepends
             );
         }
 
-        $phpExtensions = $this->phpExtension->get($phpVersion);
+        $phpExtensions = $this->phpExtension->get($config);
 
         /**
          * Include Xdebug if --with-xdebug is set
          */
-        if ($config->get(self::KEY_WITH_XDEBUG, false)) {
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)) {
             $manager->addService(
                 self::SERVICE_FPM_XDEBUG,
                 $this->serviceFactory->create(
-                    ServiceFactory::SERVICE_FPM_XDEBUG,
+                    ServiceInterface::SERVICE_FPM_XDEBUG,
                     $phpVersion,
                     [
-                        'volumes' => $volumes,
+                        'volumes' => $volumesRo,
                         'environment' => $this->converter->convert(array_merge(
                             ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
                         ))
@@ -400,11 +383,11 @@ class ProductionBuilder implements BuilderInterface
         $manager->addService(
             self::SERVICE_GENERIC,
             $this->serviceFactory->create(
-                ServiceFactory::SERVICE_GENERIC,
-                self::DEFAULT_ALPINE_VERSION,
+                ServiceInterface::SERVICE_GENERIC,
+                '',
                 [
                     'environment' => $this->converter->convert(array_merge(
-                        $this->getVariables($config),
+                        $config->getVariables(),
                         ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
                     ))
                 ]
@@ -414,22 +397,22 @@ class ProductionBuilder implements BuilderInterface
         );
         $manager->addService(
             self::SERVICE_BUILD,
-            $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $phpVersion, ['volumes' => $volumesBuild]),
+            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $phpVersion, ['volumes' => $volumesBuild]),
             [self::NETWORK_MAGENTO_BUILD],
             self::$cliDepends
         );
         $manager->addService(
             self::SERVICE_DEPLOY,
-            $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $phpVersion, ['volumes' => $volumesRo]),
+            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $phpVersion, ['volumes' => $volumesRo]),
             [self::NETWORK_MAGENTO],
             self::$cliDepends
         );
 
-        if ($config->get(self::KEY_WITH_CRON, false)) {
+        if ($config->hasCron()) {
             $manager->addService(
                 self::SERVICE_CRON,
                 array_merge(
-                    $this->getCronCliService($phpVersion),
+                    $this->getCronCliService($phpVersion, $config->getCronJobs()),
                     ['volumes' => $volumesRo]
                 ),
                 [self::NETWORK_MAGENTO],
@@ -441,42 +424,29 @@ class ProductionBuilder implements BuilderInterface
     }
 
     /**
-     * @param Repository $config
-     * @return bool
-     */
-    private function hasSelenium(Repository $config): bool
-    {
-        return $config->get(self::KEY_WITH_SELENIUM)
-            || $config->get(ServiceInterface::NAME_SELENIUM)
-            || $config->get(ServiceFactory::SERVICE_SELENIUM_IMAGE);
-    }
-
-    /**
      * @param string $version
+     * @param array $cronConfig
      * @return array
      * @throws ConfigurationMismatchException
      */
-    private function getCronCliService(string $version): array
+    private function getCronCliService(string $version, array $cronConfig): array
     {
-        $config = $this->serviceFactory->create(ServiceFactory::SERVICE_CLI, $version, ['command' => 'run-cron']);
+        $config = $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $version, ['command' => 'run-cron']);
+        $preparedCronConfig = [];
 
-        if ($cronConfig = $this->serviceConfig->getCron()) {
-            $preparedCronConfig = [];
-
-            foreach ($cronConfig as $job) {
-                $preparedCronConfig[] = sprintf(
-                    '%s root cd %s && %s >> %s/var/log/cron.log',
-                    $job['spec'],
-                    self::DIR_MAGENTO,
-                    str_replace('php ', '/usr/local/bin/php ', $job['cmd']),
-                    self::DIR_MAGENTO
-                );
-            }
-
-            $config['environment'] = [
-                'CRONTAB' => implode(PHP_EOL, $preparedCronConfig)
-            ];
+        foreach ($cronConfig as $job) {
+            $preparedCronConfig[] = sprintf(
+                '%s root cd %s && %s >> %s/var/log/cron.log',
+                $job['spec'],
+                self::DIR_MAGENTO,
+                str_replace('php ', '/usr/local/bin/php ', $job['cmd']),
+                self::DIR_MAGENTO
+            );
         }
+
+        $config['environment'] = [
+            'CRONTAB' => implode(PHP_EOL, $preparedCronConfig)
+        ];
 
         return $config;
     }
@@ -487,45 +457,5 @@ class ProductionBuilder implements BuilderInterface
     public function getPath(): string
     {
         return $this->fileList->getMagentoDockerCompose();
-    }
-
-    /**
-     * @param Repository $config
-     * @return array
-     * @throws ConfigurationMismatchException
-     */
-    private function getVariables(Repository $config): array
-    {
-        try {
-            $envConfig = $this->envReader->read();
-        } catch (FilesystemException $exception) {
-            throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
-        }
-
-        $variables = [
-            'PHP_MEMORY_LIMIT' => '2048M',
-            'UPLOAD_MAX_FILESIZE' => '64M',
-            'MAGENTO_ROOT' => self::DIR_MAGENTO,
-            # Name of your server in IDE
-            'PHP_IDE_CONFIG' => 'serverName=magento_cloud_docker',
-            # Docker host for developer environments, can be different for your OS
-            'XDEBUG_CONFIG' => 'remote_host=host.docker.internal remote_connect_back=1',
-        ];
-
-        if ($this->hasSelenium($config)) {
-            $variables['MFTF_UTILS'] = 1;
-        }
-
-        return array_merge($variables, $envConfig);
-    }
-
-    /**
-     * @param string $serviceName
-     * @return string|null
-     * @throws ConfigurationMismatchException
-     */
-    private function getServiceVersion(string $serviceName): ?string
-    {
-        return $this->serviceConfig->getServiceVersion($serviceName);
     }
 }

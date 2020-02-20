@@ -86,21 +86,21 @@ class VolumeResolver
     }
 
     /**
-     * @param bool $excludeTmpMounts
+     * @param bool $hasTmpMounts
      * @return array
      */
-    public function getMountVolumes(bool $excludeTmpMounts): array
+    public function getMountVolumes(bool $hasTmpMounts): array
     {
-        if ($excludeTmpMounts) {
-            return [];
+        if ($hasTmpMounts) {
+            return [
+                BuilderInterface::VOLUME_DOCKER_MNT => [
+                    'path' => '/mnt',
+                    'mode' => 'delegated'
+                ],
+            ];
         }
 
-        return [
-            BuilderInterface::VOLUME_DOCKER_MNT => [
-                'path' => '/mnt',
-                'mode' => 'delegated'
-            ],
-        ];
+        return [];
     }
 
     /**
