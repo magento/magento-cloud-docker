@@ -11,6 +11,7 @@ ENV DEBUG false
 
 COPY etc/nginx.conf /etc/nginx/
 COPY etc/vhost.conf /etc/nginx/conf.d/default.conf
+COPY etc/xdebug-upstream.conf /etc/nginx/conf.d/xdebug/upstream.conf
 
 RUN apt-get update && apt-get install -y openssl
 RUN mkdir /etc/nginx/ssl \
