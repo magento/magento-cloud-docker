@@ -150,7 +150,7 @@ services:
         condition: service_healthy
   generic:
     hostname: generic.magento2.docker
-    image: alpine
+    image: 'alpine:latest'
     environment:
       - PHP_MEMORY_LIMIT=2048M
       - UPLOAD_MAX_FILESIZE=64M
