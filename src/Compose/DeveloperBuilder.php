@@ -7,8 +7,10 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
-use Illuminate\Contracts\Config\Repository;
-use Magento\CloudDocker\Compose\ProductionBuilder\VolumeResolver;
+use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Compose\Php\ExtensionResolver;
+use Magento\CloudDocker\Config\Config;
+use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\Filesystem\FileList;
 
 /**
@@ -46,38 +48,46 @@ class DeveloperBuilder implements BuilderInterface
     private $resolver;
 
     /**
-     * @var VolumeResolver
+     * @var Converter
      */
-    private $volumeResolver;
+    private $converter;
+
+    /**
+     * @var ExtensionResolver
+     */
+    private $extensionResolver;
 
     /**
      * @param BuilderFactory $builderFactory
      * @param FileList $fileList
      * @param Resolver $resolver
-     * @param VolumeResolver $volumeResolver
+     * @param Converter $converter
+     * @param ExtensionResolver $extensionResolver
      */
     public function __construct(
         BuilderFactory $builderFactory,
         FileList $fileList,
         Resolver $resolver,
-        VolumeResolver $volumeResolver
+        Converter $converter,
+        ExtensionResolver $extensionResolver
     ) {
         $this->builderFactory = $builderFactory;
         $this->fileList = $fileList;
         $this->resolver = $resolver;
-        $this->volumeResolver = $volumeResolver;
+        $this->converter = $converter;
+        $this->extensionResolver = $extensionResolver;
     }
 
     /**
      * @inheritDoc
      */
-    public function build(Repository $config): Manager
+    public function build(Config $config): Manager
     {
         $manager = $this->builderFactory
             ->create(BuilderFactory::BUILDER_PRODUCTION)
             ->build($config);
 
-        $syncEngine = $config->get(self::KEY_SYNC_ENGINE);
+        $syncEngine = $config->getSyncEngine();
         $syncConfig = [];
 
         if ($syncEngine === self::SYNC_ENGINE_DOCKER_SYNC) {
@@ -97,6 +107,13 @@ class DeveloperBuilder implements BuilderInterface
         $manager->setVolumes([
             self::VOLUME_MAGENTO_SYNC => $syncConfig,
             self::VOLUME_MAGENTO_DB => [],
+            self::VOLUME_MARIADB_CONF => [
+                'driver_opts' => [
+                    'type' => 'none',
+                    'device' => $this->resolver->getRootPath('/.docker/mysql/mariadb.conf.d'),
+                    'o' => 'bind',
+                ],
+            ],
             self::VOLUME_DOCKER_ETRYPOINT => [
                 'driver_opts' => [
                     'type' => 'none',
@@ -129,17 +146,17 @@ class DeveloperBuilder implements BuilderInterface
                 $volumes,
                 [
                     self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
-                    self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d'
+                    self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d',
+                    self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
                 ]
             )
         ]);
-        $manager->updateService(self::SERVICE_BUILD, [
-            'volumes' => array_merge(
-                $volumes,
-                $this->volumeResolver->normalize(
-                    $this->volumeResolver->getComposerVolumes()
-                )
-            )
+        $manager->updateService(self::SERVICE_GENERIC, [
+            'environment' => $this->converter->convert(array_merge(
+                $config->getVariables(),
+                ['MAGENTO_RUN_MODE' => 'developer'],
+                ['PHP_EXTENSIONS' => implode(' ', $this->extensionResolver->get($config))]
+            ))
         ]);
 
         return $manager;
@@ -154,11 +171,13 @@ class DeveloperBuilder implements BuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * @param Config $config
+     * @return array
+     * @throws ConfigurationMismatchException
      */
-    private function getMagentoVolumes(Repository $config): array
+    private function getMagentoVolumes(Config $config): array
     {
-        if ($config->get(self::KEY_SYNC_ENGINE) !== self::SYNC_ENGINE_NATIVE) {
+        if ($config->getSyncEngine() !== self::SYNC_ENGINE_NATIVE) {
             return [
                 self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':nocopy'
             ];

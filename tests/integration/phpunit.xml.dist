@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.1/phpunit.xsd"
+         colors="true"
+         columns="max"
+         bootstrap="../../bootstrap.php"
+         beStrictAboutTestsThatDoNotTestAnything="false"
+         stopOnFailure="true"
+>
+    <testsuites>
+        <testsuite name="Integration">
+            <directory suffix="Test.php">../../src/Test/Integration</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <ini name="date.timezone" value="UTC"/>
+    </php>
+</phpunit>

@@ -6,7 +6,10 @@
         <!-- Default configuration for services in *this* file -->
         <defaults autowire="true" autoconfigure="true" public="true"/>
 
-        <prototype namespace="Magento\CloudDocker\" resource="../src/*" exclude="../src/{App,Test}"/>
+        <prototype namespace="Magento\CloudDocker\" resource="../src/*" exclude="../src/{Test}"/>
+        <service id="Magento\CloudDocker\App\Container" autowire="false"/>
+        <service id="Magento\CloudDocker\App\ContainerInterface" alias="container"/>
+        <service id="Magento\CloudDocker\App\ContainerException" autowire="false"/>
         <service id="Magento\CloudDocker\Compose\BuilderFactory">
             <argument key="$strategies" type="collection">
                 <argument key="developer">Magento\CloudDocker\Compose\DeveloperBuilder</argument>
@@ -15,9 +18,14 @@
         </service>
         <service id="Magento\CloudDocker\Filesystem\DirectoryList" autowire="false"/>
         <service id="Magento\CloudDocker\Filesystem\FilesystemException" autowire="false"/>
+        <service id="Magento\CloudDocker\Config\Source\SourceException" autowire="false"/>
         <service id="Magento\CloudDocker\Filesystem\FileNotFoundException" autowire="false"/>
+        <service id="Magento\CloudDocker\App\ConfigurationMismatchException" autowire="false"/>
+        <service id="Magento\CloudDocker\App\GenericException" autowire="false"/>
         <service id="Magento\CloudDocker\Compose\DeveloperBuilder" shared="false"/>
         <service id="Magento\CloudDocker\Compose\ProductionBuilder" shared="false"/>
+        <service id="Magento\CloudDocker\Config\Config" autowire="false"/>
+        <service id="Magento\CloudDocker\Config\Source\CliSource" autowire="false"/>
         <service id="Composer\Semver\VersionParser"/>
         <service id="Composer\Semver\Semver"/>
     </services>

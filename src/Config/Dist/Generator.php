@@ -8,9 +8,10 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Config\Dist;
 
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Filesystem\Filesystem;
+use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Relationship;
 use Magento\CloudDocker\Filesystem\DirectoryList;
+use Magento\CloudDocker\Filesystem\Filesystem;
 
 /**
  * Creates docker/config.php.dist file
@@ -80,21 +81,17 @@ class Generator
      * Create docker/config.php.dist file
      * generate MAGENTO_CLOUD_RELATIONSHIPS according to services enablements.
      *
-     * @param array $cloudVariables
-     * @param array $rawVariables
-     * @throws ConfigurationMismatchException if can't obtain relationships
+     * @param Config $config
+     * @throws ConfigurationMismatchException
      */
-    public function generate(array $cloudVariables = [], array $rawVariables = [])
+    public function generate(Config $config): void
     {
         $configPath = $this->directoryList->getDockerRoot() . '/config.php.dist';
 
-        $config = array_merge(
-            ['MAGENTO_CLOUD_RELATIONSHIPS' => $this->relationship->get()],
-            self::$baseConfig
+        $this->saveConfig(
+            $configPath,
+            array_merge(['MAGENTO_CLOUD_RELATIONSHIPS' => $this->relationship->get($config)], self::$baseConfig)
         );
-        $config = array_replace($config, $cloudVariables);
-
-        $this->saveConfig($configPath, $config, $rawVariables);
     }
 
     /**
@@ -102,20 +99,14 @@ class Generator
      *
      * @param string $filePath
      * @param array $config
-     * @param array $rawVariables
      */
-    private function saveConfig(string $filePath, array $config, array $rawVariables)
+    private function saveConfig(string $filePath, array $config): void
     {
         $result = "<?php\n\nreturn [";
         foreach ($config as $key => $value) {
             $result .= "\n    '{$key}' => ";
             $result .= 'base64_encode(json_encode(' . $this->phpFormatter->varExport($value, 2) . ')),';
         }
-
-        foreach ($rawVariables as $key => $value) {
-            $result .= "\n    '{$key}' => '{$value}'";
-        }
-
         $result .= "\n];\n";
 
         $this->filesystem->put($filePath, $result);

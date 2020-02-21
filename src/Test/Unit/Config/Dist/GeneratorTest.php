@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Unit\Config\Dist;
 
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Dist\Formatter;
 use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Config\Relationship;
@@ -67,14 +68,18 @@ class GeneratorTest extends TestCase
     /**
      * @throws ConfigurationMismatchException
      */
-    public function testGenerate()
+    public function testGenerate(): void
     {
+        /** @var MockObject|Config $config */
+        $config = $this->createMock(Config::class);
+
         $rootDir = '/path/to/docker';
         $this->directoryListMock->expects($this->once())
             ->method('getDockerRoot')
             ->willReturn($rootDir);
         $this->relationshipMock->expects($this->once())
             ->method('get')
+            ->with($config)
             ->willReturn([
                 'database' => ['config'],
                 'redis' => ['config'],
@@ -118,7 +123,7 @@ class GeneratorTest extends TestCase
             ->method('put')
             ->with($rootDir . '/config.php.dist', $this->getConfigForUpdate());
 
-        $this->distGenerator->generate();
+        $this->distGenerator->generate($config);
     }
 
     /**
@@ -138,7 +143,10 @@ return [
 TEXT;
     }
 
-    public function testGenerateFileSystemException()
+    /**
+     * @throws ConfigurationMismatchException
+     */
+    public function testGenerateFileSystemException(): void
     {
         $this->expectException(ConfigurationMismatchException::class);
         $this->expectExceptionMessage('file system error');
@@ -147,6 +155,9 @@ TEXT;
             ->method('put')
             ->willThrowException(new ConfigurationMismatchException('file system error'));
 
-        $this->distGenerator->generate();
+        /** @var MockObject|Config $config */
+        $config = $this->createMock(Config::class);
+
+        $this->distGenerator->generate($config);
     }
 }
