@@ -392,7 +392,7 @@ class ProductionBuilder implements BuilderInterface
             self::SERVICE_GENERIC,
             $this->serviceFactory->create(
                 ServiceInterface::SERVICE_GENERIC,
-                '',
+                $config->getServiceVersion(self::SERVICE_GENERIC),
                 [
                     'environment' => $this->converter->convert(array_merge(
                         $config->getVariables(),
