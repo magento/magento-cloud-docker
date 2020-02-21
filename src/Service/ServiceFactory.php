@@ -116,7 +116,8 @@ class ServiceFactory
         ],
         ServiceInterface::SERVICE_GENERIC => [
             'image' => 'alpine',
-            'pattern' => '%s'
+            'version' => 'latest',
+            'pattern' => self::PATTERN_STD
         ],
         ServiceInterface::SERVICE_SELENIUM => [
             'image' => 'selenium/standalone-chrome',
