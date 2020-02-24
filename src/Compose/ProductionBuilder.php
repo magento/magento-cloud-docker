@@ -289,7 +289,15 @@ class ProductionBuilder implements BuilderInterface
             $this->serviceFactory->create(
                 ServiceInterface::SERVICE_NGINX,
                 $config->getServiceVersion(ServiceInterface::SERVICE_NGINX),
-                ['volumes' => $volumesRo]
+                [
+                    'volumes' => $volumesRo,
+                    'environment' => [
+                        'VIRTUAL_HOST=magento2.docker',
+                        'VIRTUAL_PORT=80',
+                        'HTTPS_METHOD=noredirect',
+                        'WITH_XDEBUG=' . (int)$config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)
+                    ]
+                ]
             ),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_FPM => []]
@@ -384,7 +392,7 @@ class ProductionBuilder implements BuilderInterface
             self::SERVICE_GENERIC,
             $this->serviceFactory->create(
                 ServiceInterface::SERVICE_GENERIC,
-                '',
+                $config->getServiceVersion(self::SERVICE_GENERIC),
                 [
                     'environment' => $this->converter->convert(array_merge(
                         $config->getVariables(),

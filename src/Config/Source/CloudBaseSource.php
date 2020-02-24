@@ -29,7 +29,8 @@ class CloudBaseSource implements SourceInterface
         ServiceInterface::SERVICE_SELENIUM => false,
         ServiceInterface::SERVICE_NGINX => true,
         ServiceInterface::SERVICE_TLS => true,
-        ServiceInterface::SERVICE_VARNISH => true
+        ServiceInterface::SERVICE_VARNISH => true,
+        ServiceInterface::SERVICE_GENERIC => true
     ];
 
     /**
