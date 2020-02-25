@@ -19,6 +19,7 @@ php:
 env:
   matrix:
     - TEST_SUITE=static-unit
+    - TEST_SUITE=integration
     - TEST_SUITE=functional
 
 install: composer update
@@ -29,5 +30,6 @@ before_script:
 
 script:
   - if [ $TEST_SUITE == "static-unit" ]; then ./tests/travis/static-unit.sh; fi
+  - if [ $TEST_SUITE == "integration" ]; then ./vendor/bin/phpunit --configuration ./tests/integration; fi
   - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "functional" ]; then ./tests/travis/functional.sh; fi;
 
