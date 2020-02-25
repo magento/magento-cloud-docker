@@ -29,7 +29,7 @@ class EnvCoder
      */
     public function encode(array $variables): array
     {
-        array_walk($variables, static function(&$value, $key){
+        array_walk($variables, static function (&$value, $key) {
             if (in_array($key, self::$encodedEnv, true)) {
                 $value = base64_encode(json_encode($value));
             }
@@ -44,7 +44,7 @@ class EnvCoder
      */
     public function decode(array $variables): array
     {
-        array_walk($variables, static function(&$value, $key){
+        array_walk($variables, static function (&$value, $key) {
             if (in_array($key, self::$encodedEnv, true)) {
                 $value = json_decode(base64_decode($value), true);
             }

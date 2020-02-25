@@ -106,14 +106,16 @@ class Generator
      */
     public function generate(Config $config): void
     {
-        $configPath = $this->directoryList->getDockerRoot() . '/config.php.dist';
-        $configEnvPath = $this->directoryList->getDockerRoot() . '/config.env';
+        $dockerRootPath = $this->directoryList->getDockerRoot();
 
         $configByServices = $this->generateByServices($config);
-        $this->saveConfigDist($configPath, $configByServices);
+        $this->saveConfigDist(
+            $dockerRootPath . '/config.php.dist',
+            $configByServices
+        );
 
         $this->saveConfigEnv(
-            $configEnvPath,
+            $dockerRootPath . '/config.env',
             array_merge(
                 $configByServices,
                 $this->envReader->read(),

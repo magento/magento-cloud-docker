@@ -168,7 +168,7 @@ class CliSource implements SourceInterface
         }
 
         if ($envs = $this->input->getOption(self::OPTION_ENV_VARIABLES)) {
-            $repository->set(self::VARIABLES, (array) json_encode($envs, true));
+            $repository->set(self::VARIABLES, (array) json_decode($envs, true));
         }
 
         return $repository;
