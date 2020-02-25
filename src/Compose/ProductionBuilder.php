@@ -15,6 +15,7 @@ use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
+use Magento\CloudDocker\Filesystem\DirectoryList;
 
 /**
  * Production compose configuration.
@@ -64,6 +65,11 @@ class ProductionBuilder implements BuilderInterface
     ];
 
     /**
+     * @var DirectoryList
+     */
+    private $directoryList;
+
+    /**
      * @var ServiceFactory
      */
     private $serviceFactory;
@@ -106,6 +112,7 @@ class ProductionBuilder implements BuilderInterface
      * @param ManagerFactory $managerFactory
      * @param Resolver $resolver
      * @param VolumeResolver $volumeResolver
+     * @param DirectoryList $directoryList
      */
     public function __construct(
         ServiceFactory $serviceFactory,
@@ -114,7 +121,8 @@ class ProductionBuilder implements BuilderInterface
         ExtensionResolver $phpExtension,
         ManagerFactory $managerFactory,
         Resolver $resolver,
-        VolumeResolver $volumeResolver
+        VolumeResolver $volumeResolver,
+        DirectoryList $directoryList
     ) {
         $this->serviceFactory = $serviceFactory;
         $this->fileList = $fileList;
@@ -123,6 +131,7 @@ class ProductionBuilder implements BuilderInterface
         $this->managerFactory = $managerFactory;
         $this->resolver = $resolver;
         $this->volumeResolver = $volumeResolver;
+        $this->directoryList = $directoryList;
     }
 
     /**
@@ -375,9 +384,7 @@ class ProductionBuilder implements BuilderInterface
                     $phpVersion,
                     [
                         'volumes' => $volumesRo,
-                        'environment' => $this->converter->convert(array_merge(
-                            ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
-                        ))
+                        'environment' => $this->converter->convert(['PHP_EXTENSIONS' => implode(' ', $phpExtensions)])
                     ]
                 ),
                 [self::NETWORK_MAGENTO],
@@ -394,10 +401,8 @@ class ProductionBuilder implements BuilderInterface
                 ServiceInterface::SERVICE_GENERIC,
                 $config->getServiceVersion(self::SERVICE_GENERIC),
                 [
-                    'environment' => $this->converter->convert(array_merge(
-                        $config->getVariables(),
-                        ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
-                    ))
+                    'env_file' => $this->directoryList->getDockerRoot() . '/config.env',
+                    'environment' => $this->converter->convert(['PHP_EXTENSIONS' => implode(' ', $phpExtensions)])
                 ]
             ),
             [],

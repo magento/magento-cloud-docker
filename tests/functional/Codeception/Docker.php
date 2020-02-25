@@ -108,6 +108,7 @@ class Docker extends BaseModule
     {
         $result = $this->taskDockerCompose($command)
             ->dir($this->getWorkDirPath())
+            ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
             ->run();
 

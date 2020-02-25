@@ -44,6 +44,11 @@ class CliSource implements SourceInterface
     public const OPTION_WITH_XDEBUG = 'with-xdebug';
 
     /**
+     * Environment variables.
+     */
+    public const OPTION_ENV_VARIABLES = 'env-vars';
+
+    /**
      * Option key to config name map
      *
      * @var array
@@ -160,6 +165,10 @@ class CliSource implements SourceInterface
             $repository->set([
                 self::SERVICES_XDEBUG . '.enabled' => true
             ]);
+        }
+
+        if ($envs = $this->input->getOption(self::OPTION_ENV_VARIABLES)) {
+            $repository->set(self::VARIABLES, (array) json_encode($envs, true));
         }
 
         return $repository;

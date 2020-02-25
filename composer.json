@@ -33,7 +33,8 @@
     "autoload": {
         "psr-4": {
             "Magento\\CloudDocker\\": "src/",
-            "Magento\\CloudDocker\\Test\\Integration\\": "tests/integration"
+            "Magento\\CloudDocker\\Test\\Integration\\": "tests/integration",
+            "Magento\\CloudDocker\\Test\\Functional\\": "tests/functional/"
         }
     },
     "scripts": {
