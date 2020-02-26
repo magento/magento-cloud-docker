@@ -140,6 +140,12 @@ class CliSource implements SourceInterface
             ]);
         }
 
+        if ($this->input->getOption(self::OPTION_EXPOSE_DB_PORT)) {
+            $repository->set([
+                self::SYSTEM_EXPOSE_DB_PORTS => true
+            ]);
+        }
+
         return $repository;
     }
 }

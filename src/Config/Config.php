@@ -226,7 +226,7 @@ class Config
      */
     public function hasDbPortsExpose(): bool
     {
-        return (bool)$this->all()->get(CliSource::OPTION_EXPOSE_DB_PORT, false);
+        return (bool)$this->all()->get(SourceInterface::SYSTEM_EXPOSE_DB_PORTS, false);
     }
 
     /**
