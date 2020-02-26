@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Config\Source;
 
 use Illuminate\Config\Repository;
+use Magento\CloudDocker\App\GenericException;
 use Magento\CloudDocker\Compose\BuilderFactory;
 use Magento\CloudDocker\Compose\DeveloperBuilder;
 use Magento\CloudDocker\Compose\ProductionBuilder;
@@ -25,6 +26,8 @@ class CliSource implements SourceInterface
     public const OPTION_NGINX = 'nginx';
     public const OPTION_DB = 'db';
     public const OPTION_EXPOSE_DB_PORT = 'expose-db-port';
+    public const OPTION_EXPOSE_DB_QUOTE_PORT = 'expose-db-quote-port';
+    public const OPTION_EXPOSE_DB_SALES_PORT = 'expose-db-sales-port';
     public const OPTION_REDIS = 'redis';
     public const OPTION_ES = 'es';
     public const OPTION_RABBIT_MQ = 'rmq';
@@ -50,7 +53,11 @@ class CliSource implements SourceInterface
      */
     private static $optionsMap = [
         self::OPTION_PHP => self::PHP,
-        self::OPTION_DB => self::SERVICES_DB,
+        self::OPTION_DB => [
+            self::SERVICES_DB,
+            self::SERVICES_DB_QUOTE,
+            self::SERVICES_DB_SALES
+        ],
         self::OPTION_NGINX => self::SERVICES_NGINX,
         self::OPTION_REDIS => self::SERVICES_REDIS,
         self::OPTION_ES => self::SERVICES_ES,
@@ -86,6 +93,7 @@ class CliSource implements SourceInterface
      *
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @throws GenericException
      */
     public function read(): Repository
     {
@@ -115,12 +123,14 @@ class CliSource implements SourceInterface
             self::CONFIG_MODE => $mode
         ]);
 
-        foreach (self::$optionsMap as $option => $service) {
+        foreach (self::$optionsMap as $option => $services) {
             if ($value = $this->input->getOption($option)) {
-                $repository->set([
-                    $service . '.enabled' => true,
-                    $service . '.version' => $value
-                ]);
+                foreach ((array)$services as $service) {
+                    $repository->set([
+                        $service . '.enabled' => true,
+                        $service . '.version' => $value
+                    ]);
+                }
             }
         }
 

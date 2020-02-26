@@ -9,6 +9,7 @@ namespace Magento\CloudDocker\Test\Unit\Config\Environment\Shared;
 
 use Magento\CloudDocker\Config\Environment\Shared\Reader;
 use Magento\CloudDocker\Filesystem\DirectoryList;
+use Magento\CloudDocker\Filesystem\FileNotFoundException;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -47,6 +48,7 @@ class ReaderTest extends TestCase
 
     /**
      * @throws FilesystemException
+     * @throws FileNotFoundException
      */
     public function testExecute()
     {
@@ -74,6 +76,7 @@ class ReaderTest extends TestCase
 
     /**
      * @throws FilesystemException
+     * @throws FileNotFoundException
      */
     public function testExecuteUsingDist()
     {
@@ -96,23 +99,6 @@ class ReaderTest extends TestCase
                         'MIN_LOGGING_LEVEL' => 'debug',
                     ]
                 )),
-            ]);
-
-        $this->reader->read();
-    }
-
-    public function testExecuteNoSource()
-    {
-        $this->expectException(FilesystemException::class);
-        $this->expectExceptionMessage('Source file docker_root/config.php.dist does not exists');
-
-        $this->directoryListMock->method('getDockerRoot')
-            ->willReturn('docker_root');
-        $this->filesystemMock->expects($this->exactly(2))
-            ->method('exists')
-            ->willReturnMap([
-                ['docker_root/config.php', false],
-                ['docker_root/config.php.dist', false],
             ]);
 
         $this->reader->read();

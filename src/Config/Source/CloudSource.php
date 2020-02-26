@@ -10,6 +10,7 @@ namespace Magento\CloudDocker\Config\Source;
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\FileList;
+use Magento\CloudDocker\Filesystem\FileNotFoundException;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\ServiceFactory;
@@ -48,6 +49,8 @@ class CloudSource implements SourceInterface
      */
     private static $map = [
         ServiceInterface::SERVICE_DB => ['db', 'database', 'mysql'],
+        ServiceInterface::SERVICE_DB_QUOTE => ['db-quote', 'database-quote', 'mysql-quote'],
+        ServiceInterface::SERVICE_DB_SALES => ['db-sales', 'database-sales', 'mysql-sales'],
         ServiceInterface::SERVICE_ELASTICSEARCH => ['elasticsearch', 'es'],
         ServiceInterface::SERVICE_REDIS => ['redis'],
         ServiceInterface::SERVICE_RABBITMQ => ['rmq', 'rabbitmq']
@@ -167,10 +170,10 @@ class CloudSource implements SourceInterface
                 ));
             }
 
-            [$parsedService, $version] = explode(':', $servicesConfig[$name]['type']);
+            $version = explode(':', $servicesConfig[$name]['type'])[1];
 
             foreach (self::$map as $service => $possibleNames) {
-                if (!in_array($parsedService, $possibleNames, true)) {
+                if (!in_array($name, $possibleNames, true)) {
                     continue;
                 }
 
@@ -202,6 +205,7 @@ class CloudSource implements SourceInterface
      * @param Repository $repository
      * @return Repository
      * @throws SourceException
+     * @throws FileNotFoundException
      */
     private function addVariables(Repository $repository): Repository
     {

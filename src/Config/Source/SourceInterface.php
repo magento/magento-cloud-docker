@@ -49,6 +49,16 @@ interface SourceInterface
     public const SERVICES_DB = self::SERVICES . '.' . ServiceInterface::SERVICE_DB;
 
     /**
+     * DB QUOTE
+     */
+    public const SERVICES_DB_QUOTE = self::SERVICES . '.' . ServiceInterface::SERVICE_DB_QUOTE;
+
+    /**
+     * DB SALES
+     */
+    public const SERVICES_DB_SALES = self::SERVICES . '.' . ServiceInterface::SERVICE_DB_SALES;
+
+    /**
      * Nginx
      */
     public const SERVICES_NGINX = self::SERVICES . '.' . ServiceInterface::SERVICE_NGINX;

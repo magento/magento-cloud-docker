@@ -111,6 +111,18 @@ class BuildCompose extends Command
                 'Expose DB port'
             )
             ->addOption(
+                Source\CliSource::OPTION_EXPOSE_DB_QUOTE_PORT,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Expose port for DB sales'
+            )
+            ->addOption(
+                Source\CliSource::OPTION_EXPOSE_DB_SALES_PORT,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Expose port for DB quote'
+            )
+            ->addOption(
                 Source\CliSource::OPTION_REDIS,
                 null,
                 InputOption::VALUE_REQUIRED,

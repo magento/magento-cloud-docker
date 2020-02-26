@@ -11,7 +11,6 @@ use Magento\CloudDocker\Filesystem\FileNotFoundException;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Config\ReaderInterface;
 use Magento\CloudDocker\Filesystem\DirectoryList;
-use Magento\CloudDocker\Filesystem\FilesystemException;
 
 /**
  * Reader of config.php and config.php.dist files.
@@ -42,6 +41,7 @@ class Reader implements ReaderInterface
 
     /**
      * @inheritDoc
+     * @throws FileNotFoundException
      */
     public function read(): array
     {
@@ -51,17 +51,6 @@ class Reader implements ReaderInterface
             $sourcePath .= '.dist';
         }
 
-        try {
-            if ($this->filesystem->exists($sourcePath)) {
-                return $this->filesystem->getRequire($sourcePath);
-            }
-        } catch (FileNotFoundException $exception) {
-            throw new FilesystemException($exception->getMessage(), $exception->getCode(), $exception);
-        }
-
-        throw new FilesystemException(sprintf(
-            'Source file %s does not exists',
-            $sourcePath
-        ));
+        return $this->filesystem->exists($sourcePath) ? $this->filesystem->getRequire($sourcePath) : [];
     }
 }
