@@ -50,13 +50,6 @@ jobs:
       php: '7.3'
       env:
         - TEST_SUITE=integration
-  exclude:
-    - php: '7.1'
-      env: TEST_SUITE=functional
-    - php: '7.2'
-      env: TEST_SUITE=functional
-    - php: '7.3'
-      env: TEST_SUITE=functional
 
 install: composer update
 
