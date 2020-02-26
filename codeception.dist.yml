@@ -12,6 +12,7 @@ extensions:
     - Codeception\Extension\RunFailed
 params:
   - tests/functional/configuration.dist.yml
+  - env
 modules:
   config:
     Magento\CloudDocker\Test\Functional\Codeception\TestInfrastructure:
@@ -19,6 +20,9 @@ modules:
       mcd_repo: "https://github.com/magento/magento-cloud-docker.git"
       mcc_repo: "https://github.com/magento/magento-cloud-components.git"
       mcp_repo: "https://github.com/magento/magento-cloud-patches.git"
+      composer_magento_username: "%REPO_USERNAME%"
+      composer_magento_password: "%REPO_PASSWORD%"
+      composer_github_token: "%GITHUB_TOKEN%"
       printOutput: false
     Magento\CloudDocker\Test\Functional\Codeception\Docker:
       db_host: "%Magento.docker.settings.db.host%"

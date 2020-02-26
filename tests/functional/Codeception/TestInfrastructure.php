@@ -8,22 +8,12 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Codeception;
 
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Dotenv\Dotenv;
 
 /**
  * The module to work with test infrastructure
  */
 class TestInfrastructure extends BaseModule
 {
-    /**
-     * @inheritdoc
-     */
-    public function _initialize()
-    {
-        parent::_initialize();
-        $dotenv = new Dotenv();
-        $dotenv->load(codecept_root_dir('.env'));
-    }
     /**
      * Creates the work directory
      *
@@ -92,7 +82,6 @@ class TestInfrastructure extends BaseModule
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
             ->stopOnFail()
-            ->printOutput($this->_getConfig('printOutput'))
             ->cloneRepo($this->_getConfig('template_repo'), '.', $branch)
             ->dir($this->getWorkDirPath())
             ->run()
@@ -100,7 +89,7 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Starts docke-sync
+     * Starts docker-sync
      *
      * @return bool
      */
@@ -141,15 +130,16 @@ class TestInfrastructure extends BaseModule
         $auth = [
             'http-basic' => [
                 'repo.magento.com' => [
-                    'username' => getenv('COMPOSER_MAGENTO_USERNAME'),
-                    'password' => getenv('COMPOSER_MAGENTO_PASSWORD'),
+                    'username' => $this->_getConfig('composer_magento_username'),
+                    'password' => $this->_getConfig('composer_magento_password'),
                 ]
             ],
         ];
 
-        if (getenv('COMPOSER_GITHUB_TOKEN')) {
+        $githubToken = $this->_getConfig('composer_github_token');
+        if ($githubToken) {
             $auth['github-oauth'] = [
-                'github.com' => getenv('COMPOSER_GITHUB_TOKEN'),
+                'github.com' => $githubToken,
             ];
         }
 

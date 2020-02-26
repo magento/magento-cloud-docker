@@ -47,7 +47,7 @@ class EnvDown extends BaseTask implements CommandInterface
      * @param bool $value
      * @return EnvDown
      */
-    public function keepVolumes(bool $value): self
+    public function keepVolumes(bool $value = true): self
     {
         $this->keepVolumes = $value;
 

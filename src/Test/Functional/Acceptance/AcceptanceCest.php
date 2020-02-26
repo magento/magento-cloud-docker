@@ -52,7 +52,6 @@ class AcceptanceCest
      */
     public function _after(\CliTester $I): void
     {
-        $I->resetFilesOwner();
         $I->stopEnvironment();
         $I->removeDockerCompose();
         $I->removeWorkDir();

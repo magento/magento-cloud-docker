@@ -17,19 +17,49 @@ php:
   - '7.3'
 
 env:
-  matrix:
-    - TEST_SUITE=static-unit
-    - TEST_SUITE=integration
-    - TEST_SUITE=functional
+  - TEST_SUITE=functional
+
+stages:
+  - static-unit
+  - integration
+  - test
+
+jobs:
+  include:
+    - stage: static-unit
+      script: ./tests/travis/static-unit.sh;
+      env:
+        - TEST_SUITE=static-unit
+    - script: ./tests/travis/static-unit.sh;
+      php: '7.2'
+      env:
+        - TEST_SUITE=static-unit
+    - script: ./tests/travis/static-unit.sh;
+      php: '7.3'
+      env:
+        - TEST_SUITE=static-unit
+    - stage: integration
+      script: ./vendor/bin/phpunit --configuration ./tests/integration;
+      env:
+        - TEST_SUITE=integration
+    - script: ./vendor/bin/phpunit --configuration ./tests/integration;
+      php: '7.2'
+      env:
+        - TEST_SUITE=integration
+    - script: ./vendor/bin/phpunit --configuration ./tests/integration;
+      php: '7.3'
+      env:
+        - TEST_SUITE=integration
+  exclude:
+    - php: '7.1'
+      env: TEST_SUITE=functional
+    - php: '7.2'
+      env: TEST_SUITE=functional
+    - php: '7.3'
+      env: TEST_SUITE=functional
 
 install: composer update
 
-before_script:
-  - echo "COMPOSER_MAGENTO_USERNAME=${REPO_USERNAME}" >> ./.env && echo "COMPOSER_MAGENTO_PASSWORD=${REPO_PASSWORD}" >> ./.env
-  - echo "COMPOSER_GITHUB_TOKEN=${GITHUB_TOKEN}" >> ./.env
-
 script:
-  - if [ $TEST_SUITE == "static-unit" ]; then ./tests/travis/static-unit.sh; fi
-  - if [ $TEST_SUITE == "integration" ]; then ./vendor/bin/phpunit --configuration ./tests/integration; fi
   - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "functional" ]; then ./tests/travis/functional.sh; fi;
 
