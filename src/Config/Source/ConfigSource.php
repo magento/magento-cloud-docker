@@ -48,7 +48,19 @@ class ConfigSource implements SourceInterface
 
         try {
             if ($this->filesystem->exists($configFile)) {
-                $repository->set(Yaml::parseFile($configFile));
+                $config = Yaml::parseFile($configFile);
+
+                /**
+                 * Enable services which were added from the file by default
+                 */
+                if (!empty($config[self::SERVICES])) {
+                    foreach (array_keys($config[self::SERVICES]) as $service) {
+                        $config[self::SERVICES][$service]['enabled'] = $config[self::SERVICES][$service]['enabled']
+                            ?? true;
+                    }
+                }
+
+                $repository->set($config);
             }
         } catch (ParseException $exception) {
             throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
