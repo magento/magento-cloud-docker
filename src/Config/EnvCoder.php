@@ -24,6 +24,8 @@ class EnvCoder
     ];
 
     /**
+     * Encodes needed variables from the list @see self::$encodedEnv
+     *
      * @param array $variables
      * @return array
      */
@@ -39,6 +41,8 @@ class EnvCoder
     }
 
     /**
+     * Decodes needed variables from the list @see self::$encodedEnv
+     *
      * @param array $variables
      * @return array
      */

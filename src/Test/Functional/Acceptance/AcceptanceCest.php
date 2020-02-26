@@ -42,6 +42,7 @@ class AcceptanceCest
         $I->startEnvironment();
         $I->runDockerComposeCommand('run build cloud-build');
         $I->runDockerComposeCommand('run deploy cloud-deploy');
+        $I->runDockerComposeCommand('run deploy cloud-post-deploy');
         $I->amOnPage('/');
         $I->see('Home page');
         $I->see('CMS homepage content goes here.');

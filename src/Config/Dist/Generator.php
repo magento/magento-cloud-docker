@@ -125,6 +125,8 @@ class Generator
     }
 
     /**
+     * Generates MAGENTO_CLOUD_RELATIONSHIPS with credentials depends on enabled services.
+     *
      * @param Config $config
      * @return array
      * @throws ConfigurationMismatchException
@@ -138,7 +140,7 @@ class Generator
     }
 
     /**
-     * Formats and save configuration to file.
+     * Formats and save configuration to config.php.dist file.
      *
      * @param string $filePath
      * @param array $config
@@ -156,6 +158,8 @@ class Generator
     }
 
     /**
+     * Encodes needed variables and saves them to config.env file.
+     *
      * @param string $filePath
      * @param array $config
      */

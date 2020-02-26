@@ -50,7 +50,13 @@ class Reader implements ReaderInterface
     }
 
     /**
-     * @inheritDoc
+     * Reads config.php file and returns array of configured environment variables.
+     *
+     * If file does not exist returns empty array.
+     * If it cannot read existing file throws exception.
+     *
+     * @return array
+     * @throws FilesystemException
      */
     public function read(): array
     {
