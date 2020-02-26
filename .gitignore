@@ -1,5 +1,4 @@
 .DS_Store
-.env
 /.idea
 /vendor
 /composer.phar
