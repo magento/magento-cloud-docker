@@ -161,8 +161,7 @@ class BuildCompose extends Command
                         BuilderFactory::BUILDER_FUNCTIONAL,
                     ]
                 )
-            ),
-            BuilderFactory::BUILDER_PRODUCTION
+            )
         )
             ->addOption(
                 Source\CliSource::OPTION_SYNC_ENGINE,
@@ -171,8 +170,7 @@ class BuildCompose extends Command
                 sprintf(
                     'File sync engine. Works only with developer mode. Available: (%s)',
                     implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
-                ),
-                DeveloperBuilder::SYNC_ENGINE_NATIVE
+                )
             )
             ->addOption(
                 Source\CliSource::OPTION_WITH_CRON,
@@ -213,13 +211,11 @@ class BuildCompose extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $builder = $this->builderFactory->create(
-            $input->getOption(Source\CliSource::OPTION_MODE)
-        );
         $config = $this->configFactory->create([
             $this->sourceFactory->create(Source\BaseSource::class),
             $this->sourceFactory->create(Source\CloudBaseSource::class),
             $this->sourceFactory->create(Source\CloudSource::class),
+            $this->sourceFactory->create(Source\ConfigSource::class),
             new Source\CliSource($input)
         ]);
 
@@ -230,6 +226,8 @@ class BuildCompose extends Command
         )) {
             $this->distGenerator->generate($config);
         }
+
+        $builder = $this->builderFactory->create($config->getMode());
 
         $compose = $builder->build($config);
 

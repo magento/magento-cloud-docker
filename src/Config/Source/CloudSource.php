@@ -235,7 +235,7 @@ class CloudSource implements SourceInterface
         ]);
 
         if ($extensions) {
-            $repository[self::PHP_EXTENSIONS] = $extensions;
+            $repository[self::PHP_ENABLED_EXTENSIONS] = $extensions;
         }
 
         if ($disabledExtensions) {
