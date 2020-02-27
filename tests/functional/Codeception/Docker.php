@@ -25,17 +25,7 @@ class Docker extends BaseModule
      * @var array
      */
     protected $config = [
-        'db_host' => '',
-        'db_port' => '3306',
-        'db_username' => '',
-        'db_password' => '',
-        'db_path' => '',
-        'repo_url' => '',
-        'repo_branch' => '',
         'system_magento_dir' => '',
-        'env_base_url' => '',
-        'env_secure_base_url' => '',
-        'volumes' => [],
         'printOutput' => false,
     ];
 
@@ -282,81 +272,5 @@ class Docker extends BaseModule
     public function seeInOutput(string $text): void
     {
         Assert::assertContains($text, $this->output);
-    }
-
-    /**
-     * Returns DB credential
-     *
-     * @return array
-     */
-    public function getDbCredential(): array
-    {
-        return [
-            'host' => $this->_getConfig('db_host'),
-            'path' => $this->_getConfig('db_path'),
-            'password' => $this->_getConfig('db_password'),
-            'username' => $this->_getConfig('db_username'),
-            'port' => $this->_getConfig('db_port'),
-        ];
-    }
-
-    /**
-     * Returns default environment variables
-     *
-     * @return array
-     */
-    private function getDefaultVariables(): array
-    {
-        $variables = [
-            'MAGENTO_CLOUD_RELATIONSHIPS' => [
-                'database' => [
-                    $this->getDbCredential(),
-                ],
-            ],
-            'MAGENTO_CLOUD_ROUTES' => [
-                $this->_getConfig('env_base_url') => [
-                    'type' => 'upstream',
-                    'original_url' => 'http://{default}',
-                ],
-                $this->_getConfig('env_secure_base_url') => [
-                    'type' => 'upstream',
-                    'original_url' => 'https://{default}',
-                ]
-            ],
-            'MAGENTO_CLOUD_VARIABLES' => [
-                'ADMIN_EMAIL' => 'admin@example.com',
-            ],
-        ];
-
-        if (isset($this->services['es'])) {
-            $variables['MAGENTO_CLOUD_RELATIONSHIPS']['elasticsearch'] = [
-                [
-                    'host' => 'elasticsearch',
-                    'port' => '9200',
-                ],
-            ];
-        }
-
-        if (isset($this->services['redis'])) {
-            $variables['MAGENTO_CLOUD_RELATIONSHIPS']['redis'] = [
-                [
-                    'host' => 'redis',
-                    'port' => '6379',
-                ],
-            ];
-        }
-
-        if (isset($this->services['rmq'])) {
-            $variables['MAGENTO_CLOUD_RELATIONSHIPS']['rabbitmq'] = [
-                [
-                    'host' => 'rabbitmq',
-                    'port' => '5672',
-                    'username' => 'guest',
-                    'password' => 'guest',
-                ],
-            ];
-        }
-
-        return $variables;
     }
 }

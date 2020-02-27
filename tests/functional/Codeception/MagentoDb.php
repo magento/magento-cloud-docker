@@ -51,6 +51,16 @@ class MagentoDb extends Db
     }
 
     /**
+     * Returns exposed port to connect to DB from host machine
+     *
+     * @return string
+     */
+    public function getExposedPort(): string
+    {
+        return (string)$this->_getConfig('exposedPort');
+    }
+
+    /**
      * Checks if there is a connection and reconnects if there is no connection
      *
      * @param Step $step

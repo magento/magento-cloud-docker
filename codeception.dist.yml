@@ -25,22 +25,13 @@ modules:
       composer_github_token: "%GITHUB_TOKEN%"
       printOutput: false
     Magento\CloudDocker\Test\Functional\Codeception\Docker:
-      db_host: "%Magento.docker.settings.db.host%"
-      db_port: "%Magento.docker.settings.db.port%"
-      db_username: "%Magento.docker.settings.db.username%"
-      db_password: "%Magento.docker.settings.db.password%"
-      db_path: "%Magento.docker.settings.db.path%"
-      repo_url: "%Magento.docker.settings.repo.url%"
-      repo_branch: "%Magento.docker.settings.repo.branch%"
       system_magento_dir: "%Magento.docker.settings.system.magento_dir%"
-      env_base_url: "%Magento.docker.settings.env.url.base%"
-      env_secure_base_url: "%Magento.docker.settings.env.url.secure_base%"
-      volumes: []
       printOutput: false
     PhpBrowser:
       url: "%Magento.docker.settings.env.url.base%"
     Magento\CloudDocker\Test\Functional\Codeception\MagentoDb:
-      dsn: "mysql:host=127.0.0.1;port=%Magento.docker.settings.db.port%;dbname=%Magento.docker.settings.db.path%"
+      dsn: "mysql:host=%Magento.docker.settings.db.host%;port=%Magento.docker.settings.db.port%;dbname=%Magento.docker.settings.db.path%"
       user: "%Magento.docker.settings.db.username%"
       password: "%Magento.docker.settings.db.password%"
+      exposed_port: "%Magento.docker.settings.db.port%"
       reconnect: true
