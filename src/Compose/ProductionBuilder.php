@@ -138,7 +138,7 @@ class ProductionBuilder implements BuilderInterface
 
         $phpVersion = $config->getServiceVersion(ServiceInterface::SERVICE_PHP);
         $dbVersion = $config->getServiceVersion(ServiceInterface::SERVICE_DB);
-        $hostPort = $config->hasDbPortsExpose();
+        $hostPort = $config->getDbPortsExpose();
         $dbPorts = $hostPort ? "$hostPort:3306" : '3306';
 
         $manager->addNetwork(self::NETWORK_MAGENTO, ['driver' => 'bridge']);
