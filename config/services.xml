@@ -14,7 +14,6 @@
             <argument key="$strategies" type="collection">
                 <argument key="developer">Magento\CloudDocker\Compose\DeveloperBuilder</argument>
                 <argument key="production">Magento\CloudDocker\Compose\ProductionBuilder</argument>
-                <argument key="functional">Magento\CloudDocker\Compose\FunctionalBuilder</argument>
             </argument>
         </service>
         <service id="Magento\CloudDocker\Filesystem\DirectoryList" autowire="false"/>
@@ -25,7 +24,6 @@
         <service id="Magento\CloudDocker\App\GenericException" autowire="false"/>
         <service id="Magento\CloudDocker\Compose\DeveloperBuilder" shared="false"/>
         <service id="Magento\CloudDocker\Compose\ProductionBuilder" shared="false"/>
-        <service id="Magento\CloudDocker\Compose\FunctionalBuilder" shared="false"/>
         <service id="Magento\CloudDocker\Config\Config" autowire="false"/>
         <service id="Magento\CloudDocker\Config\Source\CliSource" autowire="false"/>
         <service id="Composer\Semver\VersionParser"/>

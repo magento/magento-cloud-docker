@@ -16,6 +16,8 @@ use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
+use Magento\CloudDocker\Config\EnvCoder;
 
 /**
  * @inheritdoc
@@ -43,6 +45,16 @@ class GeneratorTest extends TestCase
     private $formatterMock;
 
     /**
+     * @var EnvReader|MockObject
+     */
+    private $envReaderMock;
+
+    /**
+     * @var EnvCoder|MockObject
+     */
+    private $envCoderMock;
+
+    /**
      * @var Generator
      */
     private $distGenerator;
@@ -56,12 +68,16 @@ class GeneratorTest extends TestCase
         $this->filesystemMock = $this->createMock(Filesystem::class);
         $this->relationshipMock = $this->createMock(Relationship::class);
         $this->formatterMock = $this->createMock(Formatter::class);
+        $this->envReaderMock = $this->createMock(EnvReader::class);
+        $this->envCoderMock = $this->createMock(EnvCoder::class);
 
         $this->distGenerator = new Generator(
             $this->directoryListMock,
             $this->filesystemMock,
             $this->relationshipMock,
-            $this->formatterMock
+            $this->formatterMock,
+            $this->envReaderMock,
+            $this->envCoderMock
         );
     }
 
@@ -84,6 +100,38 @@ class GeneratorTest extends TestCase
                 'database' => ['config'],
                 'redis' => ['config'],
             ]);
+        $this->envReaderMock->expects($this->once())
+            ->method('read')
+            ->willReturn([]);
+        $this->envCoderMock->expects($this->once())
+            ->method('encode')
+            ->with([
+                'MAGENTO_CLOUD_RELATIONSHIPS' => [
+                    'database' => ['config'],
+                    'redis' => ['config'],
+                ],
+                'MAGENTO_CLOUD_ROUTES' => [
+                    'http://magento2.docker/' => [
+                        'type' => 'upstream',
+                        'original_url' => 'http://{default}'
+                    ],
+                    'https://magento2.docker/' => [
+                        'type' => 'upstream',
+                        'original_url' => 'https://{default}'
+                    ],
+                ],
+                'MAGENTO_CLOUD_VARIABLES' => [
+                    'ADMIN_EMAIL' => 'admin@example.com',
+                    'ADMIN_PASSWORD' => '123123q',
+                    'ADMIN_URL' => 'admin'
+                ],
+            ])
+            ->willReturn([
+                'MAGENTO_CLOUD_RELATIONSHIPS' => 'base64_relationship_value',
+                'MAGENTO_CLOUD_ROUTES' => 'base64_routes_value',
+                'MAGENTO_CLOUD_VARIABLES' => 'base64_variables_value',
+            ]);
+
         $this->formatterMock->expects($this->exactly(3))
             ->method('varExport')
             ->willReturnMap([
@@ -119,9 +167,17 @@ class GeneratorTest extends TestCase
                     'exported_variables_value'
                 ]
             ]);
-        $this->filesystemMock->expects($this->once())
+        $this->filesystemMock->expects($this->exactly(2))
             ->method('put')
-            ->with($rootDir . '/config.php.dist', $this->getConfigForUpdate());
+            ->withConsecutive(
+                [$rootDir . '/config.php.dist', $this->getConfigForUpdate()],
+                [
+                    $rootDir . '/config.env',
+                    'MAGENTO_CLOUD_RELATIONSHIPS=base64_relationship_value' . PHP_EOL
+                        . 'MAGENTO_CLOUD_ROUTES=base64_routes_value' . PHP_EOL
+                        . 'MAGENTO_CLOUD_VARIABLES=base64_variables_value' . PHP_EOL
+                ]
+            );
 
         $this->distGenerator->generate($config);
     }

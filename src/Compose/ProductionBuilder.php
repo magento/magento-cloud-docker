@@ -138,7 +138,7 @@ class ProductionBuilder implements BuilderInterface
 
         $phpVersion = $config->getServiceVersion(ServiceInterface::SERVICE_PHP);
         $dbVersion = $config->getServiceVersion(ServiceInterface::SERVICE_DB);
-        $hostPort = $config->hasDbPortsExpose();
+        $hostPort = $config->getDbPortsExpose();
         $dbPorts = $hostPort ? "$hostPort:3306" : '3306';
 
         $manager->addNetwork(self::NETWORK_MAGENTO, ['driver' => 'bridge']);
@@ -375,9 +375,7 @@ class ProductionBuilder implements BuilderInterface
                     $phpVersion,
                     [
                         'volumes' => $volumesRo,
-                        'environment' => $this->converter->convert(array_merge(
-                            ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
-                        ))
+                        'environment' => $this->converter->convert(['PHP_EXTENSIONS' => implode(' ', $phpExtensions)])
                     ]
                 ),
                 [self::NETWORK_MAGENTO],
@@ -394,10 +392,8 @@ class ProductionBuilder implements BuilderInterface
                 ServiceInterface::SERVICE_GENERIC,
                 $config->getServiceVersion(self::SERVICE_GENERIC),
                 [
-                    'environment' => $this->converter->convert(array_merge(
-                        $config->getVariables(),
-                        ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
-                    ))
+                    'env_file' => './.docker/config.env',
+                    'environment' => $this->converter->convert(['PHP_EXTENSIONS' => implode(' ', $phpExtensions)])
                 ]
             ),
             [],
