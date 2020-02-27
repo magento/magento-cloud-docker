@@ -72,7 +72,7 @@ class MagentoDb extends Db
             $this->reflection = new \ReflectionClass($this);
         }
 
-        if (!$this->reflection->hasMethod($step->getAction())) {
+        if ($step->getAction() === 'getExposedPort' || !$this->reflection->hasMethod($step->getAction())) {
             return;
         }
 
