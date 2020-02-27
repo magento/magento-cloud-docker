@@ -57,7 +57,7 @@ class MagentoDb extends Db
      */
     public function getExposedPort(): string
     {
-        return (string)$this->_getConfig('exposedPort');
+        return (string)$this->_getConfig('exposed_port');
     }
 
     /**
