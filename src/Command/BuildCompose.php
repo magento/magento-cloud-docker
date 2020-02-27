@@ -229,7 +229,6 @@ class BuildCompose extends Command
 
         $this->distGenerator->generate($config);
 
-
         $this->filesystem->put(
             $builder->getPath(),
             Yaml::dump([
