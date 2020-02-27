@@ -12,6 +12,9 @@ use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Relationship;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\Filesystem;
+use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
+use Magento\CloudDocker\Filesystem\FilesystemException;
+use Magento\CloudDocker\Config\EnvCoder;
 
 /**
  * Creates docker/config.php.dist file
@@ -39,6 +42,16 @@ class Generator
     private $relationship;
 
     /**
+     * @var EnvReader
+     */
+    private $envReader;
+
+    /**
+     * @var EnvCoder
+     */
+    private $envCoder;
+
+    /**
      * @var array
      */
     private static $baseConfig = [
@@ -64,43 +77,75 @@ class Generator
      * @param Filesystem $filesystem
      * @param Relationship $relationship
      * @param Formatter $phpFormatter
+     * @param EnvReader $envReader
+     * @param EnvCoder $envCoder
      */
     public function __construct(
         DirectoryList $directoryList,
         Filesystem $filesystem,
         Relationship $relationship,
-        Formatter $phpFormatter
+        Formatter $phpFormatter,
+        EnvReader $envReader,
+        EnvCoder $envCoder
     ) {
         $this->directoryList = $directoryList;
         $this->filesystem = $filesystem;
         $this->phpFormatter = $phpFormatter;
         $this->relationship = $relationship;
+        $this->envReader = $envReader;
+        $this->envCoder = $envCoder;
     }
 
     /**
-     * Create docker/config.php.dist file
+     * Create docker/config.php.dist and docker/config.env files
      * generate MAGENTO_CLOUD_RELATIONSHIPS according to services enablements.
      *
      * @param Config $config
      * @throws ConfigurationMismatchException
+     * @throws FilesystemException
      */
     public function generate(Config $config): void
     {
-        $configPath = $this->directoryList->getDockerRoot() . '/config.php.dist';
+        $dockerRootPath = $this->directoryList->getDockerRoot();
 
-        $this->saveConfig(
-            $configPath,
-            array_merge(['MAGENTO_CLOUD_RELATIONSHIPS' => $this->relationship->get($config)], self::$baseConfig)
+        $configByServices = $this->generateByServices($config);
+        $this->saveConfigDist(
+            $dockerRootPath . '/config.php.dist',
+            $configByServices
+        );
+
+        $this->saveConfigEnv(
+            $dockerRootPath . '/config.env',
+            array_merge(
+                $configByServices,
+                $this->envReader->read(),
+                $config->getVariables()
+            )
         );
     }
 
     /**
-     * Formats and save configuration to file.
+     * Generates MAGENTO_CLOUD_RELATIONSHIPS with credentials depends on enabled services.
+     *
+     * @param Config $config
+     * @return array
+     * @throws ConfigurationMismatchException
+     */
+    private function generateByServices(Config $config): array
+    {
+        return array_merge(
+            ['MAGENTO_CLOUD_RELATIONSHIPS' => $this->relationship->get($config)],
+            self::$baseConfig
+        );
+    }
+
+    /**
+     * Formats and save configuration to config.php.dist file.
      *
      * @param string $filePath
      * @param array $config
      */
-    private function saveConfig(string $filePath, array $config): void
+    private function saveConfigDist(string $filePath, array $config): void
     {
         $result = "<?php\n\nreturn [";
         foreach ($config as $key => $value) {
@@ -108,6 +153,22 @@ class Generator
             $result .= 'base64_encode(json_encode(' . $this->phpFormatter->varExport($value, 2) . ')),';
         }
         $result .= "\n];\n";
+
+        $this->filesystem->put($filePath, $result);
+    }
+
+    /**
+     * Encodes needed variables and saves them to config.env file.
+     *
+     * @param string $filePath
+     * @param array $config
+     */
+    private function saveConfigEnv(string $filePath, array $config): void
+    {
+        $result = '';
+        foreach ($this->envCoder->encode($config) as $key => $value) {
+            $result .= $key . '=' . $value . PHP_EOL;
+        }
 
         $this->filesystem->put($filePath, $result);
     }

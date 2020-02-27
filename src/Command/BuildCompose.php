@@ -158,7 +158,6 @@ class BuildCompose extends Command
                     [
                         BuilderFactory::BUILDER_DEVELOPER,
                         BuilderFactory::BUILDER_PRODUCTION,
-                        BuilderFactory::BUILDER_FUNCTIONAL,
                     ]
                 )
             )
@@ -199,6 +198,12 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'Enables XDebug'
+            )
+            ->addOption(
+                Source\CliSource::OPTION_ENV_VARIABLES,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Cloud environment variables'
             );
 
         parent::configure();
@@ -219,17 +224,11 @@ class BuildCompose extends Command
             new Source\CliSource($input)
         ]);
 
-        if (in_array(
-            $config->getMode(),
-            [BuilderFactory::BUILDER_DEVELOPER, BuilderFactory::BUILDER_PRODUCTION],
-            true
-        )) {
-            $this->distGenerator->generate($config);
-        }
-
         $builder = $this->builderFactory->create($config->getMode());
-
         $compose = $builder->build($config);
+
+        $this->distGenerator->generate($config);
+
 
         $this->filesystem->put(
             $builder->getPath(),

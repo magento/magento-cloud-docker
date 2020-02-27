@@ -1,0 +1,15 @@
+Magento:
+  docker:
+    settings:
+      db:
+        host: '127.0.0.1'
+        port: '3306'
+        username: 'magento2'
+        password: 'magento2'
+        path: 'magento2'
+      system:
+          magento_dir: '/app'
+      env:
+        url:
+          base: 'http://magento2.docker/'
+          secure_base: 'https://magento2.docker/'

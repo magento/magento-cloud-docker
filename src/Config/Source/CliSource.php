@@ -44,6 +44,11 @@ class CliSource implements SourceInterface
     public const OPTION_WITH_XDEBUG = 'with-xdebug';
 
     /**
+     * Environment variables.
+     */
+    public const OPTION_ENV_VARIABLES = 'env-vars';
+
+    /**
      * Option key to config name map
      *
      * @var array
@@ -140,10 +145,12 @@ class CliSource implements SourceInterface
             ]);
         }
 
-        if ($this->input->getOption(self::OPTION_EXPOSE_DB_PORT)) {
-            $repository->set([
-                self::SYSTEM_EXPOSE_DB_PORTS => true
-            ]);
+        if ($envs = $this->input->getOption(self::OPTION_ENV_VARIABLES)) {
+            $repository->set(self::VARIABLES, (array) json_decode($envs, true));
+        }
+
+        if ($port = $this->input->getOption(self::OPTION_EXPOSE_DB_PORT)) {
+            $repository->set(self::SYSTEM_EXPOSE_DB_PORTS, $port);
         }
 
         return $repository;

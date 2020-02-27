@@ -221,12 +221,12 @@ class Config
     }
 
     /**
-     * @return bool
+     * @return string|null
      * @throws ConfigurationMismatchException
      */
-    public function hasDbPortsExpose(): bool
+    public function getDbPortsExpose(): ?string
     {
-        return (bool)$this->all()->get(SourceInterface::SYSTEM_EXPOSE_DB_PORTS, false);
+        return $this->all()->get(SourceInterface::SYSTEM_EXPOSE_DB_PORTS);
     }
 
     /**
