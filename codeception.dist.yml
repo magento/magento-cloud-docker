@@ -32,7 +32,6 @@ modules:
       db_path: "%Magento.docker.settings.db.path%"
       repo_url: "%Magento.docker.settings.repo.url%"
       repo_branch: "%Magento.docker.settings.repo.branch%"
-      system_ece_tools_dir: "%Magento.docker.settings.system.ece_dir%"
       system_magento_dir: "%Magento.docker.settings.system.magento_dir%"
       env_base_url: "%Magento.docker.settings.env.url.base%"
       env_secure_base_url: "%Magento.docker.settings.env.url.secure_base%"
@@ -41,7 +40,7 @@ modules:
     PhpBrowser:
       url: "%Magento.docker.settings.env.url.base%"
     Magento\CloudDocker\Test\Functional\Codeception\MagentoDb:
-      dsn: "mysql:host=127.0.0.1;port=3306;dbname=%Magento.docker.settings.db.path%"
+      dsn: "mysql:host=127.0.0.1;port=%Magento.docker.settings.db.port%;dbname=%Magento.docker.settings.db.path%"
       user: "%Magento.docker.settings.db.username%"
       password: "%Magento.docker.settings.db.password%"
       reconnect: true

@@ -32,7 +32,6 @@ class Docker extends BaseModule
         'db_path' => '',
         'repo_url' => '',
         'repo_branch' => '',
-        'system_ece_tools_dir' => '',
         'system_magento_dir' => '',
         'env_base_url' => '',
         'env_secure_base_url' => '',

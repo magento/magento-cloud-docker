@@ -12,7 +12,6 @@ Magento:
         branch: 'master'
       system:
           magento_dir: '/app'
-          ece_dir: '/ece-tools'
       env:
         url:
           base: 'http://magento2.docker/'
