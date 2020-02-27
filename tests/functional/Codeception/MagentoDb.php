@@ -31,6 +31,8 @@ class MagentoDb extends Db
     }
 
     /**
+     * Retrieves assoc array with data from DB
+     *
      * @param $table
      * @param $columns
      * @param array $criteria

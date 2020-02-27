@@ -7,8 +7,9 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Robo\Tasks;
 
-use Magento\CloudDocker\Test\Functional\Robo\Tasks\DockerCompose;
-
+/**
+ * The wrapper for bash commands to run in Docker container
+ */
 class Bash extends DockerCompose\Run
 {
     protected $runWrapper = 'bash -c "%s"';
