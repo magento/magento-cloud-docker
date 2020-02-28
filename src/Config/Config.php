@@ -208,16 +208,16 @@ class Config
      */
     public function getDbQuotePortsExpose(): ?string
     {
-        return $this->all()->get(CliSource::SYSTEM_EXPOSE_DB_QUOTE_PORTS, '');
+        return $this->all()->get(SourceInterface::SYSTEM_EXPOSE_DB_QUOTE_PORTS);
     }
 
     /**
-     * @return string
+     * @return string|null
      * @throws ConfigurationMismatchException
      */
-    public function getDbSalesPortsExpose()
+    public function getDbSalesPortsExpose(): ?string
     {
-        return $this->all()->get(CliSource::SYSTEM_EXPOSE_DB_SALES_PORT, '');
+        return $this->all()->get(SourceInterface::SYSTEM_EXPOSE_DB_SALES_PORTS);
     }
 
     /**

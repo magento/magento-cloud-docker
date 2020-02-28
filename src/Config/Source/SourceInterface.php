@@ -105,6 +105,8 @@ interface SourceInterface
     public const CONFIG_TMP_MOUNTS = 'config.tmp_mounts';
     public const CONFIG_MODE = 'config.mode';
     public const SYSTEM_EXPOSE_DB_PORTS = 'system.expose_db_ports';
+    public const SYSTEM_EXPOSE_DB_QUOTE_PORTS = 'system.expose_db_quote_ports';
+    public const SYSTEM_EXPOSE_DB_SALES_PORTS = 'system.expose_db_sales_ports';
 
     public const VARIABLES = 'variables';
 

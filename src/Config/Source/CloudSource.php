@@ -12,6 +12,7 @@ use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FileNotFoundException;
 use Magento\CloudDocker\Filesystem\Filesystem;
+use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -194,25 +195,6 @@ class CloudSource implements SourceInterface
                     throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
                 }
             }
-        }
-
-        return $repository;
-    }
-
-    /**
-     * @param Repository $repository
-     * @return Repository
-     * @throws SourceException
-     * @throws FileNotFoundException
-     */
-    private function addVariables(Repository $repository): Repository
-    {
-        try {
-            if ($variables = $this->envReader->read()) {
-                $repository->set(self::VARIABLES, $variables);
-            }
-        } catch (FilesystemException $exception) {
-            throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
         return $repository;
