@@ -153,7 +153,6 @@ class DeveloperBuilder implements BuilderInterface
         ]);
         $manager->updateService(self::SERVICE_GENERIC, [
             'environment' => $this->converter->convert(array_merge(
-                $config->getVariables(),
                 ['MAGENTO_RUN_MODE' => 'developer'],
                 ['PHP_EXTENSIONS' => implode(' ', $this->extensionResolver->get($config))]
             ))

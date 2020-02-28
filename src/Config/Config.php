@@ -194,21 +194,21 @@ class Config
     }
 
     /**
-     * @return string
+     * @return string|null
      * @throws ConfigurationMismatchException
      */
-    public function getDbPortsExpose()
+    public function getDbPortsExpose(): ?string
     {
-        return $this->all()->get(CliSource::OPTION_EXPOSE_DB_PORT, '');
+        return $this->all()->get(SourceInterface::SYSTEM_EXPOSE_DB_PORTS);
     }
 
     /**
-     * @return string
+     * @return string|null
      * @throws ConfigurationMismatchException
      */
-    public function getDbQuotePortsExpose()
+    public function getDbQuotePortsExpose(): ?string
     {
-        return $this->all()->get(CliSource::OPTION_EXPOSE_DB_QUOTE_PORT, '');
+        return $this->all()->get(CliSource::SYSTEM_EXPOSE_DB_QUOTE_PORTS, '');
     }
 
     /**
@@ -217,7 +217,7 @@ class Config
      */
     public function getDbSalesPortsExpose()
     {
-        return $this->all()->get(CliSource::OPTION_EXPOSE_DB_SALES_PORT, '');
+        return $this->all()->get(CliSource::SYSTEM_EXPOSE_DB_SALES_PORT, '');
     }
 
     /**

@@ -12,7 +12,6 @@ use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FileNotFoundException;
 use Magento\CloudDocker\Filesystem\Filesystem;
-use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -131,7 +130,6 @@ class CloudSource implements SourceInterface
             $repository,
             $appConfig['crons'] ?? []
         );
-        $repository = $this->addVariables($repository);
         $repository = $this->addMounts(
             $repository,
             $appConfig['mounts'] ?? []

@@ -451,9 +451,7 @@ class ProductionBuilder implements BuilderInterface
                     $phpVersion,
                     [
                         'volumes' => $volumesRo,
-                        'environment' => $this->converter->convert(array_merge(
-                            ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
-                        ))
+                        'environment' => $this->converter->convert(['PHP_EXTENSIONS' => implode(' ', $phpExtensions)])
                     ]
                 ),
                 [self::NETWORK_MAGENTO],
@@ -470,10 +468,8 @@ class ProductionBuilder implements BuilderInterface
                 ServiceInterface::SERVICE_GENERIC,
                 $config->getServiceVersion(self::SERVICE_GENERIC),
                 [
-                    'environment' => $this->converter->convert(array_merge(
-                        $config->getVariables(),
-                        ['PHP_EXTENSIONS' => implode(' ', $phpExtensions)]
-                    ))
+                    'env_file' => './.docker/config.env',
+                    'environment' => $this->converter->convert(['PHP_EXTENSIONS' => implode(' ', $phpExtensions)])
                 ]
             ),
             [],

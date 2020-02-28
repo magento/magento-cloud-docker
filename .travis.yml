@@ -1,7 +1,14 @@
-dist: trusty
+dist: bionic
 
 git:
   depth: false
+
+addons:
+  hosts:
+    - magento2.docker
+
+services:
+  - docker
 
 language: php
 php:
@@ -9,11 +16,43 @@ php:
   - '7.2'
   - '7.3'
 
+env:
+  - TEST_SUITE=functional
+
+stages:
+  - static-unit
+  - integration
+  - test
+
+jobs:
+  include:
+    - stage: static-unit
+      script: ./tests/travis/static-unit.sh;
+      env:
+        - TEST_SUITE=static-unit
+    - script: ./tests/travis/static-unit.sh;
+      php: '7.2'
+      env:
+        - TEST_SUITE=static-unit
+    - script: ./tests/travis/static-unit.sh;
+      php: '7.3'
+      env:
+        - TEST_SUITE=static-unit
+    - stage: integration
+      script: ./vendor/bin/phpunit --configuration ./tests/integration;
+      env:
+        - TEST_SUITE=integration
+    - script: ./vendor/bin/phpunit --configuration ./tests/integration;
+      php: '7.2'
+      env:
+        - TEST_SUITE=integration
+    - script: ./vendor/bin/phpunit --configuration ./tests/integration;
+      php: '7.3'
+      env:
+        - TEST_SUITE=integration
+
 install: composer update
 
 script:
-  - ./vendor/bin/phpstan analyse -c ./tests/static/phpstan.neon
-  - ./vendor/bin/phpcs ./src --standard=./tests/static/phpcs-ruleset.xml -p -n
-  - ./vendor/bin/phpmd ./src xml ./tests/static/phpmd-ruleset.xml
-  - ./vendor/bin/phpunit --configuration ./tests/unit
-  - ./vendor/bin/phpunit --configuration ./tests/integration
+  - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "functional" ]; then ./tests/travis/functional.sh; fi;
+

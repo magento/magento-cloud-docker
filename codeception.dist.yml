@@ -1,0 +1,37 @@
+paths:
+  tests: src/Test/Functional
+  output: tests/functional/_output
+  data: tests/functional/_data
+  support: tests/functional/_support
+  envs: tests/functional/_envs
+actor_suffix: Tester
+settings:
+  colors: true
+extensions:
+  enabled:
+    - Codeception\Extension\RunFailed
+params:
+  - tests/functional/configuration.dist.yml
+  - env
+modules:
+  config:
+    Magento\CloudDocker\Test\Functional\Codeception\TestInfrastructure:
+      template_repo: "https://github.com/magento/magento-cloud.git"
+      mcd_repo: "https://github.com/magento/magento-cloud-docker.git"
+      mcc_repo: "https://github.com/magento/magento-cloud-components.git"
+      mcp_repo: "https://github.com/magento/magento-cloud-patches.git"
+      composer_magento_username: "%REPO_USERNAME%"
+      composer_magento_password: "%REPO_PASSWORD%"
+      composer_github_token: "%GITHUB_TOKEN%"
+      printOutput: false
+    Magento\CloudDocker\Test\Functional\Codeception\Docker:
+      system_magento_dir: "%Magento.docker.settings.system.magento_dir%"
+      printOutput: false
+    PhpBrowser:
+      url: "%Magento.docker.settings.env.url.base%"
+    Magento\CloudDocker\Test\Functional\Codeception\MagentoDb:
+      dsn: "mysql:host=%Magento.docker.settings.db.host%;port=%Magento.docker.settings.db.port%;dbname=%Magento.docker.settings.db.path%"
+      user: "%Magento.docker.settings.db.username%"
+      password: "%Magento.docker.settings.db.password%"
+      exposed_port: "%Magento.docker.settings.db.port%"
+      reconnect: true
