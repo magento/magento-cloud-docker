@@ -85,8 +85,8 @@ interface SourceInterface
     public const PHP = self::SERVICES . '.' . ServiceInterface::SERVICE_PHP;
     public const PHP_VERSION = self::PHP . '.version';
     public const PHP_ENABLED = self::PHP . '.enabled';
-    public const PHP_ENABLED_EXTENSIONS = self::PHP . '.enabled_extensions';
-    public const PHP_DISABLED_EXTENSIONS = self::PHP . '.disabled_extensions';
+    public const PHP_ENABLED_EXTENSIONS = self::PHP . '.extensions.enabled';
+    public const PHP_DISABLED_EXTENSIONS = self::PHP . '.extensions.disabled';
 
     /**
      * Config
