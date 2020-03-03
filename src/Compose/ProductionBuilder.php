@@ -428,8 +428,7 @@ class ProductionBuilder implements BuilderInterface
     }
 
     /**
-     * @param string $version
-     * @param array $cronConfig
+     * @param Config $config
      * @return array
      * @throws ConfigurationMismatchException
      */
@@ -437,7 +436,8 @@ class ProductionBuilder implements BuilderInterface
     {
         $cron = $this->serviceFactory->create(
             ServiceInterface::SERVICE_PHP_CLI,
-            $config->getServiceVersion(ServiceInterface::SERVICE_PHP), ['command' => 'run-cron']
+            $config->getServiceVersion(ServiceInterface::SERVICE_PHP),
+            ['command' => 'run-cron']
         );
         $preparedCronConfig = [];
 

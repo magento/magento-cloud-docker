@@ -14,7 +14,6 @@ use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 use Symfony\Component\Yaml\Yaml;
-use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
 use Exception;
 
 /**
@@ -38,11 +37,6 @@ class CloudSource implements SourceInterface
     private $serviceFactory;
 
     /**
-     * @var EnvReader
-     */
-    private $envReader;
-
-    /**
      * @var array
      */
     private static $map = [
@@ -56,18 +50,15 @@ class CloudSource implements SourceInterface
      * @param FileList $fileList
      * @param Filesystem $filesystem
      * @param ServiceFactory $serviceFactory
-     * @param EnvReader $envReader
      */
     public function __construct(
         FileList $fileList,
         Filesystem $filesystem,
-        ServiceFactory $serviceFactory,
-        EnvReader $envReader
+        ServiceFactory $serviceFactory
     ) {
         $this->fileList = $fileList;
         $this->filesystem = $filesystem;
         $this->serviceFactory = $serviceFactory;
-        $this->envReader = $envReader;
     }
 
     /**
