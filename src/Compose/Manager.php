@@ -12,7 +12,8 @@ namespace Magento\CloudDocker\Compose;
  */
 class Manager
 {
-    public const DOMAIN = 'magento2.docker';
+    public const DEFAULT_HOST = 'magento2.docker';
+    public const DEFAULT_PORT = '80';
 
     /**
      * @var string
@@ -35,6 +36,27 @@ class Manager
     private $volumes = [];
 
     /**
+     * @var string
+     */
+    private $host;
+
+    /**
+     * @var string
+     */
+    private $port;
+
+    /**
+     * @param string|null $host
+     * @param string|null $port
+     */
+    public function __construct(string $host = null, string $port = null)
+    {
+        $this->host = $host;
+        $this->port = $port;
+    }
+
+
+    /**
      * @param string $name
      * @param array $extConfig
      * @param array $networks
@@ -42,7 +64,7 @@ class Manager
      */
     public function addService(string $name, array $extConfig, array $networks, array $depends): void
     {
-        $hostname = $name . '.' . self::DOMAIN;
+        $hostname = $name . '.' . $this->getHost();
 
         $config = [
             'hostname' => $hostname,
@@ -170,5 +192,25 @@ class Manager
         ksort($this->networks);
 
         return $this->networks;
+    }
+
+    /**
+     * Returns host value or default if host not set
+     *
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->host ?? self::DEFAULT_HOST;
+    }
+
+    /**
+     * Returns port value or default if port not set
+     *
+     * @return string
+     */
+    public function getPort(): string
+    {
+        return $this->port ?? self::DEFAULT_PORT;
     }
 }

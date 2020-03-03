@@ -7,11 +7,11 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
+use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Compose\ProductionBuilder\VolumeResolver;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
-use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
@@ -134,7 +134,7 @@ class ProductionBuilder implements BuilderInterface
      */
     public function build(Config $config): Manager
     {
-        $manager = $this->managerFactory->create();
+        $manager = $this->managerFactory->create($config);
 
         $phpVersion = $config->getServiceVersion(ServiceInterface::SERVICE_PHP);
         $dbVersion = $config->getServiceVersion(ServiceInterface::SERVICE_DB);
@@ -292,8 +292,8 @@ class ProductionBuilder implements BuilderInterface
                 [
                     'volumes' => $volumesRo,
                     'environment' => [
-                        'VIRTUAL_HOST=magento2.docker',
-                        'VIRTUAL_PORT=80',
+                        'VIRTUAL_HOST=' . $manager->getHost(),
+                        'VIRTUAL_PORT=' . $manager->getPort(),
                         'HTTPS_METHOD=noredirect',
                         'WITH_XDEBUG=' . (int)$config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)
                     ]
@@ -312,7 +312,7 @@ class ProductionBuilder implements BuilderInterface
                     [
                         'networks' => [
                             self::NETWORK_MAGENTO => [
-                                'aliases' => [Manager::DOMAIN]
+                                'aliases' => $manager->getHost()
                             ]
                         ]
                     ]

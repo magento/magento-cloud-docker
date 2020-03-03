@@ -94,6 +94,8 @@ interface SourceInterface
     public const CONFIG_SYNC_ENGINE = 'config.sync_engine';
     public const CONFIG_TMP_MOUNTS = 'config.tmp_mounts';
     public const CONFIG_MODE = 'config.mode';
+    public const CONFIG_HOST = 'config.host';
+    public const CONFIG_PORT = 'config.port';
     public const SYSTEM_EXPOSE_DB_PORTS = 'system.expose_db_ports';
 
     public const VARIABLES = 'variables';
