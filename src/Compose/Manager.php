@@ -55,7 +55,6 @@ class Manager
         $this->port = $port;
     }
 
-
     /**
      * @param string $name
      * @param array $extConfig
@@ -109,16 +108,6 @@ class Manager
     public function addVolume(string $name, array $config): void
     {
         $this->volumes[$name] = $config;
-    }
-
-    /**
-     * @param array $volumes
-     */
-    public function addVolumes(array $volumes): void
-    {
-        foreach ($volumes as $name => $config) {
-            $this->volumes[$name] = $config;
-        }
     }
 
     /**
