@@ -252,12 +252,29 @@ class CloudSource implements SourceInterface
      * @param Repository $repository
      * @param array $jobs
      * @return Repository
+     * @throws SourceException
      */
     private function addCronJobs(Repository $repository, array $jobs): Repository
     {
-        if ($jobs) {
+        $preparedJobs = [];
+
+        foreach ($jobs as $name => $config) {
+            if (!isset($config['spec'], $config['cmd'])) {
+                throw new SourceException(sprintf(
+                    'One of "%s" cron job properties is not define',
+                    $name
+                ));
+            }
+
+            $preparedJobs[$name] = [
+                'schedule' => $config['spec'],
+                'command' => $config['cmd']
+            ];
+        }
+
+        if ($preparedJobs) {
             $repository->set([
-                self::CRON_JOBS => $jobs
+                self::CRON_JOBS => $preparedJobs
             ]);
         }
 

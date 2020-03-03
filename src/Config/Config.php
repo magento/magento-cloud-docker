@@ -133,6 +133,17 @@ class Config
      */
     public function getCronJobs(): array
     {
+        $jobs = $this->all()->get(SourceInterface::CRON_JOBS, []);
+
+        foreach ($jobs as $job => $config) {
+            if (!isset($config['schedule'], $config['command'])) {
+                throw new ConfigurationMismatchException(sprintf(
+                    'One of required parameters is missing in "%s" job',
+                    $job
+                ));
+            }
+        }
+
         return $this->all()->get(SourceInterface::CRON_JOBS, []);
     }
 

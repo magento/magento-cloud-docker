@@ -416,7 +416,7 @@ class ProductionBuilder implements BuilderInterface
             $manager->addService(
                 self::SERVICE_CRON,
                 array_merge(
-                    $this->getCronCliService($phpVersion, $config->getCronJobs()),
+                    $this->getCronCliService($config),
                     ['volumes' => $volumesRo]
                 ),
                 [self::NETWORK_MAGENTO],
@@ -433,26 +433,29 @@ class ProductionBuilder implements BuilderInterface
      * @return array
      * @throws ConfigurationMismatchException
      */
-    private function getCronCliService(string $version, array $cronConfig): array
+    private function getCronCliService(Config $config): array
     {
-        $config = $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $version, ['command' => 'run-cron']);
+        $cron = $this->serviceFactory->create(
+            ServiceInterface::SERVICE_PHP_CLI,
+            $config->getServiceVersion(ServiceInterface::SERVICE_PHP), ['command' => 'run-cron']
+        );
         $preparedCronConfig = [];
 
-        foreach ($cronConfig as $job) {
+        foreach ($config->getCronJobs() as $job) {
             $preparedCronConfig[] = sprintf(
                 '%s root cd %s && %s >> %s/var/log/cron.log',
-                $job['spec'],
+                $job['schedule'],
                 self::DIR_MAGENTO,
-                str_replace('php ', '/usr/local/bin/php ', $job['cmd']),
+                str_replace('php ', '/usr/local/bin/php ', $job['command']),
                 self::DIR_MAGENTO
             );
         }
 
-        $config['environment'] = [
+        $cron['environment'] = [
             'CRONTAB' => implode(PHP_EOL, $preparedCronConfig)
         ];
 
-        return $config;
+        return $cron;
     }
 
     /**
