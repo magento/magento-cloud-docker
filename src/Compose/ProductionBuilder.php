@@ -312,7 +312,7 @@ class ProductionBuilder implements BuilderInterface
                     [
                         'networks' => [
                             self::NETWORK_MAGENTO => [
-                                'aliases' => $manager->getHost()
+                                'aliases' => [$manager->getHost()]
                             ]
                         ]
                     ]
