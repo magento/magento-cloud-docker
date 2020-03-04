@@ -50,6 +50,22 @@ class AcceptanceCest
 
     /**
      * @param \CliTester $I
+     * @throws \Robo\Exception\TaskException
+     */
+    public function testCustomHost(\CliTester $I): void
+    {
+        $I->runEceDockerCommand('build:compose --mode=production --host=magento2.test --port=8080');
+        $I->startEnvironment();
+        $I->runDockerComposeCommand('run build cloud-build');
+        $I->runDockerComposeCommand('run deploy cloud-deploy');
+        $I->runDockerComposeCommand('run deploy cloud-post-deploy');
+        $I->amOnPage('/');
+        $I->see('Home page');
+        $I->see('CMS homepage content goes here.');
+    }
+
+    /**
+     * @param \CliTester $I
      */
     public function _after(\CliTester $I): void
     {
