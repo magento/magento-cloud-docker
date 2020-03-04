@@ -96,10 +96,12 @@ class Config
         $syncEngine = $this->all()->get(SourceInterface::SYSTEM_SYNC_ENGINE);
         $mode = $this->getMode();
 
-        if ($mode === BuilderFactory::BUILDER_DEVELOPER) {
-            $syncEngine = $syncEngine ?? DeveloperBuilder::DEFAULT_SYNC_ENGINE;
-        } elseif ($mode === BuilderFactory::BUILDER_PRODUCTION) {
-            $syncEngine = $syncEngine ?? ProductionBuilder::DEFAULT_SYNC_ENGINE;
+        if ($syncEngine === null) {
+            if ($mode === BuilderFactory::BUILDER_DEVELOPER) {
+                $syncEngine = DeveloperBuilder::DEFAULT_SYNC_ENGINE;
+            } elseif ($mode === BuilderFactory::BUILDER_PRODUCTION) {
+                $syncEngine = ProductionBuilder::DEFAULT_SYNC_ENGINE;
+            }
         }
 
         if (isset(self::$enginesMap[$mode]) && !in_array($syncEngine, self::$enginesMap[$mode], true)) {
@@ -122,6 +124,15 @@ class Config
     {
         if (!$this->all()->get(SourceInterface::SYSTEM_MODE)) {
             throw new ConfigurationMismatchException('Mode is not defined');
+        }
+
+        $mode = $this->all()->get(SourceInterface::SYSTEM_MODE);
+
+        if (!in_array($mode, [BuilderFactory::BUILDER_DEVELOPER, BuilderFactory::BUILDER_PRODUCTION], true)) {
+            throw new ConfigurationMismatchException(sprintf(
+                'Mode "%s" is not supported',
+                $mode
+            ));
         }
 
         return $this->all()->get(SourceInterface::SYSTEM_MODE);
