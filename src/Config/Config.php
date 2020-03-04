@@ -96,10 +96,10 @@ class Config
         $syncEngine = $this->all()->get(SourceInterface::SYSTEM_SYNC_ENGINE);
         $mode = $this->getMode();
 
-        if ($mode === BuilderFactory::BUILDER_DEVELOPER && $syncEngine === null) {
-            $syncEngine = DeveloperBuilder::DEFAULT_SYNC_ENGINE;
-        } elseif ($mode === BuilderFactory::BUILDER_PRODUCTION && $syncEngine === null) {
-            $syncEngine = ProductionBuilder::DEFAULT_SYNC_ENGINE;
+        if ($mode === BuilderFactory::BUILDER_DEVELOPER) {
+            $syncEngine = $syncEngine ?? DeveloperBuilder::DEFAULT_SYNC_ENGINE;
+        } elseif ($mode === BuilderFactory::BUILDER_PRODUCTION) {
+            $syncEngine = $syncEngine ?? ProductionBuilder::DEFAULT_SYNC_ENGINE;
         }
 
         if (isset(self::$enginesMap[$mode]) && !in_array($syncEngine, self::$enginesMap[$mode], true)) {
