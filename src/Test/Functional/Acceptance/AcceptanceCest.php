@@ -60,7 +60,6 @@ class AcceptanceCest
         $I->runDockerComposeCommand('run build cloud-build');
         $I->runDockerComposeCommand('run deploy cloud-deploy');
         $I->runDockerComposeCommand('run deploy cloud-post-deploy');
-        $I->updateBaseUrl('magento2.test:8080');
         $I->amOnPage('/');
         $I->see('Home page');
         $I->see('CMS homepage content goes here.');
