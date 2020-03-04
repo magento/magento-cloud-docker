@@ -21,7 +21,7 @@ class Relationship
      *
      * @var array
      */
-    private static $defaultConfiguration= [
+    private static $defaultConfiguration = [
         'database' => [
             [
                 'host' => 'db',

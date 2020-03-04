@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
+use Magento\CloudDocker\App\GenericException;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Compose\ProductionBuilder\VolumeResolver;
 use Magento\CloudDocker\Config\Config;
@@ -131,6 +132,7 @@ class ProductionBuilder implements BuilderInterface
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @throws GenericException
      */
     public function build(Config $config): Manager
     {
@@ -138,7 +140,6 @@ class ProductionBuilder implements BuilderInterface
 
         $phpVersion = $config->getServiceVersion(ServiceInterface::SERVICE_PHP);
         $dbVersion = $config->getServiceVersion(ServiceInterface::SERVICE_DB);
-        $hostDbPort = $config->getDbPortsExpose();
         $cliDepends = self::$cliDepends;
 
         $manager->addNetwork(self::NETWORK_MAGENTO, ['driver' => 'bridge']);
@@ -236,55 +237,27 @@ class ProductionBuilder implements BuilderInterface
             $this->serviceFactory->create(
                 ServiceInterface::SERVICE_DB,
                 $dbVersion,
-                [
-                    'ports' => [
-                        $hostDbPort ? "$hostDbPort:3306" : '3306'
-                    ],
-                    'volumes' => array_merge(
-                        [
-                            self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
-                            self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d',
-                            self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
-                        ],
-                        $volumesMount
-                    )
-                ]
+                array_merge_recursive(
+                    $this->getDbConfig(ServiceInterface::SERVICE_DB, $config),
+                    ['volumes' => $volumesMount]
+                )
             ),
             [self::NETWORK_MAGENTO],
             []
         );
 
         if ($config->hasServiceEnabled(ServiceInterface::SERVICE_DB_QUOTE)) {
-            $hostDbQuotePort = $config->getDbQuotePortsExpose();
             $cliDepends = array_merge($cliDepends, [self::SERVICE_DB_QUOTE => ['condition' => 'service_started']]);
-            $manager->addVolumes([
-                self::VOLUME_MAGENTO_DB_QUOTE => [],
-                self::VOLUME_DOCKER_ETRYPOINT_QUOTE => [
-                    'driver_opts' => [
-                        'type' => 'none',
-                        'device' => $this->resolver->getRootPath('/.docker/mysql-quote/docker-entrypoint-initdb.d'),
-                        'o' => 'bind'
-                    ]
-                ],
-            ]);
+            $manager->addVolumes($this->getDbQuoteVolumes());
             $manager->addService(
                 self::SERVICE_DB_QUOTE,
                 $this->serviceFactory->create(
                     ServiceInterface::SERVICE_DB_QUOTE,
                     $dbVersion,
-                    [
-                        'ports' => [
-                            $hostDbQuotePort ? "$hostDbQuotePort:3306" : '3306'
-                        ],
-                        'volumes' => array_merge(
-                            [
-                                self::VOLUME_MAGENTO_DB_QUOTE . ':/var/lib/mysql',
-                                self::VOLUME_DOCKER_ETRYPOINT_QUOTE . ':/docker-entrypoint-initdb.d',
-                                self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
-                            ],
-                            $volumesMount
-                        )
-                    ]
+                    array_merge_recursive(
+                        $this->getDbConfig(ServiceInterface::SERVICE_DB_QUOTE, $config),
+                        ['volumes' => $volumesMount]
+                    )
                 ),
                 [self::NETWORK_MAGENTO],
                 []
@@ -292,36 +265,17 @@ class ProductionBuilder implements BuilderInterface
         }
 
         if ($config->hasServiceEnabled(ServiceInterface::SERVICE_DB_SALES)) {
-            $hostDbSalesPort = $config->getDbSalesPortsExpose();
             $cliDepends = array_merge($cliDepends, [self::SERVICE_DB_SALES => ['condition' => 'service_started']]);
-            $manager->addVolumes([
-                self::VOLUME_MAGENTO_DB_SALES => [],
-                self::VOLUME_DOCKER_ETRYPOINT_SALES => [
-                    'driver_opts' => [
-                        'type' => 'none',
-                        'device' => $this->resolver->getRootPath('/.docker/mysql-sales/docker-entrypoint-initdb.d'),
-                        'o' => 'bind'
-                    ]
-                ],
-            ]);
+            $manager->addVolumes($this->getDbSalesVolumes());
             $manager->addService(
                 self::SERVICE_DB_SALES,
                 $this->serviceFactory->create(
                     ServiceInterface::SERVICE_DB_SALES,
                     $dbVersion,
-                    [
-                        'ports' => [
-                            $hostDbSalesPort ? "$hostDbSalesPort:3306" : '3306'
-                        ],
-                        'volumes' => array_merge(
-                            [
-                                self::VOLUME_MAGENTO_DB_SALES . ':/var/lib/mysql',
-                                self::VOLUME_DOCKER_ETRYPOINT_SALES . ':/docker-entrypoint-initdb.d',
-                                self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
-                            ],
-                            $volumesMount
-                        )
-                    ]
+                    array_merge_recursive(
+                        $this->getDbConfig(ServiceInterface::SERVICE_DB_SALES, $config),
+                        ['volumes' => $volumesMount]
+                    )
                 ),
                 [self::NETWORK_MAGENTO],
                 []
@@ -537,5 +491,82 @@ class ProductionBuilder implements BuilderInterface
     public function getPath(): string
     {
         return $this->fileList->getMagentoDockerCompose();
+    }
+
+    /**
+     * @param string $service
+     * @param Config $config
+     * @return array
+     * @throws ConfigurationMismatchException
+     * @throws GenericException
+     */
+    private function getDbConfig(string $service, Config $config): array
+    {
+        switch ($service) {
+            case ServiceInterface::SERVICE_DB:
+                $port = $config->getDbPortsExpose();
+                $volumes = [
+                    self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+                    self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d',
+                ];
+                break;
+            case ServiceInterface::SERVICE_DB_QUOTE:
+                $port = $config->getDbQuotePortsExpose();
+                $volumes = [
+                    self::VOLUME_MAGENTO_DB_QUOTE . ':/var/lib/mysql',
+                    self::VOLUME_DOCKER_ETRYPOINT_QUOTE . ':/docker-entrypoint-initdb.d',
+                ];
+                break;
+            case ServiceInterface::SERVICE_DB_SALES:
+                $port = $config->getDbSalesPortsExpose();
+                $volumes = [
+                    self::VOLUME_MAGENTO_DB_SALES . ':/var/lib/mysql',
+                    self::VOLUME_DOCKER_ETRYPOINT_SALES . ':/docker-entrypoint-initdb.d',
+                ];
+                break;
+            default:
+                throw new GenericException(sprintf('Configuration for %s service not exist', $service));
+        }
+
+        $volumes[] = self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d';
+
+        return [
+            'ports' => [$port ? "$port:3306" : '3306'],
+            'volumes' => $volumes,
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getDbSalesVolumes(): array
+    {
+        return [
+            self::VOLUME_MAGENTO_DB_SALES => [],
+            self::VOLUME_DOCKER_ETRYPOINT_SALES => [
+                'driver_opts' => [
+                    'type' => 'none',
+                    'device' => $this->resolver->getRootPath('/.docker/mysql-sales/docker-entrypoint-initdb.d'),
+                    'o' => 'bind'
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getDbQuoteVolumes(): array
+    {
+        return [
+            self::VOLUME_MAGENTO_DB_QUOTE => [],
+            self::VOLUME_DOCKER_ETRYPOINT_QUOTE => [
+                'driver_opts' => [
+                    'type' => 'none',
+                    'device' => $this->resolver->getRootPath('/.docker/mysql-quote/docker-entrypoint-initdb.d'),
+                    'o' => 'bind'
+                ]
+            ],
+        ];
     }
 }

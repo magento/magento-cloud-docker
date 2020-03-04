@@ -57,17 +57,17 @@ class CliSource implements SourceInterface
      * @var array
      */
     private static $optionsMap = [
-        self::OPTION_PHP => self::PHP,
+        self::OPTION_PHP => [self::PHP],
         self::OPTION_DB => [
             self::SERVICES_DB,
             self::SERVICES_DB_QUOTE,
             self::SERVICES_DB_SALES
         ],
-        self::OPTION_NGINX => self::SERVICES_NGINX,
-        self::OPTION_REDIS => self::SERVICES_REDIS,
-        self::OPTION_ES => self::SERVICES_ES,
-        self::OPTION_NODE => self::SERVICES_NODE,
-        self::OPTION_RABBIT_MQ => self::SERVICES_RMQ,
+        self::OPTION_NGINX => [self::SERVICES_NGINX],
+        self::OPTION_REDIS => [self::SERVICES_REDIS],
+        self::OPTION_ES => [self::SERVICES_ES],
+        self::OPTION_NODE => [self::SERVICES_NODE],
+        self::OPTION_RABBIT_MQ => [self::SERVICES_RMQ],
     ];
 
     /**
@@ -130,7 +130,7 @@ class CliSource implements SourceInterface
 
         foreach (self::$optionsMap as $option => $services) {
             if ($value = $this->input->getOption($option)) {
-                foreach ((array)$services as $service) {
+                foreach ($services as $service) {
                     $repository->set([
                         $service . '.enabled' => true,
                         $service . '.version' => $value
