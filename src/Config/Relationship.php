@@ -17,22 +17,12 @@ use Magento\CloudDocker\Service\ServiceInterface;
 class Relationship
 {
     /**
-     * Service names
-     */
-    private const RELATIONSHIP_DATABASE = 'database';
-    private const RELATIONSHIP_DATABASE_QUOTE = 'database-quote';
-    private const RELATIONSHIP_DATABASE_SALES = 'database-sales';
-    private const REDIS = 'redis';
-    private const ELASTICSEARCH = 'elasticsearch';
-    private const RABBITMQ = 'rabbitmq';
-
-    /**
      * Default relationships configuration
      *
      * @var array
      */
     private static $defaultConfiguration= [
-        self::RELATIONSHIP_DATABASE => [
+        'database' => [
             [
                 'host' => 'db',
                 'path' => 'magento2',
@@ -41,7 +31,7 @@ class Relationship
                 'port' => '3306'
             ],
         ],
-        self::RELATIONSHIP_DATABASE_SALES => [
+        'database-sales' => [
             [
                 'host' => 'db-sales',
                 'path' => 'magento2',
@@ -50,7 +40,7 @@ class Relationship
                 'port' => '3306'
             ],
         ],
-        self::RELATIONSHIP_DATABASE_QUOTE => [
+        'database-quote' => [
             [
                 'host' => 'db-quote',
                 'path' => 'magento2',
@@ -59,19 +49,19 @@ class Relationship
                 'port' => '3306'
             ],
         ],
-        self::REDIS => [
+        'redis' => [
             [
                 'host' => 'redis',
                 'port' => '6379'
             ]
         ],
-        self::ELASTICSEARCH => [
+        'elasticsearch' => [
             [
                 'host' => 'elasticsearch',
                 'port' => '9200',
             ],
         ],
-        self::RABBITMQ => [
+        'rabbitmq' => [
             [
                 'host' => 'rabbitmq',
                 'port' => '5672',
@@ -109,9 +99,9 @@ class Relationship
     private function convertServiceName(string $serviceName): string
     {
         $map = [
-            self::RELATIONSHIP_DATABASE => ServiceInterface::SERVICE_DB,
-            self::RELATIONSHIP_DATABASE_QUOTE => ServiceInterface::SERVICE_DB_QUOTE,
-            self::RELATIONSHIP_DATABASE_SALES => ServiceInterface::SERVICE_DB_SALES,
+            'database' => ServiceInterface::SERVICE_DB,
+            'database-sales' => ServiceInterface::SERVICE_DB_QUOTE,
+            'database-quote'=> ServiceInterface::SERVICE_DB_SALES,
         ];
 
         return $map[$serviceName] ?? $serviceName;
