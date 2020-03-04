@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
-use Codeception\Configuration;
-
 /**
  * @group php73
  */
@@ -56,19 +54,13 @@ class AcceptanceCest
      */
     public function testCustomHost(\CliTester $I): void
     {
-        Configuration::append([
-            'modules' => [
-                'config' => [
-                    ['PhpBrowser' => ['url' => 'magento2.test:8080']]
-                ]
-            ]
-        ]);
-
+        $I->updateBaseUrl('magento2.test:8080');
         $I->runEceDockerCommand('build:compose --mode=production --host=magento2.test --port=8080');
         $I->startEnvironment();
         $I->runDockerComposeCommand('run build cloud-build');
         $I->runDockerComposeCommand('run deploy cloud-deploy');
         $I->runDockerComposeCommand('run deploy cloud-post-deploy');
+        $I->updateBaseUrl('magento2.test:8080');
         $I->amOnPage('/');
         $I->see('Home page');
         $I->see('CMS homepage content goes here.');
