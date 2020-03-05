@@ -49,7 +49,7 @@ class BuilderFactory
     {
         if (!array_key_exists($strategy, $this->strategies)) {
             throw new ConfigurationMismatchException(
-                sprintf('Wrong strategy "%s" passed', $strategy)
+                sprintf('Wrong mode "%s" passed', $strategy)
             );
         }
 

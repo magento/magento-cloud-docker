@@ -9,6 +9,9 @@ namespace Magento\CloudDocker\Config;
 
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Compose\BuilderFactory;
+use Magento\CloudDocker\Compose\DeveloperBuilder;
+use Magento\CloudDocker\Compose\ProductionBuilder;
 use Magento\CloudDocker\Config\Source\CliSource;
 use Magento\CloudDocker\Config\Source\SourceException;
 use Magento\CloudDocker\Config\Source\SourceInterface;
@@ -28,6 +31,16 @@ class Config
      * @var Repository
      */
     private $data;
+
+    /**
+     * Available engines per mode
+     *
+     * @var array
+     */
+    private static $enginesMap = [
+        BuilderFactory::BUILDER_DEVELOPER => DeveloperBuilder::SYNC_ENGINES_LIST,
+        BuilderFactory::BUILDER_PRODUCTION => ProductionBuilder::SYNC_ENGINES_LIST
+    ];
 
     /**
      * @param SourceInterface[] $sources
@@ -80,11 +93,27 @@ class Config
      */
     public function getSyncEngine(): string
     {
-        if (!$this->all()->has(SourceInterface::CONFIG_SYNC_ENGINE)) {
-            throw new ConfigurationMismatchException('Sync engine is not defined');
+        $syncEngine = $this->all()->get(SourceInterface::SYSTEM_SYNC_ENGINE);
+        $mode = $this->getMode();
+
+        if ($syncEngine === null) {
+            if ($mode === BuilderFactory::BUILDER_DEVELOPER) {
+                $syncEngine = DeveloperBuilder::DEFAULT_SYNC_ENGINE;
+            } elseif ($mode === BuilderFactory::BUILDER_PRODUCTION) {
+                $syncEngine = ProductionBuilder::DEFAULT_SYNC_ENGINE;
+            }
         }
 
-        return $this->all()->get(SourceInterface::CONFIG_SYNC_ENGINE);
+        if (isset(self::$enginesMap[$mode]) && !in_array($syncEngine, self::$enginesMap[$mode], true)) {
+            throw new ConfigurationMismatchException(sprintf(
+                'File sync engine "%s" is not supported in "%s" mode. Available: %s',
+                $syncEngine,
+                $mode,
+                implode(', ', self::$enginesMap[$mode])
+            ));
+        }
+
+        return $syncEngine;
     }
 
     /**
@@ -93,11 +122,20 @@ class Config
      */
     public function getMode(): string
     {
-        if (!$this->all()->has(SourceInterface::CONFIG_MODE)) {
+        if (!$this->all()->get(SourceInterface::SYSTEM_MODE)) {
             throw new ConfigurationMismatchException('Mode is not defined');
         }
 
-        return $this->all()->get(SourceInterface::CONFIG_MODE);
+        $mode = $this->all()->get(SourceInterface::SYSTEM_MODE);
+
+        if (!in_array($mode, [BuilderFactory::BUILDER_DEVELOPER, BuilderFactory::BUILDER_PRODUCTION], true)) {
+            throw new ConfigurationMismatchException(sprintf(
+                'Mode "%s" is not supported',
+                $mode
+            ));
+        }
+
+        return $this->all()->get(SourceInterface::SYSTEM_MODE);
     }
 
     /**
@@ -106,6 +144,17 @@ class Config
      */
     public function getCronJobs(): array
     {
+        $jobs = $this->all()->get(SourceInterface::CRON_JOBS, []);
+
+        foreach ($jobs as $job => $config) {
+            if (!isset($config['schedule'], $config['command'])) {
+                throw new ConfigurationMismatchException(sprintf(
+                    'One of required parameters is missing in "%s" job',
+                    $job
+                ));
+            }
+        }
+
         return $this->all()->get(SourceInterface::CRON_JOBS, []);
     }
 
@@ -156,7 +205,7 @@ class Config
             ));
         }
 
-        return $this->all()->get($key);
+        return (string)$this->all()->get($key);
     }
 
     /**
@@ -190,7 +239,7 @@ class Config
      */
     public function hasTmpMounts(): bool
     {
-        return (bool)$this->all()->get(SourceInterface::CONFIG_TMP_MOUNTS);
+        return (bool)$this->all()->get(SourceInterface::SYSTEM_TMP_MOUNTS);
     }
 
     /**
@@ -208,7 +257,7 @@ class Config
      */
     public function getEnabledPhpExtensions(): array
     {
-        return $this->all()->get(SourceInterface::PHP_EXTENSIONS, []);
+        return $this->all()->get(SourceInterface::PHP_ENABLED_EXTENSIONS, []);
     }
 
     /**

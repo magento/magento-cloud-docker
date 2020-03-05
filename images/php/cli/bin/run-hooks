@@ -4,6 +4,7 @@ import yaml
 import os
 import sys
 import subprocess
+from os import path
 
 # Disable output buffering.
 os.environ['PYTHONUNBUFFERED'] = "1"
@@ -28,14 +29,19 @@ def get_magento_root():
 
 # Gets set hooks by hook name.
 def get_hooks(hook_name):
-    with open(get_magento_root() + "/.magento.app.yaml", 'r') as stream:
+    config = get_magento_root() + "/.magento.docker.yaml"
+
+    if path.exists(get_magento_root() + "/.magento.app.yaml"):
+      config = get_magento_root() + "/.magento.app.yaml"
+
+    with open(config, 'r') as stream:
         try:
             content = yaml.safe_load(stream)
             return content["hooks"][hook_name]
         except yaml.YAMLError as exc:
             error_exit(exc)
         except KeyError:
-            error_exit("The hook \"" + hook_name + "\" is not in the .magento.app.yaml file. Skipped", 0)
+            error_exit("The hook \"" + hook_name + "\" is not in the \"" + config + "\"  file. Skipped", 0)
 
 
 # Main function.
