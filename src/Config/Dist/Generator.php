@@ -163,10 +163,10 @@ class Generator
      */
     private function getBaseConfig(Config $config): array
     {
-        $host = $config->get(SourceInterface::CONFIG_HOST) ?? Manager::DEFAULT_HOST;
-        $port = $config->get(SourceInterface::CONFIG_PORT);
+        $host = $config->getHost();
+        $port = $config->getPort();
 
-        if (!empty($port) && $port != Manager::DEFAULT_PORT) {
+        if (!empty($port) && $port != Config::DEFAULT_PORT) {
             $host .= ':' . $port;
         }
 

@@ -9,7 +9,6 @@ namespace Magento\CloudDocker\Config;
 
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Config\Source\CliSource;
 use Magento\CloudDocker\Config\Source\SourceException;
 use Magento\CloudDocker\Config\Source\SourceInterface;
 use Magento\CloudDocker\Service\ServiceInterface;
@@ -19,6 +18,9 @@ use Magento\CloudDocker\Service\ServiceInterface;
  */
 class Config
 {
+    public const DEFAULT_HOST = 'magento2.docker';
+    public const DEFAULT_PORT = '80';
+
     /**
      * @var SourceInterface[]
      */
@@ -242,5 +244,25 @@ class Config
         }
 
         return $config->get(SourceInterface::VARIABLES);
+    }
+
+    /**
+     * Returns host value or default if host not set
+     *
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->get(SourceInterface::CONFIG_HOST) ?? self::DEFAULT_HOST;
+    }
+
+    /**
+     * Returns port value or default if port not set
+     *
+     * @return string
+     */
+    public function getPort(): string
+    {
+        return $this->get(SourceInterface::CONFIG_PORT) ?? self::DEFAULT_PORT;
     }
 }

@@ -26,9 +26,6 @@ class ManagerFactory
      */
     public function create(Config $config): Manager
     {
-        return new Manager(
-            $config->get(SourceInterface::CONFIG_HOST),
-            $config->get(SourceInterface::CONFIG_PORT)
-        );
+        return new Manager($config);
     }
 }

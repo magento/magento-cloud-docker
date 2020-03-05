@@ -292,13 +292,13 @@ class ProductionBuilder implements BuilderInterface
                 [
                     'volumes' => $volumesRo,
                     'environment' => [
-                        'VIRTUAL_HOST=' . $manager->getHost(),
+                        'VIRTUAL_HOST=' . $config->getHost(),
                         'VIRTUAL_PORT=80',
                         'HTTPS_METHOD=noredirect',
                         'WITH_XDEBUG=' . (int)$config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)
                     ],
                     'ports' => [
-                        $manager->getPort() . ':80'
+                        $config->getPort() . ':80'
                     ]
                 ]
             ),
@@ -315,7 +315,7 @@ class ProductionBuilder implements BuilderInterface
                     [
                         'networks' => [
                             self::NETWORK_MAGENTO => [
-                                'aliases' => [$manager->getHost()]
+                                'aliases' => [$config->getHost()]
                             ]
                         ]
                     ]
