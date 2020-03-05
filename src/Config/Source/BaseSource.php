@@ -14,6 +14,9 @@ use Illuminate\Config\Repository;
  */
 class BaseSource implements SourceInterface
 {
+    public const DEFAULT_HOST = 'magento2.docker';
+    public const DEFAULT_PORT = '80';
+
     /**
      * @inheritDoc
      */

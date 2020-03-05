@@ -11,6 +11,7 @@ use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\Manager;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Relationship;
+use Magento\CloudDocker\Config\Source\BaseSource;
 use Magento\CloudDocker\Config\Source\SourceInterface;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\Filesystem;
@@ -166,7 +167,7 @@ class Generator
         $host = $config->getHost();
         $port = $config->getPort();
 
-        if (!empty($port) && $port != Config::DEFAULT_PORT) {
+        if (!empty($port) && $port != BaseSource::DEFAULT_PORT) {
             $host .= ':' . $port;
         }
 
