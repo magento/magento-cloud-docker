@@ -78,22 +78,22 @@ interface SourceInterface
      */
     public const SERVICES_XDEBUG = self::SERVICES . '.' . ServiceInterface::SERVICE_FPM_XDEBUG;
 
-    public const CRON = 'cron';
+    public const CRON = self::SERVICES . '.cron';
     public const CRON_JOBS = self::CRON . '.jobs';
     public const CRON_ENABLED = self::CRON . '.enabled';
 
     public const PHP = self::SERVICES . '.' . ServiceInterface::SERVICE_PHP;
     public const PHP_VERSION = self::PHP . '.version';
     public const PHP_ENABLED = self::PHP . '.enabled';
-    public const PHP_EXTENSIONS = self::PHP . '.extensions';
-    public const PHP_DISABLED_EXTENSIONS = self::PHP . '.disabled_extensions';
+    public const PHP_ENABLED_EXTENSIONS = self::PHP . '.extensions.enabled';
+    public const PHP_DISABLED_EXTENSIONS = self::PHP . '.extensions.disabled';
 
     /**
      * Config
      */
-    public const CONFIG_SYNC_ENGINE = 'config.sync_engine';
-    public const CONFIG_TMP_MOUNTS = 'config.tmp_mounts';
-    public const CONFIG_MODE = 'config.mode';
+    public const SYSTEM_SYNC_ENGINE = 'system.sync_engine';
+    public const SYSTEM_TMP_MOUNTS = 'system.tmp_mounts';
+    public const SYSTEM_MODE = 'system.mode';
     public const CONFIG_HOST = 'config.host';
     public const CONFIG_PORT = 'config.port';
     public const SYSTEM_EXPOSE_DB_PORTS = 'system.expose_db_ports';

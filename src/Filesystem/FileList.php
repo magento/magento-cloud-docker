@@ -64,4 +64,12 @@ class FileList
     {
         return $this->directoryList->getRoot() . '/composer.json';
     }
+
+    /**
+     * @return string
+     */
+    public function getDockerConfig(): string
+    {
+        return $this->directoryList->getMagentoRoot() . '/.magento.docker.yaml';
+    }
 }

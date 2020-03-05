@@ -14,7 +14,6 @@ use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 use Symfony\Component\Yaml\Yaml;
-use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
 use Exception;
 
 /**
@@ -38,11 +37,6 @@ class CloudSource implements SourceInterface
     private $serviceFactory;
 
     /**
-     * @var EnvReader
-     */
-    private $envReader;
-
-    /**
      * @var array
      */
     private static $map = [
@@ -56,18 +50,15 @@ class CloudSource implements SourceInterface
      * @param FileList $fileList
      * @param Filesystem $filesystem
      * @param ServiceFactory $serviceFactory
-     * @param EnvReader $envReader
      */
     public function __construct(
         FileList $fileList,
         Filesystem $filesystem,
-        ServiceFactory $serviceFactory,
-        EnvReader $envReader
+        ServiceFactory $serviceFactory
     ) {
         $this->fileList = $fileList;
         $this->filesystem = $filesystem;
         $this->serviceFactory = $serviceFactory;
-        $this->envReader = $envReader;
     }
 
     /**
@@ -215,7 +206,7 @@ class CloudSource implements SourceInterface
         ]);
 
         if ($extensions) {
-            $repository[self::PHP_EXTENSIONS] = $extensions;
+            $repository[self::PHP_ENABLED_EXTENSIONS] = $extensions;
         }
 
         if ($disabledExtensions) {
@@ -252,12 +243,29 @@ class CloudSource implements SourceInterface
      * @param Repository $repository
      * @param array $jobs
      * @return Repository
+     * @throws SourceException
      */
     private function addCronJobs(Repository $repository, array $jobs): Repository
     {
-        if ($jobs) {
+        $preparedJobs = [];
+
+        foreach ($jobs as $name => $config) {
+            if (!isset($config['spec'], $config['cmd'])) {
+                throw new SourceException(sprintf(
+                    'One of "%s" cron job properties is not define',
+                    $name
+                ));
+            }
+
+            $preparedJobs[$name] = [
+                'schedule' => $config['spec'],
+                'command' => $config['cmd']
+            ];
+        }
+
+        if ($preparedJobs) {
             $repository->set([
-                self::CRON_JOBS => $jobs
+                self::CRON_JOBS => $preparedJobs
             ]);
         }
 
