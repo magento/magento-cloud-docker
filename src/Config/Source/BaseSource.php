@@ -44,6 +44,8 @@ class BaseSource implements SourceInterface
             self::SYSTEM_MODE => BuilderFactory::BUILDER_PRODUCTION,
             self::SYSTEM_SYNC_ENGINE => null,
             self::CRON_ENABLED => false,
+            self::CONFIG_PORT => self::DEFAULT_PORT,
+            self::CONFIG_HOST => self::DEFAULT_HOST,
         ]);
 
         try {
