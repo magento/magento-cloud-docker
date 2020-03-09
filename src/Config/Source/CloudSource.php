@@ -301,7 +301,7 @@ class CloudSource implements SourceInterface
     private function addName(Repository $repository, String $name): Repository
     {
         $repository->set([
-            "name" => $name,
+            self::NAME => $name,
         ]);
 
         return $repository;

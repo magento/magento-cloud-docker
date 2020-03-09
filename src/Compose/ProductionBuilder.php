@@ -15,7 +15,6 @@ use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
-use Magento\CloudDocker\Config\Source\CloudSource;
 
 /**
  * Production compose configuration.
@@ -99,10 +98,6 @@ class ProductionBuilder implements BuilderInterface
      */
     private $volumeResolver;
 
-    /**
-     * @var CloudSource
-     */
-    private $cloudSource;
 
     /**
      * @param ServiceFactory $serviceFactory
@@ -112,7 +107,6 @@ class ProductionBuilder implements BuilderInterface
      * @param ManagerFactory $managerFactory
      * @param Resolver $resolver
      * @param VolumeResolver $volumeResolver
-     * @param CloudSource $cloudSource
      */
     public function __construct(
         ServiceFactory $serviceFactory,
@@ -121,8 +115,7 @@ class ProductionBuilder implements BuilderInterface
         ExtensionResolver $phpExtension,
         ManagerFactory $managerFactory,
         Resolver $resolver,
-        VolumeResolver $volumeResolver,
-        CloudSource $cloudSource
+        VolumeResolver $volumeResolver
     ) {
         $this->serviceFactory = $serviceFactory;
         $this->fileList = $fileList;
@@ -131,7 +124,6 @@ class ProductionBuilder implements BuilderInterface
         $this->managerFactory = $managerFactory;
         $this->resolver = $resolver;
         $this->volumeResolver = $volumeResolver;
-        $this->cloudSource = $cloudSource;
     }
 
     /**
@@ -143,6 +135,8 @@ class ProductionBuilder implements BuilderInterface
      */
     public function build(Config $config): Manager
     {
+        $volumePrefix =  $config->getName() . '-';
+
         $manager = $this->managerFactory->create();
 
         $phpVersion = $config->getServiceVersion(ServiceInterface::SERVICE_PHP);
@@ -161,8 +155,8 @@ class ProductionBuilder implements BuilderInterface
                     'o' => 'bind'
                 ]
             ],
-            $this->cloudSource->read()->get('name').'-'.self::VOLUME_MAGENTO_DB => [],
-            $this->cloudSource->read()->get('name').'-'.self::VOLUME_MARIADB_CONF => [
+            $volumePrefix . self::VOLUME_MAGENTO_DB => [],
+            $volumePrefix . self::VOLUME_MARIADB_CONF => [
                 'driver_opts' => [
                     'type' => 'none',
                     'device' => $this->resolver->getRootPath('/.docker/mysql/mariadb.conf.d'),
@@ -249,10 +243,9 @@ class ProductionBuilder implements BuilderInterface
                     'ports' => [$dbPorts],
                     'volumes' => array_merge(
                         [
-                            $this->cloudSource->read()->get('name').'-'.self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+                            $volumePrefix . self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
                             self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d',
-                            $this->cloudSource->read()->get('name').'-'.self::VOLUME_MARIADB_CONF .
-                            ':/etc/mysql/mariadb.conf.d',
+                            $volumePrefix . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
                         ],
                         $volumesMount
                     )
