@@ -126,6 +126,10 @@ class CloudSource implements SourceInterface
             $repository,
             $appConfig['relationships'] ?? []
         );
+        $repository = $this->addName(
+            $repository,
+            $appConfig['name'] ?? []
+        );
 
         return $repository;
     }
@@ -189,14 +193,14 @@ class CloudSource implements SourceInterface
 
     /**
      * @param Repository $repository
-     * @param string $version
+     * @param String $version
      * @param array $extensions
      * @param array $disabledExtensions
      * @return Repository
      */
     private function addPhp(
         Repository $repository,
-        string $version,
+        String $version,
         array $extensions,
         array $disabledExtensions
     ): Repository {
@@ -218,11 +222,11 @@ class CloudSource implements SourceInterface
 
     /**
      * @param Repository $repository
-     * @param string $version
+     * @param String $version
      * @return Repository
      * @throws SourceException
      */
-    private function addXdebug(Repository $repository, string $version): Repository
+    private function addXdebug(Repository $repository, String $version): Repository
     {
         try {
             $repository->set([
@@ -285,6 +289,20 @@ class CloudSource implements SourceInterface
                 'orig' => $mountData
             ]);
         }
+
+        return $repository;
+    }
+
+    /**
+     * @param Repository $repository
+     * @param String $name
+     * @return Repository
+     */
+    private function addName(Repository $repository, String $name): Repository
+    {
+        $repository->set([
+            "name" => $name,
+        ]);
 
         return $repository;
     }

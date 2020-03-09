@@ -12,6 +12,7 @@ use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\Filesystem\FileList;
+use Magento\CloudDocker\Config\Source\CloudSource;
 
 /**
  * Developer compose configuration.
@@ -58,24 +59,32 @@ class DeveloperBuilder implements BuilderInterface
     private $extensionResolver;
 
     /**
+     * @var CloudSource
+     */
+    private $cloudSource;
+
+    /**
      * @param BuilderFactory $builderFactory
      * @param FileList $fileList
      * @param Resolver $resolver
      * @param Converter $converter
      * @param ExtensionResolver $extensionResolver
+     * @param CloudSource $cloudSource
      */
     public function __construct(
         BuilderFactory $builderFactory,
         FileList $fileList,
         Resolver $resolver,
         Converter $converter,
-        ExtensionResolver $extensionResolver
+        ExtensionResolver $extensionResolver,
+        CloudSource $cloudSource
     ) {
         $this->builderFactory = $builderFactory;
         $this->fileList = $fileList;
         $this->resolver = $resolver;
         $this->converter = $converter;
         $this->extensionResolver = $extensionResolver;
+        $this->cloudSource = $cloudSource;
     }
 
     /**
@@ -105,9 +114,9 @@ class DeveloperBuilder implements BuilderInterface
         }
 
         $manager->setVolumes([
-            self::VOLUME_MAGENTO_SYNC => $syncConfig,
-            self::VOLUME_MAGENTO_DB => [],
-            self::VOLUME_MARIADB_CONF => [
+            $this->cloudSource->read()->get('name') . '-' . self::VOLUME_MAGENTO_SYNC => $syncConfig,
+            $this->cloudSource->read()->get('name') . '-' . self::VOLUME_MAGENTO_DB => [],
+            $this->cloudSource->read()->get('name') . '-' . self::VOLUME_MARIADB_CONF => [
                 'driver_opts' => [
                     'type' => 'none',
                     'device' => $this->resolver->getRootPath('/.docker/mysql/mariadb.conf.d'),
@@ -145,9 +154,11 @@ class DeveloperBuilder implements BuilderInterface
             'volumes' => array_merge(
                 $volumes,
                 [
-                    self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
-                    self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d',
-                    self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
+                    $this->cloudSource->read()->get('name').'-'.self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+                    $this->cloudSource->read()->get('name').'-'.self::VOLUME_DOCKER_ETRYPOINT .
+                    ':/docker-entrypoint-initdb.d',
+                    $this->cloudSource->read()->get('name').'-'.self::VOLUME_MARIADB_CONF .
+                    ':/etc/mysql/mariadb.conf.d',
                 ]
             )
         ]);
@@ -178,12 +189,14 @@ class DeveloperBuilder implements BuilderInterface
     {
         if ($config->getSyncEngine() !== self::SYNC_ENGINE_NATIVE) {
             return [
-                self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':nocopy'
+                $this->cloudSource->read()->get('name').'-'.self::VOLUME_MAGENTO_SYNC . ':' .
+                self::DIR_MAGENTO . ':nocopy'
             ];
         }
 
         return [
-            self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':delegated',
+            $this->cloudSource->read()->get('name').'-'.self::VOLUME_MAGENTO_SYNC . ':' .
+            self::DIR_MAGENTO . ':delegated',
         ];
     }
 }
