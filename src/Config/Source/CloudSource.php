@@ -43,8 +43,8 @@ class CloudSource implements SourceInterface
      */
     private static $map = [
         ServiceInterface::SERVICE_DB => ['db', 'database', 'mysql'],
-        ServiceInterface::SERVICE_DB_QUOTE => ['db-quote', 'database-quote', 'mysql-quote'],
-        ServiceInterface::SERVICE_DB_SALES => ['db-sales', 'database-sales', 'mysql-sales'],
+        ServiceInterface::SERVICE_DB_QUOTE => ['mysql-quote'],
+        ServiceInterface::SERVICE_DB_SALES => ['mysql-sales'],
         ServiceInterface::SERVICE_ELASTICSEARCH => ['elasticsearch', 'es'],
         ServiceInterface::SERVICE_REDIS => ['redis'],
         ServiceInterface::SERVICE_RABBITMQ => ['rmq', 'rabbitmq']
