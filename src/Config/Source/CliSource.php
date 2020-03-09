@@ -71,16 +71,6 @@ class CliSource implements SourceInterface
     ];
 
     /**
-     * Available engines per mode
-     *
-     * @var array
-     */
-    private static $enginesMap = [
-        BuilderFactory::BUILDER_DEVELOPER => DeveloperBuilder::SYNC_ENGINES_LIST,
-        BuilderFactory::BUILDER_PRODUCTION => ProductionBuilder::SYNC_ENGINES_LIST
-    ];
-
-    /**
      * @var InputInterface
      */
     private $input;
@@ -104,38 +94,24 @@ class CliSource implements SourceInterface
     {
         $repository = new Repository();
 
-        $mode = $this->input->getOption(self::OPTION_MODE);
-        $syncEngine = $this->input->getOption(self::OPTION_SYNC_ENGINE);
-
-        if ($mode === BuilderFactory::BUILDER_DEVELOPER && $syncEngine === null) {
-            $syncEngine = DeveloperBuilder::DEFAULT_SYNC_ENGINE;
-        } elseif ($mode === BuilderFactory::BUILDER_PRODUCTION && $syncEngine === null) {
-            $syncEngine = ProductionBuilder::DEFAULT_SYNC_ENGINE;
+        if ($mode = $this->input->getOption(self::OPTION_MODE)) {
+            $repository->set([
+                self::SYSTEM_MODE => $mode
+            ]);
         }
 
-        if (isset(self::$enginesMap[$mode])
-            && !in_array($syncEngine, self::$enginesMap[$mode], true)
-        ) {
-            throw new SourceException(sprintf(
-                "File sync engine '%s' is not supported. Available: %s",
-                $syncEngine,
-                implode(', ', self::$enginesMap[$mode])
-            ));
+        if ($syncEngine = $this->input->getOption(self::OPTION_SYNC_ENGINE)) {
+            $repository->set([
+                self::SYSTEM_SYNC_ENGINE => $syncEngine,
+            ]);
         }
 
-        $repository->set([
-            self::CONFIG_SYNC_ENGINE => $syncEngine,
-            self::CONFIG_MODE => $mode
-        ]);
-
-        foreach (self::$optionsMap as $option => $services) {
+        foreach (self::$optionsMap as $option => $service) {
             if ($value = $this->input->getOption($option)) {
-                foreach ($services as $service) {
-                    $repository->set([
-                        $service . '.enabled' => true,
-                        $service . '.version' => $value
-                    ]);
-                }
+                $repository->set([
+                    $service . '.enabled' => true,
+                    $service . '.version' => $value
+                ]);
             }
         }
 
@@ -160,7 +136,7 @@ class CliSource implements SourceInterface
         }
 
         if ($this->input->getOption(self::OPTION_NO_TMP_MOUNTS)) {
-            $repository->set(self::CONFIG_TMP_MOUNTS, false);
+            $repository->set(self::SYSTEM_TMP_MOUNTS, false);
         }
 
         if ($this->input->getOption(self::OPTION_WITH_CRON)) {
