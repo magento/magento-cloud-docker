@@ -52,7 +52,7 @@ composer_install()
 
 add_host()
 {
-    if [[ $(grep -Eq "^\s*\d+\.\d+\.\d+\.\d+\s+${DOMAIN}$" /etc/hosts) ]]; then
+    if grep -Eq "^\s*\d+\.\d+\.\d+\.\d+\s+${DOMAIN}$" /etc/hosts; then
         echo -e "\033[33m\033[1mThere is already an entry for $DOMAIN in /etc/hosts, skipping.\033[0m"
 
         return
@@ -75,8 +75,8 @@ USAGE="Init Docker
   \033[32m-h, --help\033[0m    show this help text
 
 \033[33mExample usage:\033[0m
-  \033[32mbin/init-docker.sh\033[0m                                  perform default actions
-  \033[32mbin/init-docker.sh --php 7.3 --host no --cert no\033[0m    use PHP 7.3 and skip some optional steps"
+  \033[32mbin/init-docker.sh\033[0m                        perform default actions
+  \033[32mbin/init-docker.sh --php 7.3 --host no\033[0m    use PHP 7.3, skip adding domain to /etc/hosts"
 
 while getopts "ht:p:-:" OPT; do
     if [ "$OPT" = "-" ]; then   # long option: reformulate OPT and OPTARG
