@@ -47,12 +47,12 @@ version_is_valid()
 
 composer_install()
 {
-    docker run --rm -it -e "MAGENTO_ROOT=/app" -v "$(pwd)":/app -v ~/.composer/cache:/root/.composer/cache "magento/magento-cloud-docker-php:${PHP_VERSION}-cli" composer install
+    docker run --rm -e "MAGENTO_ROOT=/app" -v "$(pwd)":/app -v ~/.composer/cache:/root/.composer/cache "magento/magento-cloud-docker-php:${PHP_VERSION}-cli" composer install --ansi
 }
 
 add_host()
 {
-    if ! [[ $(grep -Eq "^\s*\d+\.\d+\.\d+\.\d+\s+${DOMAIN}$" /etc/hosts) ]]; then
+    if [[ $(grep -Eq "^\s*\d+\.\d+\.\d+\.\d+\s+${DOMAIN}$" /etc/hosts) ]]; then
         echo -e "\033[33m\033[1mThere is already an entry for $DOMAIN in /etc/hosts, skipping.\033[0m"
 
         return
