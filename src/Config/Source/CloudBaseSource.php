@@ -49,7 +49,7 @@ class CloudBaseSource implements SourceInterface
         $repository = new Repository();
 
         $repository->set([
-            self::CONFIG_TMP_MOUNTS => true,
+            self::SYSTEM_TMP_MOUNTS => true,
             self::VARIABLES => [
                 'PHP_MEMORY_LIMIT' => '2048M',
                 'UPLOAD_MAX_FILESIZE' => '64M',

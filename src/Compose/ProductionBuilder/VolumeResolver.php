@@ -51,12 +51,13 @@ class VolumeResolver
     {
         $volumes = $this->getDefaultMagentoVolumes($isReadOnly);
 
-        foreach (array_keys($mounts) as $volume) {
-            $volumeName = 'magento-' . str_replace('/', '-', $volume);
+        foreach ($mounts as $volumeData) {
+            $path = $volumeData['path'];
+            $volumeName = 'magento-' . str_replace('/', '-', $path);
 
             $volumes[$volumeName] = [
-                'path' => BuilderInterface::DIR_MAGENTO . '/' . $volume,
-                'volume' => '/' . $volume,
+                'path' => BuilderInterface::DIR_MAGENTO . '/' . $path,
+                'volume' => '/' . $path,
                 'mode' => 'rw'
             ];
         }

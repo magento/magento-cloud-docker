@@ -10,7 +10,7 @@ run-hooks deploy
 
 # check that Varnish exists
 if ( varnish=$(curl -I varnish 2>&1 | grep -i "magento2") ); then
-    minor_magento_version=$(magento-command --version | sed "s/Magento CLI \([0-9]*\.[0-9]*\).*/\1/")
+    minor_magento_version=$(magento-command --version | sed "s/Magento CLI version \([0-9]*\.[0-9]*\).*/\1/")
     if [[ "$minor_magento_version" != "2.1" ]]; then
         output=$(magento-command config:set system/full_page_cache/caching_application 2)
         # as config:set does not return error code, we check output text to continue set varnish settings
