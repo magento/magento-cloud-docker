@@ -292,4 +292,13 @@ class Config
 
         return $config->get(SourceInterface::VARIABLES);
     }
+
+    /**
+     * @return String
+     * @throws ConfigurationMismatchException
+     */
+    public function getName(): String
+    {
+        return $this->all()->get(SourceInterface::NAME);
+    }
 }
