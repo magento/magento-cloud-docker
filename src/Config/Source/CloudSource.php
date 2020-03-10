@@ -89,6 +89,10 @@ class CloudSource implements SourceInterface
             throw new SourceException('Relationships could not be parsed.');
         }
 
+        if (!isset($appConfig['name'])) {
+            throw new SourceException('Name could not be parsed.');
+        }
+
         [$type, $version] = explode(':', $appConfig['type']);
         /**
          * RC versions are not supported
