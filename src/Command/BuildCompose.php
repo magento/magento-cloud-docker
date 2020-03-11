@@ -204,6 +204,18 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Cloud environment variables'
+            )
+            ->addOption(
+                Source\CliSource::OPTION_HOST,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Host name'
+            )
+            ->addOption(
+                Source\CliSource::OPTION_PORT,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Port'
             );
 
         parent::configure();

@@ -68,6 +68,18 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
     }
 
     /**
+     * Updates Base Url for PhpBrowser module
+     *
+     * @param string $url
+     * @throws \Codeception\Exception\ModuleConfigException
+     * @throws \Codeception\Exception\ModuleException
+     */
+    public function updateBaseUrl(string $url)
+    {
+        $this->getModule('PhpBrowser')->_reconfigure(['url' => $url]);
+    }
+
+    /**
      * Returns the path to work directory
      *
      * @return string
