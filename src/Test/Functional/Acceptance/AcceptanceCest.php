@@ -7,34 +7,16 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
+use Robo\Exception\TaskException;
+
 /**
  * @group php73
  */
-class AcceptanceCest
+class AcceptanceCest extends AbstractAcceptanceCest
 {
     /**
-     * Template version for testing
-     */
-    protected const TEMPLATE_VERSION = 'master';
-
-    /**
      * @param \CliTester $I
-     */
-    public function _before(\CliTester $I): void
-    {
-        $I->cleanupWorkDir();
-        $I->cloneTemplateToWorkDir(static::TEMPLATE_VERSION);
-        $I->createAuthJson();
-        $I->createArtifactsDir();
-        $I->createArtifactCurrentTestedCode('docker', '1.1.99');
-        $I->addArtifactsRepoToComposer();
-        $I->addDependencyToComposer('magento/magento-cloud-docker', '1.1.99');
-        $I->composerUpdate();
-    }
-
-    /**
-     * @param \CliTester $I
-     * @throws \Robo\Exception\TaskException
+     * @throws TaskException
      */
     public function testProductionMode(\CliTester $I): void
     {
@@ -46,15 +28,5 @@ class AcceptanceCest
         $I->amOnPage('/');
         $I->see('Home page');
         $I->see('CMS homepage content goes here.');
-    }
-
-    /**
-     * @param \CliTester $I
-     */
-    public function _after(\CliTester $I): void
-    {
-        $I->stopEnvironment();
-        $I->removeDockerCompose();
-        $I->removeWorkDir();
     }
 }

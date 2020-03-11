@@ -49,12 +49,12 @@ interface SourceInterface
     public const SERVICES_DB = self::SERVICES . '.' . ServiceInterface::SERVICE_DB;
 
     /**
-     * DB QUOTE
+     * DB quote
      */
     public const SERVICES_DB_QUOTE = self::SERVICES . '.' . ServiceInterface::SERVICE_DB_QUOTE;
 
     /**
-     * DB SALES
+     * DB sales
      */
     public const SERVICES_DB_SALES = self::SERVICES . '.' . ServiceInterface::SERVICE_DB_SALES;
 

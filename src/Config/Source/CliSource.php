@@ -9,9 +9,6 @@ namespace Magento\CloudDocker\Config\Source;
 
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\App\GenericException;
-use Magento\CloudDocker\Compose\BuilderFactory;
-use Magento\CloudDocker\Compose\DeveloperBuilder;
-use Magento\CloudDocker\Compose\ProductionBuilder;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
