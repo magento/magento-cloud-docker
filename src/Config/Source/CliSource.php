@@ -30,6 +30,7 @@ class CliSource implements SourceInterface
     public const OPTION_RABBIT_MQ = 'rmq';
     public const OPTION_SELENIUM_VERSION = 'selenium-version';
     public const OPTION_SELENIUM_IMAGE = 'selenium-image';
+    public const OPTION_INSTALLATION_TYPE = 'installation-type';
 
     /**
      * State modifiers.
@@ -151,6 +152,10 @@ class CliSource implements SourceInterface
 
         if ($port = $this->input->getOption(self::OPTION_EXPOSE_DB_PORT)) {
             $repository->set(self::SYSTEM_EXPOSE_DB_PORTS, $port);
+        }
+
+        if ($installationType = $this->input->getOption(self::OPTION_INSTALLATION_TYPE) ) {
+            $repository->set(self::INSTALLATION_TYPE, $installationType);
         }
 
         return $repository;

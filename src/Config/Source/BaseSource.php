@@ -17,6 +17,9 @@ use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
  */
 class BaseSource implements SourceInterface
 {
+    public const INSTALLATION_TYPE_GIT = 'git';
+    public const INSTALLATION_TYPE_COMPOSER = 'composer';
+
     /**
      * @var EnvReader
      */
@@ -41,6 +44,7 @@ class BaseSource implements SourceInterface
             self::SYSTEM_MODE => BuilderFactory::BUILDER_PRODUCTION,
             self::SYSTEM_SYNC_ENGINE => null,
             self::CRON_ENABLED => false,
+            self::INSTALLATION_TYPE => self::INSTALLATION_TYPE_COMPOSER
         ]);
 
         try {

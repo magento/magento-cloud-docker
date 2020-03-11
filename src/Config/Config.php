@@ -290,6 +290,8 @@ class Config
             $config->set(SourceInterface::VARIABLES . '.' . 'MFTF_UTILS', 1);
         }
 
+        $config->set(SourceInterface::VARIABLES . '.INSTALLATION_TYPE', $this->get(SourceInterface::INSTALLATION_TYPE));
+
         return $config->get(SourceInterface::VARIABLES);
     }
 }

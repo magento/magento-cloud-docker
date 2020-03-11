@@ -204,6 +204,13 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Cloud environment variables'
+            )
+            ->addOption(
+                Source\CliSource::OPTION_INSTALLATION_TYPE,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Sets that magento installed from git',
+                Source\BaseSource::INSTALLATION_TYPE_COMPOSER
             );
 
         parent::configure();
