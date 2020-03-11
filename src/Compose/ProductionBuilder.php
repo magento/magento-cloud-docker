@@ -127,21 +127,6 @@ class ProductionBuilder implements BuilderInterface
     }
 
     /**
-     * @param string $device
-     * @return array
-     */
-    private function getVolumeConfig(string $device = '/'): array
-    {
-        return [
-            'driver_opts' => [
-                'type' => 'none',
-                'device' => $this->resolver->getRootPath($device),
-                'o' => 'bind'
-            ]
-        ];
-    }
-
-    /**
      * {@inheritdoc}
      *
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
@@ -203,6 +188,11 @@ class ProductionBuilder implements BuilderInterface
         ));
         $volumesMount = $this->volumeResolver->normalize(
             $this->volumeResolver->getMountVolumes($hasTmpMounts)
+        );
+
+        $manager->addVolume(
+            self::VOLUME_MARIADB_CONF,
+            $this->getVolumeConfig('/.docker/mysql/mariadb.conf.d')
         );
 
         $this->addDbService(self::SERVICE_DB, $manager, $dbVersion, $volumesMount, $config);
@@ -450,19 +440,16 @@ class ProductionBuilder implements BuilderInterface
         array $mounts,
         Config $config
     ) {
-        $volumes = [
-            self::VOLUME_MARIADB_CONF => $this->getVolumeConfig('/.docker/mysql/mariadb.conf.d'),
-        ];
-
         $mounts[] = self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d';
 
         switch ($service) {
             case self::SERVICE_DB:
                 $port = $config->getDbPortsExpose();
 
-                $volumes[self::VOLUME_MAGENTO_DB] = [];
-                $volumes[self::VOLUME_DOCKER_ETRYPOINT] = $this->getVolumeConfig(
-                    '/.docker/mysql/docker-entrypoint-initdb.d'
+                $manager->addVolume(self::VOLUME_MAGENTO_DB, []);
+                $manager->addVolume(
+                    self::VOLUME_DOCKER_ETRYPOINT,
+                    $this->getVolumeConfig('/.docker/mysql/docker-entrypoint-initdb.d')
                 );
 
                 $mounts[] = self::VOLUME_MAGENTO_DB . ':/var/lib/mysql';
@@ -472,9 +459,10 @@ class ProductionBuilder implements BuilderInterface
             case self::SERVICE_DB_QUOTE:
                 $port = $config->getDbQuotePortsExpose();
 
-                $volumes[self::VOLUME_MAGENTO_DB_QUOTE] = [];
-                $volumes[self::VOLUME_DOCKER_ETRYPOINT_QUOTE] = $this->getVolumeConfig(
-                    '/.docker/mysql-quote/docker-entrypoint-initdb.d'
+                $manager->addVolume(self::VOLUME_MAGENTO_DB_QUOTE, []);
+                $manager->addVolume(
+                    self::VOLUME_DOCKER_ETRYPOINT_QUOTE,
+                    $this->getVolumeConfig('/.docker/mysql-quote/docker-entrypoint-initdb.d')
                 );
 
                 $mounts[] = self::VOLUME_MAGENTO_DB_QUOTE . ':/var/lib/mysql';
@@ -484,9 +472,12 @@ class ProductionBuilder implements BuilderInterface
             case self::SERVICE_DB_SALES:
                 $port = $config->getDbSalesPortsExpose();
 
-                $volumes[self::VOLUME_MAGENTO_DB_SALES] = [];
-                $volumes[self::VOLUME_DOCKER_ETRYPOINT_SALES] = $this->getVolumeConfig(
-                    '/.docker/mysql-sales/docker-entrypoint-initdb.d'
+                $manager->addVolume(self::VOLUME_MAGENTO_DB_SALES, []);
+                $manager->addVolume(
+                    self::VOLUME_DOCKER_ETRYPOINT_SALES,
+                    $this->getVolumeConfig(
+                        '/.docker/mysql-sales/docker-entrypoint-initdb.d'
+                    )
                 );
 
                 $mounts[] = self::VOLUME_MAGENTO_DB_SALES . ':/var/lib/mysql';
@@ -497,7 +488,6 @@ class ProductionBuilder implements BuilderInterface
                 throw new GenericException(sprintf('Configuration for %s service not exist', $service));
         }
 
-        $manager->addVolumes($volumes);
         $manager->addService(
             $service,
             $this->serviceFactory->create(
@@ -511,5 +501,20 @@ class ProductionBuilder implements BuilderInterface
             [self::NETWORK_MAGENTO],
             []
         );
+    }
+
+    /**
+     * @param string $device
+     * @return array
+     */
+    private function getVolumeConfig(string $device = '/'): array
+    {
+        return [
+            'driver_opts' => [
+                'type' => 'none',
+                'device' => $this->resolver->getRootPath($device),
+                'o' => 'bind'
+            ]
+        ];
     }
 }
