@@ -20,6 +20,9 @@ class BaseSource implements SourceInterface
     public const INSTALLATION_TYPE_GIT = 'git';
     public const INSTALLATION_TYPE_COMPOSER = 'composer';
 
+    public const DEFAULT_HOST = 'magento2.docker';
+    public const DEFAULT_PORT = '80';
+
     /**
      * @var EnvReader
      */
@@ -44,6 +47,8 @@ class BaseSource implements SourceInterface
             self::SYSTEM_MODE => BuilderFactory::BUILDER_PRODUCTION,
             self::SYSTEM_SYNC_ENGINE => null,
             self::CRON_ENABLED => false,
+            self::CONFIG_PORT => self::DEFAULT_PORT,
+            self::CONFIG_HOST => self::DEFAULT_HOST,
             self::INSTALLATION_TYPE => self::INSTALLATION_TYPE_COMPOSER
         ]);
 

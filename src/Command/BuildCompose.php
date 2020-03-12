@@ -211,6 +211,18 @@ class BuildCompose extends Command
                 InputOption::VALUE_OPTIONAL,
                 'Sets that magento installed from git',
                 Source\BaseSource::INSTALLATION_TYPE_COMPOSER
+            )
+            ->addOption(
+                Source\CliSource::OPTION_HOST,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Host name'
+            )
+            ->addOption(
+                Source\CliSource::OPTION_PORT,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Port'
             );
 
         parent::configure();

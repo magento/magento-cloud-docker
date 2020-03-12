@@ -8,8 +8,11 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Config\Dist;
 
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Compose\Manager;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Relationship;
+use Magento\CloudDocker\Config\Source\BaseSource;
+use Magento\CloudDocker\Config\Source\SourceInterface;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
@@ -50,27 +53,6 @@ class Generator
      * @var EnvCoder
      */
     private $envCoder;
-
-    /**
-     * @var array
-     */
-    private static $baseConfig = [
-        'MAGENTO_CLOUD_ROUTES' => [
-            'http://magento2.docker/' => [
-                'type' => 'upstream',
-                'original_url' => 'http://{default}'
-            ],
-            'https://magento2.docker/' => [
-                'type' => 'upstream',
-                'original_url' => 'https://{default}'
-            ],
-        ],
-        'MAGENTO_CLOUD_VARIABLES' => [
-            'ADMIN_EMAIL' => 'admin@example.com',
-            'ADMIN_PASSWORD' => '123123q',
-            'ADMIN_URL' => 'admin'
-        ],
-    ];
 
     /**
      * @param DirectoryList $directoryList
@@ -131,7 +113,7 @@ class Generator
     {
         return array_merge(
             ['MAGENTO_CLOUD_RELATIONSHIPS' => $this->relationship->get($config)],
-            self::$baseConfig
+            $this->getBaseConfig($config)
         );
     }
 
@@ -167,5 +149,40 @@ class Generator
         }
 
         $this->filesystem->put($filePath, $result);
+    }
+
+    /**
+     * Returns base configuration
+     *
+     * @param Config $config
+     * @return array
+     * @throws ConfigurationMismatchException
+     */
+    private function getBaseConfig(Config $config): array
+    {
+        $host = $config->getHost();
+        $port = $config->getPort();
+
+        if (!empty($port) && $port != BaseSource::DEFAULT_PORT) {
+            $host .= ':' . $port;
+        }
+
+        return [
+            'MAGENTO_CLOUD_ROUTES' => [
+                sprintf('http://%s/', $host) => [
+                    'type' => 'upstream',
+                    'original_url' => 'http://{default}'
+                ],
+                sprintf('https://%s/', $host) => [
+                    'type' => 'upstream',
+                    'original_url' => 'https://{default}'
+                ],
+            ],
+            'MAGENTO_CLOUD_VARIABLES' => [
+                'ADMIN_EMAIL' => 'admin@example.com',
+                'ADMIN_PASSWORD' => '123123q',
+                'ADMIN_URL' => 'admin'
+            ],
+        ];
     }
 }

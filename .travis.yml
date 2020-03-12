@@ -6,6 +6,7 @@ git:
 addons:
   hosts:
     - magento2.docker
+    - magento2.test
 
 services:
   - docker
