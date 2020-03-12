@@ -132,7 +132,7 @@ class CloudSource implements SourceInterface
         );
         $repository = $this->addName(
             $repository,
-            $appConfig['name'] ?? []
+            $appConfig['name']
         );
 
         return $repository;
