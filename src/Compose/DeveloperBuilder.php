@@ -57,7 +57,6 @@ class DeveloperBuilder implements BuilderInterface
      */
     private $extensionResolver;
 
-
     /**
      * @param BuilderFactory $builderFactory
      * @param FileList $fileList

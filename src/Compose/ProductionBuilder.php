@@ -107,7 +107,6 @@ class ProductionBuilder implements BuilderInterface
      * @param Resolver $resolver
      * @param VolumeResolver $volumeResolver
      */
-
     public function __construct(
         ServiceFactory $serviceFactory,
         FileList $fileList,
@@ -125,6 +124,7 @@ class ProductionBuilder implements BuilderInterface
         $this->resolver = $resolver;
         $this->volumeResolver = $volumeResolver;
     }
+
     /**
      * {@inheritdoc}
      *
@@ -144,8 +144,6 @@ class ProductionBuilder implements BuilderInterface
         $manager->addNetwork(self::NETWORK_MAGENTO, ['driver' => 'bridge']);
         $manager->addNetwork(self::NETWORK_MAGENTO_BUILD, ['driver' => 'bridge']);
 
-        $volumePrefix =  $config->getName() . '-';
-
         $volumes = [
             self::VOLUME_MAGENTO => [
                 'driver_opts' => [
@@ -154,8 +152,8 @@ class ProductionBuilder implements BuilderInterface
                     'o' => 'bind'
                 ]
             ],
-            $volumePrefix . self::VOLUME_MAGENTO_DB => [],
-            $volumePrefix . self::VOLUME_MARIADB_CONF => [
+            self::VOLUME_MAGENTO_DB => [],
+            self::VOLUME_MARIADB_CONF => [
                 'driver_opts' => [
                     'type' => 'none',
                     'device' => $this->resolver->getRootPath('/.docker/mysql/mariadb.conf.d'),
@@ -242,9 +240,9 @@ class ProductionBuilder implements BuilderInterface
                     'ports' => [$dbPorts],
                     'volumes' => array_merge(
                         [
-                            $volumePrefix . self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+                            self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
                             self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d',
-                            $volumePrefix . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
+                            self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
                         ],
                         $volumesMount
                     )
