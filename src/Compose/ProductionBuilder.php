@@ -98,7 +98,6 @@ class ProductionBuilder implements BuilderInterface
      */
     private $volumeResolver;
 
-
     /**
      * @param ServiceFactory $serviceFactory
      * @param FileList $fileList
@@ -108,6 +107,7 @@ class ProductionBuilder implements BuilderInterface
      * @param Resolver $resolver
      * @param VolumeResolver $volumeResolver
      */
+
     public function __construct(
         ServiceFactory $serviceFactory,
         FileList $fileList,
@@ -125,7 +125,6 @@ class ProductionBuilder implements BuilderInterface
         $this->resolver = $resolver;
         $this->volumeResolver = $volumeResolver;
     }
-
     /**
      * {@inheritdoc}
      *
@@ -135,9 +134,7 @@ class ProductionBuilder implements BuilderInterface
      */
     public function build(Config $config): Manager
     {
-        $volumePrefix =  $config->getName() . '-';
-
-        $manager = $this->managerFactory->create();
+        $manager = $this->managerFactory->create($config);
 
         $phpVersion = $config->getServiceVersion(ServiceInterface::SERVICE_PHP);
         $dbVersion = $config->getServiceVersion(ServiceInterface::SERVICE_DB);
@@ -146,6 +143,8 @@ class ProductionBuilder implements BuilderInterface
 
         $manager->addNetwork(self::NETWORK_MAGENTO, ['driver' => 'bridge']);
         $manager->addNetwork(self::NETWORK_MAGENTO_BUILD, ['driver' => 'bridge']);
+
+        $volumePrefix =  $config->getName() . '-';
 
         $volumes = [
             self::VOLUME_MAGENTO => [
