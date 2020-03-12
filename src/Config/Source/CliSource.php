@@ -168,7 +168,7 @@ class CliSource implements SourceInterface
             $repository->set(self::CONFIG_PORT, $port);
         }
 
-        if ($installationType = $this->input->getOption(self::OPTION_INSTALLATION_TYPE) ) {
+        if ($installationType = $this->input->getOption(self::OPTION_INSTALLATION_TYPE)) {
             $repository->set(self::INSTALLATION_TYPE, $installationType);
         }
 
