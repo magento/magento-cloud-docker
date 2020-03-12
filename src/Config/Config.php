@@ -12,7 +12,6 @@ use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\BuilderFactory;
 use Magento\CloudDocker\Compose\DeveloperBuilder;
 use Magento\CloudDocker\Compose\ProductionBuilder;
-use Magento\CloudDocker\Config\Source\CliSource;
 use Magento\CloudDocker\Config\Source\SourceException;
 use Magento\CloudDocker\Config\Source\SourceInterface;
 use Magento\CloudDocker\Service\ServiceInterface;
@@ -291,5 +290,25 @@ class Config
         }
 
         return $config->get(SourceInterface::VARIABLES);
+    }
+
+    /**
+     * Returns host value or default if host not set
+     *
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->get(SourceInterface::CONFIG_HOST);
+    }
+
+    /**
+     * Returns port value or default if port not set
+     *
+     * @return string
+     */
+    public function getPort(): string
+    {
+        return $this->get(SourceInterface::CONFIG_PORT);
     }
 }

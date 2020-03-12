@@ -49,6 +49,12 @@ class CliSource implements SourceInterface
     public const OPTION_ENV_VARIABLES = 'env-vars';
 
     /**
+     * Host configuration
+     */
+    public const OPTION_HOST = 'host';
+    public const OPTION_PORT = 'port';
+
+    /**
      * Option key to config name map
      *
      * @var array
@@ -149,8 +155,16 @@ class CliSource implements SourceInterface
             $repository->set(self::VARIABLES, (array) json_decode($envs, true));
         }
 
-        if ($port = $this->input->getOption(self::OPTION_EXPOSE_DB_PORT)) {
-            $repository->set(self::SYSTEM_EXPOSE_DB_PORTS, $port);
+        if ($dbPort = $this->input->getOption(self::OPTION_EXPOSE_DB_PORT)) {
+            $repository->set(self::SYSTEM_EXPOSE_DB_PORTS, $dbPort);
+        }
+
+        if ($host = $this->input->getOption(self::OPTION_HOST)) {
+            $repository->set(self::CONFIG_HOST, $host);
+        }
+
+        if ($port = $this->input->getOption(self::OPTION_PORT)) {
+            $repository->set(self::CONFIG_PORT, $port);
         }
 
         return $repository;
