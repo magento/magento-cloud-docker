@@ -197,14 +197,14 @@ class CloudSource implements SourceInterface
 
     /**
      * @param Repository $repository
-     * @param String $version
+     * @param string $version
      * @param array $extensions
      * @param array $disabledExtensions
      * @return Repository
      */
     private function addPhp(
         Repository $repository,
-        String $version,
+        string $version,
         array $extensions,
         array $disabledExtensions
     ): Repository {
@@ -226,11 +226,11 @@ class CloudSource implements SourceInterface
 
     /**
      * @param Repository $repository
-     * @param String $version
+     * @param string $version
      * @return Repository
      * @throws SourceException
      */
-    private function addXdebug(Repository $repository, String $version): Repository
+    private function addXdebug(Repository $repository, string $version): Repository
     {
         try {
             $repository->set([
@@ -299,10 +299,10 @@ class CloudSource implements SourceInterface
 
     /**
      * @param Repository $repository
-     * @param String $name
+     * @param string $name
      * @return Repository
      */
-    private function addName(Repository $repository, String $name): Repository
+    private function addName(Repository $repository, string $name): Repository
     {
         $repository->set([
             self::NAME => $name,
