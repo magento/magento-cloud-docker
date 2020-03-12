@@ -45,9 +45,17 @@ version_is_valid()
     fi
 }
 
+domain_is_valid()
+{
+    # Check that a flag isn't being interpreted as the domain
+    if [[ -z $OPTARG ]] || [[ $OPTARG == -* ]]; then
+        die "Invalid domain $OPTARG for $OPT"
+    fi
+}
+
 composer_install()
 {
-    docker run --rm -e "MAGENTO_ROOT=/app" -v "$(pwd)":/app -v ~/.composer/cache:/root/.composer/cache "magento/magento-cloud-docker-php:${PHP_VERSION}-cli" composer install --ansi
+    docker run --rm -e "MAGENTO_ROOT=/app" -v "$(pwd)":/app -v ~/.composer/cache:/root/.composer/cache "magento/magento-cloud-docker-php:${PHP_VERSION}-cli-${IMAGE_VERSION}" composer install --ansi
 }
 
 add_host()
@@ -62,6 +70,7 @@ add_host()
 }
 
 PHP_VERSION="7.2"
+IMAGE_VERSION="1.1"
 ADD_HOST=true
 DOMAIN="magento2.docker"
 USAGE="Init Docker
@@ -71,6 +80,8 @@ USAGE="Init Docker
 
 \033[33mOptions:\033[0m
   \033[32m-p, --php\033[0m     PHP version (for installing dependencies) \033[33m[default: ${PHP_VERSION}]\033[0m
+  \033[32m-i, --image\033[0m   image version (for installing dependencies) \033[33m[default: ${IMAGE_VERSION}]\033[0m
+  \033[32m-d, --domain\033[0m  domain name to add to /etc/hosts \033[33m[default: ${DOMAIN}]\033[0m
   \033[32m-t, --host\033[0m    add domain name to /etc/hosts file \033[33m[default: ${ADD_HOST}]\033[0m
   \033[32m-h, --help\033[0m    show this help text
 
@@ -78,7 +89,7 @@ USAGE="Init Docker
   \033[32mbin/init-docker.sh\033[0m                        perform default actions
   \033[32mbin/init-docker.sh --php 7.3 --host no\033[0m    use PHP 7.3, skip adding domain to /etc/hosts"
 
-while getopts "ht:p:-:" OPT; do
+while getopts "ht:p:d:i:-:" OPT; do
     if [ "$OPT" = "-" ]; then   # long option: reformulate OPT and OPTARG
         OPT="${OPTARG%%=*}"       # extract long option name
 
@@ -93,10 +104,22 @@ while getopts "ht:p:-:" OPT; do
             PHP_VERSION="$OPTARG"
             ;;
 
+        i | image )
+            needs_arg "$@"
+            version_is_valid
+            IMAGE_VERSION="$OPTARG"
+            ;;
+
         t | host )
             needs_arg "$@"
             parse_bool_flag
             ADD_HOST="$OPTARG"
+            ;;
+
+        d | domain )
+            needs_arg "$@"
+            domain_is_valid
+            DOMAIN="$OPTARG"
             ;;
 
         h | help )
