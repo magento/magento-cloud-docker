@@ -11,9 +11,9 @@ services:
     ports:
       - '3306'
     volumes:
-      - 'magento-db:/var/lib/mysql'
+      - 'mymagento-magento-db:/var/lib/mysql'
       - 'docker-entrypoint:/docker-entrypoint-initdb.d'
-      - 'mariadb-conf:/etc/mysql/mariadb.conf.d'
+      - 'mymagento-mariadb-conf:/etc/mysql/mariadb.conf.d'
       - 'docker-mnt:/mnt:delegated'
     networks:
       magento:
@@ -259,8 +259,8 @@ volumes:
       type: none
       device: '${PWD}/'
       o: bind
-  magento-db: {  }
-  mariadb-conf:
+  mymagento-magento-db: {  }
+  mymagento-mariadb-conf:
     driver_opts:
       type: none
       device: '${PWD}/.docker/mysql/mariadb.conf.d'

@@ -144,6 +144,8 @@ class ProductionBuilder implements BuilderInterface
         $manager->addNetwork(self::NETWORK_MAGENTO, ['driver' => 'bridge']);
         $manager->addNetwork(self::NETWORK_MAGENTO_BUILD, ['driver' => 'bridge']);
 
+        $volumePrefix =  $config->getName() . '-';
+
         $volumes = [
             self::VOLUME_MAGENTO => [
                 'driver_opts' => [
@@ -152,8 +154,8 @@ class ProductionBuilder implements BuilderInterface
                     'o' => 'bind'
                 ]
             ],
-            self::VOLUME_MAGENTO_DB => [],
-            self::VOLUME_MARIADB_CONF => [
+            $volumePrefix . self::VOLUME_MAGENTO_DB => [],
+            $volumePrefix . self::VOLUME_MARIADB_CONF => [
                 'driver_opts' => [
                     'type' => 'none',
                     'device' => $this->resolver->getRootPath('/.docker/mysql/mariadb.conf.d'),
@@ -240,9 +242,9 @@ class ProductionBuilder implements BuilderInterface
                     'ports' => [$dbPorts],
                     'volumes' => array_merge(
                         [
-                            self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+                            $volumePrefix . self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
                             self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d',
-                            self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
+                            $volumePrefix . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
                         ],
                         $volumesMount
                     )
