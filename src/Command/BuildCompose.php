@@ -209,7 +209,7 @@ class BuildCompose extends Command
                 Source\CliSource::OPTION_INSTALLATION_TYPE,
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'Sets that magento installed from git',
+                'Sets magento installation type',
                 Source\BaseSource::INSTALLATION_TYPE_COMPOSER
             )
             ->addOption(
