@@ -50,6 +50,26 @@ class AcceptanceCest
 
     /**
      * @param \CliTester $I
+     * @throws \Robo\Exception\TaskException
+     */
+    public function testCustomHost(\CliTester $I): void
+    {
+        $I->updateBaseUrl('http://magento2.test:8080/');
+        $I->assertTrue(
+            $I->runEceDockerCommand('build:compose --mode=production --host=magento2.test --port=8080'),
+            'Command build:compose failed'
+        );
+        $I->startEnvironment();
+        $I->assertTrue($I->runDockerComposeCommand('run build cloud-build'), 'Build phase failed');
+        $I->assertTrue($I->runDockerComposeCommand('run deploy cloud-deploy'), 'Deploy phase failed');
+        $I->assertTrue($I->runDockerComposeCommand('run deploy cloud-post-deploy'), 'Post deploy phase failed');
+        $I->amOnPage('/');
+        $I->see('Home page');
+        $I->see('CMS homepage content goes here.');
+    }
+
+    /**
+     * @param \CliTester $I
      */
     public function _after(\CliTester $I): void
     {

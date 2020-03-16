@@ -82,6 +82,8 @@ class GeneratorTest extends TestCase
     }
 
     /**
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     *
      * @throws ConfigurationMismatchException
      */
     public function testGenerate(): void
@@ -100,6 +102,12 @@ class GeneratorTest extends TestCase
                 'database' => ['config'],
                 'redis' => ['config'],
             ]);
+        $config->expects($this->exactly(1))
+            ->method('getHost')
+            ->willReturn('magento2.docker');
+        $config->expects($this->exactly(1))
+            ->method('getPort')
+            ->willReturn(80);
         $this->envReaderMock->expects($this->once())
             ->method('read')
             ->willReturn([]);
