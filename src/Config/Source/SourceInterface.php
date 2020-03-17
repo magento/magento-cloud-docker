@@ -88,6 +88,7 @@ interface SourceInterface
     public const PHP_ENABLED_EXTENSIONS = self::PHP . '.extensions.enabled';
     public const PHP_DISABLED_EXTENSIONS = self::PHP . '.extensions.disabled';
 
+    public const INSTALLATION_TYPE = 'install.type';
     /**
      * Config
      */
