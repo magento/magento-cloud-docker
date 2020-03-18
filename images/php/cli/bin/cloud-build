@@ -7,10 +7,17 @@ set -e
 RUN_HOOKS="run-hooks"
 
 if [ "$MAGENTO_RUN_MODE" == "production" ]; then
-    echo "Cleaning directories."
+    echo "Cleaning directories:"
 
-    rm -rf $MAGENTO_ROOT/setup/*
+    if [ "$INSTALLATION_TYPE" == "composer" ]; then
+       echo "Cleaning setup directory."
+       rm -rf $MAGENTO_ROOT/setup/*
+    fi
+
+    echo "Cleaning vendor directory."
     rm -rf $MAGENTO_ROOT/vendor/*
+
+    echo "Cleaning generated directory."
     rm -rf $MAGENTO_ROOT/generated/*
 fi
 
