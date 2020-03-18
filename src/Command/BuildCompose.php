@@ -218,6 +218,13 @@ class BuildCompose extends Command
                 'Cloud environment variables'
             )
             ->addOption(
+                Source\CliSource::OPTION_INSTALLATION_TYPE,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Sets magento installation type',
+                Source\BaseSource::INSTALLATION_TYPE_COMPOSER
+            )
+            ->addOption(
                 Source\CliSource::OPTION_HOST,
                 null,
                 InputOption::VALUE_OPTIONAL,
