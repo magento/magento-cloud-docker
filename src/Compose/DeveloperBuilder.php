@@ -148,7 +148,7 @@ class DeveloperBuilder implements BuilderInterface
                 $volumes,
                 [
                     $volumePrefix  . self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
-                    $volumePrefix  . self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d',
+                    self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d',
                     $volumePrefix  . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
                 ]
             )
