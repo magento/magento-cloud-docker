@@ -7,6 +7,10 @@ Magento:
         username: 'magento2'
         password: 'magento2'
         path: 'magento2'
+      db_quote:
+        port: '3307'
+      db_sales:
+        port: '3308'
       system:
           magento_dir: '/app'
       env:

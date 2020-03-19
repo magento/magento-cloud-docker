@@ -31,6 +31,24 @@ class Relationship
                 'port' => '3306'
             ],
         ],
+        'database-sales' => [
+            [
+                'host' => 'db-sales',
+                'path' => 'magento2',
+                'password' => 'magento2',
+                'username' => 'magento2',
+                'port' => '3306'
+            ],
+        ],
+        'database-quote' => [
+            [
+                'host' => 'db-quote',
+                'path' => 'magento2',
+                'password' => 'magento2',
+                'username' => 'magento2',
+                'port' => '3306'
+            ],
+        ],
         'redis' => [
             [
                 'host' => 'redis',
@@ -81,7 +99,9 @@ class Relationship
     private function convertServiceName(string $serviceName): string
     {
         $map = [
-            'database' => ServiceInterface::SERVICE_DB
+            'database' => ServiceInterface::SERVICE_DB,
+            'database-sales' => ServiceInterface::SERVICE_DB_QUOTE,
+            'database-quote'=> ServiceInterface::SERVICE_DB_SALES,
         ];
 
         return $map[$serviceName] ?? $serviceName;

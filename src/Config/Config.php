@@ -251,6 +251,24 @@ class Config
     }
 
     /**
+     * @return string|null
+     * @throws ConfigurationMismatchException
+     */
+    public function getDbQuotePortsExpose(): ?string
+    {
+        return $this->all()->get(SourceInterface::SYSTEM_EXPOSE_DB_QUOTE_PORTS);
+    }
+
+    /**
+     * @return string|null
+     * @throws ConfigurationMismatchException
+     */
+    public function getDbSalesPortsExpose(): ?string
+    {
+        return $this->all()->get(SourceInterface::SYSTEM_EXPOSE_DB_SALES_PORTS);
+    }
+
+    /**
      * @return array
      * @throws ConfigurationMismatchException
      */
@@ -288,6 +306,8 @@ class Config
         if ($this->hasSelenium()) {
             $config->set(SourceInterface::VARIABLES . '.' . 'MFTF_UTILS', 1);
         }
+
+        $config->set(SourceInterface::VARIABLES . '.INSTALLATION_TYPE', $this->get(SourceInterface::INSTALLATION_TYPE));
 
         return $config->get(SourceInterface::VARIABLES);
     }

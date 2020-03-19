@@ -49,6 +49,16 @@ interface SourceInterface
     public const SERVICES_DB = self::SERVICES . '.' . ServiceInterface::SERVICE_DB;
 
     /**
+     * DB quote
+     */
+    public const SERVICES_DB_QUOTE = self::SERVICES . '.' . ServiceInterface::SERVICE_DB_QUOTE;
+
+    /**
+     * DB sales
+     */
+    public const SERVICES_DB_SALES = self::SERVICES . '.' . ServiceInterface::SERVICE_DB_SALES;
+
+    /**
      * Nginx
      */
     public const SERVICES_NGINX = self::SERVICES . '.' . ServiceInterface::SERVICE_NGINX;
@@ -88,6 +98,7 @@ interface SourceInterface
     public const PHP_ENABLED_EXTENSIONS = self::PHP . '.extensions.enabled';
     public const PHP_DISABLED_EXTENSIONS = self::PHP . '.extensions.disabled';
 
+    public const INSTALLATION_TYPE = 'install.type';
     /**
      * Config
      */
@@ -97,6 +108,8 @@ interface SourceInterface
     public const CONFIG_HOST = 'config.host';
     public const CONFIG_PORT = 'config.port';
     public const SYSTEM_EXPOSE_DB_PORTS = 'system.expose_db_ports';
+    public const SYSTEM_EXPOSE_DB_QUOTE_PORTS = 'system.expose_db_quote_ports';
+    public const SYSTEM_EXPOSE_DB_SALES_PORTS = 'system.expose_db_sales_ports';
 
     public const VARIABLES = 'variables';
 
