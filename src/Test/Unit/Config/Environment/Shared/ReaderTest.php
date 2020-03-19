@@ -58,6 +58,7 @@ class ReaderTest extends TestCase
 
     /**
      * @throws FilesystemException
+     * @throws FileNotFoundException
      */
     public function testExecute()
     {

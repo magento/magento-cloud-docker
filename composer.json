@@ -77,6 +77,14 @@
                 ".docker/mysql"
             ],
             [
+                "dist/mysql-sales",
+                ".docker/mysql-sales"
+            ],
+            [
+                "dist/mysql-quote",
+                ".docker/mysql-quote"
+            ],
+            [
                 "dist/bin/magento-docker",
                 "bin/magento-docker"
             ]
