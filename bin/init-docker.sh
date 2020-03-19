@@ -79,17 +79,17 @@ USAGE="Init Docker
   Initialize a Magento Cloud Docker based project
 
 \033[33mOptions:\033[0m
-  \033[32m-p, --php\033[0m     PHP version (for installing dependencies) \033[33m[default: ${PHP_VERSION}]\033[0m
-  \033[32m-i, --image\033[0m   image version (for installing dependencies) \033[33m[default: ${IMAGE_VERSION}]\033[0m
-  \033[32m-d, --domain\033[0m  domain name to add to /etc/hosts \033[33m[default: ${DOMAIN}]\033[0m
-  \033[32m-t, --host\033[0m    add domain name to /etc/hosts file \033[33m[default: ${ADD_HOST}]\033[0m
-  \033[32m-h, --help\033[0m    show this help text
+  \033[32m-p, --php\033[0m        PHP version (for installing dependencies) \033[33m[default: ${PHP_VERSION}]\033[0m
+  \033[32m-i, --image\033[0m      image version (for installing dependencies) \033[33m[default: ${IMAGE_VERSION}]\033[0m
+  \033[32m    --host\033[0m       domain name to add to /etc/hosts \033[33m[default: ${DOMAIN}]\033[0m
+  \033[32m    --add-host\033[0m   add domain name to /etc/hosts file \033[33m[default: ${ADD_HOST}]\033[0m
+  \033[32m-h, --help\033[0m       show this help text
 
 \033[33mExample usage:\033[0m
-  \033[32mbin/init-docker.sh\033[0m                        perform default actions
-  \033[32mbin/init-docker.sh --php 7.3 --host no\033[0m    use PHP 7.3, skip adding domain to /etc/hosts"
+  \033[32mbin/init-docker.sh\033[0m                           perform default actions
+  \033[32mbin/init-docker.sh --php 7.3 --add-host no\033[0m   use PHP 7.3, skip adding domain to /etc/hosts"
 
-while getopts "ht:p:d:i:-:" OPT; do
+while getopts "hp:i:-:" OPT; do
     if [ "$OPT" = "-" ]; then   # long option: reformulate OPT and OPTARG
         OPT="${OPTARG%%=*}"       # extract long option name
 
@@ -110,13 +110,13 @@ while getopts "ht:p:d:i:-:" OPT; do
             IMAGE_VERSION="$OPTARG"
             ;;
 
-        t | host )
+        add-host )
             needs_arg "$@"
             parse_bool_flag
             ADD_HOST="$OPTARG"
             ;;
 
-        d | domain )
+        host )
             needs_arg "$@"
             domain_is_valid
             DOMAIN="$OPTARG"
