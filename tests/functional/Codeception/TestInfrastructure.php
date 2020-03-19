@@ -308,6 +308,16 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Adds ece-tools repo to composer.json
+     *
+     * @return bool
+     */
+    public function addEceToolsGitRepoToComposer(): bool
+    {
+        return $this->addGitRepoToComposer('ece_tools');
+    }
+
+    /**
      * @param string $name
      * @return bool
      */
@@ -452,6 +462,30 @@ class TestInfrastructure extends BaseModule
     {
         return $this->writeYamlConfiguration(
             $this->getWorkDirPath() . DIRECTORY_SEPARATOR . self::MAGENTO_APP_YAML,
+            $data
+        );
+    }
+
+    /**
+     * Returns array from .magento.env.yaml
+     *
+     * @return array
+     */
+    public function readEnvMagentoYaml(): array
+    {
+        return $this->readYamlConfiguration($this->getWorkDirPath() . DIRECTORY_SEPARATOR . self::MAGENTO_ENV_YAML);
+    }
+
+    /**
+     * Saves configuration in the .magento.env.yaml file
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function writeEnvMagentoYaml(array $data): bool
+    {
+        return $this->writeYamlConfiguration(
+            $this->getWorkDirPath() . DIRECTORY_SEPARATOR . self::MAGENTO_ENV_YAML,
             $data
         );
     }
