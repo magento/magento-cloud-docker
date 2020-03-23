@@ -30,31 +30,25 @@ class ElasticsearchCest extends AbstractAcceptanceCest
      */
     public function testElasticsearch(CliTester $I, Example $data)
     {
-        $xms = '512m';
-        $xmx = '512m';
-        $param = 'allow_mmap';
-        $versionsForCheckingParams = ['6.5', '7.5'];
         $command = sprintf(
             'build:compose --mode=production --es=%s --es-env-var=ES_JAVA_OPTS="-Xms%s -Xmx%s"',
             $data['version'],
-            $xms,
-            $xmx
+            $data['xms'],
+            $data['xmx']
         );
-        if (in_array($data['version'], $versionsForCheckingParams)) {
-            if ('6.5' === $data['version']) {
-                $param .= 'fs';
-            }
-            $command .= " --es-env-var=node.store.$param=false";
+
+        if (!empty($data['param'])) {
+            $command .= " --es-env-var={$data['param']['key']}={$data['param']['value']}";
         }
         $I->runEceDockerCommand($command);
         $I->startEnvironment();
         $I->runDockerComposeCommand('exec -T elasticsearch ps aux | grep elasticsearch');
-        $I->seeInOutput('-Xms' . $xms);
-        $I->seeInOutput('-Xmx' . $xmx);
+        $I->seeInOutput('-Xms' . $data['xms']);
+        $I->seeInOutput('-Xmx' . $data['xmx']);
 
-        if (in_array($data['version'], $versionsForCheckingParams)) {
+        if (!empty($data['param'])) {
             $I->runDockerComposeCommand('exec -T elasticsearch curl http://localhost:9200/_nodes/settings');
-            $I->seeInOutput(sprintf('"store":{"%s":"false"}', $param));
+            $I->seeInOutput($data['param']['needle']);
         }
     }
 
@@ -64,11 +58,46 @@ class ElasticsearchCest extends AbstractAcceptanceCest
     protected function dataProvider(): array
     {
         return [
-            ['version' => '1.7'],
-            ['version' => '2.4'],
-            ['version' => '5.2'],
-            ['version' => '6.5'],
-            ['version' => '7.5'],
+            [
+                'version' => '1.7',
+                'xms' => '512m',
+                'xmx' => '512m',
+            ],
+            [
+                'version' => '2.4',
+                'xms' => '514m',
+                'xmx' => '514m',
+            ],
+            [
+                'version' => '5.2',
+                'xms' => '516m',
+                'xmx' => '516m',
+                'param' => [
+                    'key' => 'index.store.type',
+                    'value' => 'fs',
+                    'needle' => '"index":{"store":{"type":"fs"}}',
+                ]
+            ],
+            [
+                'version' => '6.5',
+                'xms' => '518m',
+                'xmx' => '518m',
+                'param' => [
+                    'key' => 'node.store.allow_mmapfs',
+                    'value' => 'false',
+                    'needle' => '"store":{"allow_mmapfs":"false"}',
+                ]
+            ],
+            [
+                'version' => '7.5',
+                'xms' => '520m',
+                'xmx' => '520m',
+                'param' => [
+                    'key' => 'node.store.allow_mmap',
+                    'value' => 'false',
+                    'needle' => '"store":{"allow_mmap":"false"}',
+                ]
+            ],
         ];
     }
 }
