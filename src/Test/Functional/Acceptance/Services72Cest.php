@@ -17,7 +17,6 @@ class Services72Cest extends ServicesCest
      */
     protected const TEMPLATE_VERSION = '2.3.0';
 
-
     /**
      * @return array
      */

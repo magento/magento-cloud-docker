@@ -60,7 +60,7 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
     /**
      * @var string
      */
-    static protected $output = '';
+    protected static $output = '';
 
     /**
      * @inheritdoc

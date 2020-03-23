@@ -28,14 +28,14 @@ class ServicesCest extends AbstractCest
     }
 
     /**
-     * @var int
+     * @var integer
      */
-    static protected $counter = 0;
+    protected static $counter = 0;
 
     /**
-     * @var bool
+     * @var boolean
      */
-    static protected $beforeShouldRun = true;
+    protected static $beforeShouldRun = true;
 
     /**
      * @param \CliTester $I
