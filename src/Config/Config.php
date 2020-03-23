@@ -331,4 +331,13 @@ class Config
     {
         return $this->get(SourceInterface::CONFIG_PORT);
     }
+
+    /**
+     * @return String
+     * @throws ConfigurationMismatchException
+     */
+    public function getName(): String
+    {
+        return $this->all()->get(SourceInterface::NAME);
+    }
 }

@@ -91,6 +91,10 @@ class CloudSource implements SourceInterface
             throw new SourceException('Relationships could not be parsed.');
         }
 
+        if (!isset($appConfig['name'])) {
+            throw new SourceException('Name could not be parsed.');
+        }
+
         [$type, $version] = explode(':', $appConfig['type']);
         /**
          * RC versions are not supported
@@ -127,6 +131,10 @@ class CloudSource implements SourceInterface
         $repository = $this->addRelationships(
             $repository,
             $appConfig['relationships'] ?? []
+        );
+        $repository = $this->addName(
+            $repository,
+            $appConfig['name']
         );
 
         return $repository;
@@ -287,6 +295,20 @@ class CloudSource implements SourceInterface
                 'orig' => $mountData
             ]);
         }
+
+        return $repository;
+    }
+
+    /**
+     * @param Repository $repository
+     * @param string $name
+     * @return Repository
+     */
+    private function addName(Repository $repository, string $name): Repository
+    {
+        $repository->set([
+            self::NAME => $name,
+        ]);
 
         return $repository;
     }
