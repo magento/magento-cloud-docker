@@ -110,12 +110,14 @@ class CliSource implements SourceInterface
             ]);
         }
 
-        foreach (self::$optionsMap as $option => $service) {
+        foreach (self::$optionsMap as $option => $services) {
             if ($value = $this->input->getOption($option)) {
-                $repository->set([
-                    $service . '.enabled' => true,
-                    $service . '.version' => $value
-                ]);
+                foreach ($services as $service) {
+                    $repository->set([
+                        $service . '.enabled' => true,
+                        $service . '.version' => $value
+                    ]);
+                }
             }
         }
 
