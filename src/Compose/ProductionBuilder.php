@@ -191,8 +191,10 @@ class ProductionBuilder implements BuilderInterface
             $this->volumeResolver->getMountVolumes($hasTmpMounts)
         );
 
+        $volumePrefix =  $config->getName() . '-';
+
         $manager->addVolume(
-            self::VOLUME_MARIADB_CONF,
+            $volumePrefix . self::VOLUME_MARIADB_CONF,
             $this->getVolumeConfig('/.docker/mysql/mariadb.conf.d')
         );
 
@@ -449,19 +451,20 @@ class ProductionBuilder implements BuilderInterface
         array $mounts,
         Config $config
     ) {
-        $mounts[] = self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d';
+        $volumePrefix =  $config->getName() . '-';
+        $mounts[] = $volumePrefix . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d';
 
         switch ($service) {
             case self::SERVICE_DB:
                 $port = $config->getDbPortsExpose();
 
-                $manager->addVolume(self::VOLUME_MAGENTO_DB, []);
+                $manager->addVolume($volumePrefix . self::VOLUME_MAGENTO_DB, []);
                 $manager->addVolume(
                     self::VOLUME_DOCKER_ETRYPOINT,
                     $this->getVolumeConfig('/.docker/mysql/docker-entrypoint-initdb.d')
                 );
 
-                $mounts[] = self::VOLUME_MAGENTO_DB . ':/var/lib/mysql';
+                $mounts[] = $volumePrefix . self::VOLUME_MAGENTO_DB . ':/var/lib/mysql';
                 $mounts[] = self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d';
                 $serviceType = ServiceInterface::SERVICE_DB;
                 break;

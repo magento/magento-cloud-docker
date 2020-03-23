@@ -18,6 +18,7 @@ interface SourceInterface
     public const DIR_MAGENTO = '/app';
 
     public const MOUNTS = 'mounts';
+    public const NAME = 'name';
 
     /**
      * Services
