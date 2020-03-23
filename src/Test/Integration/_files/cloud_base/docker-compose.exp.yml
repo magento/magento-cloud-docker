@@ -12,8 +12,8 @@ services:
       - '3306'
     volumes:
       - 'docker-mnt:/mnt:delegated'
-      - 'mariadb-conf:/etc/mysql/mariadb.conf.d'
-      - 'magento-db:/var/lib/mysql'
+      - 'mymagento-mariadb-conf:/etc/mysql/mariadb.conf.d'
+      - 'mymagento-magento-db:/var/lib/mysql'
       - 'docker-entrypoint:/docker-entrypoint-initdb.d'
     networks:
       magento:
@@ -175,12 +175,12 @@ volumes:
   magento-app-etc: {  }
   magento-pub-media: {  }
   magento-pub-static: {  }
-  mariadb-conf:
+  mymagento-mariadb-conf:
     driver_opts:
       type: none
       device: '${PWD}/.docker/mysql/mariadb.conf.d'
       o: bind
-  magento-db: {  }
+  mymagento-magento-db: {  }
   docker-entrypoint:
     driver_opts:
       type: none
