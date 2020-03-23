@@ -74,6 +74,11 @@ interface SourceInterface
     public const SERVICES_ES = self::SERVICES . '.' . ServiceInterface::SERVICE_ELASTICSEARCH;
 
     /**
+     * ES environment variables
+     */
+    public const SERVICES_ES_VARS = self::SERVICES_ES.'.'.'env-vars';
+
+    /**
      * Node
      */
     public const SERVICES_NODE = self::SERVICES . '.' . ServiceInterface::SERVICE_NODE;
