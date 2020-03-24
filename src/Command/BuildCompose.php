@@ -235,6 +235,12 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Port'
+            )
+            ->addOption(
+                Source\CliSource::OPTION_ES_ENVIRONMENT_VARIABLE,
+                null,
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+                'Environment variable for elasticsearch service'
             );
 
         parent::configure();

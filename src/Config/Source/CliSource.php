@@ -56,6 +56,11 @@ class CliSource implements SourceInterface
     public const OPTION_PORT = 'port';
 
     /**
+     * Environment variable for elasticsearch service.
+     */
+    public const OPTION_ES_ENVIRONMENT_VARIABLE = 'es-env-var';
+
+    /**
      * Option key to config name map
      *
      * @var array
@@ -110,12 +115,14 @@ class CliSource implements SourceInterface
             ]);
         }
 
-        foreach (self::$optionsMap as $option => $service) {
+        foreach (self::$optionsMap as $option => $services) {
             if ($value = $this->input->getOption($option)) {
-                $repository->set([
-                    $service . '.enabled' => true,
-                    $service . '.version' => $value
-                ]);
+                foreach ($services as $service) {
+                    $repository->set([
+                        $service . '.enabled' => true,
+                        $service . '.version' => $value
+                    ]);
+                }
             }
         }
 
@@ -183,6 +190,10 @@ class CliSource implements SourceInterface
 
         if ($port = $this->input->getOption(self::OPTION_EXPOSE_DB_SALES_PORT)) {
             $repository->set(self::SYSTEM_EXPOSE_DB_SALES_PORTS, $port);
+        }
+
+        if ($esEnvVars = $this->input->getOption(self::OPTION_ES_ENVIRONMENT_VARIABLE)) {
+            $repository->set(self::SERVICES_ES_VARS, $esEnvVars);
         }
 
         return $repository;
