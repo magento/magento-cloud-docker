@@ -14,7 +14,7 @@ use Robo\Exception\TaskException;
 /**
  * @group php73
  */
-class ElasticsearchCest extends AbstractAcceptanceCest
+class ElasticsearchCest extends AbstractCest
 {
     /**
      * Template version for testing
