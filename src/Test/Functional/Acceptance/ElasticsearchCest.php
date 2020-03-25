@@ -31,7 +31,7 @@ class ElasticsearchCest extends AbstractCest
     public function testElasticsearch(CliTester $I, Example $data)
     {
         $command = sprintf(
-            'build:compose --mode=production --es=%s --es-env-var=ES_JAVA_OPTS="-Xms%s -Xmx%s"',
+            'build:compose --mode=production --es=%s --es-env-var="ES_JAVA_OPTS=-Xms%s -Xmx%s"',
             $data['version'],
             $data['xms'],
             $data['xmx']
