@@ -24,10 +24,10 @@ modules:
       composer_magento_username: "%REPO_USERNAME%"
       composer_magento_password: "%REPO_PASSWORD%"
       composer_github_token: "%GITHUB_TOKEN%"
-      printOutput: true
+      printOutput: false
     Magento\CloudDocker\Test\Functional\Codeception\Docker:
       system_magento_dir: "%Magento.docker.settings.system.magento_dir%"
-      printOutput: true
+      printOutput: false
     PhpBrowser:
       url: "%Magento.docker.settings.env.url.base%"
     Magento\CloudDocker\Test\Functional\Codeception\MagentoDb:
