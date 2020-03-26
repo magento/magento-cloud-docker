@@ -21,7 +21,6 @@ class Elasticsearch72Cest extends ElasticsearchCest
      */
     protected const TEMPLATE_VERSION = '2.3.0';
 
-
     /**
      * @return array
      */
