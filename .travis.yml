@@ -53,11 +53,22 @@ jobs:
       php: '7.3'
       env:
         - TEST_SUITE=integration
+    - stage: test
+      script: if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/functional.sh; fi;
+      dist: xenial
+      env:
+        - TEST_SUITE=functional
+    - script: if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/functional.sh; fi;
+      dist: xenial
+      php: '7.2'
+      env:
+        - TEST_SUITE=functional
+    - script: if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/functional.sh; fi;
+      php: '7.3'
+      env:
+        - TEST_SUITE=functional
 
 install: composer update
 
 before_script:
   - sudo sysctl -w vm.max_map_count=262144
-
-script:
-  - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "functional" ]; then ./tests/travis/functional.sh; fi;

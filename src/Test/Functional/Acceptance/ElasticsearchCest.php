@@ -59,26 +59,6 @@ class ElasticsearchCest extends AbstractCest
     {
         return [
             [
-                'version' => '1.7',
-                'xms' => '512m',
-                'xmx' => '512m',
-            ],
-            [
-                'version' => '2.4',
-                'xms' => '514m',
-                'xmx' => '514m',
-            ],
-            [
-                'version' => '5.2',
-                'xms' => '516m',
-                'xmx' => '516m',
-                'param' => [
-                    'key' => 'index.store.type',
-                    'value' => 'fs',
-                    'needle' => '"index":{"store":{"type":"fs"}}',
-                ]
-            ],
-            [
                 'version' => '6.5',
                 'xms' => '518m',
                 'xmx' => '518m',
