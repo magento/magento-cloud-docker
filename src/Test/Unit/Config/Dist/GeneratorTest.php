@@ -14,10 +14,11 @@ use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Config\Relationship;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\Filesystem;
+use Magento\CloudDocker\Filesystem\FilesystemException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
-use Magento\CloudDocker\Config\EnvCoder;
+use Magento\CloudDocker\Config\Environment\Encoder;
 
 /**
  * @inheritdoc
@@ -50,7 +51,7 @@ class GeneratorTest extends TestCase
     private $envReaderMock;
 
     /**
-     * @var EnvCoder|MockObject
+     * @var Encoder|MockObject
      */
     private $envCoderMock;
 
@@ -69,7 +70,7 @@ class GeneratorTest extends TestCase
         $this->relationshipMock = $this->createMock(Relationship::class);
         $this->formatterMock = $this->createMock(Formatter::class);
         $this->envReaderMock = $this->createMock(EnvReader::class);
-        $this->envCoderMock = $this->createMock(EnvCoder::class);
+        $this->envCoderMock = $this->createMock(Encoder::class);
 
         $this->distGenerator = new Generator(
             $this->directoryListMock,
@@ -82,9 +83,10 @@ class GeneratorTest extends TestCase
     }
 
     /**
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
-     *
      * @throws ConfigurationMismatchException
+     * @throws FilesystemException
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function testGenerate(): void
     {
@@ -102,10 +104,10 @@ class GeneratorTest extends TestCase
                 'database' => ['config'],
                 'redis' => ['config'],
             ]);
-        $config->expects($this->exactly(1))
+        $config->expects($this->once())
             ->method('getHost')
             ->willReturn('magento2.docker');
-        $config->expects($this->exactly(1))
+        $config->expects($this->once())
             ->method('getPort')
             ->willReturn(80);
         $this->envReaderMock->expects($this->once())
@@ -133,14 +135,18 @@ class GeneratorTest extends TestCase
                     'ADMIN_PASSWORD' => '123123q',
                     'ADMIN_URL' => 'admin'
                 ],
+                'MAGENTO_CLOUD_APPLICATION' => [
+                    'hooks' => []
+                ],
             ])
             ->willReturn([
                 'MAGENTO_CLOUD_RELATIONSHIPS' => 'base64_relationship_value',
                 'MAGENTO_CLOUD_ROUTES' => 'base64_routes_value',
                 'MAGENTO_CLOUD_VARIABLES' => 'base64_variables_value',
+                'MAGENTO_CLOUD_APPLICATION' => 'base64_application_value',
             ]);
 
-        $this->formatterMock->expects($this->exactly(3))
+        $this->formatterMock->expects($this->exactly(4))
             ->method('varExport')
             ->willReturnMap([
                 [
@@ -173,6 +179,13 @@ class GeneratorTest extends TestCase
                     ],
                     2,
                     'exported_variables_value'
+                ],
+                [
+                    [
+                        'hooks' => []
+                    ],
+                    2,
+                    'exported_application_value',
                 ]
             ]);
         $this->filesystemMock->expects($this->exactly(2))
@@ -182,8 +195,10 @@ class GeneratorTest extends TestCase
                 [
                     $rootDir . '/config.env',
                     'MAGENTO_CLOUD_RELATIONSHIPS=base64_relationship_value' . PHP_EOL
-                        . 'MAGENTO_CLOUD_ROUTES=base64_routes_value' . PHP_EOL
-                        . 'MAGENTO_CLOUD_VARIABLES=base64_variables_value' . PHP_EOL
+                    . 'MAGENTO_CLOUD_ROUTES=base64_routes_value' . PHP_EOL
+                    . 'MAGENTO_CLOUD_VARIABLES=base64_variables_value' . PHP_EOL
+                    . 'MAGENTO_CLOUD_APPLICATION=base64_application_value' . PHP_EOL
+
                 ]
             );
 
@@ -202,6 +217,7 @@ return [
     'MAGENTO_CLOUD_RELATIONSHIPS' => base64_encode(json_encode(exported_relationship_value)),
     'MAGENTO_CLOUD_ROUTES' => base64_encode(json_encode(exported_routes_value)),
     'MAGENTO_CLOUD_VARIABLES' => base64_encode(json_encode(exported_variables_value)),
+    'MAGENTO_CLOUD_APPLICATION' => base64_encode(json_encode(exported_application_value)),
 ];
 
 TEXT;
@@ -209,6 +225,7 @@ TEXT;
 
     /**
      * @throws ConfigurationMismatchException
+     * @throws FilesystemException
      */
     public function testGenerateFileSystemException(): void
     {

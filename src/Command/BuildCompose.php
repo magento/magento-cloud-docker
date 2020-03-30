@@ -146,6 +146,11 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Selenium image'
+            )->addOption(
+                Source\CliSource::OPTION_NO_ES,
+                null,
+                InputOption::VALUE_NONE,
+                'Disable Elasticsearch'
             );
 
         $this->addOption(
@@ -183,11 +188,13 @@ class BuildCompose extends Command
         )->addOption(
             Source\CliSource::OPTION_WITH_SELENIUM,
             null,
-            InputOption::VALUE_NONE
+            InputOption::VALUE_NONE,
+            'Add Selenium latest version'
         )->addOption(
             Source\CliSource::OPTION_NO_TMP_MOUNTS,
             null,
-            InputOption::VALUE_NONE
+            InputOption::VALUE_NONE,
+            'Remove /tmp mounted volume'
         )->addOption(
             Source\CliSource::OPTION_WITH_XDEBUG,
             null,
@@ -217,7 +224,7 @@ class BuildCompose extends Command
         )->addOption(
             Source\CliSource::OPTION_ES_ENVIRONMENT_VARIABLE,
             null,
-            InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+            InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
             'Environment variable for elasticsearch service'
         );
 

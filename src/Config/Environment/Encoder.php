@@ -5,14 +5,14 @@
  */
 declare(strict_types=1);
 
-namespace Magento\CloudDocker\Config;
+namespace Magento\CloudDocker\Config\Environment;
 
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 
 /**
  * Encoder/Decoder for MAGENTO_CLOUD_* variables
  */
-class EnvCoder
+class Encoder
 {
     /**
      * The variables list to encode/decode base64
@@ -53,11 +53,13 @@ class EnvCoder
     }
 
     /**
-     * Decodes needed variables from the list @param array $variables
+     * Decodes needed variables from the list
+     *
+     * @param array $variables
      *
      * @return array
-     * @see self::$encodedEnv
      *
+     * @see $encodedEnv
      */
     public function decode(array $variables): array
     {

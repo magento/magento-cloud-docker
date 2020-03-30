@@ -25,6 +25,8 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Build configuration from custom-provided source.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class BuildCustomCompose extends Command
 {
@@ -85,8 +87,7 @@ class BuildCustomCompose extends Command
      */
     protected function configure(): void
     {
-        $this->setName(self::NAME)
-            ->setDescription('Build from custom config')
+        $this->setDescription('Build from custom config')
             ->addArgument(
                 self::ARG_SOURCE,
                 InputArgument::REQUIRED,
@@ -104,9 +105,9 @@ class BuildCustomCompose extends Command
     {
         $source = json_decode($input->getArgument(self::ARG_SOURCE), true);
 
-        if (!is_string($source) && json_last_error()) {
+        if (json_last_error() !== JSON_ERROR_NONE) {
             throw new ConfigurationMismatchException(
-                sprintf('Config payload can not be parsed: %s', json_last_error_msg()),
+                sprintf('Config string can not be parsed: %s', json_last_error_msg()),
                 json_last_error()
             );
         }

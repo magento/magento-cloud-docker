@@ -31,6 +31,7 @@ class CliSource implements SourceInterface
     public const OPTION_SELENIUM_VERSION = 'selenium-version';
     public const OPTION_SELENIUM_IMAGE = 'selenium-image';
     public const OPTION_INSTALLATION_TYPE = 'installation-type';
+    public const OPTION_NO_ES = 'no-es';
 
     /**
      * State modifiers.
@@ -65,7 +66,7 @@ class CliSource implements SourceInterface
      *
      * @var array
      */
-    private static $optionsMap = [
+    private static $enableOptionsMap = [
         self::OPTION_PHP => [self::PHP],
         self::OPTION_DB => [
             self::SERVICES_DB,
@@ -77,6 +78,10 @@ class CliSource implements SourceInterface
         self::OPTION_ES => [self::SERVICES_ES],
         self::OPTION_NODE => [self::SERVICES_NODE],
         self::OPTION_RABBIT_MQ => [self::SERVICES_RMQ],
+    ];
+
+    private static $disableOptionsMap = [
+        self::OPTION_NO_ES => self::SERVICES_ES
     ];
 
     /**
@@ -115,7 +120,7 @@ class CliSource implements SourceInterface
             ]);
         }
 
-        foreach (self::$optionsMap as $option => $services) {
+        foreach (self::$enableOptionsMap as $option => $services) {
             if ($value = $this->input->getOption($option)) {
                 foreach ($services as $service) {
                     $repository->set([
@@ -123,6 +128,14 @@ class CliSource implements SourceInterface
                         $service . '.version' => $value
                     ]);
                 }
+            }
+        }
+
+        foreach (self::$disableOptionsMap as $option => $service) {
+            if ($value = $this->input->getOption($option)) {
+                $repository->set([
+                    $service . '.enabled' => false
+                ]);
             }
         }
 
@@ -165,7 +178,7 @@ class CliSource implements SourceInterface
         }
 
         if ($envs = $this->input->getOption(self::OPTION_ENV_VARIABLES)) {
-            $repository->set(self::VARIABLES, (array) json_decode($envs, true));
+            $repository->set(self::VARIABLES, (array)json_decode($envs, true));
         }
 
         if ($dbPort = $this->input->getOption(self::OPTION_EXPOSE_DB_PORT)) {
