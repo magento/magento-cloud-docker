@@ -173,7 +173,7 @@ class CloudSource implements SourceInterface
                     continue;
                 }
 
-                if ($repository->has(self::SERVICES . '.' . $service) && $service != "mysql") {
+                if ($repository->has(self::SERVICES . '.' . $service) && $service != ServiceInterface::SERVICE_DB) {
                     throw new SourceException(sprintf(
                         'Only one instance of service "%s" supported',
                         $service
