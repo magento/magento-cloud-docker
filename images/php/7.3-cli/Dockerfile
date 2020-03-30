@@ -210,7 +210,6 @@ RUN ["chmod", "+x", \
 
 RUN mkdir -p ${MAGENTO_ROOT}
 
-VOLUME /root/.composer/cache
 VOLUME ${MAGENTO_ROOT}
 
 ENTRYPOINT ["/docker-entrypoint.sh"]

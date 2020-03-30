@@ -97,7 +97,12 @@ class Generator
             array_merge(
                 $configByServices,
                 $this->envReader->read(),
-                $config->getVariables()
+                $config->getVariables(),
+                [
+                    'MAGENTO_CLOUD_APPLICATION' => [
+                        'hooks' => $config->getHooks()
+                    ]
+                ]
             )
         );
     }
@@ -140,6 +145,8 @@ class Generator
      *
      * @param string $filePath
      * @param array $config
+     *
+     * @throws ConfigurationMismatchException
      */
     private function saveConfigEnv(string $filePath, array $config): void
     {
@@ -163,7 +170,7 @@ class Generator
         $host = $config->getHost();
         $port = $config->getPort();
 
-        if (!empty($port) && $port != BaseSource::DEFAULT_PORT) {
+        if (!empty($port) && $port !== BaseSource::DEFAULT_PORT) {
             $host .= ':' . $port;
         }
 

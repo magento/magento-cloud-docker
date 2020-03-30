@@ -173,11 +173,11 @@ class CliSource implements SourceInterface
         }
 
         if ($host = $this->input->getOption(self::OPTION_HOST)) {
-            $repository->set(self::CONFIG_HOST, $host);
+            $repository->set(self::SYSTEM_HOST, $host);
         }
 
         if ($port = $this->input->getOption(self::OPTION_PORT)) {
-            $repository->set(self::CONFIG_PORT, $port);
+            $repository->set(self::SYSTEM_PORT, $port);
         }
 
         if ($installationType = $this->input->getOption(self::OPTION_INSTALLATION_TYPE)) {

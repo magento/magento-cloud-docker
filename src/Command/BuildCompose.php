@@ -91,68 +91,57 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'PHP version'
-            )
-            ->addOption(
+            )->addOption(
                 Source\CliSource::OPTION_NGINX,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Nginx version'
-            )
-            ->addOption(
+            )->addOption(
                 Source\CliSource::OPTION_DB,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'DB version'
-            )
-            ->addOption(
+            )->addOption(
                 Source\CliSource::OPTION_EXPOSE_DB_PORT,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Expose DB port'
-            )
-            ->addOption(
+            )->addOption(
                 Source\CliSource::OPTION_EXPOSE_DB_QUOTE_PORT,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Expose port for DB sales'
-            )
-            ->addOption(
+            )->addOption(
                 Source\CliSource::OPTION_EXPOSE_DB_SALES_PORT,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Expose port for DB quote'
-            )
-            ->addOption(
+            )->addOption(
                 Source\CliSource::OPTION_REDIS,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Redis version'
-            )
-            ->addOption(
+            )->addOption(
                 Source\CliSource::OPTION_ES,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Elasticsearch version'
-            )
-            ->addOption(
+            )->addOption(
                 Source\CliSource::OPTION_RABBIT_MQ,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'RabbitMQ version'
-            )
-            ->addOption(
+            )->addOption(
                 Source\CliSource::OPTION_NODE,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Node.js version'
-            )
-            ->addOption(
+            )->addOption(
                 Source\CliSource::OPTION_SELENIUM_VERSION,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Selenium version'
-            )
-            ->addOption(
+            )->addOption(
                 Source\CliSource::OPTION_SELENIUM_IMAGE,
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -173,75 +162,64 @@ class BuildCompose extends Command
                     ]
                 )
             )
-        )
-            ->addOption(
-                Source\CliSource::OPTION_SYNC_ENGINE,
-                null,
-                InputOption::VALUE_REQUIRED,
-                sprintf(
-                    'File sync engine. Works only with developer mode. Available: (%s)',
-                    implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
-                )
+        )->addOption(
+            Source\CliSource::OPTION_SYNC_ENGINE,
+            null,
+            InputOption::VALUE_REQUIRED,
+            sprintf(
+                'File sync engine. Works only with developer mode. Available: (%s)',
+                implode(', ', DeveloperBuilder::SYNC_ENGINES_LIST)
             )
-            ->addOption(
-                Source\CliSource::OPTION_WITH_CRON,
-                null,
-                InputOption::VALUE_NONE,
-                'Add cron container'
-            )
-            ->addOption(
-                Source\CliSource::OPTION_NO_VARNISH,
-                null,
-                InputOption::VALUE_NONE,
-                'Remove Varnish container'
-            )
-            ->addOption(
-                Source\CliSource::OPTION_WITH_SELENIUM,
-                null,
-                InputOption::VALUE_NONE
-            )
-            ->addOption(
-                Source\CliSource::OPTION_NO_TMP_MOUNTS,
-                null,
-                InputOption::VALUE_NONE
-            )
-            ->addOption(
-                Source\CliSource::OPTION_WITH_XDEBUG,
-                null,
-                InputOption::VALUE_NONE,
-                'Enables XDebug'
-            )
-            ->addOption(
-                Source\CliSource::OPTION_ENV_VARIABLES,
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Cloud environment variables'
-            )
-            ->addOption(
-                Source\CliSource::OPTION_INSTALLATION_TYPE,
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Sets magento installation type',
-                Source\BaseSource::INSTALLATION_TYPE_COMPOSER
-            )
-            ->addOption(
-                Source\CliSource::OPTION_HOST,
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Host name'
-            )
-            ->addOption(
-                Source\CliSource::OPTION_PORT,
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Port'
-            )
-            ->addOption(
-                Source\CliSource::OPTION_ES_ENVIRONMENT_VARIABLE,
-                null,
-                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                'Environment variable for elasticsearch service'
-            );
+        )->addOption(
+            Source\CliSource::OPTION_WITH_CRON,
+            null,
+            InputOption::VALUE_NONE,
+            'Add cron container'
+        )->addOption(
+            Source\CliSource::OPTION_NO_VARNISH,
+            null,
+            InputOption::VALUE_NONE,
+            'Remove Varnish container'
+        )->addOption(
+            Source\CliSource::OPTION_WITH_SELENIUM,
+            null,
+            InputOption::VALUE_NONE
+        )->addOption(
+            Source\CliSource::OPTION_NO_TMP_MOUNTS,
+            null,
+            InputOption::VALUE_NONE
+        )->addOption(
+            Source\CliSource::OPTION_WITH_XDEBUG,
+            null,
+            InputOption::VALUE_NONE,
+            'Enables XDebug'
+        )->addOption(
+            Source\CliSource::OPTION_ENV_VARIABLES,
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'Cloud environment variables'
+        )->addOption(
+            Source\CliSource::OPTION_INSTALLATION_TYPE,
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'Sets magento installation type',
+            Source\BaseSource::INSTALLATION_TYPE_COMPOSER
+        )->addOption(
+            Source\CliSource::OPTION_HOST,
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'Host name'
+        )->addOption(
+            Source\CliSource::OPTION_PORT,
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'Port'
+        )->addOption(
+            Source\CliSource::OPTION_ES_ENVIRONMENT_VARIABLE,
+            null,
+            InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+            'Environment variable for elasticsearch service'
+        );
 
         parent::configure();
     }
