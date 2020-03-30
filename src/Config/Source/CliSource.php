@@ -62,7 +62,7 @@ class CliSource implements SourceInterface
     public const OPTION_ES_ENVIRONMENT_VARIABLE = 'es-env-var';
 
     /**
-     * Option key to config name map
+     * List of service enabling options
      *
      * @var array
      */
@@ -80,6 +80,11 @@ class CliSource implements SourceInterface
         self::OPTION_RABBIT_MQ => [self::SERVICES_RMQ],
     ];
 
+    /**
+     * List of service disabling options
+     *
+     * @var array
+     */
     private static $disableOptionsMap = [
         self::OPTION_NO_ES => self::SERVICES_ES
     ];
@@ -102,7 +107,7 @@ class CliSource implements SourceInterface
      *
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @throws GenericException
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function read(): Repository
     {
