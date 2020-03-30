@@ -1,0 +1,6 @@
+{
+  "name": "magento/project-enterprise-edition",
+  "description": "Composer file for integration tests",
+  "type": "project",
+  "version": "2.3.0"
+}
