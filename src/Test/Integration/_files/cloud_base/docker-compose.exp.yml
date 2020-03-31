@@ -11,10 +11,10 @@ services:
     ports:
       - '3306'
     volumes:
-      - 'magento-db:/var/lib/mysql'
-      - 'docker-entrypoint:/docker-entrypoint-initdb.d'
-      - 'mariadb-conf:/etc/mysql/mariadb.conf.d'
       - 'docker-mnt:/mnt:delegated'
+      - 'mymagento-mariadb-conf:/etc/mysql/mariadb.conf.d'
+      - 'mymagento-magento-db:/var/lib/mysql'
+      - 'docker-entrypoint:/docker-entrypoint-initdb.d'
     networks:
       magento:
         aliases:
@@ -164,17 +164,6 @@ volumes:
       type: none
       device: '${PWD}/'
       o: bind
-  magento-db: {  }
-  mariadb-conf:
-    driver_opts:
-      type: none
-      device: '${PWD}/.docker/mysql/mariadb.conf.d'
-      o: bind
-  docker-entrypoint:
-    driver_opts:
-      type: none
-      device: '${PWD}/.docker/mysql/docker-entrypoint-initdb.d'
-      o: bind
   docker-mnt:
     driver_opts:
       type: none
@@ -186,6 +175,17 @@ volumes:
   magento-app-etc: {  }
   magento-pub-media: {  }
   magento-pub-static: {  }
+  mymagento-mariadb-conf:
+    driver_opts:
+      type: none
+      device: '${PWD}/.docker/mysql/mariadb.conf.d'
+      o: bind
+  mymagento-magento-db: {  }
+  docker-entrypoint:
+    driver_opts:
+      type: none
+      device: '${PWD}/.docker/mysql/docker-entrypoint-initdb.d'
+      o: bind
 networks:
   magento:
     driver: bridge

@@ -3,5 +3,6 @@ modules:
   enabled:
     - Magento\CloudDocker\Test\Functional\Codeception\TestInfrastructure
     - Magento\CloudDocker\Test\Functional\Codeception\Docker
+    - Magento\CloudDocker\Test\Functional\Codeception\MagentoDb
     - PhpBrowser
     - Asserts

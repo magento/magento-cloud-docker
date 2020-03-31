@@ -21,6 +21,22 @@ class ServiceFactory
     private const PATTERN_VERSIONED = '%s:%s-%s';
 
     /**
+     * Default mysql-* services configuration
+     */
+    private const SERVICE_DB_CONFIG = [
+        'image' => 'mariadb',
+        'pattern' => self::PATTERN_STD,
+        'config' => [
+            'environment' => [
+                'MYSQL_ROOT_PASSWORD=magento2',
+                'MYSQL_DATABASE=magento2',
+                'MYSQL_USER=magento2',
+                'MYSQL_PASSWORD=magento2',
+            ]
+        ]
+    ];
+
+    /**
      * @var array
      */
     private static $config = [
@@ -49,18 +65,9 @@ class ServiceFactory
                 ]
             ]
         ],
-        ServiceInterface::SERVICE_DB => [
-            'image' => 'mariadb',
-            'pattern' => self::PATTERN_STD,
-            'config' => [
-                'environment' => [
-                    'MYSQL_ROOT_PASSWORD=magento2',
-                    'MYSQL_DATABASE=magento2',
-                    'MYSQL_USER=magento2',
-                    'MYSQL_PASSWORD=magento2',
-                ]
-            ]
-        ],
+        ServiceInterface::SERVICE_DB => self::SERVICE_DB_CONFIG,
+        ServiceInterface::SERVICE_DB_QUOTE => self::SERVICE_DB_CONFIG,
+        ServiceInterface::SERVICE_DB_SALES => self::SERVICE_DB_CONFIG,
         ServiceInterface::SERVICE_NGINX => [
             'image' => 'magento/magento-cloud-docker-nginx',
             'version' => 'latest',

@@ -12,7 +12,6 @@ use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\BuilderFactory;
 use Magento\CloudDocker\Compose\DeveloperBuilder;
 use Magento\CloudDocker\Compose\ProductionBuilder;
-use Magento\CloudDocker\Config\Source\CliSource;
 use Magento\CloudDocker\Config\Source\SourceException;
 use Magento\CloudDocker\Config\Source\SourceInterface;
 use Magento\CloudDocker\Service\ServiceInterface;
@@ -252,6 +251,24 @@ class Config
     }
 
     /**
+     * @return string|null
+     * @throws ConfigurationMismatchException
+     */
+    public function getDbQuotePortsExpose(): ?string
+    {
+        return $this->all()->get(SourceInterface::SYSTEM_EXPOSE_DB_QUOTE_PORTS);
+    }
+
+    /**
+     * @return string|null
+     * @throws ConfigurationMismatchException
+     */
+    public function getDbSalesPortsExpose(): ?string
+    {
+        return $this->all()->get(SourceInterface::SYSTEM_EXPOSE_DB_SALES_PORTS);
+    }
+
+    /**
      * @return array
      * @throws ConfigurationMismatchException
      */
@@ -290,6 +307,37 @@ class Config
             $config->set(SourceInterface::VARIABLES . '.' . 'MFTF_UTILS', 1);
         }
 
+        $config->set(SourceInterface::VARIABLES . '.INSTALLATION_TYPE', $this->get(SourceInterface::INSTALLATION_TYPE));
+
         return $config->get(SourceInterface::VARIABLES);
+    }
+
+    /**
+     * Returns host value or default if host not set
+     *
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->get(SourceInterface::CONFIG_HOST);
+    }
+
+    /**
+     * Returns port value or default if port not set
+     *
+     * @return string
+     */
+    public function getPort(): string
+    {
+        return $this->get(SourceInterface::CONFIG_PORT);
+    }
+
+    /**
+     * @return String
+     * @throws ConfigurationMismatchException
+     */
+    public function getName(): String
+    {
+        return $this->all()->get(SourceInterface::NAME);
     }
 }

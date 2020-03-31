@@ -83,6 +83,8 @@ class DeveloperBuilder implements BuilderInterface
      */
     public function build(Config $config): Manager
     {
+        $volumePrefix =  $config->getName() . '-';
+
         $manager = $this->builderFactory
             ->create(BuilderFactory::BUILDER_PRODUCTION)
             ->build($config);
@@ -105,9 +107,9 @@ class DeveloperBuilder implements BuilderInterface
         }
 
         $manager->setVolumes([
-            self::VOLUME_MAGENTO_SYNC => $syncConfig,
-            self::VOLUME_MAGENTO_DB => [],
-            self::VOLUME_MARIADB_CONF => [
+            $volumePrefix . self::VOLUME_MAGENTO_SYNC => $syncConfig,
+            $volumePrefix . self::VOLUME_MAGENTO_DB => [],
+            $volumePrefix . self::VOLUME_MARIADB_CONF => [
                 'driver_opts' => [
                     'type' => 'none',
                     'device' => $this->resolver->getRootPath('/.docker/mysql/mariadb.conf.d'),
@@ -145,9 +147,9 @@ class DeveloperBuilder implements BuilderInterface
             'volumes' => array_merge(
                 $volumes,
                 [
-                    self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
+                    $volumePrefix  . self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
                     self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d',
-                    self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
+                    $volumePrefix  . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
                 ]
             )
         ]);
@@ -176,14 +178,16 @@ class DeveloperBuilder implements BuilderInterface
      */
     private function getMagentoVolumes(Config $config): array
     {
+        $volumePrefix =  $config->getName() . '-';
+
         if ($config->getSyncEngine() !== self::SYNC_ENGINE_NATIVE) {
             return [
-                self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':nocopy'
+                $volumePrefix . self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':nocopy'
             ];
         }
 
         return [
-            self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':delegated',
+            $volumePrefix . self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':delegated',
         ];
     }
 }

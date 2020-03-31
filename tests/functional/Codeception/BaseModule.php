@@ -9,16 +9,12 @@ namespace Magento\CloudDocker\Test\Functional\Codeception;
 
 use Codeception\Module;
 use Magento\CloudDocker\Test\Functional\Robo\Tasks as CloudDockerTasks;
-use PHPUnit\Framework\Assert;
 use Robo\LoadAllTasks as RoboTasks;
 use Robo\Robo;
-use Robo\Result;
-use Codeception\Configuration;
 use Robo\Collection\CollectionBuilder;
 use Robo\Contract\BuilderAwareInterface;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Robo\Exception\TaskException;
 
 /**
  * Base Module for testing
@@ -51,6 +47,11 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
     const MAGENTO_APP_YAML = '.magento.app.yaml';
 
     /**
+     * The file with env configuration
+     */
+    const MAGENTO_ENV_YAML = '.magento.env.yaml';
+
+    /**
      * The file with defined services
      */
     const MAGENTO_SERVICES_YAML = '.magento' . DIRECTORY_SEPARATOR . 'services.yaml';
@@ -65,6 +66,18 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
 
         $this->setContainer($container);
         $this->setBuilder($builder);
+    }
+
+    /**
+     * Updates Base Url for PhpBrowser module
+     *
+     * @param string $url
+     * @throws \Codeception\Exception\ModuleConfigException
+     * @throws \Codeception\Exception\ModuleException
+     */
+    public function updateBaseUrl(string $url)
+    {
+        $this->getModule('PhpBrowser')->_reconfigure(['url' => $url]);
     }
 
     /**

@@ -7,13 +7,13 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
+use Magento\CloudDocker\Config\Config;
+
 /**
  * Compose configuration manager
  */
 class Manager
 {
-    public const DOMAIN = 'magento2.docker';
-
     /**
      * @var string
      */
@@ -35,6 +35,19 @@ class Manager
     private $volumes = [];
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @param Config $config
+     */
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * @param string $name
      * @param array $extConfig
      * @param array $networks
@@ -42,7 +55,7 @@ class Manager
      */
     public function addService(string $name, array $extConfig, array $networks, array $depends): void
     {
-        $hostname = $name . '.' . self::DOMAIN;
+        $hostname = $name . '.' . $this->config->getHost();
 
         $config = [
             'hostname' => $hostname,
@@ -87,16 +100,6 @@ class Manager
     public function addVolume(string $name, array $config): void
     {
         $this->volumes[$name] = $config;
-    }
-
-    /**
-     * @param array $volumes
-     */
-    public function addVolumes(array $volumes): void
-    {
-        foreach ($volumes as $name => $config) {
-            $this->volumes[$name] = $config;
-        }
     }
 
     /**
