@@ -113,8 +113,12 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
      */
     public function seeInOutput($text): void
     {
-        foreach (is_array($text) ? $text : [$text] as $value) {
-            Assert::assertNotContains($value, static::$output);
+        if (is_array($text)) {
+            foreach ($text as $value) {
+                Assert::assertContains($value, static::$output);
+            }
+        } else {
+            Assert::assertContains($text, static::$output);
         }
     }
 
