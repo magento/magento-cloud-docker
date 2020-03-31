@@ -51,7 +51,7 @@ class Services71Cest extends ServicesCest
                 'notExpectedResult' => ['selenium', 'cron'],
             ],
             'Redis 4.0, MariaDB 10.2, php 7.2, rmq 3.6' => [
-                'options' => '--redis=4.0 --db=10.2 --php=7.2 --rmq=3.6',
+                'options' => '--redis=4.0 --db=10.2 --php=7.1 --rmq=3.6',
                 'expectedResult' => [
                     'redis:4.0',
                     'magento/magento-cloud-docker-tls:latest-1.1',
