@@ -250,7 +250,7 @@ class ProductionBuilder implements BuilderInterface
             [self::NETWORK_MAGENTO],
             [self::SERVICE_DB => []]
         );
-        $manager->addService(
+         $manager->addService(
             self::SERVICE_WEB,
             $this->serviceFactory->create(
                 ServiceInterface::SERVICE_NGINX,
@@ -263,6 +263,12 @@ class ProductionBuilder implements BuilderInterface
                         'HTTPS_METHOD=noredirect',
                         'WITH_XDEBUG=' . (int)$config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)
                     ],
+                    self::SERVICE_HEALTHCHECK => [
+                        'test'=> ["CMD-SHELL", "/nginx-healthcheck.sh"],
+                        'interval'=> '30s',
+                        'timeout'=> '30s',
+                        'retries'=> 3
+                    ],
                     'ports' => [
                         $config->getPort() . ':80'
                     ]
@@ -271,7 +277,6 @@ class ProductionBuilder implements BuilderInterface
             [self::NETWORK_MAGENTO],
             [self::SERVICE_FPM => []]
         );
-
         if ($config->hasServiceEnabled(self::SERVICE_VARNISH)) {
             $manager->addService(
                 self::SERVICE_VARNISH,
