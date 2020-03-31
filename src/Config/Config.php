@@ -316,6 +316,7 @@ class Config
      * Returns host value or default if host not set
      *
      * @return string
+     * @throws ConfigurationMismatchException
      */
     public function getHost(): string
     {
@@ -326,6 +327,7 @@ class Config
      * Returns port value or default if port not set
      *
      * @return string
+     * @throws ConfigurationMismatchException
      */
     public function getPort(): string
     {
@@ -336,8 +338,17 @@ class Config
      * @return String
      * @throws ConfigurationMismatchException
      */
-    public function getName(): String
+    public function getName(): string
     {
         return $this->all()->get(SourceInterface::NAME);
+    }
+
+    /**
+     * @return string|null
+     * @throws ConfigurationMismatchException
+     */
+    public function getMagentoVersion(): ?string
+    {
+        return $this->all()->get(SourceInterface::MAGENTO_VERSION);
     }
 }

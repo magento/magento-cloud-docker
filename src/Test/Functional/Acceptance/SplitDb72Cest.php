@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 /**
- * @group php71
+ * @group php72
  */
 class SplitDb72Cest extends SplitDbCest
 {
