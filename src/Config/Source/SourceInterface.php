@@ -77,7 +77,7 @@ interface SourceInterface
     /**
      * ES environment variables
      */
-    public const SERVICES_ES_VARS = self::SERVICES_ES.'.'.'env-vars';
+    public const SERVICES_ES_VARS = self::SERVICES_ES . '.' . 'env-vars';
 
     /**
      * Node

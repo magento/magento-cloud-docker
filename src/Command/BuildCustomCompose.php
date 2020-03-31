@@ -32,7 +32,7 @@ class BuildCustomCompose extends Command
 {
     private const NAME = 'build:custom:compose';
 
-    private const ARG_SOURCE = 'source';
+    public const ARG_SOURCE = 'source';
 
     /**
      * @var ConfigFactory
@@ -101,7 +101,7 @@ class BuildCustomCompose extends Command
      * @throws ConfigurationMismatchException
      * @throws FilesystemException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         $source = json_decode($input->getArgument(self::ARG_SOURCE), true);
 

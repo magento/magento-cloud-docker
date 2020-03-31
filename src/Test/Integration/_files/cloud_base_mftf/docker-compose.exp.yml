@@ -30,13 +30,6 @@ services:
       magento:
         aliases:
           - redis.magento2.docker
-  elasticsearch:
-    hostname: elasticsearch.magento2.docker
-    image: 'magento/magento-cloud-docker-elasticsearch:6.5-1.1'
-    networks:
-      magento:
-        aliases:
-          - elasticsearch.magento2.docker
   fpm:
     hostname: fpm.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.3-fpm-1.1'
@@ -147,8 +140,6 @@ services:
         condition: service_started
       redis:
         condition: service_started
-      elasticsearch:
-        condition: service_healthy
   fpm_xdebug:
     hostname: fpm_xdebug.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.3-fpm-1.1'
@@ -198,8 +189,6 @@ services:
         condition: service_started
       redis:
         condition: service_started
-      elasticsearch:
-        condition: service_healthy
   deploy:
     hostname: deploy.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
@@ -223,8 +212,6 @@ services:
         condition: service_started
       redis:
         condition: service_started
-      elasticsearch:
-        condition: service_healthy
   cron:
     hostname: cron.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
@@ -251,8 +238,6 @@ services:
         condition: service_started
       redis:
         condition: service_started
-      elasticsearch:
-        condition: service_healthy
 volumes:
   magento:
     driver_opts:

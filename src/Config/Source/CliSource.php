@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Config\Source;
 
 use Illuminate\Config\Repository;
-use Magento\CloudDocker\App\GenericException;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
