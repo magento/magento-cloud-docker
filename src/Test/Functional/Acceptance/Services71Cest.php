@@ -50,14 +50,14 @@ class Services71Cest extends ServicesCest
                 ],
                 'notExpectedResult' => ['selenium', 'cron'],
             ],
-            'Redis 4.0, MariaDB 10.2, php 7.2, rmq 3.6' => [
+            'Redis 4.0, MariaDB 10.2, php 7.1, rmq 3.6' => [
                 'options' => '--redis=4.0 --db=10.2 --php=7.1 --rmq=3.6',
                 'expectedResult' => [
                     'redis:4.0',
                     'magento/magento-cloud-docker-tls:latest-1.1',
                     'magento/magento-cloud-docker-varnish:latest-1.1',
                     'magento/magento-cloud-docker-nginx:latest-1.1',
-                    'magento/magento-cloud-docker-php:7.2-fpm-1.1',
+                    'magento/magento-cloud-docker-php:7.1-fpm-1.1',
                     'magento/magento-cloud-docker-elasticsearch:2.4-1.1',
                     'mariadb:10.2',
                     'rabbitmq:3.6'
