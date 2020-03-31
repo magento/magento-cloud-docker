@@ -21,6 +21,9 @@ RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/b
 
 VOLUME ${MAGENTO_ROOT}
 
+COPY nginx-healthcheck.sh nginx-healthcheck.sh
+RUN ["chmod", "+x", "/nginx-healthcheck.sh"]
+
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
