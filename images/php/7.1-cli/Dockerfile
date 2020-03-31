@@ -12,7 +12,7 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mcrypt mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
 # Configure Node.js version
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
 
 # Install dependencies
 RUN apt-get update \
