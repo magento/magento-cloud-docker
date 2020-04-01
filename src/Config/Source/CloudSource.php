@@ -41,6 +41,8 @@ class CloudSource implements SourceInterface
      */
     private static $map = [
         ServiceInterface::SERVICE_DB => ['db', 'database', 'mysql'],
+        ServiceInterface::SERVICE_DB_QUOTE => ['mysql-quote'],
+        ServiceInterface::SERVICE_DB_SALES => ['mysql-sales'],
         ServiceInterface::SERVICE_ELASTICSEARCH => ['elasticsearch', 'es'],
         ServiceInterface::SERVICE_REDIS => ['redis'],
         ServiceInterface::SERVICE_RABBITMQ => ['rmq', 'rabbitmq']
@@ -89,6 +91,10 @@ class CloudSource implements SourceInterface
             throw new SourceException('Relationships could not be parsed.');
         }
 
+        if (!isset($appConfig['name'])) {
+            throw new SourceException('Name could not be parsed.');
+        }
+
         [$type, $version] = explode(':', $appConfig['type']);
         /**
          * RC versions are not supported
@@ -126,6 +132,10 @@ class CloudSource implements SourceInterface
             $repository,
             $appConfig['relationships'] ?? []
         );
+        $repository = $this->addName(
+            $repository,
+            $appConfig['name']
+        );
 
         return $repository;
     }
@@ -156,10 +166,10 @@ class CloudSource implements SourceInterface
                 ));
             }
 
-            [$parsedService, $version] = explode(':', $servicesConfig[$name]['type']);
+            $version = explode(':', $servicesConfig[$name]['type'])[1];
 
             foreach (self::$map as $service => $possibleNames) {
-                if (!in_array($parsedService, $possibleNames, true)) {
+                if (!in_array($name, $possibleNames, true)) {
                     continue;
                 }
 
@@ -285,6 +295,20 @@ class CloudSource implements SourceInterface
                 'orig' => $mountData
             ]);
         }
+
+        return $repository;
+    }
+
+    /**
+     * @param Repository $repository
+     * @param string $name
+     * @return Repository
+     */
+    private function addName(Repository $repository, string $name): Repository
+    {
+        $repository->set([
+            self::NAME => $name,
+        ]);
 
         return $repository;
     }

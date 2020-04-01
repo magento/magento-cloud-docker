@@ -14,6 +14,14 @@ use Codeception\TestInterface;
  */
 class MagentoDb extends Db
 {
+    /**
+     * Database keys
+     */
+    public const KEY_DB_QUOTE = 'db_quote';
+    public const KEY_DB_SALES = 'db_sales';
+    public const KEY_DB = 'db';
+    public const SPLIT_DB_KEYS = [self::KEY_DB_QUOTE, self::KEY_DB_SALES];
+
     /** @var \ReflectionClass */
     private $reflection;
 
@@ -53,11 +61,26 @@ class MagentoDb extends Db
     /**
      * Returns exposed port to connect to DB from host machine
      *
+     * @param string $dbKey
+     *
      * @return string
      */
-    public function getExposedPort(): string
+    public function getExposedPort(string $dbKey = self::KEY_DB): string
     {
-        return (string)$this->_getConfig('exposed_port');
+        $key = 'exposed_port';
+        if (self::KEY_DB === $dbKey) {
+            $result = $this->_getConfig($key);
+        } elseif (in_array($dbKey, self::SPLIT_DB_KEYS)) {
+            $result = $this->_getConfig()['databases'][$dbKey][$key];
+        } else {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid argument value. Available Values: \'%s\'',
+                    implode(', ', array_merge([self::KEY_DB], self::SPLIT_DB_KEYS))
+                )
+            );
+        }
+
+        return (string)$result;
     }
 
     /**

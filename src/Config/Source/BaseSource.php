@@ -7,8 +7,12 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config\Source;
 
+use Composer\IO\NullIO;
+use Composer\Factory;
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\Compose\BuilderFactory;
+use Magento\CloudDocker\Filesystem\Filesystem;
+use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
 
@@ -17,17 +21,40 @@ use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
  */
 class BaseSource implements SourceInterface
 {
+    public const INSTALLATION_TYPE_GIT = 'git';
+    public const INSTALLATION_TYPE_COMPOSER = 'composer';
+
+    public const DEFAULT_HOST = 'magento2.docker';
+    public const DEFAULT_PORT = '80';
+
     /**
      * @var EnvReader
      */
     private $envReader;
 
     /**
-     * @param EnvReader $envReader
+     * @var FileList
      */
-    public function __construct(EnvReader $envReader)
-    {
+    private $fileList;
+
+    /**
+     * @var Filesystem
+     */
+    private $filesystem;
+
+    /**
+     * @param EnvReader $envReader
+     * @param Filesystem $filesystem
+     * @param FileList $fileList
+     */
+    public function __construct(
+        EnvReader $envReader,
+        Filesystem $filesystem,
+        FileList $fileList
+    ) {
         $this->envReader = $envReader;
+        $this->filesystem = $filesystem;
+        $this->fileList = $fileList;
     }
 
     /**
@@ -41,6 +68,10 @@ class BaseSource implements SourceInterface
             self::SYSTEM_MODE => BuilderFactory::BUILDER_PRODUCTION,
             self::SYSTEM_SYNC_ENGINE => null,
             self::CRON_ENABLED => false,
+            self::CONFIG_PORT => self::DEFAULT_PORT,
+            self::CONFIG_HOST => self::DEFAULT_HOST,
+            self::INSTALLATION_TYPE => self::INSTALLATION_TYPE_COMPOSER,
+            self::MAGENTO_VERSION => $this->getMagentoVersion()
         ]);
 
         try {
@@ -52,5 +83,23 @@ class BaseSource implements SourceInterface
         }
 
         return $config;
+    }
+
+    /**
+     * Gets Magento version from composer.json
+     *
+     * @return string|null
+     */
+    private function getMagentoVersion(): ?string
+    {
+        $composer = $this->fileList->getComposer();
+
+        if ($this->filesystem->exists($composer)) {
+            return Factory::create(new NullIO(), $this->fileList->getMagentoComposer())
+                ->getPackage()
+                ->getVersion();
+        }
+
+        return null;
     }
 }
