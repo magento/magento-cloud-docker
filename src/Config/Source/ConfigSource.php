@@ -50,6 +50,10 @@ class ConfigSource implements SourceInterface
             if ($this->filesystem->exists($configFile)) {
                 $config = Yaml::parseFile($configFile);
 
+                if (!isset($config['name'])) {
+                    throw new SourceException('Name could not be parsed.');
+                }
+
                 /**
                  * Enable services which were added from the file by default
                  */

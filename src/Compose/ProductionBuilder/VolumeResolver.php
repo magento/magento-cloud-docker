@@ -16,13 +16,14 @@ class VolumeResolver
 {
     /**
      * @param bool $isReadOnly
+     * @param bool $hasGenerated
      * @return array
      */
-    public function getDefaultMagentoVolumes(bool $isReadOnly): array
+    public function getDefaultMagentoVolumes(bool $isReadOnly, bool $hasGenerated = true): array
     {
         $mode = $isReadOnly ? 'ro' : 'rw';
 
-        return [
+        $volumes = [
             BuilderInterface::VOLUME_MAGENTO => [
                 'path' => BuilderInterface::DIR_MAGENTO,
                 'volume' => '/',
@@ -32,24 +33,34 @@ class VolumeResolver
                 'path' => BuilderInterface::DIR_MAGENTO . '/vendor',
                 'volume' => '/vendor',
                 'mode' => $mode,
-            ],
-            BuilderInterface::VOLUME_MAGENTO_GENERATED => [
+            ]
+        ];
+
+        if ($hasGenerated) {
+            $volumes[BuilderInterface::VOLUME_MAGENTO_GENERATED] = [
                 'path' => BuilderInterface::DIR_MAGENTO . '/generated',
                 'volume' => '/generated',
                 'mode' => $mode
-            ]
-        ];
+            ];
+        }
+
+        return $volumes;
     }
 
     /**
      * @param array $mounts
      * @param bool $isReadOnly
      * @param bool $hasSelenium
+     * @param bool $hasGenerated
      * @return array
      */
-    public function getMagentoVolumes(array $mounts, bool $isReadOnly, bool $hasSelenium): array
-    {
-        $volumes = $this->getDefaultMagentoVolumes($isReadOnly);
+    public function getMagentoVolumes(
+        array $mounts,
+        bool $isReadOnly,
+        bool $hasSelenium,
+        bool $hasGenerated = true
+    ): array {
+        $volumes = $this->getDefaultMagentoVolumes($isReadOnly, $hasGenerated);
 
         foreach ($mounts as $volumeData) {
             $path = $volumeData['path'];

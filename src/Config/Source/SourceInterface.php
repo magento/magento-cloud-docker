@@ -18,6 +18,7 @@ interface SourceInterface
     public const DIR_MAGENTO = '/app';
 
     public const MOUNTS = 'mounts';
+    public const NAME = 'name';
 
     /**
      * Services
@@ -49,6 +50,16 @@ interface SourceInterface
     public const SERVICES_DB = self::SERVICES . '.' . ServiceInterface::SERVICE_DB;
 
     /**
+     * DB quote
+     */
+    public const SERVICES_DB_QUOTE = self::SERVICES . '.' . ServiceInterface::SERVICE_DB_QUOTE;
+
+    /**
+     * DB sales
+     */
+    public const SERVICES_DB_SALES = self::SERVICES . '.' . ServiceInterface::SERVICE_DB_SALES;
+
+    /**
      * Nginx
      */
     public const SERVICES_NGINX = self::SERVICES . '.' . ServiceInterface::SERVICE_NGINX;
@@ -62,6 +73,11 @@ interface SourceInterface
      * ES
      */
     public const SERVICES_ES = self::SERVICES . '.' . ServiceInterface::SERVICE_ELASTICSEARCH;
+
+    /**
+     * ES environment variables
+     */
+    public const SERVICES_ES_VARS = self::SERVICES_ES.'.'.'env-vars';
 
     /**
      * Node
@@ -88,13 +104,21 @@ interface SourceInterface
     public const PHP_ENABLED_EXTENSIONS = self::PHP . '.extensions.enabled';
     public const PHP_DISABLED_EXTENSIONS = self::PHP . '.extensions.disabled';
 
+    public const INSTALLATION_TYPE = 'install.type';
+
+    public const MAGENTO_VERSION = 'magento.version';
+
     /**
      * Config
      */
     public const SYSTEM_SYNC_ENGINE = 'system.sync_engine';
     public const SYSTEM_TMP_MOUNTS = 'system.tmp_mounts';
     public const SYSTEM_MODE = 'system.mode';
+    public const CONFIG_HOST = 'config.host';
+    public const CONFIG_PORT = 'config.port';
     public const SYSTEM_EXPOSE_DB_PORTS = 'system.expose_db_ports';
+    public const SYSTEM_EXPOSE_DB_QUOTE_PORTS = 'system.expose_db_quote_ports';
+    public const SYSTEM_EXPOSE_DB_SALES_PORTS = 'system.expose_db_sales_ports';
 
     public const VARIABLES = 'variables';
 

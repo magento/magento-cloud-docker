@@ -209,7 +209,8 @@ RUN ["chmod", "+x", \
     "/usr/local/bin/cloud-deploy", \
     "/usr/local/bin/cloud-post-deploy", \
     "/usr/local/bin/run-cron", \
-    "/usr/local/bin/run-hooks" \
+    "/usr/local/bin/run-hooks", \
+    "/usr/local/bin/redis-clean" \
 ]
 
 RUN mkdir -p ${MAGENTO_ROOT}

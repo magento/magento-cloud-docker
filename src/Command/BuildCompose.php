@@ -111,6 +111,18 @@ class BuildCompose extends Command
                 'Expose DB port'
             )
             ->addOption(
+                Source\CliSource::OPTION_EXPOSE_DB_QUOTE_PORT,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Expose port for DB sales'
+            )
+            ->addOption(
+                Source\CliSource::OPTION_EXPOSE_DB_SALES_PORT,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Expose port for DB quote'
+            )
+            ->addOption(
                 Source\CliSource::OPTION_REDIS,
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -204,6 +216,31 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Cloud environment variables'
+            )
+            ->addOption(
+                Source\CliSource::OPTION_INSTALLATION_TYPE,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Sets magento installation type',
+                Source\BaseSource::INSTALLATION_TYPE_COMPOSER
+            )
+            ->addOption(
+                Source\CliSource::OPTION_HOST,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Host name'
+            )
+            ->addOption(
+                Source\CliSource::OPTION_PORT,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Port'
+            )
+            ->addOption(
+                Source\CliSource::OPTION_ES_ENVIRONMENT_VARIABLE,
+                null,
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+                'Environment variable for elasticsearch service'
             );
 
         parent::configure();

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+[ "$DEBUG" = "true" ] && set -x
+
+echo "Clearing Redis cache.."
+exec redis redis-cli FLUSHALL
