@@ -14,7 +14,7 @@ use Robo\Exception\TaskException;
 /**
  * @group php73
  */
-class ElasticsearchCest extends AbstractAcceptanceCest
+class ElasticsearchCest extends AbstractCest
 {
     /**
      * Template version for testing
@@ -31,7 +31,7 @@ class ElasticsearchCest extends AbstractAcceptanceCest
     public function testElasticsearch(CliTester $I, Example $data)
     {
         $command = sprintf(
-            'build:compose --mode=production --es=%s --es-env-var=ES_JAVA_OPTS="-Xms%s -Xmx%s"',
+            'build:compose --mode=production --es=%s --es-env-var="ES_JAVA_OPTS=-Xms%s -Xmx%s"',
             $data['version'],
             $data['xms'],
             $data['xmx']
@@ -58,26 +58,6 @@ class ElasticsearchCest extends AbstractAcceptanceCest
     protected function dataProvider(): array
     {
         return [
-            [
-                'version' => '1.7',
-                'xms' => '512m',
-                'xmx' => '512m',
-            ],
-            [
-                'version' => '2.4',
-                'xms' => '514m',
-                'xmx' => '514m',
-            ],
-            [
-                'version' => '5.2',
-                'xms' => '516m',
-                'xmx' => '516m',
-                'param' => [
-                    'key' => 'index.store.type',
-                    'value' => 'fs',
-                    'needle' => '"index":{"store":{"type":"fs"}}',
-                ]
-            ],
             [
                 'version' => '6.5',
                 'xms' => '518m',

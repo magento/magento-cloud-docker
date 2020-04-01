@@ -105,6 +105,9 @@ interface SourceInterface
     public const PHP_DISABLED_EXTENSIONS = self::PHP . '.extensions.disabled';
 
     public const INSTALLATION_TYPE = 'install.type';
+
+    public const MAGENTO_VERSION = 'magento.version';
+
     /**
      * Config
      */

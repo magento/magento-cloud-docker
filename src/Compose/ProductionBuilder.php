@@ -155,11 +155,18 @@ class ProductionBuilder implements BuilderInterface
         $hasSelenium = $config->hasSelenium();
         $hasTmpMounts = $config->hasTmpMounts();
 
+        $hasGenerated = !version_compare($config->getMagentoVersion(), '2.2.0', '<');
+
         if ($hasTmpMounts) {
             $volumes[self::VOLUME_DOCKER_MNT] = $this->getVolumeConfig('/.docker/mnt');
         }
 
-        foreach ($this->volumeResolver->getMagentoVolumes($mounts, false, $hasSelenium) as $volumeName => $volume) {
+        foreach ($this->volumeResolver->getMagentoVolumes(
+            $mounts,
+            false,
+            $hasSelenium,
+            $hasGenerated
+        ) as $volumeName => $volume) {
             $syncConfig = [];
 
             if (!empty($volume['volume']) && $config->getSyncEngine() === self::SYNC_ENGINE_NATIVE) {
@@ -175,15 +182,15 @@ class ProductionBuilder implements BuilderInterface
         $manager->setVolumes($volumes);
 
         $volumesBuild = $this->volumeResolver->normalize(array_merge(
-            $this->volumeResolver->getDefaultMagentoVolumes(false),
+            $this->volumeResolver->getDefaultMagentoVolumes(false, $hasGenerated),
             $this->volumeResolver->getComposerVolumes()
         ));
         $volumesRo = $this->volumeResolver->normalize(array_merge(
-            $this->volumeResolver->getMagentoVolumes($mounts, true, $hasSelenium),
+            $this->volumeResolver->getMagentoVolumes($mounts, true, $hasSelenium, $hasGenerated),
             $this->volumeResolver->getMountVolumes($hasTmpMounts)
         ));
         $volumesRw = $this->volumeResolver->normalize(array_merge(
-            $this->volumeResolver->getMagentoVolumes($mounts, false, $hasSelenium),
+            $this->volumeResolver->getMagentoVolumes($mounts, false, $hasSelenium, $hasGenerated),
             $this->volumeResolver->getMountVolumes($hasTmpMounts),
             $this->volumeResolver->getComposerVolumes()
         ));

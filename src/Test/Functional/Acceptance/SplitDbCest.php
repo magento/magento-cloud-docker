@@ -13,7 +13,7 @@ use Robo\Exception\TaskException;
 /**
  * @group php73
  */
-class SplitDbCest extends AbstractAcceptanceCest
+class SplitDbCest extends AbstractCest
 {
     private const SPLIT_TYPES = ['quote', 'sales'];
 

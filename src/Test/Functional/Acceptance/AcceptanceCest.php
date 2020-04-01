@@ -12,7 +12,7 @@ use Robo\Exception\TaskException;
 /**
  * @group php73
  */
-class AcceptanceCest extends AbstractAcceptanceCest
+class AcceptanceCest extends AbstractCest
 {
     /**
      * @param \CliTester $I
@@ -32,7 +32,9 @@ class AcceptanceCest extends AbstractAcceptanceCest
 
     /**
      * @param \CliTester $I
-     * @throws \Robo\Exception\TaskException
+     * @throws TaskException
+     * @throws \Codeception\Exception\ModuleConfigException
+     * @throws \Codeception\Exception\ModuleException
      */
     public function testCustomHost(\CliTester $I): void
     {
