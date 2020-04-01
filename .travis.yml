@@ -1,3 +1,4 @@
+os: linux
 dist: bionic
 
 git:
@@ -6,18 +7,12 @@ git:
 addons:
   hosts:
     - magento2.docker
+    - magento2.test
 
 services:
   - docker
 
 language: php
-php:
-  - '7.1'
-  - '7.2'
-  - '7.3'
-
-env:
-  - TEST_SUITE=functional
 
 stages:
   - static-unit
@@ -27,6 +22,7 @@ stages:
 jobs:
   include:
     - stage: static-unit
+      php: '7.1'
       script: ./tests/travis/static-unit.sh;
       env:
         - TEST_SUITE=static-unit
@@ -40,6 +36,7 @@ jobs:
         - TEST_SUITE=static-unit
     - stage: integration
       script: ./vendor/bin/phpunit --configuration ./tests/integration;
+      php: '7.1'
       env:
         - TEST_SUITE=integration
     - script: ./vendor/bin/phpunit --configuration ./tests/integration;
@@ -50,9 +47,23 @@ jobs:
       php: '7.3'
       env:
         - TEST_SUITE=integration
+    - stage: test
+      php: '7.1'
+      dist: xenial
+      env:
+        - TEST_SUITE=functional
+    - php: '7.2'
+      dist: xenial
+      env:
+        - TEST_SUITE=functional
+    - php: '7.3'
+      env:
+        - TEST_SUITE=functional
 
 install: composer update
 
+before_script:
+  - sudo sysctl -w vm.max_map_count=262144
+
 script:
   - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "functional" ]; then ./tests/travis/functional.sh; fi;
-

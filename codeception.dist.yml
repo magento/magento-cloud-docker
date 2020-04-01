@@ -20,6 +20,7 @@ modules:
       mcd_repo: "https://github.com/magento/magento-cloud-docker.git"
       mcc_repo: "https://github.com/magento/magento-cloud-components.git"
       mcp_repo: "https://github.com/magento/magento-cloud-patches.git"
+      ece_tools_repo: "https://github.com/magento/ece-tools.git"
       composer_magento_username: "%REPO_USERNAME%"
       composer_magento_password: "%REPO_PASSWORD%"
       composer_github_token: "%GITHUB_TOKEN%"
@@ -35,3 +36,16 @@ modules:
       password: "%Magento.docker.settings.db.password%"
       exposed_port: "%Magento.docker.settings.db.port%"
       reconnect: true
+      databases:
+        db_quote:
+          dsn: "mysql:host=%Magento.docker.settings.db.host%;port=%Magento.docker.settings.db_quote.port%;dbname=%Magento.docker.settings.db.path%"
+          user: "%Magento.docker.settings.db.username%"
+          password: "%Magento.docker.settings.db.password%"
+          exposed_port: "%Magento.docker.settings.db_quote.port%"
+          reconnect: true
+        db_sales:
+          dsn: "mysql:host=%Magento.docker.settings.db.host%;port=%Magento.docker.settings.db_sales.port%;dbname=%Magento.docker.settings.db.path%"
+          user: "%Magento.docker.settings.db.username%"
+          password: "%Magento.docker.settings.db.password%"
+          exposed_port: "%Magento.docker.settings.db_sales.port%"
+          reconnect: true

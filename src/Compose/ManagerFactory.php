@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
+use Magento\CloudDocker\Config\Config;
+use Magento\CloudDocker\Config\Source\SourceInterface;
+
 /**
  * Creates instance of Manager
  *
@@ -14,8 +17,15 @@ namespace Magento\CloudDocker\Compose;
  */
 class ManagerFactory
 {
-    public function create(): Manager
+    /**
+     * Creates instance of Manager
+     *
+     * @param Config $config
+     * @return Manager
+     * @throws \Magento\CloudDocker\App\ConfigurationMismatchException
+     */
+    public function create(Config $config): Manager
     {
-        return new Manager();
+        return new Manager($config);
     }
 }
