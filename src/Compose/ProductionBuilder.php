@@ -198,7 +198,7 @@ class ProductionBuilder implements BuilderInterface
             $this->volumeResolver->getMountVolumes($hasTmpMounts)
         );
 
-        $volumePrefix =  $config->getName() . '-';
+        $volumePrefix = $config->getNameWithPrefix();
 
         $manager->addVolume(
             $volumePrefix . self::VOLUME_MARIADB_CONF,
@@ -369,7 +369,11 @@ class ProductionBuilder implements BuilderInterface
                 $config->getServiceVersion(self::SERVICE_GENERIC),
                 [
                     'env_file' => './.docker/config.env',
-                    'environment' => $this->converter->convert(['PHP_EXTENSIONS' => implode(' ', $phpExtensions)])
+                    'environment' => $this->converter->convert(
+                        [
+                            'PHP_EXTENSIONS' => implode(' ', $phpExtensions),
+                        ]
+                    )
                 ]
             ),
             [],
@@ -457,8 +461,8 @@ class ProductionBuilder implements BuilderInterface
         string $version,
         array $mounts,
         Config $config
-    ) {
-        $volumePrefix =  $config->getName() . '-';
+    ): void {
+        $volumePrefix = $config->getNameWithPrefix();
         $mounts[] = $volumePrefix . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d';
 
         switch ($service) {

@@ -250,10 +250,6 @@ class GeneratePhp extends Command
         }
 
         $volumes = [
-            '.composer' => [
-                'def' => 'VOLUME /root/.composer/cache',
-                'cmd' => ''
-            ],
             'root' => [
                 'def' => 'VOLUME ${MAGENTO_ROOT}',
                 'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}'

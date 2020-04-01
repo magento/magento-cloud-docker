@@ -26,6 +26,7 @@
         <service id="Magento\CloudDocker\Compose\ProductionBuilder" shared="false"/>
         <service id="Magento\CloudDocker\Config\Config" autowire="false"/>
         <service id="Magento\CloudDocker\Config\Source\CliSource" autowire="false"/>
+        <service id="Magento\CloudDocker\Config\Source\CustomSource" autowire="false"/>
         <service id="Composer\Semver\VersionParser"/>
         <service id="Composer\Semver\Semver"/>
     </services>
