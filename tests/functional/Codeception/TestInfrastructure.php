@@ -359,13 +359,16 @@ class TestInfrastructure extends BaseModule
      */
     public function runBashCommand(string $command): bool
     {
-        return $this->taskExecStack()
+        $result = $this->taskExecStack()
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
             ->dir($this->getWorkDirPath())
             ->exec($command)
-            ->run()
-            ->wasSuccessful();
+            ->run();
+
+        static::$output = $result->getMessage();
+
+        return $result->wasSuccessful();
     }
 
     /**

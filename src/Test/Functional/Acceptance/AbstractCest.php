@@ -8,9 +8,9 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 /**
- * Abstract class for AcceptanceCest
+ * General Cest
  */
-abstract class AbstractAcceptanceCest
+abstract class AbstractCest
 {
     /**
      * Template version for testing
@@ -42,7 +42,6 @@ abstract class AbstractAcceptanceCest
     public function _after(\CliTester $I): void
     {
         $I->stopEnvironment();
-        $I->removeDockerCompose();
         $I->removeWorkDir();
     }
 }
