@@ -7,8 +7,12 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config\Source;
 
+use Composer\IO\NullIO;
+use Composer\Factory;
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\Compose\BuilderFactory;
+use Magento\CloudDocker\Filesystem\Filesystem;
+use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
 
@@ -29,11 +33,28 @@ class BaseSource implements SourceInterface
     private $envReader;
 
     /**
-     * @param EnvReader $envReader
+     * @var FileList
      */
-    public function __construct(EnvReader $envReader)
-    {
+    private $fileList;
+
+    /**
+     * @var Filesystem
+     */
+    private $filesystem;
+
+    /**
+     * @param EnvReader $envReader
+     * @param Filesystem $filesystem
+     * @param FileList $fileList
+     */
+    public function __construct(
+        EnvReader $envReader,
+        Filesystem $filesystem,
+        FileList $fileList
+    ) {
         $this->envReader = $envReader;
+        $this->filesystem = $filesystem;
+        $this->fileList = $fileList;
     }
 
     /**
@@ -49,7 +70,8 @@ class BaseSource implements SourceInterface
             self::CRON_ENABLED => false,
             self::SYSTEM_PORT => self::DEFAULT_PORT,
             self::SYSTEM_HOST => self::DEFAULT_HOST,
-            self::INSTALLATION_TYPE => self::INSTALLATION_TYPE_COMPOSER
+            self::INSTALLATION_TYPE => self::INSTALLATION_TYPE_COMPOSER,
+            self::MAGENTO_VERSION => $this->getMagentoVersion()
         ]);
 
         try {
@@ -61,5 +83,23 @@ class BaseSource implements SourceInterface
         }
 
         return $config;
+    }
+
+    /**
+     * Gets Magento version from composer.json
+     *
+     * @return string|null
+     */
+    private function getMagentoVersion(): ?string
+    {
+        $composer = $this->fileList->getComposer();
+
+        if ($this->filesystem->exists($composer)) {
+            return Factory::create(new NullIO(), $this->fileList->getMagentoComposer())
+                ->getPackage()
+                ->getVersion();
+        }
+
+        return null;
     }
 }

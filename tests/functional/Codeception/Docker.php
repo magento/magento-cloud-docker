@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Codeception;
 
-use PHPUnit\Framework\Assert;
 use Robo\Robo;
 use Robo\Result;
 use Robo\Collection\CollectionBuilder;
@@ -28,11 +27,6 @@ class Docker extends BaseModule
         'system_magento_dir' => '',
         'printOutput' => false,
     ];
-
-    /**
-     * @var string
-     */
-    protected $output = '';
 
     /**
      * @var array
@@ -101,7 +95,7 @@ class Docker extends BaseModule
             ->interactive(false)
             ->run();
 
-        $this->output = $result->getMessage();
+        static::$output = $result->getMessage();
 
         return $result->wasSuccessful();
     }
@@ -167,7 +161,7 @@ class Docker extends BaseModule
             ->exec('rm -rf ' . $pathsToCleanup)
             ->run();
 
-        $this->output = $result->getMessage();
+        static::$output = $result->getMessage();
 
         return $result->wasSuccessful();
     }
@@ -191,7 +185,7 @@ class Docker extends BaseModule
             ->dir($this->getWorkDirPath())
             ->run();
 
-        $this->output = $result->getMessage();
+        static::$output = $result->getMessage();
 
         return $result->wasSuccessful();
     }
@@ -214,7 +208,7 @@ class Docker extends BaseModule
             ->dir($this->getWorkDirPath())
             ->run();
 
-        $this->output = $result->getMessage();
+        static::$output = $result->getMessage();
 
         return $result->wasSuccessful();
     }
@@ -244,7 +238,7 @@ class Docker extends BaseModule
             ->dir($this->getWorkDirPath())
             ->run();
 
-        $this->output = $result->getMessage();
+        static::$output = $result->getMessage();
 
         return $result->wasSuccessful();
     }
@@ -262,15 +256,5 @@ class Docker extends BaseModule
         $this->downloadFromContainer($source, $tmpFile, $container);
 
         return file_get_contents($tmpFile);
-    }
-
-    /**
-     * Checks that output contains $text
-     *
-     * @param string $text
-     */
-    public function seeInOutput(string $text): void
-    {
-        Assert::assertContains($text, $this->output);
     }
 }

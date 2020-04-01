@@ -379,4 +379,13 @@ class Config
     {
         return (array)$this->all()->get(SourceInterface::HOOKS);
     }
+
+    /**
+     * @return string|null
+     * @throws ConfigurationMismatchException
+     */
+    public function getMagentoVersion(): ?string
+    {
+        return $this->all()->get(SourceInterface::MAGENTO_VERSION);
+    }
 }
