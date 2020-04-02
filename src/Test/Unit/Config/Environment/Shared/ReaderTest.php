@@ -12,7 +12,7 @@ use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\FilesystemException;
 use PHPUnit\Framework\MockObject\MockObject;
-use Magento\CloudDocker\Config\EnvCoder;
+use Magento\CloudDocker\Config\Environment\Encoder;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -36,7 +36,7 @@ class ReaderTest extends TestCase
     private $filesystemMock;
 
     /**
-     * @var EnvCoder|MockObject
+     * @var Encoder|MockObject
      */
     private $envCoderMock;
 
@@ -47,7 +47,7 @@ class ReaderTest extends TestCase
     {
         $this->directoryListMock = $this->createMock(DirectoryList::class);
         $this->filesystemMock = $this->createMock(Filesystem::class);
-        $this->envCoderMock = $this->createMock(EnvCoder::class);
+        $this->envCoderMock = $this->createMock(Encoder::class);
 
         $this->reader = new Reader(
             $this->directoryListMock,

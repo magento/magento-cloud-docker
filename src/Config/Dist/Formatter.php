@@ -15,7 +15,7 @@ class Formatter
     /**
      * 4 space indentation for array formatting.
      */
-    const INDENT = '    ';
+    private const INDENT = '    ';
 
     /**
      * If variable to export is an array, format with the php >= 5.4 short array syntax. Otherwise use
