@@ -8,16 +8,14 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Config\Dist;
 
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Compose\Manager;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Relationship;
 use Magento\CloudDocker\Config\Source\BaseSource;
-use Magento\CloudDocker\Config\Source\SourceInterface;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
 use Magento\CloudDocker\Filesystem\FilesystemException;
-use Magento\CloudDocker\Config\EnvCoder;
+use Magento\CloudDocker\Config\Environment\Encoder;
 
 /**
  * Creates docker/config.php.dist file
@@ -50,7 +48,7 @@ class Generator
     private $envReader;
 
     /**
-     * @var EnvCoder
+     * @var Encoder
      */
     private $envCoder;
 
@@ -60,7 +58,7 @@ class Generator
      * @param Relationship $relationship
      * @param Formatter $phpFormatter
      * @param EnvReader $envReader
-     * @param EnvCoder $envCoder
+     * @param Encoder $envCoder
      */
     public function __construct(
         DirectoryList $directoryList,
@@ -68,7 +66,7 @@ class Generator
         Relationship $relationship,
         Formatter $phpFormatter,
         EnvReader $envReader,
-        EnvCoder $envCoder
+        Encoder $envCoder
     ) {
         $this->directoryList = $directoryList;
         $this->filesystem = $filesystem;
@@ -140,6 +138,8 @@ class Generator
      *
      * @param string $filePath
      * @param array $config
+     *
+     * @throws ConfigurationMismatchException
      */
     private function saveConfigEnv(string $filePath, array $config): void
     {
@@ -163,7 +163,7 @@ class Generator
         $host = $config->getHost();
         $port = $config->getPort();
 
-        if (!empty($port) && $port != BaseSource::DEFAULT_PORT) {
+        if (!empty($port) && $port !== BaseSource::DEFAULT_PORT) {
             $host .= ':' . $port;
         }
 
@@ -183,6 +183,9 @@ class Generator
                 'ADMIN_PASSWORD' => '123123q',
                 'ADMIN_URL' => 'admin'
             ],
+            'MAGENTO_CLOUD_APPLICATION' => [
+                'hooks' => $config->getHooks()
+            ]
         ];
     }
 }

@@ -39,6 +39,7 @@ class Application extends \Symfony\Component\Console\Application
     {
         return array_merge(parent::getDefaultCommands(), [
             $this->container->get(Command\BuildCompose::class),
+            $this->container->get(Command\BuildCustomCompose::class),
             $this->container->get(Command\BuildDist::class),
             $this->container->get(Command\Image\GeneratePhp::class)
         ]);
