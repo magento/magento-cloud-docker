@@ -136,6 +136,7 @@ class CloudSource implements SourceInterface
             $repository,
             $appConfig['name']
         );
+        $repository->set(self::HOOKS, $appConfig['hooks'] ?? []);
 
         return $repository;
     }
