@@ -12,7 +12,7 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 {%env_php_extensions%}
 
 # Configure Node.js version
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
 
 # Install dependencies
 RUN apt-get update \

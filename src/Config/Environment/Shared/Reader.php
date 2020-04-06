@@ -12,7 +12,7 @@ use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Config\ReaderInterface;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\FilesystemException;
-use Magento\CloudDocker\Config\EnvCoder;
+use Magento\CloudDocker\Config\Environment\Encoder;
 
 /**
  * Reader of config.php and config.php.dist files.
@@ -30,19 +30,19 @@ class Reader implements ReaderInterface
     private $filesystem;
 
     /**
-     * @var EnvCoder
+     * @var Encoder
      */
     private $envCoder;
 
     /**
      * @param DirectoryList $directoryList
      * @param Filesystem $filesystem
-     * @param EnvCoder $envCoder
+     * @param Encoder $envCoder
      */
     public function __construct(
         DirectoryList $directoryList,
         Filesystem $filesystem,
-        EnvCoder $envCoder
+        Encoder $envCoder
     ) {
         $this->directoryList = $directoryList;
         $this->filesystem = $filesystem;

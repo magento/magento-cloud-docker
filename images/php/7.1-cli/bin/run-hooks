@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import yaml
 import os
 import sys
 import subprocess
-from os import path
+import json
+import base64
 
 # Disable output buffering.
 os.environ['PYTHONUNBUFFERED'] = "1"
@@ -29,19 +29,13 @@ def get_magento_root():
 
 # Gets set hooks by hook name.
 def get_hooks(hook_name):
-    config = get_magento_root() + "/.magento.docker.yaml"
+    try:
+        application = str(os.environ['MAGENTO_CLOUD_APPLICATION'])
+        content = json.loads(base64.b64decode(application).decode("utf-8"))
 
-    if path.exists(get_magento_root() + "/.magento.app.yaml"):
-      config = get_magento_root() + "/.magento.app.yaml"
-
-    with open(config, 'r') as stream:
-        try:
-            content = yaml.safe_load(stream)
-            return content["hooks"][hook_name]
-        except yaml.YAMLError as exc:
-            error_exit(exc)
-        except KeyError:
-            error_exit("The hook \"" + hook_name + "\" is not in the \"" + config + "\"  file. Skipped", 0)
+        return content['hooks'][hook_name]
+    except Exception as exc:
+        error_exit("Cannot decode string: " + str(exc))
 
 
 # Main function.
