@@ -12,7 +12,7 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
 # Configure Node.js version
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
 
 # Install dependencies
 RUN apt-get update \
@@ -209,13 +209,11 @@ RUN ["chmod", "+x", \
     "/usr/local/bin/cloud-deploy", \
     "/usr/local/bin/cloud-post-deploy", \
     "/usr/local/bin/run-cron", \
-    "/usr/local/bin/run-hooks", \
-    "/usr/local/bin/redis-clean" \
+    "/usr/local/bin/run-hooks" \
 ]
 
 RUN mkdir -p ${MAGENTO_ROOT}
 
-VOLUME /root/.composer/cache
 VOLUME ${MAGENTO_ROOT}
 
 ENTRYPOINT ["/docker-entrypoint.sh"]

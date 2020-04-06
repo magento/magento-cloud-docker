@@ -10,20 +10,14 @@ return [
                 'username' => 'magento2',
                 'port' => '3306'
             ]
-        ],
-        'redis' => [
-            [
-                'host' => 'redis',
-                'port' => '6379'
-            ]
         ]
     ])),
     'MAGENTO_CLOUD_ROUTES' => base64_encode(json_encode([
-        'http://magento2.docker/' => [
+        'http://magento2.test:8080/' => [
             'type' => 'upstream',
             'original_url' => 'http://{default}'
         ],
-        'https://magento2.docker/' => [
+        'https://magento2.test:8080/' => [
             'type' => 'upstream',
             'original_url' => 'https://{default}'
         ]
@@ -35,7 +29,11 @@ return [
     ])),
     'MAGENTO_CLOUD_APPLICATION' => base64_encode(json_encode([
         'hooks' => [
-
+            'build' => 'set -e
+php ./vendor/bin/ece-tools run scenario/build/generate.xml
+php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+            'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+            'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
         ]
     ])),
 ];
