@@ -253,11 +253,22 @@ class ProductionBuilder implements BuilderInterface
 
         $manager->addService(
             self::SERVICE_FPM,
-            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_FPM, $phpVersion, ['volumes' => $volumesRo]),
+            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_FPM,
+                $phpVersion,
+                [
+                    'volumes' => $volumesRo,
+                    self::SERVICE_HEALTHCHECK => [
+                        'test'=> '["CMD-SHELL", "/usr/local/bin/fpm-healthcheck.sh"]',
+                        'interval'=> '50s',
+                        'timeout'=> '30s',
+                        'retries'=> 3
+                    ],
+                ]
+            ),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_DB => []]
         );
-         $manager->addService(
+        $manager->addService(
             self::SERVICE_WEB,
             $this->serviceFactory->create(
                 ServiceInterface::SERVICE_NGINX,
