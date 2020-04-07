@@ -6,6 +6,8 @@
 set -e
 trap '>&2 echo Error: Command \`$BASH_COMMAND\` on line $LINENO failed with exit code $?' ERR
 
+echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
 function build_push_image() {
   image_name="$1:$2"
   docker build -t "$image_name" "$3"
