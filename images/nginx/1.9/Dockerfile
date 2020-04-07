@@ -24,6 +24,8 @@ VOLUME ${MAGENTO_ROOT}
 COPY nginx-healthcheck.sh /usr/local/bin/nginx-healthcheck.sh
 RUN ["chmod", "+x", "/usr/local/bin/nginx-healthcheck.sh"]
 
+HEALTHCHECK --retries=3 CMD ["bash", "/usr/local/bin/nginx-healthcheck.sh"]
+
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 ENTRYPOINT ["/docker-entrypoint.sh"]

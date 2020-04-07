@@ -253,18 +253,7 @@ class ProductionBuilder implements BuilderInterface
 
         $manager->addService(
             self::SERVICE_FPM,
-            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_FPM,
-                $phpVersion,
-                [
-                    'volumes' => $volumesRo,
-                    self::SERVICE_HEALTHCHECK => [
-                        'test'=> ["CMD", "/usr/local/bin/fpm-healthcheck.sh"],
-                        'interval'=> '50s',
-                        'timeout'=> '30s',
-                        'retries'=> 3
-                    ],
-                ]
-            ),
+            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_FPM, $phpVersion, ['volumes' => $volumesRo]),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_DB => []]
         );
@@ -281,12 +270,6 @@ class ProductionBuilder implements BuilderInterface
                         'HTTPS_METHOD=noredirect',
                         'WITH_XDEBUG=' . (int)$config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)
                     ],
-                    self::SERVICE_HEALTHCHECK => [
-                        'test'=> ["CMD", "/usr/local/bin/nginx-healthcheck.sh"],
-                        'interval'=> '30s',
-                        'timeout'=> '30s',
-                        'retries'=> 3
-                    ],
                     'ports' => [
                         $config->getPort() . ':80'
                     ]
@@ -295,6 +278,7 @@ class ProductionBuilder implements BuilderInterface
             [self::NETWORK_MAGENTO],
             [self::SERVICE_FPM => []]
         );
+
         if ($config->hasServiceEnabled(self::SERVICE_VARNISH)) {
             $manager->addService(
                 self::SERVICE_VARNISH,
