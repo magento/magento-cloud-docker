@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-nginx_response=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost/nginx_status)
+nginx_response=$(curl -o /dev/null -s -w "%{http_code}\n" http://${WEB_HOST:-web}:${WEB_PORT:-80}/nginx_status)
 
 if [ "$nginx_response" == "200" ]
 then
