@@ -50,6 +50,11 @@ services:
       - 'magento-pub-media:/app/pub/media:rw'
       - 'magento-pub-static:/app/pub/static:rw'
       - 'docker-mnt:/mnt:delegated'
+    healthcheck:
+      test: '["CMD", "/usr/local/bin/fpm-healthcheck.sh"]'
+      interval: 50s
+      timeout: 30s
+      retries: 3
     networks:
       magento:
         aliases:
@@ -77,6 +82,11 @@ services:
       - VIRTUAL_PORT=80
       - HTTPS_METHOD=noredirect
       - WITH_XDEBUG=0
+    healthcheck:
+      test: '["CMD", "/usr/local/bin/nginx-healthcheck.sh"]'
+      interval: 30s
+      timeout: 30s
+      retries: 3
     networks:
       magento:
         aliases:
