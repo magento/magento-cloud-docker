@@ -258,7 +258,7 @@ class ProductionBuilder implements BuilderInterface
                 [
                     'volumes' => $volumesRo,
                     self::SERVICE_HEALTHCHECK => [
-                        'test'=> '["bash", "/usr/local/bin/fpm-healthcheck.sh"]',
+                        'test'=> ["CMD", "/usr/local/bin/fpm-healthcheck.sh"],
                         'interval'=> '50s',
                         'timeout'=> '30s',
                         'retries'=> 3
@@ -282,7 +282,7 @@ class ProductionBuilder implements BuilderInterface
                         'WITH_XDEBUG=' . (int)$config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)
                     ],
                     self::SERVICE_HEALTHCHECK => [
-                        'test'=> ["bash", "/nginx-healthcheck.sh"],
+                        'test'=> ["CMD", "/usr/local/bin/nginx-healthcheck.sh"],
                         'interval'=> '30s',
                         'timeout'=> '30s',
                         'retries'=> 3

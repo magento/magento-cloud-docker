@@ -38,8 +38,8 @@ COPY etc/php-pcov.ini /usr/local/etc/php/conf.d/zz-pcov-settings.ini
 COPY etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 COPY etc/php-fpm.conf /usr/local/etc/
 
-COPY nginx-healthcheck.sh /usr/local/bin/nginx-healthcheck.sh
-RUN ["chmod", "+x", "/usr/local/bin/nginx-healthcheck.sh"]
+COPY fpm-healthcheck.sh /usr/local/bin/fpm-healthcheck.sh
+RUN ["chmod", "+x", "/usr/local/bin/fpm-healthcheck.sh"]
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
