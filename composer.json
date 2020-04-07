@@ -87,12 +87,20 @@
             [
                 "dist/bin/magento-docker",
                 "bin/magento-docker"
+            ],
+            [
+                "dist/bin/db-access",
+                "bin/db-access"
             ]
         ],
         "chmod": [
             {
                 "mask": "0755",
                 "path": "bin/magento-docker"
+            },
+            {
+                "mask": "0755",
+                "path": "bin/db-access"
             },
             {
                 "mask": "0755",
