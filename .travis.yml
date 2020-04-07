@@ -17,6 +17,7 @@ language: php
 stages:
   - static-unit
   - integration
+  - buid-images
   - test
 
 jobs:
@@ -47,6 +48,12 @@ jobs:
       php: '7.3'
       env:
         - TEST_SUITE=integration
+    - stage: build-images
+      env:
+        - TEST_SUITE=build-images
+      script:
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi;
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] then ./tests/travis/images.sh; fi;
     - stage: test
       php: '7.1'
       dist: xenial
