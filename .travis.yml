@@ -52,8 +52,26 @@ jobs:
       env:
         - TEST_SUITE=build-images
       script:
-        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi;
-        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh; fi;
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh tsl; fi;
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh varnish; fi;
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh elasticsearch; fi;
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh nginx; fi;
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh varnish; fi;
+    - script:
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh php 7.1-cli; fi;
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh php 7.1-fpm; fi;
+      env:
+        - TEST_SUITE=build-images
+    - script:
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh php 7.2-cli; fi;
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh php 7.2-fpm; fi;
+      env:
+        - TEST_SUITE=build-images
+    - script:
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh php 7.3-cli; fi;
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh php 7.3-fpm; fi;
+      env:
+        - TEST_SUITE=build-images
     - stage: test
       php: '7.1'
       dist: xenial
@@ -67,10 +85,11 @@ jobs:
       env:
         - TEST_SUITE=functional
 
-install: composer update
+install: if [[ $TEST_SUITE != "build-images" ]]; then composer update; fi;
 
 before_script:
-  - sudo sysctl -w vm.max_map_count=262144
+  - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "build-images" ]; then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi;
+  - if [ $TEST_SUITE == "functional" ]; then sudo sysctl -w vm.max_map_count=262144; fi;
 
 script:
   - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "functional" ]; then ./tests/travis/functional.sh; fi;
