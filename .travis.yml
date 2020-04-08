@@ -52,11 +52,11 @@ jobs:
       env:
         - TEST_SUITE=build-images
       script:
-        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh tsl; fi;
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh tls; fi;
         - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh varnish; fi;
         - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh elasticsearch; fi;
         - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh nginx; fi;
-        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh varnish; fi;
+        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh redis; fi;
     - script:
         - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh php 7.1-cli; fi;
         - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh php 7.1-fpm; fi;
