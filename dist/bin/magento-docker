@@ -16,6 +16,8 @@ USAGE="Magento Cloud Docker
   ece-deploy        run deploy hooks
   ece-post-deploy   run post-deploy hooks
   ece-redeploy      run build, deploy, and post-deploy hooks
+  flush-redis       clears redis cache
+  flush-varnish     clears varnish cache
 
 \033[33mOptions:\033[0m
   -h            show this help text\n"
@@ -61,6 +63,12 @@ case "$1" in
         docker-compose run --rm build cloud-build
         docker-compose run --rm deploy cloud-deploy
         docker-compose run --rm deploy cloud-post-deploy
+        ;;
+    flush-redis)
+        docker-compose exec redis redis-cli FLUSHALL
+        ;;
+    flush-varnish)
+        docker-compose exec varnish varnishadm ban req.url '~' '.'
         ;;
     *)
         printf "$USAGE"

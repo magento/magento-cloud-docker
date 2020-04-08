@@ -85,27 +85,11 @@
                 ".docker/mysql-quote"
             ],
             [
-                "dist/bin/flush-redis",
-                "bin/flush-redis"
-            ],
-            [
-                "dist/bin/flush-varnish",
-                "bin/flush-varnish"
-            ],
-            [
                 "dist/bin/magento-docker",
                 "bin/magento-docker"
             ]
         ],
         "chmod": [
-            {
-                "mask": "0755",
-                "path": "bin/flush-redis"
-            },
-            {
-                "mask": "0755",
-                "path": "bin/flush-varnish"
-            },
             {
                 "mask": "0755",
                 "path": "bin/magento-docker"
