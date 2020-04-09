@@ -16,7 +16,7 @@ USAGE="Magento Cloud Docker
   ece-deploy        run deploy hooks
   ece-post-deploy   run post-deploy hooks
   ece-redeploy      run build, deploy, and post-deploy hooks
-  mysql             access to mysql DB
+  ece-db            access to Database
 
 \033[33mOptions:\033[0m
   -h            show this help text\n"
@@ -63,7 +63,7 @@ case "$1" in
         docker-compose run --rm deploy cloud-deploy
         docker-compose run --rm deploy cloud-post-deploy
         ;;
-    mysql)
+    ece-db)
         docker-compose exec db sh -c 'mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE "$@"'
         ;;
     *)
