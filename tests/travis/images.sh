@@ -19,7 +19,6 @@ function run() {
     if [[ $service_name == "tls" ]]; then
         build_push_image "cloudft/tls" "$TRAVIS_BUILD_NUMBER" "./images/tls"
     else
-        echo "$service_name"
         if [[ "$service_version" != "" ]]; then
             build_push_image "cloudft/$service_name" "$service_version-$TRAVIS_BUILD_NUMBER" "./images/$service_name/$service_version"
         else

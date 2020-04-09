@@ -90,6 +90,7 @@ install: if [[ $TEST_SUITE != "build-images" ]]; then composer update; fi;
 before_script:
   - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "build-images" ]; then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi;
   - if [ $TEST_SUITE == "functional" ]; then sudo sysctl -w vm.max_map_count=262144; fi;
+  - if [ $TEST_SUITE == "functional" ]; then cp codeception.dist.yml codeception.yml && sed -i "s/use_generated_images:\ false/use_generated_images:\ true/" codeception.yml; fi;
 
 script:
   - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "functional" ]; then ./tests/travis/functional.sh; fi;
