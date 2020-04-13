@@ -18,6 +18,7 @@ USAGE="Magento Cloud Docker
   ece-redeploy      run build, deploy, and post-deploy hooks
   flush-redis       clears redis cache
   flush-varnish     clears varnish cache
+  ece-db            access to Database
 
 \033[33mOptions:\033[0m
   -h            show this help text\n"
@@ -69,6 +70,8 @@ case "$1" in
         ;;
     flush-varnish)
         docker-compose exec varnish varnishadm ban req.url '~' '.'
+    ece-db)
+        docker-compose exec db sh -c 'mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE "$@"'
         ;;
     *)
         printf "$USAGE"
