@@ -41,6 +41,7 @@ class ElasticsearchCest extends AbstractCest
             $command .= " --es-env-var={$data['param']['key']}={$data['param']['value']}";
         }
         $I->runEceDockerCommand($command);
+        $I->replaceImagesWithGenerated();
         $I->startEnvironment();
         $I->runDockerComposeCommand('exec -T elasticsearch ps aux | grep elasticsearch');
         $I->seeInOutput('-Xms' . $data['xms']);
