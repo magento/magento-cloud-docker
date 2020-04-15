@@ -21,6 +21,7 @@ class AcceptanceCest extends AbstractCest
     public function testProductionMode(\CliTester $I): void
     {
         $I->runEceDockerCommand('build:compose --mode=production');
+        $I->replaceImagesWithGenerated();
         $I->startEnvironment();
         $I->runDockerComposeCommand('run build cloud-build');
         $I->runDockerComposeCommand('run deploy cloud-deploy');
@@ -43,6 +44,7 @@ class AcceptanceCest extends AbstractCest
             $I->runEceDockerCommand('build:compose --mode=production --host=magento2.test --port=8080'),
             'Command build:compose failed'
         );
+        $I->replaceImagesWithGenerated();
         $I->startEnvironment();
         $I->assertTrue($I->runDockerComposeCommand('run build cloud-build'), 'Build phase failed');
         $I->assertTrue($I->runDockerComposeCommand('run deploy cloud-deploy'), 'Deploy phase failed');

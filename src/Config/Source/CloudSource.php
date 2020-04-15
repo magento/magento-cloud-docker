@@ -136,6 +136,7 @@ class CloudSource implements SourceInterface
             $repository,
             $appConfig['name']
         );
+        $repository->set(self::HOOKS, $appConfig['hooks'] ?? []);
 
         return $repository;
     }
@@ -173,7 +174,7 @@ class CloudSource implements SourceInterface
                     continue;
                 }
 
-                if ($repository->has(self::SERVICES . '.' . $service)) {
+                if ($repository->has(self::SERVICES . '.' . $service) && $service != ServiceInterface::SERVICE_DB) {
                     throw new SourceException(sprintf(
                         'Only one instance of service "%s" supported',
                         $service
