@@ -294,7 +294,7 @@ class ProductionBuilder implements BuilderInterface
                     ]
                 ),
                 [],
-                [self::SERVICE_WEB => []]
+                [self::SERVICE_WEB => ['condition' => 'service_healthy']]
             );
         }
 
