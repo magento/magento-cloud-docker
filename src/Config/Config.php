@@ -388,4 +388,22 @@ class Config
     {
         return $this->all()->get(SourceInterface::MAGENTO_VERSION);
     }
+
+    /**
+     * @return int
+     * @throws ConfigurationMismatchException
+     */
+    public function getDbIncrementIncrement(): int
+    {
+        return (int)$this->all()->get(SourceInterface::SYSTEM_DB_INCREMENT_INCREMENT, 1);
+    }
+
+    /**
+     * @return int
+     * @throws ConfigurationMismatchException
+     */
+    public function getDbIncrementOffset(): int
+    {
+        return (int)$this->all()->get(SourceInterface::SYSTEM_DB_INCREMENT_OFFSET, 1);
+    }
 }
