@@ -395,7 +395,10 @@ class Config
      */
     public function getDbIncrementIncrement(): int
     {
-        return (int)$this->all()->get(SourceInterface::SYSTEM_DB_INCREMENT_INCREMENT, 1);
+        return max(
+            (int)$this->all()->get(SourceInterface::SYSTEM_DB_INCREMENT_INCREMENT, 1),
+            1
+        );
     }
 
     /**
@@ -404,6 +407,9 @@ class Config
      */
     public function getDbIncrementOffset(): int
     {
-        return (int)$this->all()->get(SourceInterface::SYSTEM_DB_INCREMENT_OFFSET, 1);
+        return max(
+            (int)$this->all()->get(SourceInterface::SYSTEM_DB_INCREMENT_OFFSET, 1),
+            1
+        );
     }
 }
