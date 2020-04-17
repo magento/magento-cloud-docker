@@ -93,7 +93,7 @@ services:
           - magento2.docker
     depends_on:
       web:
-        condition: service_started
+        condition: service_healthy
   tls:
     hostname: tls.magento2.docker
     image: 'magento/magento-cloud-docker-tls:latest-1.1'
