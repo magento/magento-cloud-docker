@@ -350,7 +350,7 @@ BASH
                     // https://intellij-support.jetbrains.com/hc/en-us/community/posts/360003410140-PHPStorm-with-PHP7-3-and-xdebug-2-7-0
                     self::EXTENSION_PACKAGE_NAME => 'xdebug-2.6.1',
                 ],
-                '>=7.3' => [
+                '>=7.3 <7.4' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_PACKAGE_NAME => 'xdebug-2.7.1',
                 ],

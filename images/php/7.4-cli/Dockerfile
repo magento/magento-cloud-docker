@@ -115,7 +115,6 @@ RUN pecl install -o -f \
   propro \
   raphf \
   redis \
-  xdebug-2.7.1 \
   xdebug-2.9.3 \
   yaml
 
@@ -174,7 +173,6 @@ RUN docker-php-ext-enable \
   sysvsem \
   sysvshm \
   tidy \
-  xdebug \
   xdebug \
   xmlrpc \
   xsl \

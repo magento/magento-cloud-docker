@@ -94,7 +94,6 @@ RUN pecl install -o -f \
   propro \
   raphf \
   redis \
-  xdebug-2.7.1 \
   xdebug-2.9.3 \
   yaml
 
@@ -154,7 +153,6 @@ RUN docker-php-ext-enable \
   sysvshm \
   tidy \
   xdebug \
-  xdebug \
   xmlrpc \
   xsl \
   yaml \
@@ -169,6 +167,11 @@ COPY etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
 COPY etc/php-pcov.ini /usr/local/etc/php/conf.d/zz-pcov-settings.ini
 COPY etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 COPY etc/php-fpm.conf /usr/local/etc/
+
+COPY fpm-healthcheck.sh /usr/local/bin/fpm-healthcheck.sh
+RUN ["chmod", "+x", "/usr/local/bin/fpm-healthcheck.sh"]
+
+HEALTHCHECK --retries=3 CMD ["bash", "/usr/local/bin/fpm-healthcheck.sh"]
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
