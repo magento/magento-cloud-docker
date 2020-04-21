@@ -32,10 +32,10 @@ class ProductionBuilder implements BuilderInterface
      */
     private static $cliDepends = [
         self::SERVICE_DB => [
-            'condition' => 'service_started'
+            'condition' => 'service_healthy'
         ],
         self::SERVICE_REDIS => [
-            'condition' => 'service_started'
+            'condition' => 'service_healthy'
         ],
         self::SERVICE_ELASTICSEARCH => [
             'condition' => 'service_healthy'
@@ -231,6 +231,13 @@ class ProductionBuilder implements BuilderInterface
                     (string)$config->getServiceVersion($service),
                     self::SERVICE_ELASTICSEARCH === $service && !empty($esEnvVars)
                         ? ['environment' => $esEnvVars]
+                        : self::SERVICE_REDIS === $service
+                        ? [self::SERVICE_HEALTHCHECK => [
+                            'test'=> 'redis-cli ping || exit 1',
+                            'interval'=> '30s',
+                            'timeout'=> '30s',
+                            'retries'=> 3
+                        ] ]
                         : []
                 ),
                 [self::NETWORK_MAGENTO],
@@ -255,7 +262,7 @@ class ProductionBuilder implements BuilderInterface
             self::SERVICE_FPM,
             $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_FPM, $phpVersion, ['volumes' => $volumesRo]),
             [self::NETWORK_MAGENTO],
-            [self::SERVICE_DB => []]
+            [self::SERVICE_DB => ['condition' => 'service_healthy']]
         );
         $manager->addService(
             self::SERVICE_WEB,
@@ -519,6 +526,12 @@ class ProductionBuilder implements BuilderInterface
                 [
                     'ports' => [$port ? "$port:3306" : '3306'],
                     'volumes' => $mounts,
+                    self::SERVICE_HEALTHCHECK => [
+                        'test'=> 'mysqladmin ping -h localhost',
+                        'interval'=> '30s',
+                        'timeout'=> '30s',
+                        'retries'=> 3
+                    ],
                 ]
             ),
             [self::NETWORK_MAGENTO],
