@@ -14,6 +14,7 @@ use Magento\CloudDocker\Compose\ProductionBuilder\VolumeResolver;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\Config\Source\SourceInterface;
+use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
@@ -101,6 +102,11 @@ class ProductionBuilder implements BuilderInterface
     private $volumeResolver;
 
     /**
+     * @var DirectoryList
+     */
+    private $directoryList;
+
+    /**
      * @param ServiceFactory $serviceFactory
      * @param FileList $fileList
      * @param Converter $converter
@@ -108,6 +114,7 @@ class ProductionBuilder implements BuilderInterface
      * @param ManagerFactory $managerFactory
      * @param Resolver $resolver
      * @param VolumeResolver $volumeResolver
+     * @param DirectoryList $directoryList
      */
     public function __construct(
         ServiceFactory $serviceFactory,
@@ -116,7 +123,8 @@ class ProductionBuilder implements BuilderInterface
         ExtensionResolver $phpExtension,
         ManagerFactory $managerFactory,
         Resolver $resolver,
-        VolumeResolver $volumeResolver
+        VolumeResolver $volumeResolver,
+        DirectoryList $directoryList
     ) {
         $this->serviceFactory = $serviceFactory;
         $this->fileList = $fileList;
@@ -125,6 +133,7 @@ class ProductionBuilder implements BuilderInterface
         $this->managerFactory = $managerFactory;
         $this->resolver = $resolver;
         $this->volumeResolver = $volumeResolver;
+        $this->directoryList = $directoryList;
     }
 
     /**
@@ -251,9 +260,17 @@ class ProductionBuilder implements BuilderInterface
             );
         }
 
+        $fpmConfig = ['volumes' => $volumesRo];
+
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_BLACKFIRE)) {
+            $fpmConfig['build'] = [
+                'context' => $this->directoryList->getImagesRoot() . '/php/' . $phpVersion . '-fpm/'
+            ];
+        }
+
         $manager->addService(
             self::SERVICE_FPM,
-            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_FPM, $phpVersion, ['volumes' => $volumesRo]),
+            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_FPM, $phpVersion, $fpmConfig),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_DB => []]
         );
@@ -338,6 +355,27 @@ class ProductionBuilder implements BuilderInterface
             );
         }
 
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_BLACKFIRE)) {
+            $manager->addService(
+                ServiceInterface::SERVICE_BLACKFIRE,
+                $this->serviceFactory->create(
+                    ServiceInterface::SERVICE_BLACKFIRE,
+                    $config->getServiceVersion(ServiceInterface::SERVICE_BLACKFIRE),
+                    [
+                        'environment' => [
+                            'BLACKFIRE_SERVER_ID' => $config->getBlackfireConfig()['server_id'],
+                            'BLACKFIRE_SERVER_TOKEN' => $config->getBlackfireConfig()['server_token'],
+                            'BLACKFIRE_CLIENT_ID' => $config->getBlackfireConfig()['client_id'],
+                            'BLACKFIRE_CLIENT_TOKEN' => $config->getBlackfireConfig()['client_token']
+                        ],
+                        'ports' => ["8707"]
+                    ]
+                ),
+                [self::NETWORK_MAGENTO],
+                []
+            );
+        }
+
         $phpExtensions = $this->phpExtension->get($config);
 
         /**
@@ -379,12 +417,22 @@ class ProductionBuilder implements BuilderInterface
             [],
             []
         );
+
+        $buildConfig = ['volumes' => $volumesBuild];
+
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_BLACKFIRE)) {
+            $buildConfig['build'] = [
+                'context' => $this->directoryList->getImagesRoot() . '/php/' . $phpVersion . '-cli/'
+            ];
+        }
+
         $manager->addService(
             self::SERVICE_BUILD,
-            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $phpVersion, ['volumes' => $volumesBuild]),
+            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $phpVersion, $buildConfig),
             [self::NETWORK_MAGENTO_BUILD],
             $cliDepends
         );
+
         $manager->addService(
             self::SERVICE_DEPLOY,
             $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $phpVersion, ['volumes' => $volumesRo]),
