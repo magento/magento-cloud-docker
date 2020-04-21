@@ -110,8 +110,12 @@ class ExtensionResolver
     public function get(Config $config): array
     {
         $phpVersion = $config->getServiceVersion(ServiceInterface::SERVICE_PHP);
+        $enabledPhpExtensions = [];
+        foreach ($config->getEnabledPhpExtensions() as $phpExtension) {
+            is_array($phpExtension) ? : array_push($enabledPhpExtensions, $phpExtension);
+        }
         $enabledExtensions = array_unique(
-            array_merge(self::DEFAULT_PHP_EXTENSIONS, $config->getEnabledPhpExtensions())
+            array_merge(self::DEFAULT_PHP_EXTENSIONS, $enabledPhpExtensions)
         );
         $phpExtensions = array_diff(
             $enabledExtensions,
