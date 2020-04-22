@@ -70,6 +70,7 @@ case "$1" in
         ;;
     flush-varnish)
         docker-compose exec varnish varnishadm ban req.url '~' '.'
+        ;;
     ece-db)
         docker-compose exec db sh -c 'mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE "$@"'
         ;;
