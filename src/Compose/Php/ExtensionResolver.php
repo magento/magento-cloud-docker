@@ -176,7 +176,7 @@ class ExtensionResolver
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
             'gd' => [
-                '>=7.0' => [
+                '>=7.0 <=7.3' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE,
                     self::EXTENSION_OS_DEPENDENCIES => ['libjpeg62-turbo-dev', 'libpng-dev', 'libfreetype6-dev'],
                     self::EXTENSION_CONFIGURE_OPTIONS => [
@@ -184,6 +184,15 @@ class ExtensionResolver
                         '--with-jpeg-dir=/usr/include/'
                     ],
                 ],
+                '>=7.4' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE,
+                    self::EXTENSION_OS_DEPENDENCIES => ['libjpeg62-turbo-dev', 'libpng-dev', 'libfreetype6-dev'],
+                    self::EXTENSION_CONFIGURE_OPTIONS => [
+                        '--with-freetype=/usr/include/',
+                        '--with-jpeg=/usr/include/'
+                    ],
+                ],
+
             ],
             'geoip' => [
                 '>=7.0' => [
@@ -211,7 +220,7 @@ class ExtensionResolver
                 ],
             ],
             'imap' => [
-                '>=7.0' => [
+                '>=7.0 <=7.3'  => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE,
                     self::EXTENSION_OS_DEPENDENCIES => ['libc-client-dev', 'libkrb5-dev'],
                     self::EXTENSION_CONFIGURE_OPTIONS => ['--with-kerberos', '--with-imap-ssl'],
@@ -273,7 +282,7 @@ class ExtensionResolver
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
             ],
             'recode' => [
-                '>=7.0' => [
+                '>=7.0 <=7.3' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE,
                     self::EXTENSION_OS_DEPENDENCIES => ['librecode0', 'librecode-dev'],
                 ],
@@ -379,17 +388,21 @@ BASH
                 ],
             ],
             'zip' => [
-                '>=7.0' => [
+                '>=7.0 <=7.3' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE,
                     self::EXTENSION_OS_DEPENDENCIES => ['libzip-dev', 'zip'],
                     self::EXTENSION_CONFIGURE_OPTIONS => ['--with-libzip'],
+                ],
+                '>=7.4' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE,
+                    self::EXTENSION_OS_DEPENDENCIES => ['libzip-dev', 'zip'],
                 ],
             ],
             'pcntl' => [
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
             'ioncube' => [
-                '>=7.0' => [
+                '>=7.0 <=7.3' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
                     self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
 cd /tmp
