@@ -15,6 +15,7 @@ services:
       - 'mymagento-mariadb-conf:/etc/mysql/mariadb.conf.d'
       - 'mymagento-magento-db:/var/lib/mysql'
       - 'docker-entrypoint:/docker-entrypoint-initdb.d'
+    command: '--auto_increment_increment=3 --auto_increment_offset=2'
     networks:
       magento:
         aliases:
