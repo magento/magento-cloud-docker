@@ -81,7 +81,11 @@ class BuildCustomComposeTest extends TestCase
                             'system' => [
                                 'mode' => 'production',
                                 'host' => 'magento2.test',
-                                'port' => '8080'
+                                'port' => '8080',
+                                'db' => [
+                                    'increment_increment' => 3,
+                                    'increment_offset' => 2
+                                ]
                             ],
                             'services' => [
                                 'php' => [
@@ -97,9 +101,9 @@ class BuildCustomComposeTest extends TestCase
                                 ],
                             ],
                             'hooks' => [
-                                'build' => 'set -e
-php ./vendor/bin/ece-tools run scenario/build/generate.xml
-php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+                                'build' => 'set -e' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/generate.xml' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
                                 'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
                                 'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
                             ],

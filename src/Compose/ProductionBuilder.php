@@ -471,6 +471,7 @@ class ProductionBuilder implements BuilderInterface
     ): void {
         $volumePrefix = $config->getNameWithPrefix();
         $mounts[] = $volumePrefix . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d';
+        $commands = [];
 
         switch ($service) {
             case self::SERVICE_DB:
@@ -485,6 +486,15 @@ class ProductionBuilder implements BuilderInterface
                 $mounts[] = $volumePrefix . self::VOLUME_MAGENTO_DB . ':/var/lib/mysql';
                 $mounts[] = self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d';
                 $serviceType = ServiceInterface::SERVICE_DB;
+
+                if ($config->getDbIncrementIncrement() > 1) {
+                    $commands[] = '--auto_increment_increment=' . $config->getDbIncrementIncrement();
+                }
+
+                if ($config->getDbIncrementOffset() > 1) {
+                    $commands[] = '--auto_increment_offset=' . $config->getDbIncrementOffset();
+                }
+
                 break;
             case self::SERVICE_DB_QUOTE:
                 $port = $config->getDbQuotePortsExpose();
@@ -518,6 +528,15 @@ class ProductionBuilder implements BuilderInterface
                 throw new GenericException(sprintf('Configuration for %s service not exist', $service));
         }
 
+        $dbConfig = [
+            'ports' => [$port ? "$port:3306" : '3306'],
+            'volumes' => $mounts,
+        ];
+
+        if ($commands) {
+            $dbConfig['command'] = implode(' ', $commands);
+        }
+
         $manager->addService(
             $service,
             $this->serviceFactory->create(
@@ -533,6 +552,7 @@ class ProductionBuilder implements BuilderInterface
                         'retries'=> 3
                     ],
                 ]
+                $dbConfig
             ),
             [self::NETWORK_MAGENTO],
             []

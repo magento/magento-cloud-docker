@@ -55,6 +55,9 @@ class CliSource implements SourceInterface
     public const OPTION_HOST = 'host';
     public const OPTION_PORT = 'port';
 
+    public const OPTION_DB_INCREMENT_INCREMENT = 'db-increment-increment';
+    public const OPTION_DB_INCREMENT_OFFSET = 'db-increment-offset';
+
     /**
      * Environment variable for elasticsearch service.
      */
@@ -211,6 +214,14 @@ class CliSource implements SourceInterface
 
         if ($esEnvVars = $this->input->getOption(self::OPTION_ES_ENVIRONMENT_VARIABLE)) {
             $repository->set(self::SERVICES_ES_VARS, $esEnvVars);
+        }
+
+        if ($incrementIncrement = $this->input->getOption(self::OPTION_DB_INCREMENT_INCREMENT)) {
+            $repository->set(SourceInterface::SYSTEM_DB_INCREMENT_INCREMENT, $incrementIncrement);
+        }
+
+        if ($incrementOffset = $this->input->getOption(self::OPTION_DB_INCREMENT_OFFSET)) {
+            $repository->set(SourceInterface::SYSTEM_DB_INCREMENT_OFFSET, $incrementOffset);
         }
 
         return $repository;
