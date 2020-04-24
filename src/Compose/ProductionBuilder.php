@@ -551,7 +551,7 @@ class ProductionBuilder implements BuilderInterface
                         'timeout'=> '30s',
                         'retries'=> 3
                     ],
-                ]
+                ],
                 $dbConfig
             ),
             [self::NETWORK_MAGENTO],
