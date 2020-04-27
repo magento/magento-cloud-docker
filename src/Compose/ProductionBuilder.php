@@ -531,6 +531,12 @@ class ProductionBuilder implements BuilderInterface
         $dbConfig = [
             'ports' => [$port ? "$port:3306" : '3306'],
             'volumes' => $mounts,
+             self::SERVICE_HEALTHCHECK => [
+                'test'=> 'mysqladmin ping -h localhost',
+                'interval'=> '30s',
+                'timeout'=> '30s',
+                'retries'=> 3
+            ],
         ];
 
         if ($commands) {
@@ -542,16 +548,6 @@ class ProductionBuilder implements BuilderInterface
             $this->serviceFactory->create(
                 $serviceType,
                 $version,
-                [
-                    'ports' => [$port ? "$port:3306" : '3306'],
-                    'volumes' => $mounts,
-                    self::SERVICE_HEALTHCHECK => [
-                        'test'=> 'mysqladmin ping -h localhost',
-                        'interval'=> '30s',
-                        'timeout'=> '30s',
-                        'retries'=> 3
-                    ],
-                ],
                 $dbConfig
             ),
             [self::NETWORK_MAGENTO],
