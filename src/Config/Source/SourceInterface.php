@@ -120,6 +120,9 @@ interface SourceInterface
     public const SYSTEM_EXPOSE_DB_QUOTE_PORTS = 'system.expose_db_quote_ports';
     public const SYSTEM_EXPOSE_DB_SALES_PORTS = 'system.expose_db_sales_ports';
 
+    public const SYSTEM_DB_INCREMENT_INCREMENT = 'system.db.increment_increment';
+    public const SYSTEM_DB_INCREMENT_OFFSET = 'system.db.increment_offset';
+
     public const VARIABLES = 'variables';
 
     public const HOOKS = 'hooks';
