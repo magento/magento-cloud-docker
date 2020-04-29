@@ -102,6 +102,12 @@ class BuildCompose extends Command
                 InputOption::VALUE_REQUIRED,
                 'DB version'
             )->addOption(
+                Source\CliSource::OPTION_DB_IMAGE,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'DB image'
+            )
+            ->addOption(
                 Source\CliSource::OPTION_EXPOSE_DB_PORT,
                 null,
                 InputOption::VALUE_REQUIRED,
