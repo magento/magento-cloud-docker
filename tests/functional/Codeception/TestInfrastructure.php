@@ -391,6 +391,33 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Replace magento images with cloud FT images in docker-compose.yml
+     *
+     * @return bool
+     */
+    public function replaceImagesWithGenerated(): bool
+    {
+
+        if (true === $this->_getConfig('use_generated_images')) {
+            $this->debug('Tests use new generatedx Docker images');
+            $path = $this->getWorkDirPath() . DIRECTORY_SEPARATOR . 'docker-compose.yml';
+
+            return (bool)file_put_contents(
+                $path,
+                preg_replace(
+                    '/(magento\/magento-cloud-docker-(\w+)):((\d+\.\d+|latest)(\-fpm|\-cli)?(\-\d+\.\d+))/i',
+                    'cloudft/$2:$4$5-' . $this->_getConfig('version_generated_images'),
+                    file_get_contents($path)
+                )
+            );
+        }
+
+        $this->debug('Tests use default Docker images');
+
+        return true;
+    }
+
+    /**
      * Runs composer update
      *
      * @return bool

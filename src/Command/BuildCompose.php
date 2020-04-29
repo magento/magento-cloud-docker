@@ -226,6 +226,16 @@ class BuildCompose extends Command
             null,
             InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
             'Environment variable for elasticsearch service'
+        )->addOption(
+            Source\CliSource::OPTION_DB_INCREMENT_INCREMENT,
+            null,
+            InputOption::VALUE_REQUIRED,
+            '"auto_increment_increment" database variable'
+        )->addOption(
+            Source\CliSource::OPTION_DB_INCREMENT_OFFSET,
+            null,
+            InputOption::VALUE_REQUIRED,
+            '"auto_increment_offset" database variable'
         );
 
         parent::configure();

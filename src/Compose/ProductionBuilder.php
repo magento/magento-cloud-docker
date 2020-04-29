@@ -33,10 +33,10 @@ class ProductionBuilder implements BuilderInterface
      */
     private static $cliDepends = [
         self::SERVICE_DB => [
-            'condition' => 'service_started'
+            'condition' => 'service_healthy'
         ],
         self::SERVICE_REDIS => [
-            'condition' => 'service_started'
+            'condition' => 'service_healthy'
         ],
         self::SERVICE_ELASTICSEARCH => [
             'condition' => 'service_healthy'
@@ -240,6 +240,13 @@ class ProductionBuilder implements BuilderInterface
                     (string)$config->getServiceVersion($service),
                     self::SERVICE_ELASTICSEARCH === $service && !empty($esEnvVars)
                         ? ['environment' => $esEnvVars]
+                        : self::SERVICE_REDIS === $service
+                        ? [self::SERVICE_HEALTHCHECK => [
+                            'test'=> 'redis-cli ping || exit 1',
+                            'interval'=> '30s',
+                            'timeout'=> '30s',
+                            'retries'=> 3
+                        ] ]
                         : []
                 ),
                 [self::NETWORK_MAGENTO],
@@ -272,7 +279,7 @@ class ProductionBuilder implements BuilderInterface
             self::SERVICE_FPM,
             $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_FPM, $phpVersion, $fpmConfig),
             [self::NETWORK_MAGENTO],
-            [self::SERVICE_DB => []]
+            [self::SERVICE_DB => ['condition' => 'service_healthy']]
         );
         $manager->addService(
             self::SERVICE_WEB,
@@ -311,7 +318,7 @@ class ProductionBuilder implements BuilderInterface
                     ]
                 ),
                 [],
-                [self::SERVICE_WEB => []]
+                [self::SERVICE_WEB => ['condition' => 'service_healthy']]
             );
         }
 
@@ -512,6 +519,7 @@ class ProductionBuilder implements BuilderInterface
     ): void {
         $volumePrefix = $config->getNameWithPrefix();
         $mounts[] = $volumePrefix . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d';
+        $commands = [];
 
         switch ($service) {
             case self::SERVICE_DB:
@@ -526,6 +534,15 @@ class ProductionBuilder implements BuilderInterface
                 $mounts[] = $volumePrefix . self::VOLUME_MAGENTO_DB . ':/var/lib/mysql';
                 $mounts[] = self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d';
                 $serviceType = ServiceInterface::SERVICE_DB;
+
+                if ($config->getDbIncrementIncrement() > 1) {
+                    $commands[] = '--auto_increment_increment=' . $config->getDbIncrementIncrement();
+                }
+
+                if ($config->getDbIncrementOffset() > 1) {
+                    $commands[] = '--auto_increment_offset=' . $config->getDbIncrementOffset();
+                }
+
                 break;
             case self::SERVICE_DB_QUOTE:
                 $port = $config->getDbQuotePortsExpose();
@@ -559,15 +576,27 @@ class ProductionBuilder implements BuilderInterface
                 throw new GenericException(sprintf('Configuration for %s service not exist', $service));
         }
 
+        $dbConfig = [
+            'ports' => [$port ? "$port:3306" : '3306'],
+            'volumes' => $mounts,
+             self::SERVICE_HEALTHCHECK => [
+                'test'=> 'mysqladmin ping -h localhost',
+                'interval'=> '30s',
+                'timeout'=> '30s',
+                'retries'=> 3
+            ],
+        ];
+
+        if ($commands) {
+            $dbConfig['command'] = implode(' ', $commands);
+        }
+
         $manager->addService(
             $service,
             $this->serviceFactory->create(
                 $serviceType,
                 $version,
-                [
-                    'ports' => [$port ? "$port:3306" : '3306'],
-                    'volumes' => $mounts,
-                ]
+                $dbConfig
             ),
             [self::NETWORK_MAGENTO],
             []

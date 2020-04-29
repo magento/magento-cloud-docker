@@ -15,6 +15,12 @@ services:
       - 'mymagento-mariadb-conf:/etc/mysql/mariadb.conf.d'
       - 'mymagento-magento-db:/var/lib/mysql'
       - 'docker-entrypoint:/docker-entrypoint-initdb.d'
+    healthcheck:
+      test: 'mysqladmin ping -h localhost'
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    command: '--auto_increment_increment=3 --auto_increment_offset=2'
     networks:
       magento:
         aliases:
@@ -26,6 +32,11 @@ services:
       - /data
     ports:
       - 6379
+    healthcheck:
+      test: 'redis-cli ping || exit 1'
+      interval: 30s
+      timeout: 30s
+      retries: 3
     networks:
       magento:
         aliases:
@@ -50,7 +61,7 @@ services:
           - fpm.magento2.docker
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
   web:
     hostname: web.magento2.docker
     image: 'magento/magento-cloud-docker-nginx:latest-1.1'
@@ -88,7 +99,7 @@ services:
           - magento2.docker
     depends_on:
       web:
-        condition: service_started
+        condition: service_healthy
   tls:
     hostname: tls.magento2.docker
     image: 'magento/magento-cloud-docker-tls:latest-1.1'
@@ -137,9 +148,9 @@ services:
           - test.magento2.docker
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
   fpm_xdebug:
     hostname: fpm_xdebug.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.3-fpm-1.1'
@@ -186,9 +197,9 @@ services:
           - build.magento2.docker
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
   deploy:
     hostname: deploy.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
@@ -209,9 +220,9 @@ services:
           - deploy.magento2.docker
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
   cron:
     hostname: cron.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
@@ -235,9 +246,9 @@ services:
           - cron.magento2.docker
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
 volumes:
   magento:
     driver_opts:
