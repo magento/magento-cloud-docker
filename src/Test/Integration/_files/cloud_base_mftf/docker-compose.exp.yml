@@ -11,7 +11,7 @@ services:
     ports:
       - '3306'
     volumes:
-      - 'docker-mnt:/mnt:delegated'
+      - 'docker-mnt:/mnt:rw,cached'
       - 'mymagento-mariadb-conf:/etc/mysql/mariadb.conf.d'
       - 'mymagento-magento-db:/var/lib/mysql'
       - 'docker-entrypoint:/docker-entrypoint-initdb.d'
@@ -46,15 +46,15 @@ services:
     image: 'magento/magento-cloud-docker-php:7.3-fpm-1.1'
     extends: generic
     volumes:
-      - 'magento:/app:ro'
-      - 'magento-vendor:/app/vendor:ro'
-      - 'magento-generated:/app/generated:ro'
-      - 'magento-var:/app/var:rw'
-      - 'magento-app-etc:/app/app/etc:rw'
-      - 'magento-pub-media:/app/pub/media:rw'
-      - 'magento-pub-static:/app/pub/static:rw'
-      - 'magento-dev:/app/dev:delegated'
-      - 'docker-mnt:/mnt:delegated'
+      - 'magento:/app:ro,cached'
+      - 'magento-vendor:/app/vendor:ro,cached'
+      - 'magento-generated:/app/generated:ro,cached'
+      - 'magento-var:/app/var:rw,cached'
+      - 'magento-app-etc:/app/app/etc:rw,cached'
+      - 'magento-pub-media:/app/pub/media:rw,cached'
+      - 'magento-pub-static:/app/pub/static:rw,cached'
+      - 'magento-dev:/app/dev:rw,cached'
+      - 'docker-mnt:/mnt:rw,cached'
     networks:
       magento:
         aliases:
@@ -69,15 +69,15 @@ services:
     ports:
       - '80:80'
     volumes:
-      - 'magento:/app:ro'
-      - 'magento-vendor:/app/vendor:ro'
-      - 'magento-generated:/app/generated:ro'
-      - 'magento-var:/app/var:rw'
-      - 'magento-app-etc:/app/app/etc:rw'
-      - 'magento-pub-media:/app/pub/media:rw'
-      - 'magento-pub-static:/app/pub/static:rw'
-      - 'magento-dev:/app/dev:delegated'
-      - 'docker-mnt:/mnt:delegated'
+      - 'magento:/app:ro,cached'
+      - 'magento-vendor:/app/vendor:ro,cached'
+      - 'magento-generated:/app/generated:ro,cached'
+      - 'magento-var:/app/var:rw,cached'
+      - 'magento-app-etc:/app/app/etc:rw,cached'
+      - 'magento-pub-media:/app/pub/media:rw,cached'
+      - 'magento-pub-static:/app/pub/static:rw,cached'
+      - 'magento-dev:/app/dev:rw,cached'
+      - 'docker-mnt:/mnt:rw,cached'
     environment:
       - VIRTUAL_HOST=magento2.docker
       - VIRTUAL_PORT=80
@@ -132,16 +132,16 @@ services:
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
     extends: generic
     volumes:
-      - 'magento:/app:rw'
-      - 'magento-vendor:/app/vendor:rw'
-      - 'magento-generated:/app/generated:rw'
-      - 'magento-var:/app/var:rw'
-      - 'magento-app-etc:/app/app/etc:rw'
-      - 'magento-pub-media:/app/pub/media:rw'
-      - 'magento-pub-static:/app/pub/static:rw'
-      - 'magento-dev:/app/dev:delegated'
-      - 'docker-mnt:/mnt:delegated'
-      - '~/.composer/cache:/root/.composer/cache:delegated'
+      - 'magento:/app:rw,cached'
+      - 'magento-vendor:/app/vendor:rw,cached'
+      - 'magento-generated:/app/generated:rw,cached'
+      - 'magento-var:/app/var:rw,cached'
+      - 'magento-app-etc:/app/app/etc:rw,cached'
+      - 'magento-pub-media:/app/pub/media:rw,cached'
+      - 'magento-pub-static:/app/pub/static:rw,cached'
+      - 'magento-dev:/app/dev:rw,cached'
+      - 'docker-mnt:/mnt:rw,cached'
+      - '~/.composer/cache:/root/.composer/cache:rw,cached'
     networks:
       magento:
         aliases:
@@ -158,15 +158,15 @@ services:
     ports:
       - '9001:9001'
     volumes:
-      - 'magento:/app:ro'
-      - 'magento-vendor:/app/vendor:ro'
-      - 'magento-generated:/app/generated:ro'
-      - 'magento-var:/app/var:rw'
-      - 'magento-app-etc:/app/app/etc:rw'
-      - 'magento-pub-media:/app/pub/media:rw'
-      - 'magento-pub-static:/app/pub/static:rw'
-      - 'magento-dev:/app/dev:delegated'
-      - 'docker-mnt:/mnt:delegated'
+      - 'magento:/app:ro,cached'
+      - 'magento-vendor:/app/vendor:ro,cached'
+      - 'magento-generated:/app/generated:ro,cached'
+      - 'magento-var:/app/var:rw,cached'
+      - 'magento-app-etc:/app/app/etc:rw,cached'
+      - 'magento-pub-media:/app/pub/media:rw,cached'
+      - 'magento-pub-static:/app/pub/static:rw,cached'
+      - 'magento-dev:/app/dev:rw,cached'
+      - 'docker-mnt:/mnt:rw,cached'
     environment:
       - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip redis xsl sodium'
     networks:
@@ -187,10 +187,10 @@ services:
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
     extends: generic
     volumes:
-      - 'magento:/app:rw'
-      - 'magento-vendor:/app/vendor:rw'
-      - 'magento-generated:/app/generated:rw'
-      - '~/.composer/cache:/root/.composer/cache:delegated'
+      - 'magento:/app:rw,cached'
+      - 'magento-vendor:/app/vendor:rw,cached'
+      - 'magento-generated:/app/generated:rw,cached'
+      - '~/.composer/cache:/root/.composer/cache:rw,cached'
     networks:
       magento-build:
         aliases:
@@ -205,15 +205,15 @@ services:
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
     extends: generic
     volumes:
-      - 'magento:/app:ro'
-      - 'magento-vendor:/app/vendor:ro'
-      - 'magento-generated:/app/generated:ro'
-      - 'magento-var:/app/var:rw'
-      - 'magento-app-etc:/app/app/etc:rw'
-      - 'magento-pub-media:/app/pub/media:rw'
-      - 'magento-pub-static:/app/pub/static:rw'
-      - 'magento-dev:/app/dev:delegated'
-      - 'docker-mnt:/mnt:delegated'
+      - 'magento:/app:ro,cached'
+      - 'magento-vendor:/app/vendor:ro,cached'
+      - 'magento-generated:/app/generated:ro,cached'
+      - 'magento-var:/app/var:rw,cached'
+      - 'magento-app-etc:/app/app/etc:rw,cached'
+      - 'magento-pub-media:/app/pub/media:rw,cached'
+      - 'magento-pub-static:/app/pub/static:rw,cached'
+      - 'magento-dev:/app/dev:rw,cached'
+      - 'docker-mnt:/mnt:rw,cached'
     networks:
       magento:
         aliases:
@@ -231,15 +231,15 @@ services:
     environment:
       CRONTAB: '* * * * * root cd /app && /usr/local/bin/php bin/magento cron:run >> /app/var/log/cron.log'
     volumes:
-      - 'magento:/app:ro'
-      - 'magento-vendor:/app/vendor:ro'
-      - 'magento-generated:/app/generated:ro'
-      - 'magento-var:/app/var:rw'
-      - 'magento-app-etc:/app/app/etc:rw'
-      - 'magento-pub-media:/app/pub/media:rw'
-      - 'magento-pub-static:/app/pub/static:rw'
-      - 'magento-dev:/app/dev:delegated'
-      - 'docker-mnt:/mnt:delegated'
+      - 'magento:/app:ro,cached'
+      - 'magento-vendor:/app/vendor:ro,cached'
+      - 'magento-generated:/app/generated:ro,cached'
+      - 'magento-var:/app/var:rw,cached'
+      - 'magento-app-etc:/app/app/etc:rw,cached'
+      - 'magento-pub-media:/app/pub/media:rw,cached'
+      - 'magento-pub-static:/app/pub/static:rw,cached'
+      - 'magento-dev:/app/dev:rw,cached'
+      - 'docker-mnt:/mnt:rw,cached'
     networks:
       magento:
         aliases:
