@@ -1,5 +1,5 @@
 {%note%}
-FROM php:{%version%}-cli-stretch
+FROM php:{%version%}-cli-buster
 ARG GOSU_VERSION=1.11
 
 ENV COMPOSER_MEMORY_LIMIT -1
