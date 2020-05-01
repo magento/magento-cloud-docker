@@ -147,10 +147,6 @@ class ProductionBuilder implements BuilderInterface
 
         $volumes = [self::VOLUME_MAGENTO => $this->getVolumeConfig()];
 
-        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_SELENIUM)) {
-            $manager->addVolume(self::VOLUME_MAGENTO_DEV, []);
-        }
-
         $mounts = $config->getMounts();
         $hasSelenium = $config->hasSelenium();
         $hasTmpMounts = $config->hasTmpMounts();
@@ -177,6 +173,10 @@ class ProductionBuilder implements BuilderInterface
 
         if ($config->getSyncEngine() === self::SYNC_ENGINE_MOUNT) {
             $volumes[self::VOLUME_MAGENTO] = $this->getVolumeConfig();
+        }
+
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_SELENIUM)) {
+            $volumes[self::VOLUME_MAGENTO_DEV] = $this->getVolumeConfig('/dev');
         }
 
         $manager->setVolumes($volumes);

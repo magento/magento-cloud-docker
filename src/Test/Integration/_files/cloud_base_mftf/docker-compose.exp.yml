@@ -266,7 +266,11 @@ volumes:
   magento-app-etc: {  }
   magento-pub-media: {  }
   magento-pub-static: {  }
-  magento-dev: {  }
+  magento-dev:
+    driver_opts:
+      type: none
+      device: '${PWD}/dev'
+      o: bind
   mymagento-mariadb-conf:
     driver_opts:
       type: none
