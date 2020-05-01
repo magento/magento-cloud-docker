@@ -8,7 +8,7 @@
         "AFL-3.0"
     ],
     "require": {
-        "php": "^7.1.3",
+        "php": "^7.2",
         "ext-json": "*",
         "composer/composer": "^1.0",
         "composer/semver": "^1.0",
