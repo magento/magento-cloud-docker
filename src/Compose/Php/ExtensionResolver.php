@@ -210,6 +210,12 @@ class ExtensionResolver
                     self::EXTENSION_OS_DEPENDENCIES => ['libgmp-dev'],
                 ],
             ],
+            'gnupg' => [
+                '>=7.0' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
+                    self::EXTENSION_OS_DEPENDENCIES => ['libgpgme11-dev'],
+                ],
+            ],
             'igbinary' => [
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
             ],
