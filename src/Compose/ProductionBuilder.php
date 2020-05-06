@@ -205,16 +205,16 @@ class ProductionBuilder implements BuilderInterface
             $this->getVolumeConfig('/.docker/mysql/mariadb.conf.d')
         );
 
-        $this->addDbService(self::SERVICE_DB, $manager, $dbVersion, $volumesMount, $config);
+        $this->addDbService($manager, $config, self::SERVICE_DB, $dbVersion, $volumesMount);
 
         if ($config->hasServiceEnabled(ServiceInterface::SERVICE_DB_QUOTE)) {
             $cliDepends = array_merge($cliDepends, [self::SERVICE_DB_QUOTE => ['condition' => 'service_started']]);
-            $this->addDbService(self::SERVICE_DB_QUOTE, $manager, $dbVersion, $volumesMount, $config);
+            $this->addDbService($manager, $config, self::SERVICE_DB_QUOTE, $dbVersion, $volumesMount);
         }
 
         if ($config->hasServiceEnabled(ServiceInterface::SERVICE_DB_SALES)) {
             $cliDepends = array_merge($cliDepends, [self::SERVICE_DB_SALES => ['condition' => 'service_started']]);
-            $this->addDbService(self::SERVICE_DB_SALES, $manager, $dbVersion, $volumesMount, $config);
+            $this->addDbService($manager, $config, self::SERVICE_DB_SALES, $dbVersion, $volumesMount);
         }
 
         $esEnvVars = $config->get(SourceInterface::SERVICES_ES_VARS);
@@ -463,11 +463,11 @@ class ProductionBuilder implements BuilderInterface
      * @throws GenericException
      */
     private function addDbService(
-        string $service,
         Manager $manager,
+        Config $config,
+        string $service,
         string $version,
-        array $mounts,
-        Config $config
+        array $mounts
     ): void {
         $volumePrefix = $config->getNameWithPrefix();
         $mounts[] = $volumePrefix . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d';
@@ -548,7 +548,8 @@ class ProductionBuilder implements BuilderInterface
             $this->serviceFactory->create(
                 $serviceType,
                 $version,
-                $dbConfig
+                $dbConfig,
+                $config->getServiceImage(ServiceInterface::SERVICE_DB)
             ),
             [self::NETWORK_MAGENTO],
             []
