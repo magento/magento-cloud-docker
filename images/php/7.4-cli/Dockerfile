@@ -2,6 +2,7 @@
 FROM php:7.4-cli-buster
 ARG GOSU_VERSION=1.11
 
+ENV COMPOSER_MEMORY_LIMIT -1
 ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
 ENV DEBUG false
@@ -108,6 +109,14 @@ RUN pecl install -o -f \
   xdebug-2.9.3 \
   yaml
 
+RUN curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s \ \
+  && https://blackfire.io/api/v1/releases/probe/php/linux/amd64/$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
+  && mkdir -p /tmp/blackfire \
+  && tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp/blackfire \
+  && mv /tmp/blackfire/blackfire-*.so $(php -r "echo ini_get ('extension_dir');")/blackfire.so \
+  && ( echo extension=blackfire.so \
+  && echo blackfire.agent_socket=tcp://blackfire:8707 ) > $(php -i | grep "additional .ini" | awk '{print $9}')/blackfire.ini \
+  && rm -rf /tmp/blackfire /tmp/blackfire-probe.tar.gz
 RUN rm -f /usr/local/etc/php/conf.d/*sodium.ini \
   && rm -f /usr/local/lib/php/extensions/*/*sodium.so \
   && apt-get remove libsodium* -y  \
@@ -123,6 +132,7 @@ RUN rm -f /usr/local/etc/php/conf.d/*sodium.ini \
 
 RUN docker-php-ext-enable \
   bcmath \
+  blackfire \
   bz2 \
   calendar \
   exif \
