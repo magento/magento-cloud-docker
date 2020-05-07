@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -e
+
+USAGE="Magento PHP Docker
+\033[33mArguments:\033[0m
+  7.2           run a command in a PHP 7.2 container
+  7.3           run a command in a PHP 7.3 container
+  7.4           run a command in a PHP 7.4 container
+\033[33mOptions:\033
+  -h            show this help text
+\033[33mExample usage:\033[0m
+  bin/php-docker 7.3 composer install
+  bin/php-docker 7.3 vendor/bin/ece-docker build:compose\n"
+
+if [ ${#@} -ne 0 ]; then
+    for arg in "$@"; do
+        if [ "${arg#"-h"}" = "" ]; then
+            printf "$USAGE"
+            exit 0;
+        fi
+    done
+fi;
+
+php-container ()
+{
+    local version="$1"
+    shift
+    docker run --rm -it -e "MAGENTO_ROOT=/app" -v "$(pwd)":/app -v ~/.composer/cache:/root/.composer/cache "magento/magento-cloud-docker-php:${version}-cli" "$@"
+}
+
+case "$1" in
+    7.2)
+        shift
+        php-container 7.2 "$@"
+        ;;
+    7.3)
+        shift
+        php-container 7.3 "$@"
+        ;;
+    7.4)
+            shift
+            php-container 7.4 "$@"
+            ;;
+    *)
+        printf "$USAGE"
+        exit 0;
+esac
