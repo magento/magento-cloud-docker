@@ -27,8 +27,7 @@
         "consolidation/robo": "^1.2"
     },
     "bin": [
-        "bin/ece-docker",
-        "bin/php-docker"
+        "bin/ece-docker"
     ],
     "autoload": {
         "psr-4": {
