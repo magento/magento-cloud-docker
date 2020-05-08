@@ -19,6 +19,7 @@ USAGE="Magento Cloud Docker
   flush-redis       clears redis cache
   flush-varnish     clears varnish cache
   ece-db            access to Database
+  php 7.1           run a command in a PHP 7.1 container
   php 7.2           run a command in a PHP 7.2 container
   php 7.3           run a command in a PHP 7.3 container
   php 7.4           run a command in a PHP 7.4 container
@@ -90,6 +91,10 @@ case "$1" in
         ;;
     php)
         case "$2" in
+             7.1)
+                shift 2
+                php-container 7.1 "$@"
+                ;;
             7.2)
                 shift 2
                 php-container 7.2 "$@"
