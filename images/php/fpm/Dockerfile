@@ -1,6 +1,5 @@
 {%note%}
 FROM php:{%version%}-fpm-buster
-ARG GOSU_VERSION=1.11
 
 ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
@@ -31,6 +30,7 @@ RUN apt-get update \
 {%docker-php-ext-enable%}
 
 RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
+RUN usermod -a -G www www-data
 
 COPY etc/php-fpm.ini /usr/local/etc/php/conf.d/zz-magento.ini
 COPY etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
@@ -52,8 +52,6 @@ RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-USER root
-
 WORKDIR ${MAGENTO_ROOT}
 
-CMD ["php-fpm", "-R"]
+CMD ["php-fpm", "-F"]

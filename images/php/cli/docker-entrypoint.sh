@@ -29,6 +29,7 @@ fi
 
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
+chown -R -f www:www $MAGENTO_ROOT
 
 CRON_LOG=/var/log/cron.log
 

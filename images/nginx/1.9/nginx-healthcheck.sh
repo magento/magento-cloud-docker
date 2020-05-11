@@ -6,9 +6,9 @@ nginx_response=$(curl -o /dev/null -s -w "%{http_code}\n" http://${WEB_HOST:-web
 
 if [ "$nginx_response" == "200" ]
 then
-	exit 0
+  exit 0
 else
-	echo "The health of the nginx server is not good"
-	exit 1
+  echo "The health of the nginx server is not good"
+  exit 1
 fi
 

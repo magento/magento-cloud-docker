@@ -1,6 +1,5 @@
 {%note%}
 FROM php:{%version%}-cli-buster
-ARG GOSU_VERSION=1.11
 
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV PHP_MEMORY_LIMIT 2G
@@ -52,6 +51,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 ADD bin/* /usr/local/bin/
 
 RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
+RUN usermod -a -G www www-data
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
@@ -73,8 +73,6 @@ RUN ["chmod", "+x", \
 {%volumes_def%}
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-
-USER root
 
 WORKDIR ${MAGENTO_ROOT}
 

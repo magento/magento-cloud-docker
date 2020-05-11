@@ -29,6 +29,7 @@ fi
 
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
+chown -R -f www:www $MAGENTO_ROOT
 
 PHP_EXT_DIR=/usr/local/etc/php/conf.d
 
