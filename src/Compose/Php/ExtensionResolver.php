@@ -166,6 +166,7 @@ class ExtensionResolver
             'blackfire' => [
                 '>=7.2' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
+                    // phpcs:disable
                     self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
 curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/amd64/$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;")
 mkdir -p /tmp/blackfire
@@ -175,6 +176,7 @@ mv /tmp/blackfire/blackfire-*.so $(php -r "echo ini_get ('extension_dir');")/bla
 echo blackfire.agent_socket=tcp://blackfire:8707 ) > $(php -i | grep "additional .ini" | awk '{print $9}')/blackfire.ini
 rm -rf /tmp/blackfire /tmp/blackfire-probe.tar.gz
 BASH
+// phpcs:enable
                 ]
             ],
             'bz2' => [
