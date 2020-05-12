@@ -21,7 +21,7 @@ class VolumeResolver
      */
     public function getDefaultMagentoVolumes(bool $isReadOnly, bool $hasGenerated = true): array
     {
-        $mode = $isReadOnly ? 'ro' : 'rw';
+        $mode = $isReadOnly ? 'ro,delegated' : 'rw,delegated';
 
         $volumes = [
             BuilderInterface::VOLUME_MAGENTO => [
@@ -69,7 +69,7 @@ class VolumeResolver
             $volumes[$volumeName] = [
                 'path' => BuilderInterface::DIR_MAGENTO . '/' . $path,
                 'volume' => '/' . $path,
-                'mode' => 'rw'
+                'mode' => 'rw,delegated'
             ];
         }
 
@@ -77,7 +77,7 @@ class VolumeResolver
             $volumes[BuilderInterface::VOLUME_MAGENTO_DEV] = [
                 'path' => BuilderInterface::DIR_MAGENTO . '/dev',
                 'volume' => '/dev',
-                'mode' => 'delegated'
+                'mode' => 'rw,delegated'
             ];
         }
 
@@ -92,7 +92,7 @@ class VolumeResolver
         return [
             '~/.composer/cache' => [
                 'path' => '/root/.composer/cache',
-                'mode' => 'delegated'
+                'mode' => 'rw,delegated'
             ]
         ];
     }
@@ -107,7 +107,7 @@ class VolumeResolver
             return [
                 BuilderInterface::VOLUME_DOCKER_MNT => [
                     'path' => '/mnt',
-                    'mode' => 'delegated'
+                    'mode' => 'rw,delegated'
                 ],
             ];
         }
@@ -130,7 +130,7 @@ class VolumeResolver
                 '%s:%s:%s',
                 $name,
                 $config['path'],
-                $config['mode'] ?? 'rw'
+                $config['mode'] ?? 'rw,delegated'
             );
         }
 

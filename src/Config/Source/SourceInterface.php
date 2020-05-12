@@ -48,6 +48,7 @@ interface SourceInterface
      * DB
      */
     public const SERVICES_DB = self::SERVICES . '.' . ServiceInterface::SERVICE_DB;
+    public const SERVICES_DB_IMAGE = self::SERVICES_DB . '.image';
 
     /**
      * DB quote
