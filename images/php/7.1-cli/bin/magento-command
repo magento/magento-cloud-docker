@@ -1,7 +1,0 @@
-#!/bin/bash
-
-[ "$DEBUG" = "true" ] && set -x
-
-MAGENTO_COMMAND="php $MAGENTO_ROOT/bin/magento"
-
-exec $MAGENTO_COMMAND "$@"

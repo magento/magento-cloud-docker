@@ -23,12 +23,8 @@ stages:
 jobs:
   include:
     - stage: static-unit
-      php: '7.1'
-      script: ./tests/travis/static-unit.sh;
-      env:
-        - TEST_SUITE=static-unit
-    - script: ./tests/travis/static-unit.sh;
       php: '7.2'
+      script: ./tests/travis/static-unit.sh;
       env:
         - TEST_SUITE=static-unit
     - script: ./tests/travis/static-unit.sh;
@@ -37,10 +33,6 @@ jobs:
         - TEST_SUITE=static-unit
     - stage: integration
       script: ./vendor/bin/phpunit --configuration ./tests/integration;
-      php: '7.1'
-      env:
-        - TEST_SUITE=integration
-    - script: ./vendor/bin/phpunit --configuration ./tests/integration;
       php: '7.2'
       env:
         - TEST_SUITE=integration
@@ -57,11 +49,6 @@ jobs:
         - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh elasticsearch; fi;
         - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh nginx; fi;
     - script:
-        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh php 7.1-cli; fi;
-        - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh php 7.1-fpm; fi;
-      env:
-        - TEST_SUITE=build-images
-    - script:
         - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh php 7.2-cli; fi;
         - if [ $TRAVIS_SECURE_ENV_VARS == "true" ]; then ./tests/travis/images.sh php 7.2-fpm; fi;
       env:
@@ -72,11 +59,7 @@ jobs:
       env:
         - TEST_SUITE=build-images
     - stage: test
-      php: '7.1'
-      dist: xenial
-      env:
-        - TEST_SUITE=functional
-    - php: '7.2'
+      php: '7.2'
       dist: xenial
       env:
         - TEST_SUITE=functional
