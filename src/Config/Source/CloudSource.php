@@ -174,7 +174,9 @@ class CloudSource implements SourceInterface
                     continue;
                 }
 
-                if ($repository->has(self::SERVICES . '.' . $service) && $service != ServiceInterface::SERVICE_DB) {
+                if ($service !== ServiceInterface::SERVICE_DB
+                    && $repository->has(self::SERVICES . '.' . $service)
+                ) {
                     throw new SourceException(sprintf(
                         'Only one instance of service "%s" supported',
                         $service
@@ -185,9 +187,7 @@ class CloudSource implements SourceInterface
                     $repository->set([
                         self::SERVICES . '.' . $service . '.enabled' => true,
                         self::SERVICES . '.' . $service . '.version' => $version,
-                        self::SERVICES . '.' . $service . '.image' => $this->serviceFactory->getDefaultImage(
-                            $service
-                        )
+                        self::SERVICES . '.' . $service . '.image' => $this->serviceFactory->getDefaultImage($service)
                     ]);
                 } catch (ConfigurationMismatchException $exception) {
                     throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);

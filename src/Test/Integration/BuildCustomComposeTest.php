@@ -97,6 +97,7 @@ class BuildCustomComposeTest extends TestCase
                                 ],
                                 'mysql' => [
                                     'version' => '10.0',
+                                    'image' => 'mariadb',
                                     'enabled' => true,
                                 ],
                             ],

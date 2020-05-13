@@ -21,6 +21,7 @@ class CliSource implements SourceInterface
     public const OPTION_PHP = 'php';
     public const OPTION_NGINX = 'nginx';
     public const OPTION_DB = 'db';
+    public const OPTION_DB_IMAGE = 'db-image';
     public const OPTION_EXPOSE_DB_PORT = 'expose-db-port';
     public const OPTION_EXPOSE_DB_QUOTE_PORT = 'expose-db-quote-port';
     public const OPTION_EXPOSE_DB_SALES_PORT = 'expose-db-sales-port';
@@ -163,6 +164,12 @@ class CliSource implements SourceInterface
             $repository->set([
                 self::SERVICES_SELENIUM_ENABLED => true,
                 self::SERVICES_SELENIUM_VERSION => $seleniumVersion
+            ]);
+        }
+
+        if ($dbImage = $this->input->getOption(self::OPTION_DB_IMAGE)) {
+            $repository->set([
+                self::SERVICES_DB_IMAGE => $dbImage
             ]);
         }
 
