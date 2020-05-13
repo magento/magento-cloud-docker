@@ -109,7 +109,7 @@ class GeneratorTest extends TestCase
             ->willReturn('magento2.docker');
         $config->expects($this->once())
             ->method('getPort')
-            ->willReturn(80);
+            ->willReturn('80');
         $this->envReaderMock->expects($this->once())
             ->method('read')
             ->willReturn([]);
