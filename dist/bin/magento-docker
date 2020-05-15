@@ -85,7 +85,15 @@ case "$1" in
     php)
         version="$2"
         shift 2
-        docker run --rm -it -e "MAGENTO_ROOT=/app" -v "$(pwd)":/app -v ~/.composer/cache:/root/.composer/cache "magento/magento-cloud-docker-php:${version}-cli" "$@"
+        # allow ssh-agent forwarding for composer.json files that need access to private repos
+        if [[ $(uname) = Darwin ]]; then
+            # https://docs.docker.com/docker-for-mac/osxfs/#ssh-agent-forwarding (D4M > 2.2)
+            SSH_AUTH_SOCK="/run/host-services/ssh-auth.sock"
+        fi
+        docker run --rm -it -e "MAGENTO_ROOT=/app" -v "$(pwd)":/app -v ~/.composer/cache:/root/.composer/cache \
+            --mount "type=bind,src=$HOME/.ssh/known_hosts,target=/root/.ssh/known_hosts" \
+            --mount "type=bind,src=$SSH_AUTH_SOCK,target=$SSH_AUTH_SOCK" -e SSH_AUTH_SOCK="$SSH_AUTH_SOCK" \
+            "magento/magento-cloud-docker-php:${version}-cli-1.1" "$@"
         ;;
     *)
         printf "$USAGE"
