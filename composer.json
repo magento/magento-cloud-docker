@@ -21,6 +21,7 @@
     "require-dev": {
         "codeception/codeception": "^4.1",
         "codeception/module-db": "^1.0",
+        "codeception/module-phpbrowser": "^1.0",
         "consolidation/robo": "^1.2",
         "phpmd/phpmd": "@stable",
         "phpstan/phpstan": "^0.11",
