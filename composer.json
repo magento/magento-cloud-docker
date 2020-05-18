@@ -19,12 +19,13 @@
         "symfony/yaml": "^3.3||^4.0"
     },
     "require-dev": {
+        "codeception/codeception": "^4.1",
+        "codeception/module-db": "^1.0",
+        "consolidation/robo": "^1.2",
         "phpmd/phpmd": "@stable",
         "phpstan/phpstan": "^0.11",
         "phpunit/phpunit": "^8.5",
-        "squizlabs/php_codesniffer": "^3.0",
-        "codeception/codeception": "^4.1",
-        "consolidation/robo": "^1.2"
+        "squizlabs/php_codesniffer": "^3.0"
     },
     "bin": [
         "bin/ece-docker"
