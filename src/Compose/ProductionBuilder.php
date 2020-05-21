@@ -224,21 +224,30 @@ class ProductionBuilder implements BuilderInterface
                 continue;
             }
 
+            switch ($service) {
+                case self::SERVICE_REDIS:
+                    $serviceConfig = [self::SERVICE_HEALTHCHECK => [
+                        'test'=> 'redis-cli ping || exit 1',
+                        'interval'=> '30s',
+                        'timeout'=> '30s',
+                        'retries'=> 3
+                    ]];
+                    break;
+
+                case self::SERVICE_ELASTICSEARCH:
+                    $serviceConfig = !empty($esEnvVars) ? ['environment' => $esEnvVars] : [];
+                    break;
+
+                default:
+                    $serviceConfig = [];
+            }
+
             $manager->addService(
                 $service,
                 $this->serviceFactory->create(
                     (string)$service,
                     (string)$config->getServiceVersion($service),
-                    self::SERVICE_ELASTICSEARCH === $service && !empty($esEnvVars)
-                        ? ['environment' => $esEnvVars]
-                        : self::SERVICE_REDIS === $service
-                        ? [self::SERVICE_HEALTHCHECK => [
-                            'test'=> 'redis-cli ping || exit 1',
-                            'interval'=> '30s',
-                            'timeout'=> '30s',
-                            'retries'=> 3
-                        ] ]
-                        : []
+                    $serviceConfig
                 ),
                 [self::NETWORK_MAGENTO],
                 []
