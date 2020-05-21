@@ -237,6 +237,7 @@ class ProductionBuilder implements BuilderInterface
                 case self::SERVICE_ELASTICSEARCH:
                     $serviceConfig = !empty($esEnvVars) ? ['environment' => $esEnvVars] : [];
                     break;
+
                 default:
                     $serviceConfig = [];
             }
