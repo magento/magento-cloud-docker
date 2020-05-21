@@ -14,6 +14,7 @@ XDEBUG_UPSTREAM_FILE="/etc/nginx/conf.d/xdebug/upstream.conf"
 [ ! -z "${MAGENTO_RUN_MODE}" ] && sed -i "s/!MAGENTO_RUN_MODE!/${MAGENTO_RUN_MODE}/" $VHOST_FILE
 [ ! -z "${MFTF_UTILS}" ] && sed -i "s/!MFTF_UTILS!/${MFTF_UTILS}/" $VHOST_FILE
 [ ! -z "${UPLOAD_MAX_FILESIZE}" ] && sed -i "s/!UPLOAD_MAX_FILESIZE!/${UPLOAD_MAX_FILESIZE}/" $VHOST_FILE
+[ ! -z "${WITH_XDEBUG}" ] && sed -i "s/!WITH_XDEBUG!/${WITH_XDEBUG}/" $VHOST_FILE
 [ "${WITH_XDEBUG}" == "1" ] && sed -i "s/#include_xdebug_upstream/include/" $NGINX_FILE
 
 # Check if the nginx syntax is fine, then launch.
