@@ -1,3 +1,6 @@
+TEST
+
+
 # Magento Cloud Docker
 
 [![Docker Build Status][ico-dockerbuild]][link-dockerhub]
