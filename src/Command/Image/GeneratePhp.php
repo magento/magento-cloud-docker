@@ -24,7 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GeneratePhp extends Command
 {
     private const NAME = 'image:generate:php';
-    private const SUPPORTED_VERSIONS = ['7.1', '7.2', '7.3', '7.4'];
+    private const SUPPORTED_VERSIONS = ['7.2', '7.3', '7.4'];
 
     private const EDITION_CLI = 'cli';
     private const EDITION_FPM = 'fpm';
