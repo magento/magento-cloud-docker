@@ -249,6 +249,15 @@ class Config
     }
 
     /**
+     * @return array
+     * @throws ConfigurationMismatchException
+     */
+    public function getBlackfireConfig(): array
+    {
+        return (array)$this->all()->get(SourceInterface::SERVICES_BLACKFIRE_CONFIG, []);
+    }
+
+    /**
      * @return string|null
      * @throws ConfigurationMismatchException
      */
