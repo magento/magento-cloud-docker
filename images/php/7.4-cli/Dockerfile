@@ -40,6 +40,7 @@ RUN apt-get update \
   libgeoip-dev \
   wget \
   libgmp-dev \
+  libgpgme11-dev \
   libmagickwand-dev \
   libmagickcore-dev \
   libicu-dev \
@@ -96,6 +97,7 @@ RUN docker-php-ext-install -j$(nproc) \
 
 RUN pecl install -o -f \
   geoip-1.1.1 \
+  gnupg \
   igbinary \
   imagick \
   mailparse \
@@ -108,6 +110,13 @@ RUN pecl install -o -f \
   xdebug-2.9.3 \
   yaml
 
+RUN curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/amd64/$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
+  && mkdir -p /tmp/blackfire \
+  && tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp/blackfire \
+  && mv /tmp/blackfire/blackfire-*.so $(php -r "echo ini_get ('extension_dir');")/blackfire.so \
+  && ( echo extension=blackfire.so \
+  && echo blackfire.agent_socket=tcp://blackfire:8707 ) > $(php -i | grep "additional .ini" | awk '{print $9}')/blackfire.ini \
+  && rm -rf /tmp/blackfire /tmp/blackfire-probe.tar.gz
 RUN rm -f /usr/local/etc/php/conf.d/*sodium.ini \
   && rm -f /usr/local/lib/php/extensions/*/*sodium.so \
   && apt-get remove libsodium* -y  \
@@ -123,6 +132,7 @@ RUN rm -f /usr/local/etc/php/conf.d/*sodium.ini \
 
 RUN docker-php-ext-enable \
   bcmath \
+  blackfire \
   bz2 \
   calendar \
   exif \
@@ -130,6 +140,7 @@ RUN docker-php-ext-enable \
   geoip \
   gettext \
   gmp \
+  gnupg \
   igbinary \
   imagick \
   intl \
@@ -164,6 +175,7 @@ ADD etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
 ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
 ADD etc/php-pcov.ini /usr/local/etc/php/conf.d/zz-pcov-settings.ini
 ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
+ADD etc/php-gnupg.ini /usr/local/etc/php/conf.d/gnupg.ini
 
 # Get composer installed to /usr/local/bin/composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

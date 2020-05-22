@@ -85,7 +85,7 @@ class ExtensionResolver
     /**
      * Extensions which should be ignored
      */
-    private const IGNORED_EXTENSIONS = ['blackfire', 'newrelic'];
+    private const IGNORED_EXTENSIONS = ['newrelic'];
 
     /**
      * @var Semver
@@ -163,6 +163,22 @@ class ExtensionResolver
             'bcmath' => [
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
+            'blackfire' => [
+                '>=7.2' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
+                    // phpcs:disable
+                    self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
+curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/amd64/$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;")
+mkdir -p /tmp/blackfire
+tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp/blackfire
+mv /tmp/blackfire/blackfire-*.so $(php -r "echo ini_get ('extension_dir');")/blackfire.so
+( echo extension=blackfire.so
+echo blackfire.agent_socket=tcp://blackfire:8707 ) > $(php -i | grep "additional .ini" | awk '{print $9}')/blackfire.ini
+rm -rf /tmp/blackfire /tmp/blackfire-probe.tar.gz
+BASH
+// phpcs:enable
+                ]
+            ],
             'bz2' => [
                 '>=7.0' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE,
@@ -208,6 +224,12 @@ class ExtensionResolver
                 '>=7.0' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE,
                     self::EXTENSION_OS_DEPENDENCIES => ['libgmp-dev'],
+                ],
+            ],
+            'gnupg' => [
+                '>=7.0' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
+                    self::EXTENSION_OS_DEPENDENCIES => ['libgpgme11-dev'],
                 ],
             ],
             'igbinary' => [

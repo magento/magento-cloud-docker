@@ -129,6 +129,11 @@ class ServiceFactory
                 'ports' => [4444],
                 'extends' => ServiceInterface::SERVICE_GENERIC
             ]
+        ],
+        ServiceInterface::SERVICE_BLACKFIRE => [
+            'image' => 'blackfire/blackfire',
+            'version' => 'latest',
+            'pattern' => self::PATTERN_STD
         ]
     ];
 
