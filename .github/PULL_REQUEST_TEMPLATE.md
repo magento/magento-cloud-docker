@@ -32,10 +32,15 @@
 
 ### Release notes
 <!---
-    Please provide a list of public changes or documentation update pull requests
+If your PR includes user-facing changes, provide a meaningful release note. See https://devdocs.magento.com/cloud/release-notes/mcd-release-notes.html.
 -->
-1. ...
-2. ...
+<Add release note text>
+
+### Associated documentation updates
+<!--
+ If your proposed update requires user documentation, submit a PR to the Magento DevDocs repository. For extensive updates requiring assistance, submit an issue to DevDocs. See https://github.com/magento/devdocs/blob/master/.github/CONTRIBUTING.md.
+ -->
+ <Add link to Magento DevDocs PR>
 
 ### Contribution checklist
  - [ ] Pull request has a meaningful description of its purpose
