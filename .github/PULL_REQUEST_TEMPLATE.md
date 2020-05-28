@@ -44,5 +44,5 @@ If your PR includes user-facing changes, provide a meaningful release note. See 
 
 ### Contribution checklist
  - [ ] Pull request has a meaningful description of its purpose
- - [ ] Pull request has meaningful release notes and documentation
+ - [ ] Pull request introduces user-facing changes and includes meaningful release notes and documentation
  - [ ] All commits are accompanied by meaningful commit messages
