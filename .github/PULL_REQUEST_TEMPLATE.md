@@ -39,5 +39,5 @@
 
 ### Contribution checklist
  - [ ] Pull request has a meaningful description of its purpose
- - [ ] Pull request has a meaningful releas notes and documentation
+ - [ ] Pull request has meaningful release notes and documentation
  - [ ] All commits are accompanied by meaningful commit messages
