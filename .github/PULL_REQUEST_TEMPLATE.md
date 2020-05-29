@@ -31,10 +31,8 @@
 2. ...
 
 ### Release notes
-<!---
-If your PR includes user-facing changes, provide a meaningful release note. See https://devdocs.magento.com/cloud/release-notes/mcd-release-notes.html.
--->
-<Add release note text>
+
+For user-facing changes, add a meaningful release note. For examples, see [Magento Cloud Docker release notes](https://devdocs.magento.com/cloud/release-notes/mcd-release-notes.html).
 
 ### Associated documentation updates
 <!--
