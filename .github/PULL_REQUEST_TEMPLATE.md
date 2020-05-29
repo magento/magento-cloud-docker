@@ -38,7 +38,7 @@ For user-facing changes, add a meaningful release note. For examples, see [Magen
 <!--
  If your proposed update requires user documentation, submit a PR to the Magento DevDocs repository. For extensive updates requiring assistance, submit an issue to DevDocs. See https://github.com/magento/devdocs/blob/master/.github/CONTRIBUTING.md.
  -->
- <Add link to Magento DevDocs PR>
+Add link to Magento DevDocs PR or Issue, if needed.
 
 ### Contribution checklist
  - [ ] Pull request has a meaningful description of its purpose
