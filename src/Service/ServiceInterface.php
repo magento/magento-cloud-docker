@@ -30,4 +30,5 @@ interface ServiceInterface
     public const SERVICE_SELENIUM = 'selenium';
     public const SERVICE_TLS = 'tls';
     public const SERVICE_GENERIC = 'generic';
+    public const SERVICE_BLACKFIRE = 'blackfire';
 }

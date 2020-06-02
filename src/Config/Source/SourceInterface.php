@@ -91,6 +91,15 @@ interface SourceInterface
     public const SERVICES_RMQ = self::SERVICES . '.' . ServiceInterface::SERVICE_RABBITMQ;
 
     /**
+     * Blackfire
+     */
+    public const SERVICES_BLACKFIRE = self::SERVICES . '.' . ServiceInterface::SERVICE_BLACKFIRE;
+    public const SERVICES_BLACKFIRE_VERSION = self::SERVICES_BLACKFIRE . '.version';
+    public const SERVICES_BLACKFIRE_IMAGE = self::SERVICES_BLACKFIRE . '.image';
+    public const SERVICES_BLACKFIRE_ENABLED = self::SERVICES_BLACKFIRE . '.enabled';
+    public const SERVICES_BLACKFIRE_CONFIG = self::SERVICES_BLACKFIRE . '.config';
+
+    /**
      * PHP Xdebug
      */
     public const SERVICES_XDEBUG = self::SERVICES . '.' . ServiceInterface::SERVICE_FPM_XDEBUG;
