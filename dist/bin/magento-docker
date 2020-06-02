@@ -88,7 +88,7 @@ case "$1" in
         # allow ssh-agent forwarding for composer.json files that need access to private repos
         if [[ $(uname) = Darwin ]]; then
             # https://docs.docker.com/docker-for-mac/osxfs/#ssh-agent-forwarding (D4M > 2.2)
-            SSH_AUTH_SOCK="/run/host-services/ssh-auth.sock"
+            export SSH_AUTH_SOCK="/run/host-services/ssh-auth.sock"
         fi
         docker run --rm -it -e "MAGENTO_ROOT=/app" -v "$(pwd)":/app -v ~/.composer/cache:/root/.composer/cache \
             --mount "type=bind,src=$HOME/.ssh/known_hosts,target=/root/.ssh/known_hosts" \
