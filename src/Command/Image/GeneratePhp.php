@@ -53,6 +53,7 @@ class GeneratePhp extends Command
         'sudo',
         'unzip',
         'vim',
+        'openssh-client',
     ];
 
     private const PHP_EXTENSIONS_ENABLED_BY_DEFAULT = [
