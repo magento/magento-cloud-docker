@@ -33,6 +33,7 @@ RUN apt-get update \
   sudo \
   unzip \
   vim \
+  openssh-client \
   libbz2-dev \
   libjpeg62-turbo-dev \
   libpng-dev \
