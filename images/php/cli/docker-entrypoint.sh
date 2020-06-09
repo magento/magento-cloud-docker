@@ -27,20 +27,19 @@ if [[ "$UPDATE_UID_GID" = "true" ]]; then
     groupmod -g $DOCKER_GID www
 fi
 
+echo "Recursive change permissions start"
+
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
 chown -R -f www:www $MAGENTO_ROOT
+
+echo "Recursive change permissions end"
 
 CRON_LOG=/var/log/cron.log
 
 if [ ! -z "${CRONTAB}" ]; then
     echo "${CRONTAB}" > /etc/cron.d/magento
 fi
-
-# Get rsyslog running for cron output
-touch $CRON_LOG
-echo "cron.* $CRON_LOG" > /etc/rsyslog.d/cron.conf
-service rsyslog start
 
 PHP_EXT_DIR=/usr/local/etc/php/conf.d
 
@@ -67,7 +66,6 @@ PHP_EXT_COM_ON=docker-php-ext-enable
 if [ -x "$(command -v ${PHP_EXT_COM_ON})" ] && [ ! -z "${PHP_EXTENSIONS}" ]; then
       ${PHP_EXT_COM_ON} ${PHP_EXTENSIONS}
 fi
-
 
 # Configure composer
 [ ! -z "${COMPOSER_GITHUB_TOKEN}" ] && \

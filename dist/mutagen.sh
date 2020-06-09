@@ -4,6 +4,8 @@ mutagen terminate --label-selector=magento-docker-vendor
 
 mutagen create \
        --label=magento-docker \
+       --default-group-beta=www \
+       --default-owner-beta=www \
        --sync-mode=two-way-resolved \
        --default-file-mode=0644 \
        --default-directory-mode=0755 \
@@ -22,6 +24,8 @@ mutagen create \
 
 mutagen create \
        --label=magento-docker-vendor \
+       --default-group-beta=www \
+       --default-owner-beta=www \
        --sync-mode=two-way-resolved \
        --default-file-mode=0644 \
        --default-directory-mode=0755 \

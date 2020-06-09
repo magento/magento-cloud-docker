@@ -2,24 +2,25 @@
 
 set -e
 
-USAGE="Magento Cloud Docker
+PACKAGE_VERSION_MINOR="1.2"
+USAGE="Magento Cloud Docker $PACKAGE_VERSION_MINOR
 
 \033[33mArguments:\033[0m
   pull              pull latest images
   up                destroy, re-create and start containers
   down              destroy containers
-  bash              connect to bash
   stop              stop containers
   start             start containers
   restart           restart containers
+  status            show containers status
   ece-build         run build hooks
   ece-deploy        run deploy hooks
   ece-post-deploy   run post-deploy hooks
   ece-redeploy      run build, deploy, and post-deploy hooks
+  bash              connect to bash
+  ece-db            access to Database
   flush-redis       clears redis cache
   flush-varnish     clears varnish cache
-  ece-db            access to Database
-  php 7.1           run a command in a PHP 7.1 container
   php 7.2           run a command in a PHP 7.2 container
   php 7.3           run a command in a PHP 7.3 container
   php 7.4           run a command in a PHP 7.4 container
@@ -47,9 +48,6 @@ case "$1" in
     down)
         docker-compose down --volumes
         ;;
-    bash)
-        docker-compose run --rm deploy bash
-        ;;
     stop)
         docker-compose stop
         ;;
@@ -59,6 +57,9 @@ case "$1" in
     restart)
         docker-compose restart
         ;;
+    status)
+      docker-compose ps
+      ;;
     ece-build)
         docker-compose run --rm build cloud-build
         ;;
@@ -73,14 +74,17 @@ case "$1" in
         docker-compose run --rm deploy cloud-deploy
         docker-compose run --rm deploy cloud-post-deploy
         ;;
+    bash)
+        docker-compose run --rm deploy bash
+        ;;
+    ece-db)
+        docker-compose exec db sh -c 'mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE "$@"'
+        ;;
     flush-redis)
         docker-compose exec redis redis-cli FLUSHALL
         ;;
     flush-varnish)
         docker-compose exec varnish varnishadm ban req.url '~' '.'
-        ;;
-    ece-db)
-        docker-compose exec db sh -c 'mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE "$@"'
         ;;
     php)
         version="$2"
@@ -93,7 +97,7 @@ case "$1" in
         docker run --rm -it -e "MAGENTO_ROOT=/app" -v "$(pwd)":/app -v ~/.composer/cache:/root/.composer/cache \
             --mount "type=bind,src=$HOME/.ssh/known_hosts,target=/root/.ssh/known_hosts" \
             --mount "type=bind,src=$SSH_AUTH_SOCK,target=$SSH_AUTH_SOCK" -e SSH_AUTH_SOCK="$SSH_AUTH_SOCK" \
-            "magento/magento-cloud-docker-php:${version}-cli-1.1" "$@"
+            "magento/magento-cloud-docker-php:${version}-cli-${PACKAGE_VERSION_MINOR}" "$@"
         ;;
     *)
         printf "$USAGE"
