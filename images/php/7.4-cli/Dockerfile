@@ -28,7 +28,6 @@ RUN apt-get update \
   python3 \
   python3-pip \
   redis-tools \
-  rsyslog \
   sendmail \
   sendmail-bin \
   sudo \

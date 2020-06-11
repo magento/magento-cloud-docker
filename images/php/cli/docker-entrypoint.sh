@@ -36,10 +36,7 @@ if [ ! -z "${CRONTAB}" ]; then
     echo "${CRONTAB}" > /etc/cron.d/magento
 fi
 
-# Get rsyslog running for cron output
 touch $CRON_LOG
-echo "cron.* $CRON_LOG" > /etc/rsyslog.d/cron.conf
-service rsyslog start
 
 PHP_EXT_DIR=/usr/local/etc/php/conf.d
 
