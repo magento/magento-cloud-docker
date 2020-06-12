@@ -33,6 +33,7 @@ RUN apt-get update \
   sudo \
   unzip \
   vim \
+  openssh-client \
   libbz2-dev \
   libjpeg62-turbo-dev \
   libpng-dev \
@@ -40,6 +41,7 @@ RUN apt-get update \
   libgeoip-dev \
   wget \
   libgmp-dev \
+  libgpgme11-dev \
   libmagickwand-dev \
   libmagickcore-dev \
   libicu-dev \
@@ -96,6 +98,7 @@ RUN docker-php-ext-install -j$(nproc) \
 
 RUN pecl install -o -f \
   geoip-1.1.1 \
+  gnupg \
   igbinary \
   imagick \
   mailparse \
@@ -138,6 +141,7 @@ RUN docker-php-ext-enable \
   geoip \
   gettext \
   gmp \
+  gnupg \
   igbinary \
   imagick \
   intl \
@@ -172,6 +176,7 @@ ADD etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
 ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
 ADD etc/php-pcov.ini /usr/local/etc/php/conf.d/zz-pcov-settings.ini
 ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
+ADD etc/php-gnupg.ini /usr/local/etc/php/conf.d/gnupg.ini
 
 # Get composer installed to /usr/local/bin/composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
