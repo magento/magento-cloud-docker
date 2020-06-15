@@ -47,7 +47,6 @@ class GeneratePhp extends Command
         'python3',
         'python3-pip',
         'redis-tools',
-        'rsyslog',
         'sendmail',
         'sendmail-bin',
         'sudo',
