@@ -132,7 +132,6 @@ class CliSource implements SourceInterface
             if ($value = $this->input->getOption($option)) {
                 foreach ($services as $service) {
                     $repository->set([
-                        $service . '.enabled' => true,
                         $service . '.version' => $value
                     ]);
                 }
