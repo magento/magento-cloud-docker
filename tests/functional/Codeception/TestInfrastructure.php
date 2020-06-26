@@ -308,6 +308,16 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Adds quality-patches repo to composer.json
+     *
+     * @return bool
+     */
+    public function addQualityPatchesGitRepoToComposer(): bool
+    {
+        return $this->addGitRepoToComposer('mqp');
+    }
+
+    /**
      * Adds ece-tools repo to composer.json
      *
      * @return bool
@@ -321,7 +331,7 @@ class TestInfrastructure extends BaseModule
      * @param string $name
      * @return bool
      */
-    private function addGitRepoToComposer(string $name): bool
+    public function addGitRepoToComposer(string $name): bool
     {
         return $this->taskComposerConfig()
             ->set('repositories.' . $name, json_encode(
