@@ -308,6 +308,16 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Adds cloud-patches repo to composer.json
+     *
+     * @return bool
+     */
+    public function addQualityPatchesGitRepoToComposer(): bool
+    {
+        return $this->addGitRepoToComposer('mqp');
+    }
+
+    /**
      * Adds ece-tools repo to composer.json
      *
      * @return bool
