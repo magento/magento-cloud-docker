@@ -20,6 +20,7 @@ modules:
       mcd_repo: "https://github.com/magento/magento-cloud-docker.git"
       mcc_repo: "https://github.com/magento/magento-cloud-components.git"
       mcp_repo: "https://github.com/magento/magento-cloud-patches.git"
+      mqp_repo: "https://github.com/magento/quality-patches.git"
       ece_tools_repo: "https://github.com/magento/ece-tools.git"
       composer_magento_username: "%REPO_USERNAME%"
       composer_magento_password: "%REPO_PASSWORD%"
