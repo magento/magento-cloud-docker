@@ -217,30 +217,12 @@ class ProductionBuilder implements BuilderInterface
             $this->addDbService($manager, $config, self::SERVICE_DB_SALES, $dbVersion, $volumesMount);
         }
 
-        $esEnvVars = $config->get(SourceInterface::SERVICES_ES_VARS);
-
         foreach (self::$standaloneServices as $service) {
             if (!$config->hasServiceEnabled($service)) {
                 continue;
             }
 
-            switch ($service) {
-                case self::SERVICE_REDIS:
-                    $serviceConfig = [self::SERVICE_HEALTHCHECK => [
-                        'test'=> 'redis-cli ping || exit 1',
-                        'interval'=> '30s',
-                        'timeout'=> '30s',
-                        'retries'=> 3
-                    ]];
-                    break;
-
-                case self::SERVICE_ELASTICSEARCH:
-                    $serviceConfig = !empty($esEnvVars) ? ['environment' => $esEnvVars] : [];
-                    break;
-
-                default:
-                    $serviceConfig = [];
-            }
+            $serviceConfig = $this->getServiceConfig($service, $config);
 
             $manager->addService(
                 $service,
@@ -584,6 +566,36 @@ class ProductionBuilder implements BuilderInterface
             [self::NETWORK_MAGENTO],
             []
         );
+    }
+
+    /**
+     * @param string $service
+     * @param Config $config
+     * @return array
+     * @throws ConfigurationMismatchException
+     */
+    private function getServiceConfig(string $service, Config $config): array
+    {
+        switch ($service) {
+            case self::SERVICE_REDIS:
+                $serviceConfig = [self::SERVICE_HEALTHCHECK => [
+                    'test'=> 'redis-cli ping || exit 1',
+                    'interval'=> '30s',
+                    'timeout'=> '30s',
+                    'retries'=> 3
+                ]];
+                break;
+
+            case self::SERVICE_ELASTICSEARCH:
+                $esEnvVars = $config->get(SourceInterface::SERVICES_ES_VARS);
+                $serviceConfig = !empty($esEnvVars) ? ['environment' => $esEnvVars] : [];
+                break;
+
+            default:
+                $serviceConfig = [];
+        }
+
+        return $serviceConfig;
     }
 
     /**
