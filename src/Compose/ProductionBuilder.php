@@ -222,14 +222,12 @@ class ProductionBuilder implements BuilderInterface
                 continue;
             }
 
-            $serviceConfig = $this->getServiceConfig($service, $config);
-
             $manager->addService(
                 $service,
                 $this->serviceFactory->create(
                     (string)$service,
                     (string)$config->getServiceVersion($service),
-                    $serviceConfig
+                    $this->getServiceConfig($service, $config)
                 ),
                 [self::NETWORK_MAGENTO],
                 []
