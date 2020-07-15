@@ -249,6 +249,24 @@ class Config
     }
 
     /**
+     * @return bool
+     * @throws ConfigurationMismatchException
+     */
+    public function hasDbEntrypoint(): bool
+    {
+        return (bool)$this->all()->get(SourceInterface::SYSTEM_DB_ENTRYPOINT);
+    }
+
+    /**
+     * @return bool
+     * @throws ConfigurationMismatchException
+     */
+    public function hasMariaDbConf(): bool
+    {
+        return (bool)$this->all()->get(SourceInterface::SYSTEM_MARIADB_CONF);
+    }
+
+    /**
      * @return array
      * @throws ConfigurationMismatchException
      */

@@ -106,8 +106,7 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'DB image'
-            )
-            ->addOption(
+            )->addOption(
                 Source\CliSource::OPTION_EXPOSE_DB_PORT,
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -122,6 +121,16 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Expose port for DB quote'
+            )->addOption(
+                Source\CliSource::OPTION_WITH_ENTRYPOINT,
+                null,
+                InputOption::VALUE_NONE,
+                'Add DB entrypoint volume'
+            )->addOption(
+                Source\CliSource::OPTION_WITH_MARIADB_CONF,
+                null,
+                InputOption::VALUE_NONE,
+                'Add MariaDb config volume'
             )->addOption(
                 Source\CliSource::OPTION_REDIS,
                 null,
