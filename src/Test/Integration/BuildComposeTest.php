@@ -74,7 +74,9 @@ class BuildComposeTest extends TestCase
             'cloud-base' => [
                 __DIR__ . '/_files/cloud_base',
                 [
-                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION]
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true]
                 ]
             ],
             'cloud-base-mftf' => [
@@ -88,6 +90,8 @@ class BuildComposeTest extends TestCase
                     [CliSource::OPTION_NO_ES, true],
                     [CliSource::OPTION_DB_INCREMENT_INCREMENT, 3],
                     [CliSource::OPTION_DB_INCREMENT_OFFSET, 2],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true]
                 ]
             ]
         ];

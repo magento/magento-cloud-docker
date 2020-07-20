@@ -200,10 +200,12 @@ class ProductionBuilder implements BuilderInterface
 
         $volumePrefix = $config->getNameWithPrefix();
 
-        $manager->addVolume(
-            $volumePrefix . self::VOLUME_MARIADB_CONF,
-            $this->getVolumeConfig('/.docker/mysql/mariadb.conf.d')
-        );
+        if ($config->hasMariaDbConf()) {
+            $manager->addVolume(
+                $volumePrefix . self::VOLUME_MARIADB_CONF,
+                $this->getVolumeConfig('/.docker/mysql/mariadb.conf.d')
+            );
+        }
 
         $this->addDbService($manager, $config, self::SERVICE_DB, $dbVersion, $volumesMount);
 
@@ -471,6 +473,9 @@ class ProductionBuilder implements BuilderInterface
      * @param Config $config
      * @throws ConfigurationMismatchException
      * @throws GenericException
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     private function addDbService(
         Manager $manager,
@@ -480,7 +485,11 @@ class ProductionBuilder implements BuilderInterface
         array $mounts
     ): void {
         $volumePrefix = $config->getNameWithPrefix();
-        $mounts[] = $volumePrefix . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d';
+
+        if ($config->hasMariaDbConf()) {
+            $mounts[] = $volumePrefix . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d';
+        }
+
         $commands = [];
 
         switch ($service) {
@@ -488,13 +497,17 @@ class ProductionBuilder implements BuilderInterface
                 $port = $config->getDbPortsExpose();
 
                 $manager->addVolume($volumePrefix . self::VOLUME_MAGENTO_DB, []);
-                $manager->addVolume(
-                    self::VOLUME_DOCKER_ETRYPOINT,
-                    $this->getVolumeConfig('/.docker/mysql/docker-entrypoint-initdb.d')
-                );
 
                 $mounts[] = $volumePrefix . self::VOLUME_MAGENTO_DB . ':/var/lib/mysql';
-                $mounts[] = self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d';
+
+                if ($config->hasDbEntrypoint()) {
+                    $manager->addVolume(
+                        self::VOLUME_DOCKER_ETRYPOINT,
+                        $this->getVolumeConfig('/.docker/mysql/docker-entrypoint-initdb.d')
+                    );
+                    $mounts[] = self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d';
+                }
+
                 $serviceType = ServiceInterface::SERVICE_DB;
 
                 if ($config->getDbIncrementIncrement() > 1) {
@@ -541,11 +554,11 @@ class ProductionBuilder implements BuilderInterface
         $dbConfig = [
             'ports' => [$port ? "$port:3306" : '3306'],
             'volumes' => $mounts,
-             self::SERVICE_HEALTHCHECK => [
-                'test'=> 'mysqladmin ping -h localhost',
-                'interval'=> '30s',
-                'timeout'=> '30s',
-                'retries'=> 3
+            self::SERVICE_HEALTHCHECK => [
+                'test' => 'mysqladmin ping -h localhost',
+                'interval' => '30s',
+                'timeout' => '30s',
+                'retries' => 3
             ],
         ];
 
@@ -576,12 +589,14 @@ class ProductionBuilder implements BuilderInterface
     {
         switch ($service) {
             case self::SERVICE_REDIS:
-                $serviceConfig = [self::SERVICE_HEALTHCHECK => [
-                    'test'=> 'redis-cli ping || exit 1',
-                    'interval'=> '30s',
-                    'timeout'=> '30s',
-                    'retries'=> 3
-                ]];
+                $serviceConfig = [
+                    self::SERVICE_HEALTHCHECK => [
+                        'test' => 'redis-cli ping || exit 1',
+                        'interval' => '30s',
+                        'timeout' => '30s',
+                        'retries' => 3
+                    ]
+                ];
                 break;
 
             case self::SERVICE_ELASTICSEARCH:
