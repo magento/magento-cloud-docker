@@ -220,7 +220,7 @@ class CloudSource implements SourceInterface
         if ($extensions) {
             /* Parse nested Blackfire configuration */
             foreach ($extensions as $key => $phpExtension) {
-                if (is_array($phpExtension) && $phpExtension["name"] === ServiceInterface::SERVICE_BLACKFIRE) {
+                if (is_array($phpExtension) && $phpExtension['name'] === ServiceInterface::SERVICE_BLACKFIRE) {
                     /* Store extension data in repository */
                     $repository->set([
                         self::SERVICES_BLACKFIRE_ENABLED => true,
@@ -228,7 +228,7 @@ class CloudSource implements SourceInterface
                                 $this->serviceFactory->getDefaultVersion(ServiceInterface::SERVICE_BLACKFIRE),
                         self::SERVICES_BLACKFIRE_IMAGE =>
                                 $this->serviceFactory->getDefaultImage(ServiceInterface::SERVICE_BLACKFIRE),
-                        self::SERVICES_BLACKFIRE_CONFIG => $phpExtension["configuration"]
+                        self::SERVICES_BLACKFIRE_CONFIG => $phpExtension['configuration']
                     ]);
                     /* Reset nested extension data with extension name */
                     $extensions[$key] = ServiceInterface::SERVICE_BLACKFIRE;

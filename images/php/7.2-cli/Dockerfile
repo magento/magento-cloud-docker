@@ -9,6 +9,7 @@ ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV UPDATE_UID_GID false
 ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV ENABLE_SENDMAIL true
 
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
@@ -28,8 +29,6 @@ RUN apt-get update \
   python3 \
   python3-pip \
   redis-tools \
-  sendmail \
-  sendmail-bin \
   sudo \
   unzip \
   vim \
@@ -64,6 +63,11 @@ RUN pip3 install --upgrade setuptools \
 
 # Install Grunt
 RUN npm install -g grunt-cli
+
+# Install MailHog
+RUN wget https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 \
+    && sudo chmod +x mhsendmail_linux_amd64 \
+    && sudo mv mhsendmail_linux_amd64 /usr/local/bin/mhsendmail
 
 # Configure the gd library
 RUN docker-php-ext-configure \

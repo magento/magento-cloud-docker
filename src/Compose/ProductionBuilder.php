@@ -423,6 +423,16 @@ class ProductionBuilder implements BuilderInterface
             );
         }
 
+        $manager->addService(
+            self::SERVICE_MAILHOG,
+            $this->serviceFactory->create(
+                ServiceInterface::SERVICE_MAILHOG,
+                $this->serviceFactory->getDefaultVersion(ServiceInterface::SERVICE_MAILHOG)
+            ),
+            [self::NETWORK_MAGENTO],
+            []
+        );
+
         return $manager;
     }
 
