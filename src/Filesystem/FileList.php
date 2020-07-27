@@ -52,14 +52,6 @@ class FileList
     /**
      * @return string
      */
-    public function getEceToolsCompose(): string
-    {
-        return $this->directoryList->getEceToolsRoot() . '/docker-compose.yml';
-    }
-
-    /**
-     * @return string
-     */
     public function getComposer(): string
     {
         return $this->directoryList->getRoot() . '/composer.json';
@@ -71,13 +63,5 @@ class FileList
     public function getMagentoComposer(): string
     {
         return $this->directoryList->getMagentoRoot() . '/composer.json';
-    }
-
-    /**
-     * @return string
-     */
-    public function getDockerConfig(): string
-    {
-        return $this->directoryList->getMagentoRoot() . '/.magento.docker.yaml';
     }
 }

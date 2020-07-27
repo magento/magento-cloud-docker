@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Config\Source;
 
 use Illuminate\Config\Repository;
-use Magento\CloudDocker\Filesystem\FileList;
+use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
@@ -19,9 +19,9 @@ use Symfony\Component\Yaml\Yaml;
 class ConfigSource implements SourceInterface
 {
     /**
-     * @var FileList
+     * @var DirectoryList
      */
-    private $fileList;
+    private $directoryList;
 
     /**
      * @var Filesystem
@@ -29,12 +29,12 @@ class ConfigSource implements SourceInterface
     private $filesystem;
 
     /**
-     * @param FileList $fileList
+     * @param DirectoryList $directoryList
      * @param Filesystem $filesystem
      */
-    public function __construct(FileList $fileList, Filesystem $filesystem)
+    public function __construct(DirectoryList $directoryList, Filesystem $filesystem)
     {
-        $this->fileList = $fileList;
+        $this->directoryList = $directoryList;
         $this->filesystem = $filesystem;
     }
 
@@ -43,7 +43,12 @@ class ConfigSource implements SourceInterface
      */
     public function read(): Repository
     {
-        $configFile = $this->fileList->getDockerConfig();
+        $configFile = $this->directoryList->getMagentoRoot() . '/.magento.docker.yml';
+
+        if (!$this->filesystem->exists($configFile)) {
+            $configFile = $this->directoryList->getMagentoRoot() . '/.magento.docker.yaml';
+        }
+
         $repository = new Repository();
 
         try {
