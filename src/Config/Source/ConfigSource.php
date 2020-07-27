@@ -43,10 +43,10 @@ class ConfigSource implements SourceInterface
      */
     public function read(): Repository
     {
-        $configFile = $this->directoryList->getRoot() . '/.magento.docker.yml';
+        $configFile = $this->directoryList->getMagentoRoot() . '/.magento.docker.yml';
 
         if (!$this->filesystem->exists($configFile)) {
-            $configFile = $this->directoryList->getRoot() . '/.magento.docker.yaml';
+            $configFile = $this->directoryList->getMagentoRoot() . '/.magento.docker.yaml';
         }
 
         $repository = new Repository();
