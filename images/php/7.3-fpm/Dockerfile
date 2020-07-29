@@ -8,6 +8,7 @@ ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
 ENV UPLOAD_MAX_FILESIZE 64M
 ENV UPDATE_UID_GID false
+ENV ENABLE_SENDMAIL true
 
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
@@ -16,8 +17,6 @@ RUN apt-get update \
   && apt-get upgrade -y \
   && apt-get install -y --no-install-recommends \
   apt-utils \
-  sendmail-bin \
-  sendmail \
   sudo \
   libbz2-dev \
   libjpeg62-turbo-dev \
@@ -41,6 +40,11 @@ RUN apt-get update \
   libzip-dev \
   zip \
   && rm -rf /var/lib/apt/lists/*
+
+# Install MailHog
+RUN wget https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 \
+    && sudo chmod +x mhsendmail_linux_amd64 \
+    && sudo mv mhsendmail_linux_amd64 /usr/local/bin/mhsendmail
 
 # Configure the gd library
 RUN docker-php-ext-configure \

@@ -136,6 +136,17 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  mailhog:
+    hostname: mailhog.magento2.test
+    image: 'mailhog/mailhog:latest'
+    restart: always
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    networks:
+      magento:
+        aliases:
+          - mailhog.magento2.test
 volumes:
   magento:
     driver_opts:
