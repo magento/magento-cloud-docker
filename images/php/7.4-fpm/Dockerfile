@@ -25,6 +25,7 @@ RUN apt-get update \
   libgeoip-dev \
   wget \
   libgmp-dev \
+  libgpgme11-dev \
   libmagickwand-dev \
   libmagickcore-dev \
   libicu-dev \
@@ -79,6 +80,7 @@ RUN docker-php-ext-install -j$(nproc) \
 
 RUN pecl install -o -f \
   geoip-1.1.1 \
+  gnupg \
   igbinary \
   imagick \
   mailparse \
@@ -121,6 +123,7 @@ RUN docker-php-ext-enable \
   geoip \
   gettext \
   gmp \
+  gnupg \
   igbinary \
   imagick \
   intl \
@@ -158,6 +161,7 @@ COPY etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
 COPY etc/php-pcov.ini /usr/local/etc/php/conf.d/zz-pcov-settings.ini
 COPY etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 COPY etc/php-fpm.conf /usr/local/etc/
+COPY etc/php-gnupg.ini /usr/local/etc/php/conf.d/gnupg.ini
 
 COPY fpm-healthcheck.sh /usr/local/bin/fpm-healthcheck.sh
 RUN ["chmod", "+x", "/usr/local/bin/fpm-healthcheck.sh"]
