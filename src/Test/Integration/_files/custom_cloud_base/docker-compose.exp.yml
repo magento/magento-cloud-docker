@@ -12,9 +12,7 @@ services:
       - '3306'
     volumes:
       - 'docker-mnt:/mnt:rw,delegated'
-      - 'magento-mariadb-conf:/etc/mysql/mariadb.conf.d'
       - 'magento-magento-db:/var/lib/mysql'
-      - 'docker-entrypoint:/docker-entrypoint-initdb.d'
     healthcheck:
       test: 'mysqladmin ping -h localhost'
       interval: 30s
@@ -138,6 +136,17 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  mailhog:
+    hostname: mailhog.magento2.test
+    image: 'mailhog/mailhog:latest'
+    restart: always
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    networks:
+      magento:
+        aliases:
+          - mailhog.magento2.test
 volumes:
   magento:
     driver_opts:
@@ -155,17 +164,7 @@ volumes:
   magento-app-etc: {  }
   magento-pub-media: {  }
   magento-pub-static: {  }
-  magento-mariadb-conf:
-    driver_opts:
-      type: none
-      device: '${PWD}/.docker/mysql/mariadb.conf.d'
-      o: bind
   magento-magento-db: {  }
-  docker-entrypoint:
-    driver_opts:
-      type: none
-      device: '${PWD}/.docker/mysql/docker-entrypoint-initdb.d'
-      o: bind
 networks:
   magento:
     driver: bridge

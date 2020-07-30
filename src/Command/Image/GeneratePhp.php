@@ -33,8 +33,6 @@ class GeneratePhp extends Command
     private const ARGUMENT_VERSION = 'version';
     private const DEFAULT_PACKAGES_PHP_FPM = [
         'apt-utils',
-        'sendmail-bin',
-        'sendmail',
         'sudo'
     ];
     private const DEFAULT_PACKAGES_PHP_CLI = [
@@ -47,8 +45,6 @@ class GeneratePhp extends Command
         'python3',
         'python3-pip',
         'redis-tools',
-        'sendmail',
-        'sendmail-bin',
         'sudo',
         'unzip',
         'vim',

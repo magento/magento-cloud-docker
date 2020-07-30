@@ -31,4 +31,5 @@ interface ServiceInterface
     public const SERVICE_TLS = 'tls';
     public const SERVICE_GENERIC = 'generic';
     public const SERVICE_BLACKFIRE = 'blackfire';
+    public const SERVICE_MAILHOG = 'mailhog';
 }

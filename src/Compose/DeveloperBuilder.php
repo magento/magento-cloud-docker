@@ -79,11 +79,13 @@ class DeveloperBuilder implements BuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function build(Config $config): Manager
     {
-        $volumePrefix =  $config->getName() . '-';
+        $volumePrefix = $config->getName() . '-';
 
         $manager = $this->builderFactory
             ->create(BuilderFactory::BUILDER_PRODUCTION)
@@ -106,24 +108,32 @@ class DeveloperBuilder implements BuilderInterface
             ];
         }
 
-        $manager->setVolumes([
+        $volumesList = [
             $volumePrefix . self::VOLUME_MAGENTO_SYNC => $syncConfig,
-            $volumePrefix . self::VOLUME_MAGENTO_DB => [],
-            $volumePrefix . self::VOLUME_MARIADB_CONF => [
+            $volumePrefix . self::VOLUME_MAGENTO_DB => []
+        ];
+
+        if ($config->hasMariaDbConf()) {
+            $volumesList[$volumePrefix . self::VOLUME_MARIADB_CONF] = [
                 'driver_opts' => [
                     'type' => 'none',
                     'device' => $this->resolver->getRootPath('/.docker/mysql/mariadb.conf.d'),
                     'o' => 'bind',
                 ],
-            ],
-            self::VOLUME_DOCKER_ETRYPOINT => [
+            ];
+        }
+
+        if ($config->hasDbEntrypoint()) {
+            $volumesList[self::VOLUME_DOCKER_ETRYPOINT] = [
                 'driver_opts' => [
                     'type' => 'none',
                     'device' => $this->resolver->getRootPath('/.docker/mysql/docker-entrypoint-initdb.d'),
                     'o' => 'bind'
                 ]
-            ]
-        ]);
+            ];
+        }
+
+        $manager->setVolumes($volumesList);
 
         /**
          * Gather all services except DB with specific volumes.
@@ -143,14 +153,22 @@ class DeveloperBuilder implements BuilderInterface
             $manager->updateService($sName, ['volumes' => $volumes]);
         }
 
+        $dbVolumes = [
+            $volumePrefix . self::VOLUME_MAGENTO_DB . ':/var/lib/mysql'
+        ];
+
+        if ($config->hasMariaDbConf()) {
+            $dbVolumes[] = $volumePrefix . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d';
+        }
+
+        if ($config->hasDbEntrypoint()) {
+            $dbVolumes[] = self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d';
+        }
+
         $manager->updateService(self::SERVICE_DB, [
             'volumes' => array_merge(
                 $volumes,
-                [
-                    $volumePrefix  . self::VOLUME_MAGENTO_DB . ':/var/lib/mysql',
-                    self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d',
-                    $volumePrefix  . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d',
-                ]
+                $dbVolumes
             )
         ]);
         $manager->updateService(self::SERVICE_GENERIC, [
@@ -178,7 +196,7 @@ class DeveloperBuilder implements BuilderInterface
      */
     private function getMagentoVolumes(Config $config): array
     {
-        $volumePrefix =  $config->getName() . '-';
+        $volumePrefix = $config->getName() . '-';
 
         if ($config->getSyncEngine() !== self::SYNC_ENGINE_NATIVE) {
             return [

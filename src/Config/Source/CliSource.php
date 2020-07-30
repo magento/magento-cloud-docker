@@ -44,6 +44,8 @@ class CliSource implements SourceInterface
     public const OPTION_NO_TMP_MOUNTS = 'no-tmp-mounts';
     public const OPTION_SYNC_ENGINE = 'sync-engine';
     public const OPTION_WITH_XDEBUG = 'with-xdebug';
+    public const OPTION_WITH_ENTRYPOINT = 'with-entrypoint';
+    public const OPTION_WITH_MARIADB_CONF = 'with-mariadb-conf';
 
     /**
      * Environment variables.
@@ -253,6 +255,14 @@ class CliSource implements SourceInterface
 
         if ($incrementOffset = $this->input->getOption(self::OPTION_DB_INCREMENT_OFFSET)) {
             $repository->set(SourceInterface::SYSTEM_DB_INCREMENT_OFFSET, $incrementOffset);
+        }
+
+        if ($this->input->getOption(self::OPTION_WITH_ENTRYPOINT)) {
+            $repository->set(SourceInterface::SYSTEM_DB_ENTRYPOINT, true);
+        }
+
+        if ($this->input->getOption(self::OPTION_WITH_MARIADB_CONF)) {
+            $repository->set(SourceInterface::SYSTEM_MARIADB_CONF, true);
         }
 
         return $repository;
