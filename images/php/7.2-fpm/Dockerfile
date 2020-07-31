@@ -17,6 +17,8 @@ RUN apt-get update \
   && apt-get upgrade -y \
   && apt-get install -y --no-install-recommends \
   apt-utils \
+  sendmail-bin \
+  sendmail \
   sudo \
   libbz2-dev \
   libjpeg62-turbo-dev \

@@ -29,6 +29,8 @@ RUN apt-get update \
   python3 \
   python3-pip \
   redis-tools \
+  sendmail-bin \
+  sendmail \
   sudo \
   unzip \
   vim \
