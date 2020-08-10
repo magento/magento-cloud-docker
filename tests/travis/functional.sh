@@ -16,4 +16,7 @@ case $TRAVIS_PHP_VERSION in
     7.3)
         ./vendor/bin/codecept run -g php73 --steps
         ;;
+    7.4)
+        ./vendor/bin/codecept run -g php74 --steps
+        ;;
 esac
