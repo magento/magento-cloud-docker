@@ -11,7 +11,7 @@ use Magento\CloudDocker\Test\Functional\Codeception\MagentoDb;
 use Robo\Exception\TaskException;
 
 /**
- * @group php73
+ * @group php74
  */
 class SplitDbCest extends AbstractCest
 {

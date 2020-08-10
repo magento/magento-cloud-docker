@@ -79,6 +79,9 @@ jobs:
     - php: '7.3'
       env:
         - TEST_SUITE=functional
+    - php: '7.4'
+      env:
+        - TEST_SUITE=functional
 
 install: if [[ $TEST_SUITE != "build-images" ]]; then composer update; fi;
 
