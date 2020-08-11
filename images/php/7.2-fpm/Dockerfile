@@ -51,6 +51,8 @@ RUN wget https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendma
     && sudo chmod +x mhsendmail_linux_amd64 \
     && sudo mv mhsendmail_linux_amd64 /usr/local/bin/mhsendmail
 
+RUN sed -i 's/SECLEVEL=2/SECLEVEL=1/g' /etc/ssl/openssl.cnf
+
 # Configure the gd library
 RUN docker-php-ext-configure \
   gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
