@@ -23,20 +23,13 @@ class DirectoryList
     private $magentoRoot;
 
     /**
-     * @var string
-     */
-    private $eceRoot;
-
-    /**
      * @param string $root
      * @param string $magentoRoot
-     * @param string $eceRoot
      */
-    public function __construct(string $root, string $magentoRoot, string $eceRoot = null)
+    public function __construct(string $root, string $magentoRoot)
     {
         $this->root = realpath($root);
         $this->magentoRoot = realpath($magentoRoot);
-        $this->eceRoot = $eceRoot ? realpath($eceRoot) : null;
     }
 
     /**
@@ -53,27 +46,6 @@ class DirectoryList
     public function getMagentoRoot(): string
     {
         return $this->magentoRoot;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasEceToolsRoot(): bool
-    {
-        return $this->eceRoot !== null;
-    }
-
-    /**
-     * @return string
-     * @throws FilesystemException
-     */
-    public function getEceToolsRoot(): string
-    {
-        if (null === $this->eceRoot) {
-            throw new FilesystemException('No ECE-Tools root defined');
-        }
-
-        return $this->eceRoot;
     }
 
     /**

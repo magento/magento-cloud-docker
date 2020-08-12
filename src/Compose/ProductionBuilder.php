@@ -251,7 +251,10 @@ class ProductionBuilder implements BuilderInterface
 
         $manager->addService(
             self::SERVICE_FPM,
-            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_FPM, $phpVersion, ['volumes' => $volumesRo]),
+            $this->serviceFactory->create(
+                ServiceInterface::SERVICE_PHP_FPM,
+                $phpVersion,
+                $this->getPhpConfig($config, ['volumes' => $volumesRo])),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_DB => ['condition' => 'service_healthy']]
         );
@@ -329,7 +332,7 @@ class ProductionBuilder implements BuilderInterface
                 $this->serviceFactory->create(
                     ServiceInterface::SERVICE_PHP_CLI,
                     $phpVersion,
-                    ['volumes' => $volumesRw]
+                    $this->getPhpConfig($config, ['volumes' => $volumesRw])
                 ),
                 [self::NETWORK_MAGENTO],
                 $cliDepends
@@ -400,13 +403,20 @@ class ProductionBuilder implements BuilderInterface
         );
         $manager->addService(
             self::SERVICE_BUILD,
-            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $phpVersion, ['volumes' => $volumesBuild]),
+            $this->serviceFactory->create(
+                ServiceInterface::SERVICE_PHP_CLI,
+                $phpVersion,
+                $this->getPhpConfig($config, ['volumes' => $volumesBuild])
+            ),
             [self::NETWORK_MAGENTO_BUILD],
             $cliDepends
         );
         $manager->addService(
             self::SERVICE_DEPLOY,
-            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $phpVersion, ['volumes' => $volumesRo]),
+            $this->serviceFactory->create(
+                ServiceInterface::SERVICE_PHP_CLI,
+                $phpVersion,
+                $this->getPhpConfig($config, ['volumes' => $volumesRo])),
             [self::NETWORK_MAGENTO],
             self::$cliDepends
         );
@@ -423,15 +433,17 @@ class ProductionBuilder implements BuilderInterface
             );
         }
 
-        $manager->addService(
-            self::SERVICE_MAILHOG,
-            $this->serviceFactory->create(
-                ServiceInterface::SERVICE_MAILHOG,
-                $this->serviceFactory->getDefaultVersion(ServiceInterface::SERVICE_MAILHOG)
-            ),
-            [self::NETWORK_MAGENTO],
-            []
-        );
+        if ($config->hasServiceEnabled(self::SERVICE_MAILHOG)) {
+            $manager->addService(
+                self::SERVICE_MAILHOG,
+                $this->serviceFactory->create(
+                    ServiceInterface::SERVICE_MAILHOG,
+                    $this->serviceFactory->getDefaultVersion(ServiceInterface::SERVICE_MAILHOG)
+                ),
+                [self::NETWORK_MAGENTO],
+                []
+            );
+        }
 
         return $manager;
     }
@@ -446,7 +458,7 @@ class ProductionBuilder implements BuilderInterface
         $cron = $this->serviceFactory->create(
             ServiceInterface::SERVICE_PHP_CLI,
             $config->getServiceVersion(ServiceInterface::SERVICE_PHP),
-            ['command' => 'run-cron']
+            $this->getPhpConfig($config, ['command' => 'run-cron'])
         );
         $preparedCronConfig = [];
 
@@ -634,5 +646,22 @@ class ProductionBuilder implements BuilderInterface
                 'o' => 'bind'
             ]
         ];
+    }
+
+    /**
+     * @param Config $config
+     * @param array $baseServiceConfig
+     * @return array
+     * @throws ConfigurationMismatchException
+     */
+    private function getPhpConfig(Config $config, array $baseServiceConfig): array
+    {
+        if (!$config->hasServiceEnabled(self::SERVICE_MAILHOG)) {
+            $baseServiceConfig['environment'] = $this->converter->convert([
+                'ENABLE_SENDMAIL' => false,
+            ]);
+        }
+
+        return $baseServiceConfig;
     }
 }

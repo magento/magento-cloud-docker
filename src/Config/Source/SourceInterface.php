@@ -76,6 +76,11 @@ interface SourceInterface
     public const SERVICES_ES = self::SERVICES . '.' . ServiceInterface::SERVICE_ELASTICSEARCH;
 
     /**
+     * Mailhog
+     */
+    public const SERVICES_MAILHOG = self::SERVICES . '.' . ServiceInterface::SERVICE_MAILHOG;
+
+    /**
      * ES environment variables
      */
     public const SERVICES_ES_VARS = self::SERVICES_ES . '.' . 'env-vars';

@@ -32,6 +32,7 @@ class CliSource implements SourceInterface
     public const OPTION_SELENIUM_IMAGE = 'selenium-image';
     public const OPTION_INSTALLATION_TYPE = 'installation-type';
     public const OPTION_NO_ES = 'no-es';
+    public const OPTION_NO_MAILHOG = 'no-mailhog';
 
     /**
      * State modifiers.
@@ -103,7 +104,8 @@ class CliSource implements SourceInterface
      * @var array
      */
     private static $disableOptionsMap = [
-        self::OPTION_NO_ES => self::SERVICES_ES
+        self::OPTION_NO_ES => self::SERVICES_ES,
+        self::OPTION_NO_MAILHOG => self::SERVICES_MAILHOG,
     ];
 
     /**
@@ -166,11 +168,9 @@ class CliSource implements SourceInterface
         }
 
         foreach (self::$disableOptionsMap as $option => $service) {
-            if ($value = $this->input->getOption($option)) {
-                $repository->set([
-                    $service . '.enabled' => false
-                ]);
-            }
+            $repository->set([
+                $service . '.enabled' => !$this->input->getOption($option)
+            ]);
         }
 
         if ($this->input->getOption(self::OPTION_WITH_SELENIUM)) {
