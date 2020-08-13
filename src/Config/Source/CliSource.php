@@ -168,9 +168,11 @@ class CliSource implements SourceInterface
         }
 
         foreach (self::$disableOptionsMap as $option => $service) {
-            $repository->set([
-                $service . '.enabled' => !$this->input->getOption($option)
-            ]);
+            if ($value = $this->input->getOption($option)) {
+                $repository->set([
+                    $service . '.enabled' => false
+                ]);
+            }
         }
 
         if ($this->input->getOption(self::OPTION_WITH_SELENIUM)) {
