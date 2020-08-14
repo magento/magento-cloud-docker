@@ -45,6 +45,9 @@ RUN wget https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendma
     && sudo chmod +x mhsendmail_linux_amd64 \
     && sudo mv mhsendmail_linux_amd64 /usr/local/bin/mhsendmail
 
+# Change security level to avoid `dh key too small` error
+RUN sed -i 's/SECLEVEL=2/SECLEVEL=1/g' /etc/ssl/openssl.cnf
+
 # Configure the gd library
 RUN docker-php-ext-configure \
   gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
