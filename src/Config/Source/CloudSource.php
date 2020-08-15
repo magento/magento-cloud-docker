@@ -120,6 +120,7 @@ class CloudSource implements SourceInterface
             $repository,
             $version
         );
+        $repository = $this->addMailhog($repository);
         $repository = $this->addCronJobs(
             $repository,
             $appConfig['crons'] ?? []
@@ -327,6 +328,21 @@ class CloudSource implements SourceInterface
     {
         $repository->set([
             self::NAME => $name,
+        ]);
+
+        return $repository;
+    }
+
+    /**
+     * Adds mailhog configuration
+     *
+     * @param Repository $repository
+     * @return Repository
+     */
+    private function addMailhog(Repository $repository): Repository
+    {
+        $repository->set([
+            self::SERVICES_MAILHOG . '.enabled' => true
         ]);
 
         return $repository;
