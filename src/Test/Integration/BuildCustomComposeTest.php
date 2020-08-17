@@ -60,8 +60,8 @@ class BuildCustomComposeTest extends TestCase
         $command->execute($inputMock, $outputMock);
 
         $this->assertSame(
-            $filesystem->get($directory . '/docker-compose.yml'),
-            $filesystem->get($directory . '/docker-compose.exp.yml')
+            $filesystem->get($directory . '/docker-compose.exp.yml'),
+            $filesystem->get($directory . '/docker-compose.yml')
         );
     }
 
@@ -100,6 +100,9 @@ class BuildCustomComposeTest extends TestCase
                                     'image' => 'mariadb',
                                     'enabled' => true,
                                 ],
+                                'mailhog' => [
+                                    'enabled' => true,
+                                ]
                             ],
                             'hooks' => [
                                 'build' => 'set -e' . PHP_EOL

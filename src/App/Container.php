@@ -27,20 +27,18 @@ class Container implements ContainerInterface
     /**
      * @param string $root
      * @param string $magentoRoot
-     * @param string|null $eceToolsRoot
      * @throws ContainerException
      */
-    public function __construct(string $root, string $magentoRoot, string $eceToolsRoot = null)
+    public function __construct(string $root, string $magentoRoot)
     {
         $containerBuilder = new ContainerBuilder();
         $containerBuilder->set('container', $this);
         $containerBuilder->setDefinition('container', new Definition(__CLASS__))
-            ->setArguments([$root, $magentoRoot, $eceToolsRoot]);
+            ->setArguments([$root, $magentoRoot]);
 
         $containerBuilder->set(DirectoryList::class, new DirectoryList(
             $root,
-            $magentoRoot,
-            $eceToolsRoot
+            $magentoRoot
         ));
 
         try {

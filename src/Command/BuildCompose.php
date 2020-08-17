@@ -166,6 +166,11 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'Disable Elasticsearch'
+            )->addOption(
+                Source\CliSource::OPTION_NO_MAILHOG,
+                null,
+                InputOption::VALUE_NONE,
+                'Disable mailhog'
             );
 
         $this->addOption(

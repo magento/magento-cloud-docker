@@ -7,4 +7,4 @@ require __DIR__ . '/autoload.php';
 
 use Magento\CloudDocker\App\Container;
 
-return new Container(__DIR__, BP, ECE_BP);
+return new Container(__DIR__, BP);
