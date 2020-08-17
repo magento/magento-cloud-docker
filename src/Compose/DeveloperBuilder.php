@@ -84,19 +84,14 @@ class DeveloperBuilder implements BuilderInterface
             ->build($config);
 
         $syncEngine = $config->getSyncEngine();
-        $syncConfig = [];
         $volumesList = [
             $volumePrefix . self::VOLUME_MAGENTO_DB => []
         ];
 
         if (in_array($syncEngine, [self::SYNC_ENGINE_MUTAGEN, self::SYNC_ENGINE_DOCKER_SYNC], true)) {
-            if ($syncEngine === self::SYNC_ENGINE_DOCKER_SYNC) {
-                $syncConfig = ['external' => true];
-            } elseif ($syncEngine === self::SYNC_ENGINE_MUTAGEN) {
-                $syncConfig = [];
-            }
-
-            $volumesList[$volumePrefix . self::VOLUME_MAGENTO_SYNC] = $syncConfig;
+            $volumesList[$volumePrefix . self::VOLUME_MAGENTO_SYNC] = $syncEngine === self::SYNC_ENGINE_DOCKER_SYNC
+                ? ['external' => true]
+                : [];
         }
 
         if ($config->hasMariaDbConf()) {
