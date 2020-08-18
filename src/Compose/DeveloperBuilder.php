@@ -88,10 +88,13 @@ class DeveloperBuilder implements BuilderInterface
             $volumePrefix . self::VOLUME_MAGENTO_DB => []
         ];
 
+        $volumes = [self::VOLUME_MAGENTO . ':' . self::DIR_MAGENTO . ':delegated'];
+
         if (in_array($syncEngine, [self::SYNC_ENGINE_MUTAGEN, self::SYNC_ENGINE_DOCKER_SYNC], true)) {
             $volumesList[$volumePrefix . self::VOLUME_MAGENTO_SYNC] = $syncEngine === self::SYNC_ENGINE_DOCKER_SYNC
                 ? ['external' => true]
                 : [];
+            $volumes = [$volumePrefix . self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':nocopy'];
         }
 
         if ($config->hasMariaDbConf()) {
