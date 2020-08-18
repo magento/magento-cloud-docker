@@ -15,10 +15,6 @@ COPY etc/nginx.conf /etc/nginx/
 COPY etc/vhost.conf /etc/nginx/conf.d/default.conf
 COPY etc/xdebug-upstream.conf /etc/nginx/conf.d/xdebug/upstream.conf
 
-#RUN apt-get update && apt-get install -y openssl curl
-#RUN mkdir /etc/nginx/ssl \
-#  && openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /etc/nginx/ssl/magento.key -out /etc/nginx/ssl/magento.crt -subj "/C=CH/ST=Zurich/L=Zurich/O=Snakeoil Inc/OU=IT Department/CN=magento2.docker"
-
 RUN mkdir /etc/nginx/ssl
 COPY certs/* /etc/nginx/ssl/
 
