@@ -66,8 +66,6 @@ services:
     hostname: web.magento2.docker
     image: 'magento/magento-cloud-docker-nginx:latest-1.1'
     extends: generic
-    ports:
-      - '80:80'
     volumes:
       - 'magento:/app:ro,delegated'
       - 'magento-vendor:/app/vendor:ro,delegated'
@@ -79,9 +77,6 @@ services:
       - 'magento-dev:/app/dev:rw,delegated'
       - 'docker-mnt:/mnt:rw,delegated'
     environment:
-      - VIRTUAL_HOST=magento2.docker
-      - VIRTUAL_PORT=80
-      - HTTPS_METHOD=noredirect
       - WITH_XDEBUG=1
     networks:
       magento:
@@ -97,16 +92,23 @@ services:
       magento:
         aliases:
           - magento2.docker
+    ports:
+      - '80:80'
+    environment:
+      - VIRTUAL_HOST=magento2.docker
+      - VIRTUAL_PORT=80
+      - HTTPS_METHOD=noredirect
     depends_on:
       web:
-        condition: service_healthy
+        condition: service_started
   tls:
     hostname: tls.magento2.docker
-    image: 'magento/magento-cloud-docker-tls:latest-1.1'
+    image: 'magento/magento-cloud-docker-nginx:latest-1.1'
+    extends: generic
     ports:
       - '443:443'
     environment:
-      HTTPS_UPSTREAM_SERVER_ADDRESS: varnish
+      VARNISH_HOST: varnish
     networks:
       magento:
         aliases:
