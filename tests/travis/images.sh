@@ -16,8 +16,8 @@ function run() {
     service_name="$1"
     service_version="$2"
 
-    if [[ $service_name == "tls" ]]; then
-        build_push_image "cloudft/tls" "latest-$TRAVIS_BUILD_NUMBER" "./images/tls"
+    if [[ $service_name == "nginx" ]]; then
+        build_push_image "cloudft/nginx" "latest-$TRAVIS_BUILD_NUMBER" "./images/web"
     else
         if [[ "$service_version" != "" ]]; then
             build_push_image "cloudft/$service_name" "$service_version-$TRAVIS_BUILD_NUMBER" "./images/$service_name/$service_version"
