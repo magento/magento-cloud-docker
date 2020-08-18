@@ -44,10 +44,6 @@ interface BuilderInterface
     public const VOLUME_MARIADB_CONF = '.docker/mysql/mariadb.conf.d';
     public const VOLUME_MAGENTO_VENDOR = 'magento-vendor';
     public const VOLUME_MAGENTO_GENERATED = 'magento-generated';
-    public const VOLUME_MAGENTO_VAR = 'magento-var';
-    public const VOLUME_MAGENTO_ETC = 'magento-etc';
-    public const VOLUME_MAGENTO_STATIC = 'magento-static';
-    public const VOLUME_MAGENTO_MEDIA = 'magento-media';
     public const VOLUME_MAGENTO_DB = 'magento-db';
     public const VOLUME_MAGENTO_DB_QUOTE = 'magento-db-quote';
     public const VOLUME_MAGENTO_DB_SALES = 'magento-db-sales';

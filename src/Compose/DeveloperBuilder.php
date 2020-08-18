@@ -111,7 +111,6 @@ class DeveloperBuilder implements BuilderInterface
          * Gather all services except DB with specific volumes.
          */
         $services = $manager->getServices();
-        $volumes = $this->getMagentoVolumes($config);
 
         /**
          * @var string $sName
@@ -159,25 +158,5 @@ class DeveloperBuilder implements BuilderInterface
     public function getPath(): string
     {
         return $this->fileList->getMagentoDockerCompose();
-    }
-
-    /**
-     * @param Config $config
-     * @return array
-     * @throws ConfigurationMismatchException
-     */
-    private function getMagentoVolumes(Config $config): array
-    {
-        $volumePrefix = $config->getName() . '-';
-
-        if (in_array($config->getSyncEngine(), [self::SYNC_ENGINE_DOCKER_SYNC, self::SYNC_ENGINE_MUTAGEN], true)) {
-            return [
-                $volumePrefix . self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':nocopy'
-            ];
-        }
-
-        return [
-            self::VOLUME_MAGENTO . ':' . self::DIR_MAGENTO . ':delegated',
-        ];
     }
 }
