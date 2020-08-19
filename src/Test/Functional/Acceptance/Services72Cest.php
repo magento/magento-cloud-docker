@@ -27,7 +27,6 @@ class Services72Cest extends ServicesCest
                 'options' => '',
                 'expectedResult' => [
                     'redis:5.0',
-                    'magento/magento-cloud-docker-tls:latest-1.1',
                     'magento/magento-cloud-docker-varnish:latest-1.1',
                     'magento/magento-cloud-docker-nginx:latest-1.1',
                     'magento/magento-cloud-docker-php:7.2-fpm-1.1',
@@ -40,7 +39,6 @@ class Services72Cest extends ServicesCest
                 'options' => '--redis=3.2 --db=10.1 --php=7.1 --rmq=3.5',
                 'expectedResult' => [
                     'redis:3.2',
-                    'magento/magento-cloud-docker-tls:latest-1.1',
                     'magento/magento-cloud-docker-varnish:latest-1.1',
                     'magento/magento-cloud-docker-nginx:latest-1.1',
                     'magento/magento-cloud-docker-php:7.1-fpm-1.1',
@@ -54,7 +52,6 @@ class Services72Cest extends ServicesCest
                 'options' => '--redis=4.0 --db=10.2 --php=7.2 --rmq=3.6',
                 'expectedResult' => [
                     'redis:4.0',
-                    'magento/magento-cloud-docker-tls:latest-1.1',
                     'magento/magento-cloud-docker-varnish:latest-1.1',
                     'magento/magento-cloud-docker-nginx:latest-1.1',
                     'magento/magento-cloud-docker-php:7.2-fpm-1.1',
@@ -68,7 +65,6 @@ class Services72Cest extends ServicesCest
                 'options' => '--with-cron --with-selenium',
                 'expectedResult' => [
                     'redis:5.0',
-                    'magento/magento-cloud-docker-tls:latest-1.1',
                     'magento/magento-cloud-docker-varnish:latest-1.1',
                     'magento/magento-cloud-docker-nginx:latest-1.1',
                     'magento/magento-cloud-docker-php:7.2-fpm-1.1',
