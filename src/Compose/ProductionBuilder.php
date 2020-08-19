@@ -224,23 +224,27 @@ class ProductionBuilder implements BuilderInterface
             [self::NETWORK_MAGENTO],
             [self::SERVICE_DB => ['condition' => 'service_healthy']]
         );
+
+        $webConfig = [
+            'volumes' => $volumesRo,
+            'environment' => [
+                'WITH_XDEBUG=' . (int)$config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)
+            ]
+        ];
+
+        if (!$config->hasServiceEnabled(self::SERVICE_VARNISH)) {
+            $webConfig['ports'] = [$config->getPort() . ':80'];
+            $webConfig['environment'][] = 'VIRTUAL_HOST=' . $config->getHost();
+            $webConfig['environment'][] = 'VIRTUAL_PORT=' . $config->getPort();
+            $webConfig['environment'][] = 'HTTPS_METHOD=noredirect';
+        }
+
         $manager->addService(
             self::SERVICE_WEB,
             $this->serviceFactory->create(
                 ServiceInterface::SERVICE_NGINX,
                 $config->getServiceVersion(ServiceInterface::SERVICE_NGINX),
-                [
-                    'volumes' => $volumesRo,
-                    'environment' => [
-                        'VIRTUAL_HOST=' . $config->getHost(),
-                        'VIRTUAL_PORT=80',
-                        'HTTPS_METHOD=noredirect',
-                        'WITH_XDEBUG=' . (int)$config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)
-                    ],
-                    'ports' => [
-                        $config->getPort() . ':80'
-                    ]
-                ]
+                $webConfig
             ),
             [self::NETWORK_MAGENTO],
             [self::SERVICE_FPM => []]
@@ -257,11 +261,17 @@ class ProductionBuilder implements BuilderInterface
                             self::NETWORK_MAGENTO => [
                                 'aliases' => [$config->getHost()]
                             ]
+                        ],
+                        'ports' => [$config->getPort() . ':80'],
+                        'environment' => [
+                            'VIRTUAL_HOST=' . $config->getHost(),
+                            'VIRTUAL_PORT=' . $config->getPort(),
+                            'HTTPS_METHOD=noredirect'
                         ]
                     ]
                 ),
                 [],
-                [self::SERVICE_WEB => ['condition' => 'service_healthy']]
+                [self::SERVICE_WEB => ['condition' => 'service_started']]
             );
         }
 
@@ -274,7 +284,7 @@ class ProductionBuilder implements BuilderInterface
                 ServiceInterface::SERVICE_TLS,
                 $config->getServiceVersion(ServiceInterface::SERVICE_TLS),
                 [
-                    'environment' => ['HTTPS_UPSTREAM_SERVER_ADDRESS' => $tlsBackendService],
+                    'environment' => ['VARNISH_HOST' => $tlsBackendService],
                 ]
             ),
             [self::NETWORK_MAGENTO],
