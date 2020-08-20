@@ -19,6 +19,9 @@ if [ "$MAGENTO_RUN_MODE" == "production" ]; then
 
     echo "Cleaning generated directory."
     rm -rf $MAGENTO_ROOT/generated/*
+
+    echo "Removing app/etc/env.php file"
+    rm -f  $MAGENTO_ROOT/app/etc/env.php
 fi
 
 echo "Installing dependencies."

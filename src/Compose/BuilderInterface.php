@@ -39,22 +39,18 @@ interface BuilderInterface
     public const NETWORK_MAGENTO = 'magento';
     public const NETWORK_MAGENTO_BUILD = 'magento-build';
 
-    public const VOLUME_MAGENTO = 'magento';
+    public const VOLUME_MAGENTO = '.';
+    public const VOLUME_DOCKER_MNT = '.docker/mnt';
+    public const VOLUME_MARIADB_CONF = '.docker/mysql/mariadb.conf.d';
     public const VOLUME_MAGENTO_VENDOR = 'magento-vendor';
     public const VOLUME_MAGENTO_GENERATED = 'magento-generated';
-    public const VOLUME_MAGENTO_VAR = 'magento-var';
-    public const VOLUME_MAGENTO_ETC = 'magento-etc';
-    public const VOLUME_MAGENTO_STATIC = 'magento-static';
-    public const VOLUME_MAGENTO_MEDIA = 'magento-media';
     public const VOLUME_MAGENTO_DB = 'magento-db';
     public const VOLUME_MAGENTO_DB_QUOTE = 'magento-db-quote';
     public const VOLUME_MAGENTO_DB_SALES = 'magento-db-sales';
-    public const VOLUME_MAGENTO_DEV = 'magento-dev';
-    public const VOLUME_DOCKER_MNT = 'docker-mnt';
-    public const VOLUME_DOCKER_ETRYPOINT = 'docker-entrypoint';
-    public const VOLUME_DOCKER_ETRYPOINT_QUOTE = 'docker-entrypoint-quote';
-    public const VOLUME_DOCKER_ETRYPOINT_SALES = 'docker-entrypoint-sales';
-    public const VOLUME_MARIADB_CONF = 'mariadb-conf';
+    public const VOLUME_MAGENTO_DEV = './dev';
+    public const VOLUME_DOCKER_ETRYPOINT = '.docker/mysql/docker-entrypoint-initdb.d';
+    public const VOLUME_DOCKER_ETRYPOINT_QUOTE = '.docker/mysql-quote/docker-entrypoint-initdb.d';
+    public const VOLUME_DOCKER_ETRYPOINT_SALES = '.docker/mysql-sales/docker-entrypoint-initdb.d';
 
     public const SYNC_ENGINE_NATIVE = 'native';
 

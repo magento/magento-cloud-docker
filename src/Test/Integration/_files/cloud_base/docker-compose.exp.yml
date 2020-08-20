@@ -11,10 +11,10 @@ services:
     ports:
       - '3306'
     volumes:
-      - 'docker-mnt:/mnt:rw,delegated'
-      - 'mymagento-mariadb-conf:/etc/mysql/mariadb.conf.d'
+      - '.docker/mnt:/mnt:rw,delegated'
+      - '.docker/mysql/mariadb.conf.d:/etc/mysql/mariadb.conf.d'
       - 'mymagento-magento-db:/var/lib/mysql'
-      - 'docker-entrypoint:/docker-entrypoint-initdb.d'
+      - '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
     healthcheck:
       test: 'mysqladmin ping -h localhost'
       interval: 30s
@@ -52,14 +52,14 @@ services:
     image: 'magento/magento-cloud-docker-php:7.3-fpm-1.1'
     extends: generic
     volumes:
-      - 'magento:/app:ro,delegated'
+      - '.:/app:ro,delegated'
       - 'magento-vendor:/app/vendor:ro,delegated'
       - 'magento-generated:/app/generated:ro,delegated'
       - 'magento-var:/app/var:rw,delegated'
       - 'magento-app-etc:/app/app/etc:rw,delegated'
       - 'magento-pub-media:/app/pub/media:rw,delegated'
       - 'magento-pub-static:/app/pub/static:rw,delegated'
-      - 'docker-mnt:/mnt:rw,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
     networks:
       magento:
         aliases:
@@ -72,14 +72,14 @@ services:
     image: 'magento/magento-cloud-docker-nginx:latest-1.1'
     extends: generic
     volumes:
-      - 'magento:/app:ro,delegated'
+      - '.:/app:ro,delegated'
       - 'magento-vendor:/app/vendor:ro,delegated'
       - 'magento-generated:/app/generated:ro,delegated'
       - 'magento-var:/app/var:rw,delegated'
       - 'magento-app-etc:/app/app/etc:rw,delegated'
       - 'magento-pub-media:/app/pub/media:rw,delegated'
       - 'magento-pub-static:/app/pub/static:rw,delegated'
-      - 'docker-mnt:/mnt:rw,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
     environment:
       - WITH_XDEBUG=0
     networks:
@@ -131,7 +131,7 @@ services:
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
     extends: generic
     volumes:
-      - 'magento:/app:rw,delegated'
+      - '.:/app:rw,delegated'
       - 'magento-vendor:/app/vendor:rw,delegated'
       - 'magento-generated:/app/generated:rw,delegated'
       - '~/.composer/cache:/root/.composer/cache:rw,delegated'
@@ -151,14 +151,14 @@ services:
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
     extends: generic
     volumes:
-      - 'magento:/app:ro,delegated'
+      - '.:/app:ro,delegated'
       - 'magento-vendor:/app/vendor:ro,delegated'
       - 'magento-generated:/app/generated:ro,delegated'
       - 'magento-var:/app/var:rw,delegated'
       - 'magento-app-etc:/app/app/etc:rw,delegated'
       - 'magento-pub-media:/app/pub/media:rw,delegated'
       - 'magento-pub-static:/app/pub/static:rw,delegated'
-      - 'docker-mnt:/mnt:rw,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
     networks:
       magento:
         aliases:
@@ -182,33 +182,13 @@ services:
         aliases:
           - mailhog.magento2.docker
 volumes:
-  magento:
-    driver_opts:
-      type: none
-      device: '${PWD}/'
-      o: bind
-  docker-mnt:
-    driver_opts:
-      type: none
-      device: '${PWD}/.docker/mnt'
-      o: bind
   magento-vendor: {  }
   magento-generated: {  }
   magento-var: {  }
   magento-app-etc: {  }
   magento-pub-media: {  }
   magento-pub-static: {  }
-  mymagento-mariadb-conf:
-    driver_opts:
-      type: none
-      device: '${PWD}/.docker/mysql/mariadb.conf.d'
-      o: bind
   mymagento-magento-db: {  }
-  docker-entrypoint:
-    driver_opts:
-      type: none
-      device: '${PWD}/.docker/mysql/docker-entrypoint-initdb.d'
-      o: bind
 networks:
   magento:
     driver: bridge
