@@ -60,8 +60,8 @@ class BuildComposeTest extends TestCase
         $command->execute($inputMock, $outputMock);
 
         $this->assertSame(
-            $filesystem->get($directory . '/docker-compose.yml'),
-            $filesystem->get($directory . '/docker-compose.exp.yml')
+            $filesystem->get($directory . '/docker-compose.exp.yml'),
+            $filesystem->get($directory . '/docker-compose.yml')
         );
     }
 

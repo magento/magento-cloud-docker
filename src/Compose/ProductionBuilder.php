@@ -622,8 +622,17 @@ class ProductionBuilder implements BuilderInterface
                 break;
 
             case self::SERVICE_ELASTICSEARCH:
-                $esEnvVars = $config->get(SourceInterface::SERVICES_ES_VARS);
+                $esEnvVars = [];
+                if (!empty($config->get(SourceInterface::SERVICES_ES_VARS))) {
+                    $esEnvVars = $config->get(SourceInterface::SERVICES_ES_VARS);
+                }
+
+                if (!empty($plugins = $config->get(SourceInterface::SERVICES_ES_PLUGINS))) {
+                    $esEnvVars[] = 'ES_PLUGINS=' . (is_array($plugins) ? implode(' ', $plugins) : $plugins);
+                }
+
                 $serviceConfig = !empty($esEnvVars) ? ['environment' => $esEnvVars] : [];
+
                 break;
 
             default:

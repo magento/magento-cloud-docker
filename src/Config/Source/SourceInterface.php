@@ -86,6 +86,11 @@ interface SourceInterface
     public const SERVICES_ES_VARS = self::SERVICES_ES . '.' . 'env-vars';
 
     /**
+     * ES plugins
+     */
+    public const SERVICES_ES_PLUGINS = self::SERVICES_ES . '.configuration.plugins';
+
+    /**
      * Node
      */
     public const SERVICES_NODE = self::SERVICES . '.' . ServiceInterface::SERVICE_NODE;
