@@ -1,7 +1,7 @@
-FROM docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+FROM docker.elastic.co/elasticsearch/elasticsearch:{%version%}
 
 RUN echo "xpack.security.enabled: false" >> /usr/share/elasticsearch/config/elasticsearch.yml
-RUN echo "discovery.type: single-node" >> /usr/share/elasticsearch/config/elasticsearch.yml
+{%single_node%}
 RUN bin/elasticsearch-plugin install -b analysis-icu && \
     bin/elasticsearch-plugin install -b analysis-phonetic
 

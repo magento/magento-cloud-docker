@@ -27,6 +27,8 @@ use Magento\CloudDocker\Service\ServiceInterface;
  */
 class ProductionBuilder implements BuilderInterface
 {
+    private const ELASTICSEARCH_INSTALLED_PLUGINS = ['analysis-icu', 'analysis-phonetic'];
+
     /**
      * @var array
      */
@@ -627,8 +629,11 @@ class ProductionBuilder implements BuilderInterface
                     $esEnvVars = $config->get(SourceInterface::SERVICES_ES_VARS);
                 }
 
-                if (!empty($plugins = $config->get(SourceInterface::SERVICES_ES_PLUGINS))) {
-                    $esEnvVars[] = 'ES_PLUGINS=' . (is_array($plugins) ? implode(' ', $plugins) : $plugins);
+                if (!empty($plugins = $config->get(SourceInterface::SERVICES_ES_PLUGINS)) && is_array($plugins)) {
+                    $plugins = array_diff($plugins, self::ELASTICSEARCH_INSTALLED_PLUGINS);
+                    if (!empty($plugins)) {
+                        $esEnvVars[] = 'ES_PLUGINS=' . implode(' ', $plugins);
+                    }
                 }
 
                 $serviceConfig = !empty($esEnvVars) ? ['environment' => $esEnvVars] : [];
