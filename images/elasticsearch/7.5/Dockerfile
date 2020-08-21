@@ -6,10 +6,10 @@ RUN bin/elasticsearch-plugin install -b analysis-icu && \
     bin/elasticsearch-plugin install -b analysis-phonetic
 
 ADD docker-healthcheck.sh /docker-healthcheck.sh
+ADD docker-entrypoint.sh /docker-entrypoint.sh
 
 HEALTHCHECK --retries=3 CMD ["bash", "/docker-healthcheck.sh"]
 
-COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
