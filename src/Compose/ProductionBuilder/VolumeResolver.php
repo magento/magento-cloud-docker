@@ -14,6 +14,38 @@ use Magento\CloudDocker\Compose\BuilderInterface;
  */
 class VolumeResolver
 {
+    public function getRootVolume(bool $isReadOnly): array
+    {
+        $mode = $isReadOnly ? 'ro,delegated' : 'rw,delegated';
+
+        return [
+            BuilderInterface::VOLUME_MAGENTO => [
+                'path' => BuilderInterface::DIR_MAGENTO,
+                'volume' => '/',
+                'mode' => $mode
+            ]
+        ];
+    }
+
+    /**
+     * @param bool $hasSelenium
+     * @return array
+     */
+    public function getDevVolumes(bool $hasSelenium): array
+    {
+        if ($hasSelenium) {
+            return [
+                BuilderInterface::VOLUME_MAGENTO_DEV => [
+                    'path' => BuilderInterface::DIR_MAGENTO . '/dev',
+                    'volume' => '/dev',
+                    'mode' => 'rw,delegated'
+                ]
+            ];
+        }
+
+        return [];
+    }
+
     /**
      * @param bool $isReadOnly
      * @param bool $hasGenerated
@@ -24,11 +56,6 @@ class VolumeResolver
         $mode = $isReadOnly ? 'ro,delegated' : 'rw,delegated';
 
         $volumes = [
-            BuilderInterface::VOLUME_MAGENTO => [
-                'path' => BuilderInterface::DIR_MAGENTO,
-                'volume' => '/',
-                'mode' => $mode
-            ],
             BuilderInterface::VOLUME_MAGENTO_VENDOR => [
                 'path' => BuilderInterface::DIR_MAGENTO . '/vendor',
                 'volume' => '/vendor',
@@ -50,14 +77,12 @@ class VolumeResolver
     /**
      * @param array $mounts
      * @param bool $isReadOnly
-     * @param bool $hasSelenium
      * @param bool $hasGenerated
      * @return array
      */
     public function getMagentoVolumes(
         array $mounts,
         bool $isReadOnly,
-        bool $hasSelenium,
         bool $hasGenerated = true
     ): array {
         $volumes = $this->getDefaultMagentoVolumes($isReadOnly, $hasGenerated);
@@ -69,14 +94,6 @@ class VolumeResolver
             $volumes[$volumeName] = [
                 'path' => BuilderInterface::DIR_MAGENTO . '/' . $path,
                 'volume' => '/' . $path,
-                'mode' => 'rw,delegated'
-            ];
-        }
-
-        if ($hasSelenium) {
-            $volumes[BuilderInterface::VOLUME_MAGENTO_DEV] = [
-                'path' => BuilderInterface::DIR_MAGENTO . '/dev',
-                'volume' => '/dev',
                 'mode' => 'rw,delegated'
             ];
         }
