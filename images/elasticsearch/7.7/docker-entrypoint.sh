@@ -9,4 +9,4 @@ if [[ -n "$ES_PLUGINS" ]]; then
   done
 fi
 
-bash /usr/local/bin/docker-entrypoint.sh
+/bin/bash /usr/local/bin/docker-entrypoint.sh

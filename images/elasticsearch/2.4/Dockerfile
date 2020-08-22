@@ -12,7 +12,6 @@ ADD docker-healthcheck.sh /docker-healthcheck.sh
 HEALTHCHECK --retries=3 CMD ["bash", "/docker-healthcheck.sh"]
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 EXPOSE 9200 9300
