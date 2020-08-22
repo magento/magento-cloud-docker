@@ -43,6 +43,8 @@ class ElasticsearchCest extends AbstractCest
         $I->runEceDockerCommand($command);
         $I->replaceImagesWithGenerated();
         $I->startEnvironment();
+        $I->runDockerComposeCommand('logs elasticsearch');
+        var_dump($I->getOutput());
         $I->runDockerComposeCommand('exec -T elasticsearch ps aux | grep elasticsearch');
         $I->seeInOutput('-Xms' . $data['xms']);
         $I->seeInOutput('-Xmx' . $data['xmx']);
@@ -59,16 +61,6 @@ class ElasticsearchCest extends AbstractCest
     protected function dataProvider(): array
     {
         return [
-            [
-                'version' => '6.5',
-                'xms' => '518m',
-                'xmx' => '518m',
-                'param' => [
-                    'key' => 'node.store.allow_mmapfs',
-                    'value' => 'false',
-                    'needle' => '"store":{"allow_mmapfs":"false"}',
-                ]
-            ],
             [
                 'version' => '7.5',
                 'xms' => '520m',
