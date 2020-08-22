@@ -103,6 +103,7 @@ class GenerateEs extends Command
             $this->filesystem->deleteDirectory($destination);
             $this->filesystem->makeDirectory($destination);
             $this->filesystem->copyDirectory($dataDir, $destination);
+            $this->filesystem->chmod($destination . '/docker-entrypoint.sh', 0755);
 
             $this->filesystem->put(
                 $dockerfile,
