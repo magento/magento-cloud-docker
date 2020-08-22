@@ -44,7 +44,6 @@ class ElasticsearchCest extends AbstractCest
         $I->replaceImagesWithGenerated();
         $I->startEnvironment();
         $I->runDockerComposeCommand('logs elasticsearch');
-        var_dump($I->getOutput());
         $I->runDockerComposeCommand('exec -T elasticsearch ps aux | grep elasticsearch');
         $I->seeInOutput('-Xms' . $data['xms']);
         $I->seeInOutput('-Xmx' . $data['xmx']);

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eo pipefail
 
 if [[ -n "$ES_PLUGINS" ]]; then
   echo "Intalling plugins: $ES_PLUGNS"
@@ -7,3 +8,5 @@ if [[ -n "$ES_PLUGINS" ]]; then
       ./bin/elasticsearch-plugin install -b "$PLUGIN"
   done
 fi
+
+bash /usr/local/bin/docker-entrypoint.sh
