@@ -69,6 +69,31 @@ class TestInfrastructure extends BaseModule
         return $this->createWorkDir();
     }
 
+    /**
+     * @return bool
+     */
+    public function isCacheDirExists(): bool
+    {
+        return is_dir($this->getCachedWorkDirPath());
+    }
+
+    /**
+     * @return bool
+     */
+    public function cacheWorkDir(): bool
+    {
+        return $this->taskCopyDir([$this->getWorkDirPath() => $this->getCachedWorkDirPath()])
+            ->run()
+            ->wasSuccessful();
+    }
+
+
+    public function restoreWorkDirFromCache(): bool
+    {
+        return $this->taskCopyDir([$this->getCachedWorkDirPath() => $this->getWorkDirPath()])
+            ->run()
+            ->wasSuccessful();
+    }
 
     /**
      * Clones cloud template to the work directory
@@ -407,9 +432,8 @@ class TestInfrastructure extends BaseModule
      */
     public function replaceImagesWithGenerated(): bool
     {
-
         if (true === $this->_getConfig('use_generated_images')) {
-            $this->debug('Tests use new generatedx Docker images');
+            $this->debug('Tests use new generated Docker images');
             $path = $this->getWorkDirPath() . DIRECTORY_SEPARATOR . 'docker-compose.yml';
 
             return (bool)file_put_contents(
