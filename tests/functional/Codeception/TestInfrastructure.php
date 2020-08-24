@@ -408,7 +408,7 @@ class TestInfrastructure extends BaseModule
     public function replaceImagesWithGenerated(): bool
     {
         if (true === $this->_getConfig('use_generated_images')) {
-            $this->debug('Tests use new generatedA Docker images');
+            $this->debug('Tests use new generated Docker images');
             $path = $this->getWorkDirPath() . DIRECTORY_SEPARATOR . 'docker-compose.yml';
 
             return (bool)file_put_contents(
