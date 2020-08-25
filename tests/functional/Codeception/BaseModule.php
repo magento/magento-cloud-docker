@@ -104,11 +104,12 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
     /**
      * Returns the path to cached work directory
      *
+     * @param string $version
      * @return string
      */
-    public function getCachedWorkDirPath(): string
+    public function getCachedWorkDirPath(string $version): string
     {
-        return codecept_root_dir(self::WORK_DIR_CACHE);
+        return codecept_root_dir(self::WORK_DIR_CACHE) . '/' . $version;
     }
 
     /**

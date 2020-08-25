@@ -22,7 +22,7 @@ abstract class AbstractCest
      */
     public function _before(\CliTester $I): void
     {
-        if (!$I->isCacheDirExists()) {
+        if (!$I->isCacheDirExists(static::TEMPLATE_VERSION)) {
             $I->cleanupWorkDir();
             $I->cloneTemplateToWorkDir(static::TEMPLATE_VERSION);
             $I->createAuthJson();
@@ -35,10 +35,10 @@ abstract class AbstractCest
             $I->addDependencyToComposer('magento/ece-tools', 'dev-develop as 2002.1.99');
 
             $I->composerUpdate();
-            $I->cacheWorkDir();
+            $I->cacheWorkDir(static::TEMPLATE_VERSION);
         } else {
             $I->cleanupWorkDir();
-            $I->restoreWorkDirFromCache();
+            $I->restoreWorkDirFromCache(static::TEMPLATE_VERSION);
         }
     }
 

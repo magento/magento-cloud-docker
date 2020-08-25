@@ -70,25 +70,31 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * @param string $version
      * @return bool
      */
-    public function isCacheDirExists(): bool
+    public function isCacheDirExists(string $version): bool
     {
-        return is_dir($this->getCachedWorkDirPath());
+        return is_dir($this->getCachedWorkDirPath($version));
     }
 
     /**
-     * @return bool
+     * @param string $version
+     * @return void
+     * @throws \Exception
      */
-    public function cacheWorkDir(): void
+    public function cacheWorkDir(string $version): void
     {
-        $this->copyDir($this->getWorkDirPath(), $this->getCachedWorkDirPath());
+        $this->copyDir($this->getWorkDirPath(), $this->getCachedWorkDirPath($version));
     }
 
-
-    public function restoreWorkDirFromCache(): void
+    /**
+     * @param string $version
+     * @throws \Exception
+     */
+    public function restoreWorkDirFromCache(string $version): void
     {
-        $this->copyDir($this->getCachedWorkDirPath(), $this->getWorkDirPath());
+        $this->copyDir($this->getCachedWorkDirPath($version), $this->getWorkDirPath());
     }
 
     /**
@@ -102,6 +108,10 @@ class TestInfrastructure extends BaseModule
      */
     public function copyDir($source, $destination): void
     {
+        if (!is_dir(dirname($destination))) {
+            mkdir(dirname($destination));
+        }
+
         if (!is_dir($destination)) {
             mkdir($destination);
         }
@@ -138,7 +148,7 @@ class TestInfrastructure extends BaseModule
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
             ->stopOnFail()
-            ->cloneRepo($this->_getConfig('template_repo'), '.', $branch)
+            ->cloneShallow($this->_getConfig('template_repo'), '.', $branch)
             ->dir($this->getWorkDirPath())
             ->run()
             ->wasSuccessful();
