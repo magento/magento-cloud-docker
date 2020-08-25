@@ -150,13 +150,7 @@ class CloudSource implements SourceInterface
      */
     private function addRelationships(Repository $repository, array $relationships): Repository
     {
-        try {
-            $servicesConfig = Yaml::parse(
-                $this->filesystem->get($this->fileList->getServicesConfig())
-            );
-        } catch (Exception $exception) {
-            throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
-        }
+        $servicesConfig = $this->getServiceConfig();
 
         foreach ($relationships as $constraint) {
             [$name] = explode(':', $constraint);
@@ -190,6 +184,13 @@ class CloudSource implements SourceInterface
                         self::SERVICES . '.' . $service . '.version' => $version,
                         self::SERVICES . '.' . $service . '.image' => $this->serviceFactory->getDefaultImage($service)
                     ]);
+
+                    if (isset($servicesConfig[$name]['configuration'])) {
+                        $repository->set(
+                            self::SERVICES . '.' . $service . '.configuration',
+                            $servicesConfig[$name]['configuration']
+                        );
+                    }
                 } catch (ConfigurationMismatchException $exception) {
                     throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
                 }
@@ -346,5 +347,24 @@ class CloudSource implements SourceInterface
         ]);
 
         return $repository;
+    }
+
+    /**
+     * Returns config from services yaml
+     *
+     * @return array
+     * @throws SourceException
+     */
+    private function getServiceConfig(): array
+    {
+        try {
+            $servicesConfig = Yaml::parse(
+                $this->filesystem->get($this->fileList->getServicesConfig())
+            );
+        } catch (Exception $exception) {
+            throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
+        }
+
+        return is_array($servicesConfig) ? $servicesConfig : [];
     }
 }

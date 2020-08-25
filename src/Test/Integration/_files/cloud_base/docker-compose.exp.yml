@@ -43,6 +43,8 @@ services:
   elasticsearch:
     hostname: elasticsearch.magento2.docker
     image: 'magento/magento-cloud-docker-elasticsearch:6.5-1.1'
+    environment:
+      - 'ES_PLUGINS=plugin_1 plugin_2'
     networks:
       magento:
         aliases:
