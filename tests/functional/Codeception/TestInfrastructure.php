@@ -108,32 +108,13 @@ class TestInfrastructure extends BaseModule
      */
     public function copyDir($source, $destination): void
     {
-        if (!is_dir(dirname($destination))) {
-            mkdir(dirname($destination));
-        }
-
-        if (!is_dir($destination)) {
-            mkdir($destination);
-        }
-
-        $command = sprintf(
-            'shopt -s dotglob && cp -R %s/* %s/',
-            escapeshellarg(rtrim($source, '/')),
-            escapeshellarg(rtrim($destination, '/'))
-        );
-
-        exec(
-            '/bin/bash -c ' . escapeshellarg($command),
-            $output,
-            $status
-        );
-
-        if ($status !== 0) {
-            throw new \Exception(
-                'The content of path "%1" cannot be copied to "%2" %3',
-                [$source, $destination, $output]
-            );
-        }
+        $this->taskRsync()
+            ->arg('-l')
+            ->recursive()
+            ->fromPath($source . '/')
+            ->toPath($destination . '/')
+            ->excludeVcs()
+            ->run();
     }
 
     /**
