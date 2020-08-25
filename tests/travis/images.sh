@@ -25,7 +25,7 @@ function run() {
             latest_version=""
             for service_version in $(ls -1 "./images/$service_name" | sort --version-sort)
             do
-                if [[ $service_version == "cli" ]] || [[ $service_version == "fpm" ]]; then continue; fi;
+                if [[ $service_version == "cli" ]] || [[ $service_version == "fpm" ]] || [[ $service_version == "es" ]]; then continue; fi;
                 build_push_image "cloudft/$service_name" "$service_version-$TRAVIS_BUILD_NUMBER" "./images/$service_name/$service_version"
                 latest_version="$service_version"
             done
