@@ -91,14 +91,39 @@ class TestInfrastructure extends BaseModule
         $this->copyDir($this->getCachedWorkDirPath(), $this->getWorkDirPath());
     }
 
-    private function copyDir(string $from, string $to): void
+    /**
+     * Copy directory recursively.
+     *
+     * @param string $source The path of source folder
+     * @param string $destination The path of destination folder
+     * @return void
+     *
+     * @throws \Exception
+     */
+    public function copyDir($source, $destination): void
     {
-        if (!is_dir($to)) {
-            mkdir($to);
+        if (!is_dir($destination)) {
+            mkdir($destination);
         }
 
-        shell_exec(sprintf('cp -R %s/ %s', $from, $to));
-        return;
+        $command = sprintf(
+            'shopt -s dotglob && cp -R %s/* %s/',
+            escapeshellarg(rtrim($source, '/')),
+            escapeshellarg(rtrim($destination, '/'))
+        );
+
+        exec(
+            '/bin/bash -c ' . escapeshellarg($command),
+            $output,
+            $status
+        );
+
+        if ($status !== 0) {
+            throw new \Exception(
+                'The content of path "%1" cannot be copied to "%2" %3',
+                [$source, $destination, $output]
+            );
+        }
     }
 
     /**
