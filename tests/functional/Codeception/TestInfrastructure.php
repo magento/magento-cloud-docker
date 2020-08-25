@@ -108,6 +108,10 @@ class TestInfrastructure extends BaseModule
      */
     public function copyDir($source, $destination): void
     {
+        if (!is_dir(dirname($destination))) {
+            mkdir(dirname($destination));
+        }
+
         $this->taskRsync()
             ->arg('-l')
             ->recursive()
