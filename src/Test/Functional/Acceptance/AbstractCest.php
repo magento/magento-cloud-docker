@@ -37,6 +37,7 @@ abstract class AbstractCest
             $I->composerUpdate();
             $I->cacheWorkDir();
         } else {
+            $I->cleanupWorkDir();
             $I->restoreWorkDirFromCache();
         }
     }

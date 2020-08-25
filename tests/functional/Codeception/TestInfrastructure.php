@@ -80,19 +80,25 @@ class TestInfrastructure extends BaseModule
     /**
      * @return bool
      */
-    public function cacheWorkDir(): bool
+    public function cacheWorkDir(): void
     {
-        return $this->taskCopyDir([$this->getWorkDirPath() => $this->getCachedWorkDirPath()])
-            ->run()
-            ->wasSuccessful();
+        $this->copyDir($this->getWorkDirPath(), $this->getCachedWorkDirPath());
     }
 
 
-    public function restoreWorkDirFromCache(): bool
+    public function restoreWorkDirFromCache(): void
     {
-        return $this->taskCopyDir([$this->getCachedWorkDirPath() => $this->getWorkDirPath()])
-            ->run()
-            ->wasSuccessful();
+        $this->copyDir($this->getCachedWorkDirPath(), $this->getWorkDirPath());
+    }
+
+    private function copyDir(string $from, string $to): void
+    {
+        if (!is_dir($to)) {
+            mkdir($to);
+        }
+
+        shell_exec(sprintf('cp -R %s/ %s', $from, $to));
+        return;
     }
 
     /**
