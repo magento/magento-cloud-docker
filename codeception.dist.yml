@@ -27,10 +27,10 @@ modules:
       composer_github_token: "%GITHUB_TOKEN%"
       use_generated_images: false
       version_generated_images: "%TRAVIS_BUILD_NUMBER%"
-      printOutput: true
+      printOutput: false
     Magento\CloudDocker\Test\Functional\Codeception\Docker:
       system_magento_dir: "%Magento.docker.settings.system.magento_dir%"
-      printOutput: true
+      printOutput: false
     PhpBrowser:
       url: "%Magento.docker.settings.env.url.base%"
     Magento\CloudDocker\Test\Functional\Codeception\MagentoDb:
