@@ -14,6 +14,8 @@ use Symfony\Component\Yaml\Yaml;
  */
 class TestInfrastructure extends BaseModule
 {
+    private const USE_CACHED_WORKDIR_OPTION = 'use_cached_workdir';
+
     /**
      * Creates the work directory
      *
@@ -75,7 +77,7 @@ class TestInfrastructure extends BaseModule
      */
     public function isCacheWorkDirExists(string $version): bool
     {
-        return is_dir($this->getCachedWorkDirPath($version));
+        return $this->_getConfig(self::USE_CACHED_WORKDIR_OPTION) && is_dir($this->getCachedWorkDirPath($version));
     }
 
     /**
@@ -84,6 +86,10 @@ class TestInfrastructure extends BaseModule
      */
     public function cacheWorkDir(string $version): void
     {
+        if (!$this->_getConfig(self::USE_CACHED_WORKDIR_OPTION)) {
+            return;
+        }
+
         $this->copyDir($this->getWorkDirPath(), $this->getCachedWorkDirPath($version));
     }
 

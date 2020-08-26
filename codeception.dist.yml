@@ -26,6 +26,7 @@ modules:
       composer_magento_password: "%REPO_PASSWORD%"
       composer_github_token: "%GITHUB_TOKEN%"
       use_generated_images: false
+      use_cached_workdir: true
       version_generated_images: "%TRAVIS_BUILD_NUMBER%"
       printOutput: false
     Magento\CloudDocker\Test\Functional\Codeception\Docker:
