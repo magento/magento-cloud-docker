@@ -73,7 +73,7 @@ class TestInfrastructure extends BaseModule
      * @param string $version
      * @return bool
      */
-    public function isCacheDirExists(string $version): bool
+    public function isCacheWorkDirExists(string $version): bool
     {
         return is_dir($this->getCachedWorkDirPath($version));
     }
@@ -81,7 +81,6 @@ class TestInfrastructure extends BaseModule
     /**
      * @param string $version
      * @return void
-     * @throws \Exception
      */
     public function cacheWorkDir(string $version): void
     {
@@ -90,7 +89,6 @@ class TestInfrastructure extends BaseModule
 
     /**
      * @param string $version
-     * @throws \Exception
      */
     public function restoreWorkDirFromCache(string $version): void
     {
@@ -103,8 +101,6 @@ class TestInfrastructure extends BaseModule
      * @param string $source The path of source folder
      * @param string $destination The path of destination folder
      * @return void
-     *
-     * @throws \Exception
      */
     public function copyDir($source, $destination): void
     {
