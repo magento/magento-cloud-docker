@@ -38,6 +38,11 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
     const WORK_DIR = '_workdir';
 
     /**
+     * Cached work directory name
+     */
+    const WORK_DIR_CACHE = '_workdir_cache';
+
+    /**
      * The artifact directory name
      */
     const ARTIFACTS_DIR = 'artifacts';
@@ -94,6 +99,17 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
     public function getWorkDirPath(): string
     {
         return codecept_root_dir(self::WORK_DIR);
+    }
+
+    /**
+     * Returns the path to cached work directory
+     *
+     * @param string $version
+     * @return string
+     */
+    public function getCachedWorkDirPath(string $version): string
+    {
+        return codecept_root_dir(self::WORK_DIR_CACHE) . '/' . $version;
     }
 
     /**
