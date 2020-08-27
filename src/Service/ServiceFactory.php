@@ -87,9 +87,6 @@ class ServiceFactory
             'pattern' => self::PATTERN_VERSIONED,
             'config' => [
                 'extends' => ServiceInterface::SERVICE_GENERIC,
-                'ports' => [
-                    '443:443'
-                ],
             ]
         ],
         ServiceInterface::SERVICE_REDIS => [

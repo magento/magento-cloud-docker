@@ -58,6 +58,7 @@ class CliSource implements SourceInterface
      */
     public const OPTION_HOST = 'host';
     public const OPTION_PORT = 'port';
+    public const OPTION_TLS_PORT = 'tls-port';
 
     public const OPTION_DB_INCREMENT_INCREMENT = 'db-increment-increment';
     public const OPTION_DB_INCREMENT_OFFSET = 'db-increment-offset';
@@ -233,6 +234,10 @@ class CliSource implements SourceInterface
 
         if ($port = $this->input->getOption(self::OPTION_PORT)) {
             $repository->set(self::SYSTEM_PORT, $port);
+        }
+
+        if ($port = $this->input->getOption(self::OPTION_TLS_PORT)) {
+            $repository->set(self::SYSTEM_TLS_PORT, $port);
         }
 
         if ($installationType = $this->input->getOption(self::OPTION_INSTALLATION_TYPE)) {

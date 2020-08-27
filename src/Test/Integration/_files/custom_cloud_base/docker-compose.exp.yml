@@ -71,13 +71,7 @@ services:
     networks:
       magento:
         aliases:
-          - magento2.test
-    ports:
-      - '8080:80'
-    environment:
-      - VIRTUAL_HOST=magento2.test
-      - VIRTUAL_PORT=8080
-      - HTTPS_METHOD=noredirect
+          - varnish.magento2.test
     depends_on:
       web:
         condition: service_started
@@ -85,14 +79,15 @@ services:
     hostname: tls.magento2.test
     image: 'magento/magento-cloud-docker-nginx:latest-1.1'
     extends: generic
-    ports:
-      - '443:443'
-    environment:
-      VARNISH_HOST: varnish
     networks:
       magento:
         aliases:
-          - tls.magento2.test
+          - magento2.test
+    environment:
+      UPSTREAM_HOST: varnish
+    ports:
+      - '8080:80'
+      - '443:443'
     depends_on:
       varnish:
         condition: service_started
