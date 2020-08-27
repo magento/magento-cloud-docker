@@ -234,13 +234,6 @@ class ProductionBuilder implements BuilderInterface
             ]
         ];
 
-        if (!$config->hasServiceEnabled(self::SERVICE_VARNISH)) {
-            $webConfig['ports'] = [$config->getPort() . ':80'];
-            $webConfig['environment'][] = 'VIRTUAL_HOST=' . $config->getHost();
-            $webConfig['environment'][] = 'VIRTUAL_PORT=' . $config->getPort();
-            $webConfig['environment'][] = 'HTTPS_METHOD=noredirect';
-        }
-
         $manager->addService(
             self::SERVICE_WEB,
             $this->serviceFactory->create(
@@ -257,23 +250,10 @@ class ProductionBuilder implements BuilderInterface
                 self::SERVICE_VARNISH,
                 $this->serviceFactory->create(
                     ServiceInterface::SERVICE_VARNISH,
-                    $config->getServiceVersion(ServiceInterface::SERVICE_VARNISH),
-                    [
-                        'networks' => [
-                            self::NETWORK_MAGENTO => [
-                                'aliases' => [$config->getHost()]
-                            ]
-                        ],
-                        'ports' => [$config->getPort() . ':80'],
-                        'environment' => [
-                            'VIRTUAL_HOST=' . $config->getHost(),
-                            'VIRTUAL_PORT=' . $config->getPort(),
-                            'HTTPS_METHOD=noredirect'
-                        ]
-                    ]
+                    $config->getServiceVersion(ServiceInterface::SERVICE_VARNISH)
                 ),
-                [],
-                [self::SERVICE_WEB => ['condition' => 'service_started']]
+                [self::NETWORK_MAGENTO],
+                [self::SERVICE_WEB => []]
             );
         }
 
@@ -286,7 +266,16 @@ class ProductionBuilder implements BuilderInterface
                 ServiceInterface::SERVICE_TLS,
                 $config->getServiceVersion(ServiceInterface::SERVICE_TLS),
                 [
-                    'environment' => ['VARNISH_HOST' => $tlsBackendService],
+                    'networks' => [
+                        self::NETWORK_MAGENTO => [
+                            'aliases' => [$config->getHost()]
+                        ]
+                    ],
+                    'environment' => ['UPSTREAM_HOST' => $tlsBackendService],
+                    'ports' => [
+                        $config->getPort() . ':80',
+                        $config->getTlsPort() . ':443'
+                    ]
                 ]
             ),
             [self::NETWORK_MAGENTO],

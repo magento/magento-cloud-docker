@@ -64,6 +64,10 @@ class Manager
         $config = array_replace($config, $extConfig);
 
         foreach ($networks as $network) {
+            if (!empty($config['networks'][$network]['aliases'])) {
+                continue;
+            }
+
             $config['networks'][$network] = [
                 'aliases' => [$hostname]
             ];

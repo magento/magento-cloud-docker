@@ -234,13 +234,18 @@ class BuildCompose extends Command
         )->addOption(
             Source\CliSource::OPTION_HOST,
             null,
-            InputOption::VALUE_OPTIONAL,
+            InputOption::VALUE_REQUIRED,
             'Host name'
         )->addOption(
             Source\CliSource::OPTION_PORT,
             null,
-            InputOption::VALUE_OPTIONAL,
+            InputOption::VALUE_REQUIRED,
             'Port'
+        )->addOption(
+            Source\CliSource::OPTION_TLS_PORT,
+            null,
+            InputOption::VALUE_REQUIRED,
+            'TLS port'
         )->addOption(
             Source\CliSource::OPTION_ES_ENVIRONMENT_VARIABLE,
             null,
