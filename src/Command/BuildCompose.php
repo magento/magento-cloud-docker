@@ -171,6 +171,11 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'Disable mailhog'
+            )->addOption(
+                Source\CliSource::OPTION_SET_DOCKER_HOST_XDEBUG,
+                null,
+                InputOption::VALUE_NONE,
+                'Sets host.docker.internal for fpm_xdebug container to resolve debug issue for LINUX system'
             );
 
         $this->addOption(

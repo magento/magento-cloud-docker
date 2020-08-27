@@ -60,9 +60,6 @@ class ServiceFactory
             'pattern' => '%s:%s-fpm-%s',
             'config' => [
                 'extends' => ServiceInterface::SERVICE_GENERIC,
-                'ports' => [
-                    '9001:9001',
-                ]
             ]
         ],
         ServiceInterface::SERVICE_DB => self::SERVICE_DB_CONFIG,
