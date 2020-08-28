@@ -157,8 +157,6 @@ services:
     hostname: fpm_xdebug.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.3-fpm-1.1'
     extends: generic
-    ports:
-      - '9001:9001'
     volumes:
       - '.:/app:ro,delegated'
       - './dev:/app/dev:rw,delegated'
@@ -170,7 +168,7 @@ services:
       - 'magento-pub-static:/app/pub/static:rw,delegated'
       - '.docker/mnt:/mnt:rw,delegated'
     environment:
-      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip redis xsl sodium'
+      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip redis xsl sodium xdebug'
     networks:
       magento:
         aliases:
