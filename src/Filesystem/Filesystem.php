@@ -229,4 +229,16 @@ class Filesystem
 
         throw new FileNotFoundException("File does not exist at path {$path}");
     }
+
+    /**
+     * Changes file mode
+     *
+     * @param string $path
+     * @param int $mode
+     * @return bool
+     */
+    public function chmod(string $path, int $mode): bool
+    {
+        return chmod($path, $mode);
+    }
 }

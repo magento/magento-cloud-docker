@@ -10,8 +10,8 @@ XDEBUG_UPSTREAM_FILE="/etc/nginx/conf.d/xdebug/upstream.conf"
 [ ! -z "${XDEBUG_HOST}" ] && sed -i "s/!XDEBUG_HOST!/${XDEBUG_HOST}/" $XDEBUG_UPSTREAM_FILE
 [ ! -z "${FPM_PORT}" ] && sed -i "s/!FPM_PORT!/${FPM_PORT}/" $VHOST_FILE
 [ ! -z "${FPM_PORT}" ] && sed -i "s/!FPM_PORT!/${FPM_PORT}/" $XDEBUG_UPSTREAM_FILE
-[ ! -z "${VARNISH_HOST}" ] && sed -i "s/!VARNISH_HOST!/${VARNISH_HOST}/" $VHOST_FILE
-[ ! -z "${VARNISH_PORT}" ] && sed -i "s/!VARNISH_PORT!/${VARNISH_PORT}/" $VHOST_FILE
+[ ! -z "${UPSTREAM_HOST}" ] && sed -i "s/!UPSTREAM_HOST!/${UPSTREAM_HOST}/" $VHOST_FILE
+[ ! -z "${UPSTREAM_PORT}" ] && sed -i "s/!UPSTREAM_PORT!/${UPSTREAM_PORT}/" $VHOST_FILE
 [ ! -z "${MAGENTO_ROOT}" ] && sed -i "s#!MAGENTO_ROOT!#${MAGENTO_ROOT}#" $VHOST_FILE
 [ ! -z "${MAGENTO_RUN_MODE}" ] && sed -i "s/!MAGENTO_RUN_MODE!/${MAGENTO_RUN_MODE}/" $VHOST_FILE
 [ ! -z "${MFTF_UTILS}" ] && sed -i "s/!MFTF_UTILS!/${MFTF_UTILS}/" $VHOST_FILE

@@ -377,6 +377,21 @@ class Config
     }
 
     /**
+     * Returns the TLS port
+     *
+     * @return string
+     * @throws ConfigurationMismatchException
+     */
+    public function getTlsPort(): string
+    {
+        if (!$this->all()->has(SourceInterface::SYSTEM_TLS_PORT)) {
+            throw new ConfigurationMismatchException('Required config "tls port" is not provided');
+        }
+
+        return (string)$this->all()->get(SourceInterface::SYSTEM_TLS_PORT);
+    }
+
+    /**
      * @return string
      * @throws ConfigurationMismatchException
      */

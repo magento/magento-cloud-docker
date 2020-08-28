@@ -60,8 +60,8 @@ class BuildComposeTest extends TestCase
         $command->execute($inputMock, $outputMock);
 
         $this->assertSame(
-            $filesystem->get($directory . '/docker-compose.yml'),
-            $filesystem->get($directory . '/docker-compose.exp.yml')
+            $filesystem->get($directory . '/docker-compose.exp.yml'),
+            $filesystem->get($directory . '/docker-compose.yml')
         );
     }
 
@@ -91,7 +91,9 @@ class BuildComposeTest extends TestCase
                     [CliSource::OPTION_DB_INCREMENT_INCREMENT, 3],
                     [CliSource::OPTION_DB_INCREMENT_OFFSET, 2],
                     [CliSource::OPTION_WITH_ENTRYPOINT, true],
-                    [CliSource::OPTION_WITH_MARIADB_CONF, true]
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true],
+                    [CliSource::OPTION_TLS_PORT, '4443'],
+                    [CliSource::OPTION_NO_MAILHOG, true]
                 ]
             ]
         ];

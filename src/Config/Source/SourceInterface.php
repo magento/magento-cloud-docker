@@ -86,6 +86,11 @@ interface SourceInterface
     public const SERVICES_ES_VARS = self::SERVICES_ES . '.' . 'env-vars';
 
     /**
+     * ES plugins
+     */
+    public const SERVICES_ES_PLUGINS = self::SERVICES_ES . '.configuration.plugins';
+
+    /**
      * Node
      */
     public const SERVICES_NODE = self::SERVICES . '.' . ServiceInterface::SERVICE_NODE;
@@ -131,6 +136,7 @@ interface SourceInterface
     public const SYSTEM_MODE = 'system.mode';
     public const SYSTEM_HOST = 'system.host';
     public const SYSTEM_PORT = 'system.port';
+    public const SYSTEM_TLS_PORT = 'system.tls_port';
     public const SYSTEM_EXPOSE_DB_PORTS = 'system.expose_db_ports';
     public const SYSTEM_EXPOSE_DB_QUOTE_PORTS = 'system.expose_db_quote_ports';
     public const SYSTEM_EXPOSE_DB_SALES_PORTS = 'system.expose_db_sales_ports';
