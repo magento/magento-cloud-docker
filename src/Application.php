@@ -42,7 +42,9 @@ class Application extends \Symfony\Component\Console\Application
             $this->container->get(Command\BuildCustomCompose::class),
             $this->container->get(Command\BuildDist::class),
             $this->container->get(Command\Image\GeneratePhp::class),
-            $this->container->get(Command\Image\GenerateEs::class)
+            $this->container->get(Command\Image\GenerateEs::class),
+            $this->container->get(Command\Dev\DevLink::class),
+            $this->container->get(Command\Dev\DevBuild::class),
         ]);
     }
 }

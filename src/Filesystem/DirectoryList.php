@@ -48,12 +48,41 @@ class DirectoryList
         return $this->magentoRoot;
     }
 
+    public function getMagentoRootComposer()
+    {
+        return $this->getMagentoRoot() . '/composer.json';
+    }
+
+    public function getMagentoRootDev(): string
+    {
+        return $this->getMagentoRoot() . '/.dev';
+    }
+
+    public function getRepoRoot(): string
+    {
+        return $this->getMagentoRoot() . '/.dev';
+    }
+
     /**
      * @return string
      */
     public function getDockerRoot(): string
     {
         return $this->getMagentoRoot() . '/.docker';
+    }
+
+    /**
+     * @return string
+     */
+    public function getConfig(): string
+    {
+        $configFile = $this->getMagentoRoot() . '/.magento.docker.yml';
+
+        if (!file_exists($configFile)) {
+            $configFile = $this->getMagentoRoot() . '/.magento.docker.yaml';
+        }
+
+        return $configFile;
     }
 
     /**

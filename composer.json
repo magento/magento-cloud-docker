@@ -8,6 +8,7 @@
         "AFL-3.0"
     ],
     "require": {
+        "composer-plugin-api": "^1.1",
         "php": "^7.2",
         "ext-json": "*",
         "composer/composer": "^1.0",
@@ -16,6 +17,7 @@
         "symfony/config": "^4.4",
         "symfony/console": "^2.8||^4.0",
         "symfony/dependency-injection": "^3.3||^4.3",
+        "symfony/process": "^2.1||^4.1",
         "symfony/yaml": "^3.3||^4.0"
     },
     "require-dev": {
@@ -58,6 +60,7 @@
     },
     "prefer-stable": true,
     "extra": {
+        "class": "Magento\\CloudDocker\\DownloadPlugin",
         "map": [
             [
                 "dist/docker-sync.yml",

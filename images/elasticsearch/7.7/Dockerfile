@@ -13,3 +13,4 @@ HEALTHCHECK --retries=3 CMD ["bash", "/docker-healthcheck.sh"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 EXPOSE 9200 9300
+[]
