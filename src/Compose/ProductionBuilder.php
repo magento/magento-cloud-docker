@@ -333,6 +333,10 @@ class ProductionBuilder implements BuilderInterface
          * Include Xdebug if --with-xdebug is set
          */
         if ($config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)) {
+            $envVariables = ['PHP_EXTENSIONS' => implode(' ', array_unique(array_merge($phpExtensions, ['xdebug'])))];
+            if ($config->get(SourceInterface::SYSTEM_SET_DOCKER_HOST)) {
+                $envVariables['SET_DOCKER_HOST'] = true;
+            }
             $manager->addService(
                 self::SERVICE_FPM_XDEBUG,
                 $this->serviceFactory->create(
@@ -340,7 +344,7 @@ class ProductionBuilder implements BuilderInterface
                     $phpVersion,
                     [
                         'volumes' => $volumesRo,
-                        'environment' => $this->converter->convert(['PHP_EXTENSIONS' => implode(' ', $phpExtensions)])
+                        'environment' => $this->converter->convert($envVariables)
                     ]
                 ),
                 [self::NETWORK_MAGENTO],

@@ -9,6 +9,7 @@ ENV MAGENTO_RUN_MODE production
 ENV UPLOAD_MAX_FILESIZE 64M
 ENV UPDATE_UID_GID false
 ENV ENABLE_SENDMAIL true
+ENV SET_DOCKER_HOST false
 
 {%env_php_extensions%}
 

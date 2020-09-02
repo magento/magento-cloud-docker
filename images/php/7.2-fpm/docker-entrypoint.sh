@@ -58,4 +58,11 @@ fi
 # Configure PHP-FPM
 [ ! -z "${MAGENTO_RUN_MODE}" ] && sed -i "s/!MAGENTO_RUN_MODE!/${MAGENTO_RUN_MODE}/" /usr/local/etc/php-fpm.conf
 
+# Set host.docker.inernal for LINUX os
+if [[ "$SET_DOCKER_HOST" = "true" ]]; then
+  apt update
+  apt install -y iproute2
+  echo -e "`/sbin/ip route|awk '/default/ { print $3 }'`\thost.docker.internal" | sudo tee -a /etc/hosts > /dev/null
+fi
+
 exec "$@"
