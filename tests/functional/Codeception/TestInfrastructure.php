@@ -14,6 +14,8 @@ use Symfony\Component\Yaml\Yaml;
  */
 class TestInfrastructure extends BaseModule
 {
+    private const USE_CACHED_WORKDIR_OPTION = 'use_cached_workdir';
+
     /**
      * Creates the work directory
      *
@@ -69,6 +71,57 @@ class TestInfrastructure extends BaseModule
         return $this->createWorkDir();
     }
 
+    /**
+     * @param string $version
+     * @return bool
+     */
+    public function isCacheWorkDirExists(string $version): bool
+    {
+        return $this->_getConfig(self::USE_CACHED_WORKDIR_OPTION) && is_dir($this->getCachedWorkDirPath($version));
+    }
+
+    /**
+     * @param string $version
+     * @return void
+     */
+    public function cacheWorkDir(string $version): void
+    {
+        if (!$this->_getConfig(self::USE_CACHED_WORKDIR_OPTION)) {
+            return;
+        }
+
+        $this->copyDir($this->getWorkDirPath(), $this->getCachedWorkDirPath($version));
+    }
+
+    /**
+     * @param string $version
+     */
+    public function restoreWorkDirFromCache(string $version): void
+    {
+        $this->copyDir($this->getCachedWorkDirPath($version), $this->getWorkDirPath());
+    }
+
+    /**
+     * Copy directory recursively.
+     *
+     * @param string $source The path of source folder
+     * @param string $destination The path of destination folder
+     * @return void
+     */
+    public function copyDir($source, $destination): void
+    {
+        if (!is_dir(dirname($destination))) {
+            mkdir(dirname($destination));
+        }
+
+        $this->taskRsync()
+            ->arg('-l')
+            ->recursive()
+            ->fromPath($source . '/')
+            ->toPath($destination . '/')
+            ->excludeVcs()
+            ->run();
+    }
 
     /**
      * Clones cloud template to the work directory
@@ -82,7 +135,7 @@ class TestInfrastructure extends BaseModule
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
             ->stopOnFail()
-            ->cloneRepo($this->_getConfig('template_repo'), '.', $branch)
+            ->cloneShallow($this->_getConfig('template_repo'), '.', $branch)
             ->dir($this->getWorkDirPath())
             ->run()
             ->wasSuccessful();
@@ -407,9 +460,8 @@ class TestInfrastructure extends BaseModule
      */
     public function replaceImagesWithGenerated(): bool
     {
-
         if (true === $this->_getConfig('use_generated_images')) {
-            $this->debug('Tests use new generatedx Docker images');
+            $this->debug('Tests use new generated Docker images');
             $path = $this->getWorkDirPath() . DIRECTORY_SEPARATOR . 'docker-compose.yml';
 
             return (bool)file_put_contents(

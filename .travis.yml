@@ -89,7 +89,7 @@ jobs:
       env:
         - TEST_SUITE=functional
 
-install: if [[ $TEST_SUITE != "build-images" ]]; then composer update; fi;
+install: if [[ $TEST_SUITE != "build-images" ]]; then phpenv config-add travis.php.ini && composer update; fi;
 
 before_script:
   - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "build-images" ]; then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi;
