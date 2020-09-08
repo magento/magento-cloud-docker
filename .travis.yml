@@ -82,6 +82,10 @@ jobs:
       env:
         - TEST_SUITE=functional
 
+before_install:
+  # https://github.com/kylekatarnls/update-helper/issues/9
+  - travis_retry composer self-update 1.10.10
+
 install: if [[ $TEST_SUITE != "build-images" ]]; then composer update; fi;
 
 before_script:
