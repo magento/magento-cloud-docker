@@ -6,3 +6,4 @@ modules:
     - Magento\CloudDocker\Test\Functional\Codeception\MagentoDb
     - PhpBrowser
     - Asserts
+    - REST

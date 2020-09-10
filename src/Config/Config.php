@@ -454,4 +454,22 @@ class Config
             1
         );
     }
+
+    /**
+     * @return string|null
+     * @throws ConfigurationMismatchException
+     */
+    public function getMailHogSmtpPort(): ?string
+    {
+        return $this->all()->get(SourceInterface::SYSTEM_MAILHOG_SMTP_PORT);
+    }
+
+    /**
+     * @return string|null
+     * @throws ConfigurationMismatchException
+     */
+    public function getMailHogHttpPort(): ?string
+    {
+        return $this->all()->get(SourceInterface::SYSTEM_MAILHOG_HTTP_PORT);
+    }
 }

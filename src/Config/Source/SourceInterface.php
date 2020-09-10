@@ -143,6 +143,8 @@ interface SourceInterface
     public const SYSTEM_DB_ENTRYPOINT = 'system.db_entrypoint';
     public const SYSTEM_MARIADB_CONF = 'system.mariadb_conf';
     public const SYSTEM_SET_DOCKER_HOST = 'system.set_docker_host';
+    public const SYSTEM_MAILHOG_SMTP_PORT = 'system.mailhog.smtp_port';
+    public const SYSTEM_MAILHOG_HTTP_PORT = 'system.mailhog.http_port';
 
     public const SYSTEM_DB_INCREMENT_INCREMENT = 'system.db.increment_increment';
     public const SYSTEM_DB_INCREMENT_OFFSET = 'system.db.increment_offset';

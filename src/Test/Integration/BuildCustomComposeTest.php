@@ -85,6 +85,10 @@ class BuildCustomComposeTest extends TestCase
                                 'db' => [
                                     'increment_increment' => 3,
                                     'increment_offset' => 2
+                                ],
+                                'mailhog' => [
+                                    'smtp_port' => '1026',
+                                    'http_port' => '8026'
                                 ]
                             ],
                             'services' => [

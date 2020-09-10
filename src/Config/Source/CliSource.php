@@ -35,6 +35,12 @@ class CliSource implements SourceInterface
     public const OPTION_NO_MAILHOG = 'no-mailhog';
 
     /**
+     * MailHog configuration
+     */
+    public const OPTION_MAILHOG_SMTP_PORT = 'mailhog-smtp-port';
+    public const OPTION_MAILHOG_HTTP_PORT = 'mailhog-http-port';
+
+    /**
      * State modifiers.
      */
     public const OPTION_NODE = 'node';
@@ -275,6 +281,14 @@ class CliSource implements SourceInterface
 
         if ($this->input->getOption(self::OPTION_WITH_MARIADB_CONF)) {
             $repository->set(SourceInterface::SYSTEM_MARIADB_CONF, true);
+        }
+
+        if ($port = $this->input->getOption(self::OPTION_MAILHOG_SMTP_PORT)) {
+            $repository->set(self::SYSTEM_MAILHOG_SMTP_PORT, $port);
+        }
+
+        if ($port = $this->input->getOption(self::OPTION_MAILHOG_HTTP_PORT)) {
+            $repository->set(self::SYSTEM_MAILHOG_HTTP_PORT, $port);
         }
 
         return $repository;

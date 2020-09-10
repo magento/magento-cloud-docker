@@ -402,7 +402,13 @@ class ProductionBuilder implements BuilderInterface
                 self::SERVICE_MAILHOG,
                 $this->serviceFactory->create(
                     ServiceInterface::SERVICE_MAILHOG,
-                    $this->serviceFactory->getDefaultVersion(ServiceInterface::SERVICE_MAILHOG)
+                    $this->serviceFactory->getDefaultVersion(ServiceInterface::SERVICE_MAILHOG),
+                    [
+                        'ports' => [
+                            ($config->getMailHogSmtpPort() ?: '1025').':1025',
+                            ($config->getMailHogHttpPort() ?: '8025').':8025',
+                        ]
+                    ]
                 ),
                 [self::NETWORK_MAGENTO],
                 []

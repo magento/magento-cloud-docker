@@ -34,6 +34,10 @@ modules:
       printOutput: false
     PhpBrowser:
       url: "%Magento.docker.settings.env.url.base%"
+    REST:
+      depends: PhpBrowser
+      url: "%Magento.docker.settings.env.url.base%"
+      shortDebugResponse: 300
     Magento\CloudDocker\Test\Functional\Codeception\MagentoDb:
       dsn: "mysql:host=%Magento.docker.settings.db.host%;port=%Magento.docker.settings.db.port%;dbname=%Magento.docker.settings.db.path%"
       user: "%Magento.docker.settings.db.username%"
