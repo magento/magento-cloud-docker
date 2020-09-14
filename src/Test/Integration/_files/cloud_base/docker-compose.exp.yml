@@ -170,7 +170,6 @@ services:
   mailhog:
     hostname: mailhog.magento2.docker
     image: 'mailhog/mailhog:latest'
-    restart: always
     ports:
       - '1025:1025'
       - '8025:8025'

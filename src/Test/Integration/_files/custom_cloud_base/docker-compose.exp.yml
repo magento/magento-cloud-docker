@@ -136,7 +136,6 @@ services:
   mailhog:
     hostname: mailhog.magento2.test
     image: 'mailhog/mailhog:latest'
-    restart: always
     ports:
       - '1026:1025'
       - '8026:8025'
