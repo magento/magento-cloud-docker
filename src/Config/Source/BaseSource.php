@@ -30,7 +30,6 @@ class BaseSource implements SourceInterface
     public const DEFAULT_MAILHOG_SMTP_PORT = '1025';
     public const DEFAULT_MAILHOG_HTTP_PORT = '8025';
 
-
     /**
      * @var EnvReader
      */
