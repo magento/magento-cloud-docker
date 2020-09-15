@@ -405,8 +405,8 @@ class ProductionBuilder implements BuilderInterface
                     $this->serviceFactory->getDefaultVersion(ServiceInterface::SERVICE_MAILHOG),
                     [
                         'ports' => [
-                            ($config->getMailHogSmtpPort() ?: '1025').':1025',
-                            ($config->getMailHogHttpPort() ?: '8025').':8025',
+                            $config->getMailHogSmtpPort() . ':1025',
+                            $config->getMailHogHttpPort() . ':8025',
                         ]
                     ]
                 ),

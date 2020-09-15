@@ -27,6 +27,9 @@ class BaseSource implements SourceInterface
     public const DEFAULT_HOST = 'magento2.docker';
     public const DEFAULT_PORT = '80';
     public const DEFAULT_TLS_PORT = '443';
+    public const DEFAULT_MAILHOG_SMTP_PORT = '1025';
+    public const DEFAULT_MAILHOG_HTTP_PORT = '8025';
+
 
     /**
      * @var EnvReader
@@ -73,7 +76,9 @@ class BaseSource implements SourceInterface
             self::SYSTEM_HOST => self::DEFAULT_HOST,
             self::SYSTEM_TLS_PORT => self::DEFAULT_TLS_PORT,
             self::INSTALLATION_TYPE => self::INSTALLATION_TYPE_COMPOSER,
-            self::MAGENTO_VERSION => $this->getMagentoVersion()
+            self::MAGENTO_VERSION => $this->getMagentoVersion(),
+            self::SYSTEM_MAILHOG_SMTP_PORT => self::DEFAULT_MAILHOG_SMTP_PORT,
+            self::SYSTEM_MAILHOG_HTTP_PORT => self::DEFAULT_MAILHOG_HTTP_PORT
         ]);
 
         try {
