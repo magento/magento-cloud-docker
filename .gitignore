@@ -5,4 +5,5 @@
 /composer.lock
 /auth.json
 /_workdir
+/_workdir_cache
 .phpunit.result.cache

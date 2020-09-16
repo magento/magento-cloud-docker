@@ -132,7 +132,6 @@ class ServiceFactory
             'version' => 'latest',
             'pattern' => self::PATTERN_STD,
             'config' => [
-                'restart' => 'always',
                 'ports' => [
                     '1025:1025',
                     '8025:8025'

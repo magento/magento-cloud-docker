@@ -172,6 +172,16 @@ class BuildCompose extends Command
                 InputOption::VALUE_NONE,
                 'Disable mailhog'
             )->addOption(
+                Source\CliSource::OPTION_MAILHOG_SMTP_PORT,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'MailHog SMTP port'
+            )->addOption(
+                Source\CliSource::OPTION_MAILHOG_HTTP_PORT,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'MailHog HTTP port'
+            )->addOption(
                 Source\CliSource::OPTION_SET_DOCKER_HOST_XDEBUG,
                 null,
                 InputOption::VALUE_NONE,
