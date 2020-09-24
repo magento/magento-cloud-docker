@@ -48,6 +48,7 @@ class CliSource implements SourceInterface
     public const OPTION_WITH_CRON = 'with-cron';
     public const OPTION_NO_VARNISH = 'no-varnish';
     public const OPTION_WITH_SELENIUM = 'with-selenium';
+    public const OPTION_WITH_TEST = 'with-test';
     public const OPTION_NO_TMP_MOUNTS = 'no-tmp-mounts';
     public const OPTION_SYNC_ENGINE = 'sync-engine';
     public const OPTION_WITH_XDEBUG = 'with-xdebug';
@@ -186,6 +187,12 @@ class CliSource implements SourceInterface
         if ($this->input->getOption(self::OPTION_WITH_SELENIUM)) {
             $repository->set([
                 self::SERVICES_SELENIUM_ENABLED => true
+            ]);
+        }
+
+        if ($this->input->getOption(self::OPTION_WITH_TEST)) {
+            $repository->set([
+                self::SERVICES_TEST_ENABLED => true
             ]);
         }
 

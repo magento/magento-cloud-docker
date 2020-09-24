@@ -140,8 +140,8 @@ class ProductionBuilder implements BuilderInterface
         $manager->addNetwork(self::NETWORK_MAGENTO_BUILD, ['driver' => 'bridge']);
 
         $mounts = $config->getMounts();
-        $hasSelenium = $config->hasSelenium();
         $hasTmpMounts = $config->hasTmpMounts();
+        $hasTest = $config->hasServiceEnabled(ServiceInterface::SERVICE_TEST);
 
         $hasGenerated = !version_compare($config->getMagentoVersion(), '2.2.0', '<');
         $volumes = [];
@@ -163,13 +163,13 @@ class ProductionBuilder implements BuilderInterface
         ));
         $volumesRo = $this->volumeResolver->normalize(array_merge(
             $this->volumeResolver->getRootVolume(true),
-            $this->volumeResolver->getDevVolumes($hasSelenium),
+            $this->volumeResolver->getDevVolumes($hasTest),
             $this->volumeResolver->getMagentoVolumes($mounts, true, $hasGenerated),
             $this->volumeResolver->getMountVolumes($hasTmpMounts)
         ));
         $volumesRw = $this->volumeResolver->normalize(array_merge(
             $this->volumeResolver->getRootVolume(false),
-            $this->volumeResolver->getDevVolumes($hasSelenium),
+            $this->volumeResolver->getDevVolumes($hasTest),
             $this->volumeResolver->getMagentoVolumes($mounts, false, $hasGenerated),
             $this->volumeResolver->getMountVolumes($hasTmpMounts),
             $this->volumeResolver->getComposerVolumes()
@@ -294,6 +294,9 @@ class ProductionBuilder implements BuilderInterface
                 [self::NETWORK_MAGENTO],
                 [self::SERVICE_WEB => []]
             );
+        }
+
+        if ($hasTest) {
             $manager->addService(
                 self::SERVICE_TEST,
                 $this->serviceFactory->create(

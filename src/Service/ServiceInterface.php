@@ -28,6 +28,7 @@ interface ServiceInterface
     public const SERVICE_NODE = 'node';
     public const SERVICE_VARNISH = 'varnish';
     public const SERVICE_SELENIUM = 'selenium';
+    public const SERVICE_TEST = 'test';
     public const SERVICE_TLS = 'tls';
     public const SERVICE_GENERIC = 'generic';
     public const SERVICE_BLACKFIRE = 'blackfire';

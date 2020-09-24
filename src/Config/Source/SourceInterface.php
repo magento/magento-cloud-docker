@@ -29,20 +29,17 @@ interface SourceInterface
      * Selenium
      */
     public const SERVICES_SELENIUM = self::SERVICES . '.' . ServiceInterface::SERVICE_SELENIUM;
+    public const SERVICES_TEST = self::SERVICES . '.' . ServiceInterface::SERVICE_TEST;
     public const SERVICES_SELENIUM_VERSION = self::SERVICES_SELENIUM . '.version';
     public const SERVICES_SELENIUM_IMAGE = self::SERVICES_SELENIUM . '.image';
     public const SERVICES_SELENIUM_ENABLED = self::SERVICES_SELENIUM . '.enabled';
+    public const SERVICES_TEST_ENABLED = self::SERVICES_TEST . '.enabled';
 
     /**
      * Varnish
      */
     public const SERVICES_VARNISH = self::SERVICES . '.' . ServiceInterface::SERVICE_VARNISH;
     public const SERVICES_VARNISH_ENABLED = self::SERVICES_VARNISH . '.enabled';
-
-    /**
-     * TLS
-     */
-    public const SERVICES_TLS = self::SERVICES . '.' . ServiceInterface::SERVICE_TLS;
 
     /**
      * DB
