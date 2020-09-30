@@ -2,6 +2,30 @@
 FROM php:7.2-cli-buster
 ARG GOSU_VERSION=1.11
 
+
+# Configure Node.js version
+#RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash
+
+
+# Install dependencies
+RUN apt-get update \
+  && apt-get upgrade -y \
+  && apt-get install -y --no-install-recommends \
+  nano \
+  nodejs
+
+# Install Grunt
+RUN npm update -g npm
+RUN npm install grunt --save-dev
+RUN npm install -g grunt-cli
+RUN npm install -g jit-grunt
+RUN npm install -g jstestdriver
+RUN npm install -g jshint
+
+
+
+
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
@@ -13,8 +37,7 @@ ENV ENABLE_SENDMAIL true
 
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
-# Configure Node.js version
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
+
 
 # Install dependencies
 RUN apt-get update \
@@ -65,8 +88,8 @@ RUN apt-get update \
 RUN pip3 install --upgrade setuptools \
     && pip3 install pyyaml
 
-# Install Grunt
-RUN npm install -g grunt-cli
+
+
 
 # Install MailHog
 RUN wget https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 \
