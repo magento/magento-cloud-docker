@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
+use Magento\CloudDocker\Compose\ProductionBuilder\ServiceInterface;
 use Magento\CloudDocker\Config\Config;
 
 /**
@@ -45,6 +46,34 @@ class Manager
     public function __construct(Config $config)
     {
         $this->config = $config;
+    }
+
+
+    public function addServiceObject(ServiceInterface $service)
+    {
+        $hostname = $service->getName() . '.' . $this->config->getHost();
+
+        $serviceConfig = [
+            'hostname' => $hostname,
+        ];
+
+        $serviceConfig = array_replace($serviceConfig, $service->getConfig($this->config));
+
+
+        foreach ($service->getNetworks() as $network) {
+            if (!empty($serviceConfig['networks'][$network]['aliases'])) {
+                continue;
+            }
+
+            $serviceConfig['networks'][$network] = [
+                'aliases' => [$hostname]
+            ];
+        }
+
+        $this->services[$service->getName()] = [
+            'config' => $serviceConfig,
+            'depends_on' => $service->getDependsOn($this->config),
+        ];
     }
 
     /**

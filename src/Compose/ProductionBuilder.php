@@ -10,6 +10,9 @@ namespace Magento\CloudDocker\Compose;
 use Magento\CloudDocker\App\GenericException;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
+use Magento\CloudDocker\Compose\ProductionBuilder\CliDepend;
+use Magento\CloudDocker\Compose\ProductionBuilder\ServicePool;
+use Magento\CloudDocker\Compose\ProductionBuilder\Volume;
 use Magento\CloudDocker\Compose\ProductionBuilder\VolumeResolver;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
@@ -27,29 +30,6 @@ use Magento\CloudDocker\Service\ServiceInterface;
  */
 class ProductionBuilder implements BuilderInterface
 {
-    private const ELASTICSEARCH_INSTALLED_PLUGINS = ['analysis-icu', 'analysis-phonetic'];
-
-    /**
-     * @var array
-     */
-    private static $cliDepends = [
-        self::SERVICE_DB => [
-            'condition' => 'service_healthy'
-        ],
-        self::SERVICE_REDIS => [
-            'condition' => 'service_healthy'
-        ],
-        self::SERVICE_ELASTICSEARCH => [
-            'condition' => 'service_healthy'
-        ],
-        self::SERVICE_NODE => [
-            'condition' => 'service_started'
-        ],
-        self::SERVICE_RABBITMQ => [
-            'condition' => 'service_started'
-        ]
-    ];
-
     public const SYNC_ENGINE_MOUNT = 'mount';
     public const DEFAULT_SYNC_ENGINE = self::SYNC_ENGINE_MOUNT;
 
@@ -58,13 +38,10 @@ class ProductionBuilder implements BuilderInterface
         self::SYNC_ENGINE_MOUNT
     ];
 
-    /**
-     * @var array
-     */
-    private static $standaloneServices = [
-        self::SERVICE_REDIS,
-        self::SERVICE_ELASTICSEARCH,
-        self::SERVICE_RABBITMQ,
+    private static $defaultServices = [
+        self::SERVICE_GENERIC,
+        self::SERVICE_DEPLOY,
+        self::SERVICE_BUILD,
     ];
 
     /**
@@ -98,12 +75,28 @@ class ProductionBuilder implements BuilderInterface
     private $volumeResolver;
 
     /**
+     * @var ServicePool
+     */
+    private $servicePool;
+    /**
+     * @var Volume
+     */
+    private $volume;
+    /**
+     * @var CliDepend
+     */
+    private $cliDepend;
+
+    /**
      * @param ServiceFactory $serviceFactory
      * @param FileList $fileList
      * @param Converter $converter
      * @param ExtensionResolver $phpExtension
      * @param ManagerFactory $managerFactory
      * @param VolumeResolver $volumeResolver
+     * @param ServicePool $servicePool
+     * @param Volume $volume
+     * @param CliDepend $cliDepend
      */
     public function __construct(
         ServiceFactory $serviceFactory,
@@ -111,7 +104,10 @@ class ProductionBuilder implements BuilderInterface
         Converter $converter,
         ExtensionResolver $phpExtension,
         ManagerFactory $managerFactory,
-        VolumeResolver $volumeResolver
+        VolumeResolver $volumeResolver,
+        ServicePool $servicePool,
+        Volume $volume,
+        CliDepend $cliDepend
     ) {
         $this->serviceFactory = $serviceFactory;
         $this->fileList = $fileList;
@@ -119,6 +115,9 @@ class ProductionBuilder implements BuilderInterface
         $this->phpExtension = $phpExtension;
         $this->managerFactory = $managerFactory;
         $this->volumeResolver = $volumeResolver;
+        $this->servicePool = $servicePool;
+        $this->volume = $volume;
+        $this->cliDepend = $cliDepend;
     }
 
     /**
@@ -132,16 +131,21 @@ class ProductionBuilder implements BuilderInterface
     {
         $manager = $this->managerFactory->create($config);
 
+        foreach ($this->servicePool->getServices() as $service) {
+            if ($config->hasServiceEnabled($service->getName()) || in_array($service->getName(), self::$defaultServices)) {
+                $manager->addServiceObject($service);
+            }
+        }
+
+
         $phpVersion = $config->getServiceVersion(ServiceInterface::SERVICE_PHP);
         $dbVersion = $config->getServiceVersion(ServiceInterface::SERVICE_DB);
-        $cliDepends = self::$cliDepends;
+        $cliDepends = $this->cliDepend->getList($config);
 
         $manager->addNetwork(self::NETWORK_MAGENTO, ['driver' => 'bridge']);
         $manager->addNetwork(self::NETWORK_MAGENTO_BUILD, ['driver' => 'bridge']);
 
         $mounts = $config->getMounts();
-        $hasSelenium = $config->hasSelenium();
-        $hasTmpMounts = $config->hasTmpMounts();
 
         $hasGenerated = !version_compare($config->getMagentoVersion(), '2.2.0', '<');
         $volumes = [];
@@ -156,55 +160,18 @@ class ProductionBuilder implements BuilderInterface
 
         $manager->setVolumes($volumes);
 
-        $volumesBuild = $this->volumeResolver->normalize(array_merge(
-            $this->volumeResolver->getRootVolume(false),
-            $this->volumeResolver->getDefaultMagentoVolumes(false, $hasGenerated),
-            $this->volumeResolver->getComposerVolumes()
-        ));
-        $volumesRo = $this->volumeResolver->normalize(array_merge(
-            $this->volumeResolver->getRootVolume(true),
-            $this->volumeResolver->getDevVolumes($hasSelenium),
-            $this->volumeResolver->getMagentoVolumes($mounts, true, $hasGenerated),
-            $this->volumeResolver->getMountVolumes($hasTmpMounts)
-        ));
-        $volumesRw = $this->volumeResolver->normalize(array_merge(
-            $this->volumeResolver->getRootVolume(false),
-            $this->volumeResolver->getDevVolumes($hasSelenium),
-            $this->volumeResolver->getMagentoVolumes($mounts, false, $hasGenerated),
-            $this->volumeResolver->getMountVolumes($hasTmpMounts),
-            $this->volumeResolver->getComposerVolumes()
-        ));
-        $volumesMount = $this->volumeResolver->normalize(
-            $this->volumeResolver->getMountVolumes($hasTmpMounts)
-        );
+        $volumesRo = $this->volume->getRo($config);
+        $volumesRw = $this->volume->getRw($config);
+        $volumesMount = $this->volume->getMount($config);
 
         $this->addDbService($manager, $config, self::SERVICE_DB, $dbVersion, $volumesMount);
 
         if ($config->hasServiceEnabled(ServiceInterface::SERVICE_DB_QUOTE)) {
-            $cliDepends = array_merge($cliDepends, [self::SERVICE_DB_QUOTE => ['condition' => 'service_started']]);
             $this->addDbService($manager, $config, self::SERVICE_DB_QUOTE, $dbVersion, $volumesMount);
         }
 
         if ($config->hasServiceEnabled(ServiceInterface::SERVICE_DB_SALES)) {
-            $cliDepends = array_merge($cliDepends, [self::SERVICE_DB_SALES => ['condition' => 'service_started']]);
             $this->addDbService($manager, $config, self::SERVICE_DB_SALES, $dbVersion, $volumesMount);
-        }
-
-        foreach (self::$standaloneServices as $service) {
-            if (!$config->hasServiceEnabled($service)) {
-                continue;
-            }
-
-            $manager->addService(
-                $service,
-                $this->serviceFactory->create(
-                    (string)$service,
-                    $config->getServiceVersion($service),
-                    $this->getServiceConfig($service, $config)
-                ),
-                [self::NETWORK_MAGENTO],
-                []
-            );
         }
 
         if ($config->hasServiceEnabled(self::SERVICE_NODE)) {
@@ -372,81 +339,8 @@ class ProductionBuilder implements BuilderInterface
             [],
             []
         );
-        $manager->addService(
-            self::SERVICE_BUILD,
-            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $phpVersion, ['volumes' => $volumesBuild]),
-            [self::NETWORK_MAGENTO_BUILD],
-            $cliDepends
-        );
-        $manager->addService(
-            self::SERVICE_DEPLOY,
-            $this->serviceFactory->create(ServiceInterface::SERVICE_PHP_CLI, $phpVersion, ['volumes' => $volumesRo]),
-            [self::NETWORK_MAGENTO],
-            self::$cliDepends
-        );
-
-        if ($config->hasCron()) {
-            $manager->addService(
-                self::SERVICE_CRON,
-                array_merge(
-                    $this->getCronCliService($config),
-                    ['volumes' => $volumesRo]
-                ),
-                [self::NETWORK_MAGENTO],
-                $cliDepends
-            );
-        }
-
-        if ($config->hasServiceEnabled(self::SERVICE_MAILHOG)) {
-            $manager->addService(
-                self::SERVICE_MAILHOG,
-                $this->serviceFactory->create(
-                    ServiceInterface::SERVICE_MAILHOG,
-                    $this->serviceFactory->getDefaultVersion(ServiceInterface::SERVICE_MAILHOG),
-                    [
-                        'ports' => [
-                            $config->getMailHogSmtpPort() . ':1025',
-                            $config->getMailHogHttpPort() . ':8025',
-                        ]
-                    ]
-                ),
-                [self::NETWORK_MAGENTO],
-                []
-            );
-        }
 
         return $manager;
-    }
-
-    /**
-     * @param Config $config
-     * @return array
-     * @throws ConfigurationMismatchException
-     */
-    private function getCronCliService(Config $config): array
-    {
-        $cron = $this->serviceFactory->create(
-            ServiceInterface::SERVICE_PHP_CLI,
-            $config->getServiceVersion(ServiceInterface::SERVICE_PHP),
-            ['command' => 'run-cron']
-        );
-        $preparedCronConfig = [];
-
-        foreach ($config->getCronJobs() as $job) {
-            $preparedCronConfig[] = sprintf(
-                '%s root cd %s && %s >> %s/var/log/cron.log',
-                $job['schedule'],
-                self::DIR_MAGENTO,
-                str_replace('php ', '/usr/local/bin/php ', $job['command']),
-                self::DIR_MAGENTO
-            );
-        }
-
-        $cron['environment'] = [
-            'CRONTAB' => implode(PHP_EOL, $preparedCronConfig)
-        ];
-
-        return $cron;
     }
 
     /**
@@ -555,49 +449,5 @@ class ProductionBuilder implements BuilderInterface
             [self::NETWORK_MAGENTO],
             []
         );
-    }
-
-    /**
-     * @param string $service
-     * @param Config $config
-     * @return array
-     * @throws ConfigurationMismatchException
-     */
-    private function getServiceConfig(string $service, Config $config): array
-    {
-        switch ($service) {
-            case self::SERVICE_REDIS:
-                $serviceConfig = [
-                    self::SERVICE_HEALTHCHECK => [
-                        'test' => 'redis-cli ping || exit 1',
-                        'interval' => '30s',
-                        'timeout' => '30s',
-                        'retries' => 3
-                    ]
-                ];
-                break;
-
-            case self::SERVICE_ELASTICSEARCH:
-                $esEnvVars = [];
-                if (!empty($config->get(SourceInterface::SERVICES_ES_VARS))) {
-                    $esEnvVars = $config->get(SourceInterface::SERVICES_ES_VARS);
-                }
-
-                if (!empty($plugins = $config->get(SourceInterface::SERVICES_ES_PLUGINS)) && is_array($plugins)) {
-                    $plugins = array_diff($plugins, self::ELASTICSEARCH_INSTALLED_PLUGINS);
-                    if (!empty($plugins)) {
-                        $esEnvVars[] = 'ES_PLUGINS=' . implode(' ', $plugins);
-                    }
-                }
-
-                $serviceConfig = !empty($esEnvVars) ? ['environment' => $esEnvVars] : [];
-
-                break;
-
-            default:
-                $serviceConfig = [];
-        }
-
-        return $serviceConfig;
     }
 }

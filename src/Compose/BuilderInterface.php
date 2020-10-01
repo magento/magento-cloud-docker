@@ -34,7 +34,7 @@ interface BuilderInterface
     public const SERVICE_CRON = 'cron';
     public const SERVICE_TEST = 'test';
     public const SERVICE_HEALTHCHECK = 'healthcheck';
-    public const SERVICE_MAILHOG = 'mailhog';
+    public const SERVICE_MAILHOG = ServiceInterface::SERVICE_MAILHOG;
 
     public const NETWORK_MAGENTO = 'magento';
     public const NETWORK_MAGENTO_BUILD = 'magento-build';
