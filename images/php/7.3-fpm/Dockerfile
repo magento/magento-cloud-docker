@@ -11,37 +11,6 @@ ENV UPDATE_UID_GID false
 ENV ENABLE_SENDMAIL true
 ENV SET_DOCKER_HOST false
 
-# Configure Node.js version
-#RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash
-
-
-# Install dependencies
-RUN apt-get update \
-  && apt-get upgrade -y \
-  && apt-get install -y --no-install-recommends \
-  nano \
-  nodejs
-
-RUN npm install npm@latest -g
-
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-
-RUN apt-get update \
-  && apt-get install -y yarn
-
-
-# Install Grunt
-RUN npm update -g npm
-RUN npm install -g grunt-cli
-RUN echo "Node version":
-RUN node --version
-RUN echo "Npm version":
-RUN npm --version
-RUN echo "Grunt version":
-RUN grunt --version
-
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
 # Install dependencies
