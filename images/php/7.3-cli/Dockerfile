@@ -63,7 +63,7 @@ RUN apt-get update \
 RUN pip3 install --upgrade setuptools \
     && pip3 install pyyaml
 
-# Install grunt
+# Install Grunt
 RUN npm install npm@latest -g
 RUN npm update -g npm
 RUN npm install -g grunt-cli
