@@ -41,6 +41,21 @@ RUN apt-get update \
   zip \
   && rm -rf /var/lib/apt/lists/*
 
+# Configure Node.js version
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash
+RUN apt-get install -y nodejs
+
+# Install Grunt
+RUN npm install npm@latest -g
+RUN npm update -g npm
+RUN npm install -g grunt-cli
+
+# Install Yarn
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update \
+  && apt-get install -y yarn
+
 # Install MailHog
 RUN wget https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 \
     && sudo chmod +x mhsendmail_linux_amd64 \
