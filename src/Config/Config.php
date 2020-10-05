@@ -337,7 +337,7 @@ class Config
     {
         $config = $this->all();
 
-        if ($this->hasSelenium()) {
+        if ($this->hasServiceEnabled(ServiceInterface::SERVICE_TEST)) {
             $config->set(SourceInterface::VARIABLES . '.' . 'MFTF_UTILS', 1);
         }
 

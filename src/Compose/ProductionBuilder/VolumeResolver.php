@@ -28,12 +28,12 @@ class VolumeResolver
     }
 
     /**
-     * @param bool $hasSelenium
+     * @param bool $hasTest
      * @return array
      */
-    public function getDevVolumes(bool $hasSelenium): array
+    public function getDevVolumes(bool $hasTest): array
     {
-        if ($hasSelenium) {
+        if ($hasTest) {
             return [
                 BuilderInterface::VOLUME_MAGENTO_DEV => [
                     'path' => BuilderInterface::DIR_MAGENTO . '/dev',

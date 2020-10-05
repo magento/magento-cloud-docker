@@ -226,6 +226,11 @@ class BuildCompose extends Command
             InputOption::VALUE_NONE,
             'Add Selenium latest version'
         )->addOption(
+            Source\CliSource::OPTION_WITH_TEST,
+            null,
+            InputOption::VALUE_NONE,
+            'Add container for tests running'
+        )->addOption(
             Source\CliSource::OPTION_NO_TMP_MOUNTS,
             null,
             InputOption::VALUE_NONE,

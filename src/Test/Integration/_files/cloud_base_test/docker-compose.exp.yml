@@ -1,0 +1,246 @@
+version: '2.1'
+services:
+  db:
+    hostname: db.magento2.docker
+    image: 'mariadb:10.2'
+    environment:
+      - MYSQL_ROOT_PASSWORD=magento2
+      - MYSQL_DATABASE=magento2
+      - MYSQL_USER=magento2
+      - MYSQL_PASSWORD=magento2
+    ports:
+      - '3306'
+    volumes:
+      - '.docker/mnt:/mnt:rw,delegated'
+      - '.docker/mysql/mariadb.conf.d:/etc/mysql/mariadb.conf.d'
+      - 'mymagento-magento-db:/var/lib/mysql'
+      - '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
+    healthcheck:
+      test: 'mysqladmin ping -h localhost'
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    command: '--auto_increment_increment=3 --auto_increment_offset=2'
+    networks:
+      magento:
+        aliases:
+          - db.magento2.docker
+  redis:
+    hostname: redis.magento2.docker
+    image: 'redis:5.0'
+    volumes:
+      - /data
+    ports:
+      - 6379
+    healthcheck:
+      test: 'redis-cli ping || exit 1'
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    networks:
+      magento:
+        aliases:
+          - redis.magento2.docker
+  fpm:
+    hostname: fpm.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.3-fpm-1.1'
+    extends: generic
+    volumes:
+      - '.:/app:ro,delegated'
+      - './dev:/app/dev:rw,delegated'
+      - 'magento-vendor:/app/vendor:ro,delegated'
+      - 'magento-generated:/app/generated:ro,delegated'
+      - 'magento-var:/app/var:rw,delegated'
+      - 'magento-app-etc:/app/app/etc:rw,delegated'
+      - 'magento-pub-media:/app/pub/media:rw,delegated'
+      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
+    networks:
+      magento:
+        aliases:
+          - fpm.magento2.docker
+    depends_on:
+      db:
+        condition: service_healthy
+  web:
+    hostname: web.magento2.docker
+    image: 'magento/magento-cloud-docker-nginx:latest-1.1'
+    extends: generic
+    volumes:
+      - '.:/app:ro,delegated'
+      - './dev:/app/dev:rw,delegated'
+      - 'magento-vendor:/app/vendor:ro,delegated'
+      - 'magento-generated:/app/generated:ro,delegated'
+      - 'magento-var:/app/var:rw,delegated'
+      - 'magento-app-etc:/app/app/etc:rw,delegated'
+      - 'magento-pub-media:/app/pub/media:rw,delegated'
+      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
+    environment:
+      - WITH_XDEBUG=1
+    networks:
+      magento:
+        aliases:
+          - web.magento2.docker
+    depends_on:
+      fpm:
+        condition: service_started
+  varnish:
+    hostname: varnish.magento2.docker
+    image: 'magento/magento-cloud-docker-varnish:latest-1.1'
+    networks:
+      magento:
+        aliases:
+          - varnish.magento2.docker
+    depends_on:
+      web:
+        condition: service_started
+  tls:
+    hostname: tls.magento2.docker
+    image: 'magento/magento-cloud-docker-nginx:latest-1.1'
+    extends: generic
+    networks:
+      magento:
+        aliases:
+          - magento2.docker
+    environment:
+      UPSTREAM_HOST: varnish
+    ports:
+      - '80:80'
+      - '4443:443'
+    depends_on:
+      varnish:
+        condition: service_started
+  test:
+    hostname: test.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
+    extends: generic
+    volumes:
+      - '.:/app:rw,delegated'
+      - './dev:/app/dev:rw,delegated'
+      - 'magento-vendor:/app/vendor:rw,delegated'
+      - 'magento-generated:/app/generated:rw,delegated'
+      - 'magento-var:/app/var:rw,delegated'
+      - 'magento-app-etc:/app/app/etc:rw,delegated'
+      - 'magento-pub-media:/app/pub/media:rw,delegated'
+      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
+      - '~/.composer/cache:/root/.composer/cache:rw,delegated'
+    networks:
+      magento:
+        aliases:
+          - test.magento2.docker
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  fpm_xdebug:
+    hostname: fpm_xdebug.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.3-fpm-1.1'
+    extends: generic
+    volumes:
+      - '.:/app:ro,delegated'
+      - './dev:/app/dev:rw,delegated'
+      - 'magento-vendor:/app/vendor:ro,delegated'
+      - 'magento-generated:/app/generated:ro,delegated'
+      - 'magento-var:/app/var:rw,delegated'
+      - 'magento-app-etc:/app/app/etc:rw,delegated'
+      - 'magento-pub-media:/app/pub/media:rw,delegated'
+      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
+    environment:
+      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip redis xsl sodium xdebug'
+    networks:
+      magento:
+        aliases:
+          - fpm_xdebug.magento2.docker
+    depends_on:
+      db:
+        condition: service_started
+  generic:
+    hostname: generic.magento2.docker
+    image: 'alpine:latest'
+    env_file: ./.docker/config.env
+    environment:
+      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip redis xsl sodium'
+  build:
+    hostname: build.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
+    extends: generic
+    volumes:
+      - '.:/app:rw,delegated'
+      - 'magento-vendor:/app/vendor:rw,delegated'
+      - 'magento-generated:/app/generated:rw,delegated'
+      - '~/.composer/cache:/root/.composer/cache:rw,delegated'
+    networks:
+      magento-build:
+        aliases:
+          - build.magento2.docker
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  deploy:
+    hostname: deploy.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
+    extends: generic
+    volumes:
+      - '.:/app:ro,delegated'
+      - './dev:/app/dev:rw,delegated'
+      - 'magento-vendor:/app/vendor:ro,delegated'
+      - 'magento-generated:/app/generated:ro,delegated'
+      - 'magento-var:/app/var:rw,delegated'
+      - 'magento-app-etc:/app/app/etc:rw,delegated'
+      - 'magento-pub-media:/app/pub/media:rw,delegated'
+      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
+    networks:
+      magento:
+        aliases:
+          - deploy.magento2.docker
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  cron:
+    hostname: cron.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
+    extends: generic
+    command: run-cron
+    environment:
+      CRONTAB: '* * * * * root cd /app && /usr/local/bin/php bin/magento cron:run >> /app/var/log/cron.log'
+    volumes:
+      - '.:/app:ro,delegated'
+      - './dev:/app/dev:rw,delegated'
+      - 'magento-vendor:/app/vendor:ro,delegated'
+      - 'magento-generated:/app/generated:ro,delegated'
+      - 'magento-var:/app/var:rw,delegated'
+      - 'magento-app-etc:/app/app/etc:rw,delegated'
+      - 'magento-pub-media:/app/pub/media:rw,delegated'
+      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
+    networks:
+      magento:
+        aliases:
+          - cron.magento2.docker
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+volumes:
+  magento-vendor: {  }
+  magento-generated: {  }
+  magento-var: {  }
+  magento-app-etc: {  }
+  magento-pub-media: {  }
+  magento-pub-static: {  }
+  mymagento-magento-db: {  }
+networks:
+  magento:
+    driver: bridge
+  magento-build:
+    driver: bridge
