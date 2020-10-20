@@ -16,6 +16,34 @@
                 <argument key="production">Magento\CloudDocker\Compose\ProductionBuilder</argument>
             </argument>
         </service>
+        <service id="Magento\CloudDocker\Compose\ProductionBuilder\ServicePool" autowire="false" />
+        <service id="productionBuilderPool" class="Magento\CloudDocker\Compose\ProductionBuilder\ServicePool" lazy="true">
+            <argument key="$services" type="collection">
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Database\Db" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Database\DbQuote" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Database\DbSales" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Redis" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\ElasticSearch" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Fpm" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Web" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Varnish" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Tls" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Selenium" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Test" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\FpmXdebug" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Generic" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Build" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Deploy" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\RabbitMq" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Node" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Mailhog" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Blackfire" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Cron" />
+            </argument>
+        </service>
+        <service id="Magento\CloudDocker\Compose\ProductionBuilder" shared="false">
+            <argument key="$servicePool" type="service" id="productionBuilderPool"/>
+        </service>
         <service id="Magento\CloudDocker\Filesystem\DirectoryList" autowire="false"/>
         <service id="Magento\CloudDocker\Filesystem\FilesystemException" autowire="false"/>
         <service id="Magento\CloudDocker\Config\Source\SourceException" autowire="false"/>
@@ -23,7 +51,6 @@
         <service id="Magento\CloudDocker\App\ConfigurationMismatchException" autowire="false"/>
         <service id="Magento\CloudDocker\App\GenericException" autowire="false"/>
         <service id="Magento\CloudDocker\Compose\DeveloperBuilder" shared="false"/>
-        <service id="Magento\CloudDocker\Compose\ProductionBuilder" shared="false"/>
         <service id="Magento\CloudDocker\Config\Config" autowire="false"/>
         <service id="Magento\CloudDocker\Config\Source\CliSource" autowire="false"/>
         <service id="Magento\CloudDocker\Config\Source\CustomSource" autowire="false"/>

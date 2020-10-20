@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
+use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Compose\ProductionBuilder\ServiceBuilderInterface;
 use Magento\CloudDocker\Config\Config;
 
 /**
@@ -48,34 +50,32 @@ class Manager
     }
 
     /**
-     * @param string $name
-     * @param array $extConfig
-     * @param array $networks
-     * @param array $depends
+     * @param ServiceBuilderInterface $service
+     * @throws ConfigurationMismatchException
      */
-    public function addService(string $name, array $extConfig, array $networks, array $depends): void
+    public function addService(ServiceBuilderInterface $service): void
     {
-        $hostname = $name . '.' . $this->config->getHost();
+        $hostname = $service->getName() . '.' . $this->config->getHost();
 
-        $config = [
+        $serviceConfig = [
             'hostname' => $hostname,
         ];
 
-        $config = array_replace($config, $extConfig);
+        $serviceConfig = array_replace($serviceConfig, $service->getConfig($this->config));
 
-        foreach ($networks as $network) {
-            if (!empty($config['networks'][$network]['aliases'])) {
+        foreach ($service->getNetworks() as $network) {
+            if (!empty($serviceConfig['networks'][$network]['aliases'])) {
                 continue;
             }
 
-            $config['networks'][$network] = [
+            $serviceConfig['networks'][$network] = [
                 'aliases' => [$hostname]
             ];
         }
 
-        $this->services[$name] = [
-            'config' => $config,
-            'depends_on' => $depends,
+        $this->services[$service->getName()] = [
+            'config' => $serviceConfig,
+            'depends_on' => $service->getDependsOn($this->config),
         ];
     }
 
@@ -85,12 +85,6 @@ class Manager
      */
     public function updateService(string $name, array $extConfig): void
     {
-        if (!isset($this->services[$name])) {
-            $this->addService($name, $extConfig, [], []);
-
-            return;
-        }
-
         $this->services[$name]['config'] = array_replace(
             $this->services[$name]['config'],
             $extConfig

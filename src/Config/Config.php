@@ -158,15 +158,6 @@ class Config
     }
 
     /**
-     * @return bool
-     * @throws ConfigurationMismatchException
-     */
-    public function hasCron(): bool
-    {
-        return (bool)$this->all()->get(SourceInterface::CRON_ENABLED);
-    }
-
-    /**
      * @param string $name
      * @param string $type
      * @return string
