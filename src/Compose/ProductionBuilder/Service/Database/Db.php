@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Compose\ProductionBuilder\Service\Database;
 
 use Magento\CloudDocker\Compose\BuilderInterface;
+use Magento\CloudDocker\Compose\ProductionBuilder\Service\Database\Db\HealthCheck;
 use Magento\CloudDocker\Compose\ProductionBuilder\ServiceBuilderInterface;
 use Magento\CloudDocker\Compose\ProductionBuilder\Volume;
 use Magento\CloudDocker\Config\Config;
@@ -28,15 +29,21 @@ class Db implements ServiceBuilderInterface
      * @var Volume
      */
     private $volume;
+    /**
+     * @var HealthCheck
+     */
+    private $healthCheck;
 
     /**
      * @param ServiceFactory $serviceFactory
      * @param Volume $volume
+     * @param HealthCheck $healthCheck
      */
-    public function __construct(ServiceFactory $serviceFactory, Volume $volume)
+    public function __construct(ServiceFactory $serviceFactory, Volume $volume, HealthCheck $healthCheck)
     {
         $this->serviceFactory = $serviceFactory;
         $this->volume = $volume;
+        $this->healthCheck = $healthCheck;
     }
 
     /**
@@ -64,12 +71,7 @@ class Db implements ServiceBuilderInterface
         $dbConfig = [
             'ports' => [$port ? "$port:3306" : '3306'],
             'volumes' => $this->getMounts($config),
-            BuilderInterface::SERVICE_HEALTHCHECK => [
-                'test' => 'mysqladmin ping -h localhost',
-                'interval' => '30s',
-                'timeout' => '30s',
-                'retries' => 3
-            ],
+            BuilderInterface::SERVICE_HEALTHCHECK => $this->healthCheck->getConfig(),
         ];
 
         if ($commands = $this->getCommands($config)) {

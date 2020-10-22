@@ -14,7 +14,7 @@ services:
       - '.docker/mnt:/mnt:rw,delegated'
       - 'magento-magento-db:/var/lib/mysql'
     healthcheck:
-      test: 'mysqladmin ping -h localhost'
+      test: 'mysqladmin ping -h localhost -pmagento2'
       interval: 30s
       timeout: 30s
       retries: 3
