@@ -109,9 +109,9 @@ class ServiceFactory
             'pattern' => self::PATTERN_STD
         ],
         ServiceInterface::SERVICE_GENERIC => [
-            'image' => 'alpine',
+            'image' => 'magento/magento-cloud-docker-php',
             'version' => 'latest',
-            'pattern' => self::PATTERN_STD
+            'pattern' => '%s:%s-cli-%s'
         ],
         ServiceInterface::SERVICE_SELENIUM => [
             'image' => 'selenium/standalone-chrome',

@@ -93,7 +93,7 @@ services:
         condition: service_started
   generic:
     hostname: generic.magento2.test
-    image: 'alpine:latest'
+    image: 'magento/magento-cloud-docker-php:7.2-cli-1.1'
     env_file: ./.docker/config.env
     environment:
       - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl'
