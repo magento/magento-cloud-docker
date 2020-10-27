@@ -67,7 +67,7 @@ class ServiceFactory
         ServiceInterface::SERVICE_DB_SALES => self::SERVICE_DB_CONFIG,
         ServiceInterface::SERVICE_NGINX => [
             'image' => 'magento/magento-cloud-docker-nginx',
-            'version' => 'latest',
+            'version' => '1.19',
             'pattern' => self::PATTERN_VERSIONED,
             'config' => [
                 'extends' => ServiceInterface::SERVICE_GENERIC,
@@ -75,12 +75,12 @@ class ServiceFactory
         ],
         ServiceInterface::SERVICE_VARNISH => [
             'image' => 'magento/magento-cloud-docker-varnish',
-            'version' => 'latest',
+            'version' => '6.2',
             'pattern' => self::PATTERN_VERSIONED,
         ],
         ServiceInterface::SERVICE_TLS => [
             'image' => 'magento/magento-cloud-docker-nginx',
-            'version' => 'latest',
+            'version' => '1.19',
             'pattern' => self::PATTERN_VERSIONED,
             'config' => [
                 'extends' => ServiceInterface::SERVICE_GENERIC,
@@ -146,6 +146,11 @@ class ServiceFactory
     private $fileList;
 
     /**
+     * @var string
+     */
+    private $mcdVersion;
+
+    /**
      * @param FileList $fileList
      */
     public function __construct(FileList $fileList)
@@ -173,18 +178,11 @@ class ServiceFactory
         $metaConfig = self::$config[$name];
         $defaultConfig = $metaConfig['config'] ?? [];
 
-        $mcdVersion = Factory::create(new NullIO(), $this->fileList->getComposer())
-            ->getPackage()
-            ->getVersion();
-
-        /** Extract minor version. Patch version should not affect images. */
-        preg_match('/^\d+\.\d+/', $mcdVersion, $matches);
-
         $image = $image ?: $metaConfig['image'];
         $pattern = $metaConfig['pattern'];
 
         return array_replace(
-            ['image' => sprintf($pattern, $image, $version, $matches[0])],
+            ['image' => sprintf($pattern, $image, $version, $this->getMcdVersion())],
             $defaultConfig,
             $config
         );
@@ -222,5 +220,25 @@ class ServiceFactory
             'Default version for %s cannot be resolved',
             $name
         ));
+    }
+
+    /**
+     * Returns patch version of magento-cloud-docker package
+     *
+     * @return string
+     */
+    private function getMcdVersion(): string
+    {
+        if ($this->mcdVersion === null) {
+            $mcdVersion = Factory::create(new NullIO(), $this->fileList->getComposer())
+                ->getPackage()
+                ->getVersion();
+
+            preg_match('/^\d+\.\d+\.\d+/', $mcdVersion, $matches);
+
+            $this->mcdVersion = $matches[0];
+        }
+
+        return $this->mcdVersion;
     }
 }

@@ -54,6 +54,7 @@ class ServicesCest extends AbstractCest
 
         try {
             $I->assertTrue($I->runEceDockerCommand('build:compose --mode=production ' . $data['options']));
+            $I->assertTrue($I->replaceImagesWithCurrentDockerVersion());
             $I->assertTrue($I->startEnvironment());
             $I->assertTrue($I->runBashCommand('docker ps'));
             $I->seeInOutput($data['expectedResult']);
@@ -90,35 +91,35 @@ class ServicesCest extends AbstractCest
                 'options' => '',
                 'expectedResult' => [
                     'redis:5.0',
-                    'magento/magento-cloud-docker-varnish:latest-1.1',
-                    'magento/magento-cloud-docker-nginx:latest-1.1',
-                    'magento/magento-cloud-docker-php:7.3-fpm-1.1',
-                    'magento/magento-cloud-docker-elasticsearch:6.5-1.1',
+                    'magento/magento-cloud-docker-varnish:6.2-1.2',
+                    'magento/magento-cloud-docker-nginx:1.19-1.2',
+                    'magento/magento-cloud-docker-php:7.3-fpm-1.2',
+                    'magento/magento-cloud-docker-elasticsearch:6.5-1.2',
                     'mariadb:10.2'
                 ],
                 'notExpectedResult' => ['rabbitmq', 'selenium/standalone-chrome:latest', 'cron'],
             ],
-            'Redis 3.2, MariaDB 10.1, php 7.1, rmq 3.5' => [
-                'options' => '--redis=3.2 --db=10.1 --php=7.1 --rmq=3.5',
+            'Redis 3.2, MariaDB 10.1, php 7.2, rmq 3.5' => [
+                'options' => '--redis=3.2 --db=10.1 --php=7.2 --rmq=3.5',
                 'expectedResult' => [
                     'redis:3.2',
-                    'magento/magento-cloud-docker-varnish:latest-1.1',
-                    'magento/magento-cloud-docker-nginx:latest-1.1',
-                    'magento/magento-cloud-docker-php:7.1-fpm-1.1',
-                    'magento/magento-cloud-docker-elasticsearch:6.5-1.1',
+                    'magento/magento-cloud-docker-varnish:6.2-1.2',
+                    'magento/magento-cloud-docker-nginx:1.19-1.2',
+                    'magento/magento-cloud-docker-php:7.2-fpm-1.2',
+                    'magento/magento-cloud-docker-elasticsearch:6.5-1.2',
                     'mariadb:10.1',
                     'rabbitmq:3.5'
                 ],
                 'notExpectedResult' => ['selenium', 'cron'],
             ],
-            'Redis 4.0, MariaDB 10.2, php 7.2, rmq 3.6' => [
-                'options' => '--redis=4.0 --db=10.2 --php=7.2 --rmq=3.6',
+            'Redis 4.0, MariaDB 10.2, php 7.4, rmq 3.6' => [
+                'options' => '--redis=4.0 --db=10.2 --php=7.4 --rmq=3.6',
                 'expectedResult' => [
                     'redis:4.0',
-                    'magento/magento-cloud-docker-varnish:latest-1.1',
-                    'magento/magento-cloud-docker-nginx:latest-1.1',
-                    'magento/magento-cloud-docker-php:7.2-fpm-1.1',
-                    'magento/magento-cloud-docker-elasticsearch:6.5-1.1',
+                    'magento/magento-cloud-docker-varnish:6.2-1.2',
+                    'magento/magento-cloud-docker-nginx:1.19-1.2',
+                    'magento/magento-cloud-docker-php:7.4-fpm-1.2',
+                    'magento/magento-cloud-docker-elasticsearch:6.5-1.2',
                     'mariadb:10.2',
                     'rabbitmq:3.6'
                 ],
@@ -128,10 +129,10 @@ class ServicesCest extends AbstractCest
                 'options' => '--with-cron --with-selenium',
                 'expectedResult' => [
                     'redis:5.0',
-                    'magento/magento-cloud-docker-varnish:latest-1.1',
-                    'magento/magento-cloud-docker-nginx:latest-1.1',
-                    'magento/magento-cloud-docker-php:7.3-fpm-1.1',
-                    'magento/magento-cloud-docker-elasticsearch:6.5-1.1',
+                    'magento/magento-cloud-docker-varnish:6.2-1.2',
+                    'magento/magento-cloud-docker-nginx:1.19-1.2',
+                    'magento/magento-cloud-docker-php:7.3-fpm-1.2',
+                    'magento/magento-cloud-docker-elasticsearch:6.5-1.2',
                     'mariadb:10.2',
                     'cron',
                     'selenium/standalone-chrome:latest'
