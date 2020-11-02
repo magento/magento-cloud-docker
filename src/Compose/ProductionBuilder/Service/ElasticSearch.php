@@ -70,7 +70,9 @@ class ElasticSearch implements ServiceBuilderInterface
         return $this->serviceFactory->create(
             $this->getServiceName(),
             $config->getServiceVersion($this->getServiceName()),
-            !empty($esEnvVars) ? ['environment' => $esEnvVars] : []
+            !empty($esEnvVars) ? ['environment' => $esEnvVars] : [],
+            $config->getServiceImage($this->getServiceName()),
+            $config->getServiceImagePattern($this->getServiceName())
         );
     }
 

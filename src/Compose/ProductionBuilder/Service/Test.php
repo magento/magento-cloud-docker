@@ -71,7 +71,9 @@ class Test implements ServiceBuilderInterface
         return $this->serviceFactory->create(
             ServiceInterface::SERVICE_PHP_CLI,
             $config->getServiceVersion(ServiceInterface::SERVICE_PHP),
-            ['volumes' => $this->volume->getRw($config)]
+            ['volumes' => $this->volume->getRw($config)],
+            $config->getServiceImage(ServiceInterface::SERVICE_PHP),
+            $config->getServiceImagePattern(ServiceInterface::SERVICE_PHP_CLI)
         );
     }
 

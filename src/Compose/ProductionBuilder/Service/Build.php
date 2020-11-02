@@ -71,7 +71,9 @@ class Build implements ServiceBuilderInterface
         return $this->serviceFactory->create(
             $this->getServiceName(),
             $config->getServiceVersion(ServiceInterface::SERVICE_PHP),
-            ['volumes' => $this->volume->getBuild($config)]
+            ['volumes' => $this->volume->getBuild($config)],
+            $config->getServiceImage(ServiceInterface::SERVICE_PHP),
+            $config->getServiceImagePattern(ServiceInterface::SERVICE_PHP_CLI)
         );
     }
 

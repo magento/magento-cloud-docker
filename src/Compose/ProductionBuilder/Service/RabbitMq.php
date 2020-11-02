@@ -53,7 +53,9 @@ class RabbitMq implements ServiceBuilderInterface
     {
         return $this->serviceFactory->create(
             $this->getServiceName(),
-            $config->getServiceVersion($this->getServiceName())
+            $config->getServiceVersion($this->getServiceName()),
+            [],
+            $config->getServiceImage($this->getServiceName())
         );
     }
 

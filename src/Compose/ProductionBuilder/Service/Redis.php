@@ -61,7 +61,8 @@ class Redis implements ServiceBuilderInterface
                     'timeout' => '30s',
                     'retries' => 3
                 ]
-            ]
+            ],
+            $config->getServiceImage($this->getServiceName())
         );
     }
 

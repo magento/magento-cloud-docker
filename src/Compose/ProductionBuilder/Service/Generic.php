@@ -81,7 +81,9 @@ class Generic implements ServiceBuilderInterface
                         'PHP_EXTENSIONS' => implode(' ', $this->phpExtension->get($config)),
                     ]
                 )
-            ]
+            ],
+            $config->getServiceImage(ServiceInterface::SERVICE_PHP),
+            $config->getServiceImagePattern(ServiceInterface::SERVICE_PHP_CLI)
         );
     }
 

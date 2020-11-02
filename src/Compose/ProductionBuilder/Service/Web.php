@@ -68,7 +68,9 @@ class Web implements ServiceBuilderInterface
                 'environment' => [
                     'WITH_XDEBUG=' . (int)$config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)
                 ]
-            ]
+            ],
+            $config->getServiceImage(ServiceInterface::SERVICE_NGINX),
+            $config->getServiceImagePattern(ServiceInterface::SERVICE_NGINX)
         );
     }
 

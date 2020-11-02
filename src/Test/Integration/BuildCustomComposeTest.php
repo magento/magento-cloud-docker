@@ -7,19 +7,18 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Integration;
 
+use Magento\CloudDocker\App\GenericException;
 use Magento\CloudDocker\Command\BuildCustomCompose;
 use Magento\CloudDocker\Compose\BuilderFactory;
 use Magento\CloudDocker\Config\ConfigFactory;
 use Magento\CloudDocker\Config\Dist\Generator;
-use Magento\CloudDocker\Config\Source\CliSource;
 use Magento\CloudDocker\Config\Source\SourceFactory;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Magento\CloudDocker\App\GenericException;
-use ReflectionException;
 
 /**
  * @inheritDoc
@@ -67,6 +66,8 @@ class BuildCustomComposeTest extends TestCase
 
     /**
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function buildDataProvider(): array
     {
@@ -105,6 +106,94 @@ class BuildCustomComposeTest extends TestCase
                                     'enabled' => true,
                                 ],
                                 'mailhog' => [
+                                    'enabled' => true,
+                                ]
+                            ],
+                            'hooks' => [
+                                'build' => 'set -e' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/generate.xml' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+                                'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+                                'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+                            ],
+                            'mounts' => [
+                                'var' => ['path' => 'var'],
+                                'app-etc' => ['path' => 'app/etc',],
+                                'pub-media' => ['path' => 'pub/media',],
+                                'pub-static' => ['path' => 'pub/static']
+                            ]
+                        ])
+                    ]
+                ]
+            ],
+            'cloud-base-with-custom-images' => [
+                __DIR__ . '/_files/custom_cloud_custom_images',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => [
+                                'mode' => 'production',
+                                'host' => 'magento2.test',
+                                'port' => '8080',
+                                'db' => [
+                                    'increment_increment' => 3,
+                                    'increment_offset' => 2
+                                ],
+                                'mailhog' => [
+                                    'smtp_port' => '1026',
+                                    'http_port' => '8026'
+                                ]
+                            ],
+                            'services' => [
+                                'php' => [
+                                    'image' => 'php-v1',
+                                    'version' => '7.4',
+                                    'enabled' => true,
+                                    'extensions' => [
+                                        'enabled' => ['xsl']
+                                    ],
+                                ],
+                                'php-cli' => [
+                                    'image-pattern' => '%s:%s-cli',
+                                ],
+                                'php-fpm' => [
+                                    'image-pattern' => '%s:%s-fpm',
+                                ],
+                                'mysql' => [
+                                    'image' => 'mariadb-v1',
+                                    'version' => '10.2',
+                                    'image-pattern' => '%s:%s',
+                                    'enabled' => true,
+                                ],
+                                'mailhog' => [
+                                    'enabled' => true,
+                                ],
+                                'redis' => [
+                                    'image' => 'redis-v1',
+                                    'enabled' => 'true',
+                                    'version' => '5',
+                                ],
+                                'elasticsearch' => [
+                                    'image' => 'elasticsearch-v1',
+                                    'image-pattern' => '%s:%s',
+                                    'enabled' => true,
+                                    'version' => '7.6',
+                                ],
+                                'varnish' => [
+                                    'image' => 'varnish-v1',
+                                    'image-pattern' => '%s:%s',
+                                    'enabled' => true,
+                                    'version' => '6.2',
+                                ],
+                                'nginx' => [
+                                    'image' => 'nginx-v1',
+                                    'version' => '1.19',
+                                    'image-pattern' => '%s:%s',
+                                    'enabled' => 'true',
+                                ],
+                                'test' => [
                                     'enabled' => true,
                                 ]
                             ],

@@ -71,7 +71,9 @@ class Cron implements ServiceBuilderInterface
         $cron = $this->serviceFactory->create(
             ServiceInterface::SERVICE_PHP_CLI,
             $config->getServiceVersion(ServiceInterface::SERVICE_PHP),
-            ['command' => 'run-cron']
+            ['command' => 'run-cron'],
+            $config->getServiceImage(ServiceInterface::SERVICE_PHP),
+            $config->getServiceImagePattern(ServiceInterface::SERVICE_PHP_CLI)
         );
         $preparedCronConfig = [];
 

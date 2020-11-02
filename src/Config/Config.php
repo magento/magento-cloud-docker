@@ -207,18 +207,22 @@ class Config
 
     /**
      * @param string $name
-     * @return string
+     * @return string|null
      * @throws ConfigurationMismatchException
      */
-    public function getServiceImage(string $name): string
+    public function getServiceImage(string $name): ?string
     {
-        $key = $this->getKey($name, 'image');
+        return $this->all()->get($this->getKey($name, 'image'));
+    }
 
-        if (!$this->all()->has($key)) {
-            throw new ConfigurationMismatchException('Service image is not defined');
-        }
-
-        return $this->all()->get($key);
+    /**
+     * @param string $name
+     * @return string|null
+     * @throws ConfigurationMismatchException
+     */
+    public function getServiceImagePattern(string $name): ?string
+    {
+        return $this->all()->get($this->getKey($name, 'image-pattern'));
     }
 
     /**

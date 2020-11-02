@@ -37,6 +37,18 @@ class ServiceFactory
     ];
 
     /**
+     * Default nginx configuration for nginx and tls services
+     */
+    private const SERVICE_NGINX_CONFIG = [
+        'image' => 'magento/magento-cloud-docker-nginx',
+        'version' => '1.19',
+        'pattern' => self::PATTERN_VERSIONED,
+        'config' => [
+            'extends' => ServiceInterface::SERVICE_GENERIC,
+        ]
+    ];
+
+    /**
      * @var array
      */
     private static $config = [
@@ -65,27 +77,13 @@ class ServiceFactory
         ServiceInterface::SERVICE_DB => self::SERVICE_DB_CONFIG,
         ServiceInterface::SERVICE_DB_QUOTE => self::SERVICE_DB_CONFIG,
         ServiceInterface::SERVICE_DB_SALES => self::SERVICE_DB_CONFIG,
-        ServiceInterface::SERVICE_NGINX => [
-            'image' => 'magento/magento-cloud-docker-nginx',
-            'version' => '1.19',
-            'pattern' => self::PATTERN_VERSIONED,
-            'config' => [
-                'extends' => ServiceInterface::SERVICE_GENERIC,
-            ]
-        ],
+        ServiceInterface::SERVICE_NGINX => self::SERVICE_NGINX_CONFIG,
         ServiceInterface::SERVICE_VARNISH => [
             'image' => 'magento/magento-cloud-docker-varnish',
             'version' => '6.2',
             'pattern' => self::PATTERN_VERSIONED,
         ],
-        ServiceInterface::SERVICE_TLS => [
-            'image' => 'magento/magento-cloud-docker-nginx',
-            'version' => '1.19',
-            'pattern' => self::PATTERN_VERSIONED,
-            'config' => [
-                'extends' => ServiceInterface::SERVICE_GENERIC,
-            ]
-        ],
+        ServiceInterface::SERVICE_TLS => self::SERVICE_NGINX_CONFIG,
         ServiceInterface::SERVICE_REDIS => [
             'image' => 'redis',
             'pattern' => self::PATTERN_STD,
@@ -163,11 +161,17 @@ class ServiceFactory
      * @param string $version
      * @param array $config
      * @param string $image
+     * @param string|null $imagePattern
      * @return array
      * @throws ConfigurationMismatchException
      */
-    public function create(string $name, string $version, array $config = [], string $image = null): array
-    {
+    public function create(
+        string $name,
+        string $version,
+        array $config = [],
+        string $image = null,
+        string $imagePattern = null
+    ): array {
         if (!array_key_exists($name, self::$config)) {
             throw new ConfigurationMismatchException(sprintf(
                 'Service "%s" is not supported',
@@ -179,7 +183,7 @@ class ServiceFactory
         $defaultConfig = $metaConfig['config'] ?? [];
 
         $image = $image ?: $metaConfig['image'];
-        $pattern = $metaConfig['pattern'];
+        $pattern = $imagePattern ?: $metaConfig['pattern'];
 
         return array_replace(
             ['image' => sprintf($pattern, $image, $version, $this->getMcdVersion())],
