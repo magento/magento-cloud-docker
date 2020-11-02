@@ -61,7 +61,9 @@ class Node implements ServiceBuilderInterface
         return $this->serviceFactory->create(
             $this->getServiceName(),
             $config->getServiceVersion($this->getServiceName()),
-            ['volumes' => $this->volume->getRo($config)]
+            ['volumes' => $this->volume->getRo($config)],
+            $config->getServiceImage($this->getServiceName()),
+            $config->getServiceImagePattern($this->getServiceName())
         );
     }
 

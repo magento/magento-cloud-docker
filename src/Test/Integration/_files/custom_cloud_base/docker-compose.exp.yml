@@ -14,7 +14,7 @@ services:
       - '.docker/mnt:/mnt:rw,delegated'
       - 'magento-magento-db:/var/lib/mysql'
     healthcheck:
-      test: 'mysqladmin ping -h localhost'
+      test: 'mysqladmin ping -h localhost -pmagento2'
       interval: 30s
       timeout: 30s
       retries: 3
@@ -25,7 +25,7 @@ services:
           - db.magento2.test
   fpm:
     hostname: fpm.magento2.test
-    image: 'magento/magento-cloud-docker-php:7.2-fpm-1.1'
+    image: 'magento/magento-cloud-docker-php:7.2-fpm-1.2.0'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
@@ -45,7 +45,7 @@ services:
         condition: service_healthy
   web:
     hostname: web.magento2.test
-    image: 'magento/magento-cloud-docker-nginx:latest-1.1'
+    image: 'magento/magento-cloud-docker-nginx:1.19-1.2.0'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
@@ -67,7 +67,7 @@ services:
         condition: service_started
   varnish:
     hostname: varnish.magento2.test
-    image: 'magento/magento-cloud-docker-varnish:latest-1.1'
+    image: 'magento/magento-cloud-docker-varnish:6.2-1.2.0'
     networks:
       magento:
         aliases:
@@ -77,7 +77,7 @@ services:
         condition: service_started
   tls:
     hostname: tls.magento2.test
-    image: 'magento/magento-cloud-docker-nginx:latest-1.1'
+    image: 'magento/magento-cloud-docker-nginx:1.19-1.2.0'
     extends: generic
     networks:
       magento:
@@ -93,13 +93,13 @@ services:
         condition: service_started
   generic:
     hostname: generic.magento2.test
-    image: 'alpine:latest'
+    image: 'magento/magento-cloud-docker-php:7.2-cli-1.2.0'
     env_file: ./.docker/config.env
     environment:
       - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl'
   build:
     hostname: build.magento2.test
-    image: 'magento/magento-cloud-docker-php:7.2-cli-1.1'
+    image: 'magento/magento-cloud-docker-php:7.2-cli-1.2.0'
     extends: generic
     volumes:
       - '.:/app:rw,delegated'
@@ -115,7 +115,7 @@ services:
         condition: service_healthy
   deploy:
     hostname: deploy.magento2.test
-    image: 'magento/magento-cloud-docker-php:7.2-cli-1.1'
+    image: 'magento/magento-cloud-docker-php:7.2-cli-1.2.0'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'

@@ -63,7 +63,8 @@ class Blackfire implements ServiceBuilderInterface
                     'BLACKFIRE_CLIENT_TOKEN' => $config->getBlackfireConfig()['client_token']
                 ],
                 'ports' => ["8707"]
-            ]
+            ],
+            $config->getServiceImage($this->getServiceName())
         );
     }
 

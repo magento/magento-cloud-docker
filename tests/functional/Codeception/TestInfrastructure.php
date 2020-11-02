@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Codeception;
 
+use Composer\Factory;
+use Composer\IO\NullIO;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -467,7 +469,7 @@ class TestInfrastructure extends BaseModule
             return (bool)file_put_contents(
                 $path,
                 preg_replace(
-                    '/(magento\/magento-cloud-docker-(\w+)):((\d+\.\d+|latest)(\-fpm|\-cli)?(\-\d+\.\d+))/i',
+                    '/(magento\/magento-cloud-docker-(\w+)):((\d+\.\d+|latest)(-fpm|-cli)?(-\d+\.\d+\.\d+))/i',
                     'cloudft/$2:$4$5-' . $this->_getConfig('version_generated_images'),
                     file_get_contents($path)
                 )
@@ -477,6 +479,25 @@ class TestInfrastructure extends BaseModule
         $this->debug('Tests use default Docker images');
 
         return true;
+    }
+
+    /**
+     * Replace magento images versions with current magento-cloud-docker version
+     *
+     * @return bool
+     */
+    public function replaceImagesWithCurrentDockerVersion(): bool
+    {
+        $composePath = $this->getWorkDirPath() . DIRECTORY_SEPARATOR . 'docker-compose.yml';
+
+        return (bool)file_put_contents(
+            $composePath,
+            preg_replace(
+                '/magento\/magento-cloud-docker-(.*?)(-\d+\.\d+\.\d+)/i',
+                'magento/magento-cloud-docker-$1-' . $this->getMcdVersion(),
+                file_get_contents($composePath)
+            )
+        );
     }
 
     /**
@@ -628,5 +649,21 @@ class TestInfrastructure extends BaseModule
             ->line(Yaml::dump($data, 10, 4, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK))
             ->run()
             ->wasSuccessful();
+    }
+
+    /**
+     * Returns magento-cloud-docker original version
+     *
+     * @return string
+     */
+    private function getMcdVersion(): string
+    {
+        $mcdVersion = Factory::create(new NullIO(), $this->getWorkDirPath() . '/../composer.json')
+            ->getPackage()
+            ->getVersion();
+
+        preg_match('/^\d+\.\d+\.\d+/', $mcdVersion, $matches);
+
+        return $matches[0];
     }
 }

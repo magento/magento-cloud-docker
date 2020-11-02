@@ -59,7 +59,9 @@ class Mailhog implements ServiceBuilderInterface
                     $config->getMailHogSmtpPort() . ':1025',
                     $config->getMailHogHttpPort() . ':8025',
                 ]
-            ]
+            ],
+            $config->getServiceImage($this->getServiceName()),
+            $config->getServiceImagePattern($this->getServiceName())
         );
     }
 

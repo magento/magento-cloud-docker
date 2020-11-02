@@ -37,6 +37,18 @@ class ServiceFactory
     ];
 
     /**
+     * Default nginx configuration for nginx and tls services
+     */
+    private const SERVICE_NGINX_CONFIG = [
+        'image' => 'magento/magento-cloud-docker-nginx',
+        'version' => '1.19',
+        'pattern' => self::PATTERN_VERSIONED,
+        'config' => [
+            'extends' => ServiceInterface::SERVICE_GENERIC,
+        ]
+    ];
+
+    /**
      * @var array
      */
     private static $config = [
@@ -65,27 +77,13 @@ class ServiceFactory
         ServiceInterface::SERVICE_DB => self::SERVICE_DB_CONFIG,
         ServiceInterface::SERVICE_DB_QUOTE => self::SERVICE_DB_CONFIG,
         ServiceInterface::SERVICE_DB_SALES => self::SERVICE_DB_CONFIG,
-        ServiceInterface::SERVICE_NGINX => [
-            'image' => 'magento/magento-cloud-docker-nginx',
-            'version' => 'latest',
-            'pattern' => self::PATTERN_VERSIONED,
-            'config' => [
-                'extends' => ServiceInterface::SERVICE_GENERIC,
-            ]
-        ],
+        ServiceInterface::SERVICE_NGINX => self::SERVICE_NGINX_CONFIG,
         ServiceInterface::SERVICE_VARNISH => [
             'image' => 'magento/magento-cloud-docker-varnish',
-            'version' => 'latest',
+            'version' => '6.2',
             'pattern' => self::PATTERN_VERSIONED,
         ],
-        ServiceInterface::SERVICE_TLS => [
-            'image' => 'magento/magento-cloud-docker-nginx',
-            'version' => 'latest',
-            'pattern' => self::PATTERN_VERSIONED,
-            'config' => [
-                'extends' => ServiceInterface::SERVICE_GENERIC,
-            ]
-        ],
+        ServiceInterface::SERVICE_TLS => self::SERVICE_NGINX_CONFIG,
         ServiceInterface::SERVICE_REDIS => [
             'image' => 'redis',
             'pattern' => self::PATTERN_STD,
@@ -109,9 +107,9 @@ class ServiceFactory
             'pattern' => self::PATTERN_STD
         ],
         ServiceInterface::SERVICE_GENERIC => [
-            'image' => 'alpine',
+            'image' => 'magento/magento-cloud-docker-php',
             'version' => 'latest',
-            'pattern' => self::PATTERN_STD
+            'pattern' => '%s:%s-cli-%s'
         ],
         ServiceInterface::SERVICE_SELENIUM => [
             'image' => 'selenium/standalone-chrome',
@@ -146,6 +144,11 @@ class ServiceFactory
     private $fileList;
 
     /**
+     * @var string
+     */
+    private $mcdVersion;
+
+    /**
      * @param FileList $fileList
      */
     public function __construct(FileList $fileList)
@@ -158,11 +161,17 @@ class ServiceFactory
      * @param string $version
      * @param array $config
      * @param string $image
+     * @param string|null $imagePattern
      * @return array
      * @throws ConfigurationMismatchException
      */
-    public function create(string $name, string $version, array $config = [], string $image = null): array
-    {
+    public function create(
+        string $name,
+        string $version,
+        array $config = [],
+        string $image = null,
+        string $imagePattern = null
+    ): array {
         if (!array_key_exists($name, self::$config)) {
             throw new ConfigurationMismatchException(sprintf(
                 'Service "%s" is not supported',
@@ -173,18 +182,11 @@ class ServiceFactory
         $metaConfig = self::$config[$name];
         $defaultConfig = $metaConfig['config'] ?? [];
 
-        $mcdVersion = Factory::create(new NullIO(), $this->fileList->getComposer())
-            ->getPackage()
-            ->getVersion();
-
-        /** Extract minor version. Patch version should not affect images. */
-        preg_match('/^\d+\.\d+/', $mcdVersion, $matches);
-
         $image = $image ?: $metaConfig['image'];
-        $pattern = $metaConfig['pattern'];
+        $pattern = $imagePattern ?: $metaConfig['pattern'];
 
         return array_replace(
-            ['image' => sprintf($pattern, $image, $version, $matches[0])],
+            ['image' => sprintf($pattern, $image, $version, $this->getMcdVersion())],
             $defaultConfig,
             $config
         );
@@ -222,5 +224,25 @@ class ServiceFactory
             'Default version for %s cannot be resolved',
             $name
         ));
+    }
+
+    /**
+     * Returns patch version of magento-cloud-docker package
+     *
+     * @return string
+     */
+    private function getMcdVersion(): string
+    {
+        if ($this->mcdVersion === null) {
+            $mcdVersion = Factory::create(new NullIO(), $this->fileList->getComposer())
+                ->getPackage()
+                ->getVersion();
+
+            preg_match('/^\d+\.\d+\.\d+/', $mcdVersion, $matches);
+
+            $this->mcdVersion = $matches[0];
+        }
+
+        return $this->mcdVersion;
     }
 }

@@ -37,7 +37,7 @@ class Tls implements ServiceBuilderInterface
      */
     public function getName(): string
     {
-        return ServiceInterface::SERVICE_TLS;
+        return BuilderInterface::SERVICE_TLS;
     }
 
     /**
@@ -45,7 +45,7 @@ class Tls implements ServiceBuilderInterface
      */
     public function getServiceName(): string
     {
-        return $this->getName();
+        return ServiceInterface::SERVICE_NGINX;
     }
 
     /**
@@ -67,7 +67,9 @@ class Tls implements ServiceBuilderInterface
                     $config->getPort() . ':80',
                     $config->getTlsPort() . ':443'
                 ]
-            ]
+            ],
+            $config->getServiceImage($this->getServiceName()),
+            $config->getServiceImagePattern($this->getServiceName())
         );
     }
 

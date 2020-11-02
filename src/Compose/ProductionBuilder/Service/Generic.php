@@ -13,6 +13,7 @@ use Magento\CloudDocker\Compose\ProductionBuilder\ServiceBuilderInterface;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\Service\ServiceFactory;
+use Magento\CloudDocker\Service\ServiceInterface;
 
 /**
  * Returns Generic service configuration
@@ -72,7 +73,7 @@ class Generic implements ServiceBuilderInterface
     {
         return $this->serviceFactory->create(
             $this->getServiceName(),
-            $config->getServiceVersion($this->getServiceName()),
+            $config->getServiceVersion(ServiceInterface::SERVICE_PHP),
             [
                 'env_file' => './.docker/config.env',
                 'environment' => $this->converter->convert(
@@ -80,7 +81,9 @@ class Generic implements ServiceBuilderInterface
                         'PHP_EXTENSIONS' => implode(' ', $this->phpExtension->get($config)),
                     ]
                 )
-            ]
+            ],
+            $config->getServiceImage(ServiceInterface::SERVICE_PHP),
+            $config->getServiceImagePattern(ServiceInterface::SERVICE_PHP_CLI)
         );
     }
 

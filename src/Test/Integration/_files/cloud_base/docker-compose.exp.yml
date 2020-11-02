@@ -16,7 +16,7 @@ services:
       - 'mymagento-magento-db:/var/lib/mysql'
       - '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
     healthcheck:
-      test: 'mysqladmin ping -h localhost'
+      test: 'mysqladmin ping -h localhost -pmagento2'
       interval: 30s
       timeout: 30s
       retries: 3
@@ -42,7 +42,7 @@ services:
           - redis.magento2.docker
   elasticsearch:
     hostname: elasticsearch.magento2.docker
-    image: 'magento/magento-cloud-docker-elasticsearch:6.5-1.1'
+    image: 'magento/magento-cloud-docker-elasticsearch:6.5-1.2.0'
     environment:
       - 'ES_PLUGINS=plugin_1 plugin_2'
     networks:
@@ -51,7 +51,7 @@ services:
           - elasticsearch.magento2.docker
   fpm:
     hostname: fpm.magento2.docker
-    image: 'magento/magento-cloud-docker-php:7.3-fpm-1.1'
+    image: 'magento/magento-cloud-docker-php:7.3-fpm-1.2.0'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
@@ -71,7 +71,7 @@ services:
         condition: service_healthy
   web:
     hostname: web.magento2.docker
-    image: 'magento/magento-cloud-docker-nginx:latest-1.1'
+    image: 'magento/magento-cloud-docker-nginx:1.19-1.2.0'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
@@ -93,7 +93,7 @@ services:
         condition: service_started
   varnish:
     hostname: varnish.magento2.docker
-    image: 'magento/magento-cloud-docker-varnish:latest-1.1'
+    image: 'magento/magento-cloud-docker-varnish:6.2-1.2.0'
     networks:
       magento:
         aliases:
@@ -103,7 +103,7 @@ services:
         condition: service_started
   tls:
     hostname: tls.magento2.docker
-    image: 'magento/magento-cloud-docker-nginx:latest-1.1'
+    image: 'magento/magento-cloud-docker-nginx:1.19-1.2.0'
     extends: generic
     networks:
       magento:
@@ -119,13 +119,13 @@ services:
         condition: service_started
   generic:
     hostname: generic.magento2.docker
-    image: 'alpine:latest'
+    image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'
     env_file: ./.docker/config.env
     environment:
       - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip redis xsl sodium'
   build:
     hostname: build.magento2.docker
-    image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
+    image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'
     extends: generic
     volumes:
       - '.:/app:rw,delegated'
@@ -145,7 +145,7 @@ services:
         condition: service_healthy
   deploy:
     hostname: deploy.magento2.docker
-    image: 'magento/magento-cloud-docker-php:7.3-cli-1.1'
+    image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
