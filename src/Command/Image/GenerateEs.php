@@ -49,6 +49,10 @@ class GenerateEs extends Command
             'real-version' => '7.7.1',
             'single-node' => true,
         ],
+        '7.9' => [
+            'real-version' => '7.9.3',
+            'single-node' => true,
+        ],
     ];
 
     /**
