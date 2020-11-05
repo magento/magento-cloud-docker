@@ -205,7 +205,7 @@ ADD etc/php-pcov.ini /usr/local/etc/php/conf.d/zz-pcov-settings.ini
 ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 
 # Get composer installed to /usr/local/bin/composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=1.10.16 --filename=composer
 
 ADD bin/* /usr/local/bin/
 

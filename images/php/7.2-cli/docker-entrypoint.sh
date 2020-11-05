@@ -65,6 +65,9 @@ fi
 
 
 # Configure composer
+[ ! -z "${COMPOSER_VERSION}" ] && \
+    composer self-update $COMPOSER_VERSION
+
 [ ! -z "${COMPOSER_GITHUB_TOKEN}" ] && \
     composer config --global github-oauth.github.com $COMPOSER_GITHUB_TOKEN
 
