@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eo pipefail
 
-fpm_response=$(curl -o /dev/null -s -w "%{http_code}\n" http://${WEB_HOST:-web}:${WEB_PORT:-80}/status)
+fpm_response=$(curl -o /dev/null -s -w "%{http_code}\n" http://${WEB_HOST:-web}:${WEB_PORT:-8080}/status)
 
 if [ "$fpm_response" == "200" ]
 then

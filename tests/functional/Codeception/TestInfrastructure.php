@@ -226,7 +226,7 @@ class TestInfrastructure extends BaseModule
             ->wasSuccessful();
 
         $skippedFiles = array_merge(
-            ['..', '.', 'vendor', '.git', '_workdir', 'vendor', 'composer.lock'],
+            ['..', '.', 'vendor', '.git', BaseModule::WORK_DIR, BaseModule::WORK_DIR_CACHE, 'composer.lock'],
             $skippedFiles
         );
         $files = [];
