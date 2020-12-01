@@ -62,7 +62,7 @@ class Tls implements ServiceBuilderInterface
                         'aliases' => [$config->getHost()]
                     ]
                 ],
-                'environment' => ['UPSTREAM_HOST' => $this->getBackendService($config)],
+                'environment' => $this->getBackendServiceUpstream($config),
                 'ports' => [
                     $config->getPort() . ':80',
                     $config->getTlsPort() . ':443'
@@ -99,5 +99,25 @@ class Tls implements ServiceBuilderInterface
         return $config->hasServiceEnabled(ServiceInterface::SERVICE_VARNISH)
             ? BuilderInterface::SERVICE_VARNISH
             : BuilderInterface::SERVICE_WEB;
+    }
+
+    /**
+     * @param Config $config
+     * @return string[]
+     * @throws ConfigurationMismatchException
+     */
+    private function getBackendServiceUpstream(Config $config): array
+    {
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_VARNISH)) {
+            return [
+                'UPSTREAM_HOST=' . BuilderInterface::SERVICE_VARNISH,
+                'UPSTREAM_PORT=80'
+            ];
+        }
+
+        return [
+            'UPSTREAM_HOST=' . BuilderInterface::SERVICE_WEB,
+            'UPSTREAM_PORT=8080'
+        ];
     }
 }
