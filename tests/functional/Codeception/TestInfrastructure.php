@@ -303,15 +303,40 @@ class TestInfrastructure extends BaseModule
      */
     public function addDependencyToComposer(string $name, string $version): bool
     {
-        return $this->taskComposerRequire('composer')
-            ->dependency($name, $version)
-            ->noInteraction()
-            ->option('--no-update')
-            ->printOutput($this->_getConfig('printOutput'))
-            ->interactive(false)
-            ->dir($this->getWorkDirPath())
-            ->run()
-            ->wasSuccessful();
+        return $this->retry(
+            function () use ($name, $version) {
+                return $this->taskComposerRequire('composer')
+                    ->dependency($name, $version)
+                    ->noInteraction()
+                    ->option('--no-update')
+                    ->printOutput($this->_getConfig('printOutput'))
+                    ->interactive(false)
+                    ->dir($this->getWorkDirPath())
+                    ->run()
+                    ->wasSuccessful();
+            }
+        );
+    }
+
+    /**
+     * @param callable $callback
+     * @param int $retries
+     * @return bool
+     */
+    private function retry(callable $callback, int $retries = 2): bool
+    {
+        $result = false;
+
+        for ($i = $retries; $i > 0; $i--) {
+            $result = $callback();
+            if ($result) {
+                return $result;
+            }
+
+            sleep(5);
+        }
+
+        return $result;
     }
 
     /**
@@ -507,12 +532,16 @@ class TestInfrastructure extends BaseModule
      */
     public function composerUpdate(): bool
     {
-        return $this->taskComposerUpdate('composer')
-            ->printOutput($this->_getConfig('printOutput'))
-            ->interactive(false)
-            ->dir($this->getWorkDirPath())
-            ->run()
-            ->wasSuccessful();
+        return $this->retry(
+            function () {
+                return $this->taskComposerUpdate('composer')
+                    ->printOutput($this->_getConfig('printOutput'))
+                    ->interactive(false)
+                    ->dir($this->getWorkDirPath())
+                    ->run()
+                    ->wasSuccessful();
+            }
+        );
     }
 
     /**
