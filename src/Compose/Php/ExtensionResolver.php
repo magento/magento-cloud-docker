@@ -47,6 +47,7 @@ class ExtensionResolver
         'sysvshm',
         'opcache',
         'zip',
+        'blackfire'
     ];
 
     /**
@@ -172,8 +173,7 @@ curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/
 mkdir -p /tmp/blackfire
 tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp/blackfire
 mv /tmp/blackfire/blackfire-*.so $(php -r "echo ini_get ('extension_dir');")/blackfire.so
-( echo extension=blackfire.so
-echo blackfire.agent_socket=tcp://blackfire:8707 ) > $(php -i | grep "additional .ini" | awk '{print $9}')/blackfire.ini
+echo blackfire.agent_socket=tcp://blackfire:8707 > $(php -i | grep "additional .ini" | awk '{print $9}')/blackfire.ini
 rm -rf /tmp/blackfire /tmp/blackfire-probe.tar.gz
 BASH
 // phpcs:enable
