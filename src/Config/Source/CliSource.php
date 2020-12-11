@@ -236,7 +236,7 @@ class CliSource implements SourceInterface
         }
 
         if ($this->input->getOption(self::OPTION_WITHOUT_BLACKFIRE)) {
-            $repository->push(self::PHP_DISABLED_EXTENSIONS, 'blackfire');
+            $repository->set(self::PHP_DISABLED_EXTENSIONS, ['blackfire' => 'blackfire']);
         }
 
         if ($this->input->getOption(self::OPTION_SET_DOCKER_HOST_XDEBUG)) {
