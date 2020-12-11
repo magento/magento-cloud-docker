@@ -141,6 +141,7 @@ class CliSource implements SourceInterface
     public function read(): Repository
     {
         $repository = new Repository();
+        $disabledExtensions = [];
 
         if ($mode = $this->input->getOption(self::OPTION_MODE)) {
             $repository->set([
@@ -236,7 +237,7 @@ class CliSource implements SourceInterface
         }
 
         if ($this->input->getOption(self::OPTION_WITHOUT_BLACKFIRE)) {
-            $repository->set(self::PHP_DISABLED_EXTENSIONS, ['blackfire' => 'blackfire']);
+            $disabledExtensions['blackfire'] = 'blackfire';
         }
 
         if ($this->input->getOption(self::OPTION_SET_DOCKER_HOST_XDEBUG)) {
@@ -303,6 +304,7 @@ class CliSource implements SourceInterface
             $repository->set(self::SYSTEM_MAILHOG_HTTP_PORT, $port);
         }
 
+        $repository->set(self::PHP_DISABLED_EXTENSIONS, $disabledExtensions);
         return $repository;
     }
 }
