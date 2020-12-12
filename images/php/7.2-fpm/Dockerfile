@@ -9,7 +9,6 @@ ENV MAGENTO_RUN_MODE production
 ENV UPLOAD_MAX_FILESIZE 64M
 ENV UPDATE_UID_GID false
 ENV ENABLE_SENDMAIL true
-ENV SET_DOCKER_HOST false
 
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
 
@@ -21,6 +20,7 @@ RUN apt-get update \
   sendmail-bin \
   sendmail \
   sudo \
+  iproute2 \
   libbz2-dev \
   libjpeg62-turbo-dev \
   libpng-dev \
