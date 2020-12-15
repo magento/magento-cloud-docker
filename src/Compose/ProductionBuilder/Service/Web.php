@@ -60,18 +60,33 @@ class Web implements ServiceBuilderInterface
      */
     public function getConfig(Config $config): array
     {
-        return $this->serviceFactory->create(
+        $result = $this->serviceFactory->create(
             $this->getServiceName(),
             $config->getServiceVersion(ServiceInterface::SERVICE_NGINX),
             [
                 'volumes' => $this->volume->getRo($config),
                 'environment' => [
-                    'WITH_XDEBUG=' . (int)$config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG)
-                ]
+                    'WITH_XDEBUG=' . (int)$config->hasServiceEnabled(ServiceInterface::SERVICE_FPM_XDEBUG),
+                    'NGINX_WORKER_PROCESSES=' . $config->getNginxWorkerProcesses(),
+                    'NGINX_WORKER_CONNECTIONS=' . $config->getNginxWorkerConnections(),
+                ],
             ],
             $config->getServiceImage(ServiceInterface::SERVICE_NGINX),
             $config->getServiceImagePattern(ServiceInterface::SERVICE_NGINX)
         );
+
+        if (!$config->hasServiceEnabled(ServiceInterface::SERVICE_TLS)
+            && !$config->hasServiceEnabled(ServiceInterface::SERVICE_VARNISH)
+        ) {
+            $result['ports'] = [$config->getPort() . ':8080'];
+            $result['networks'] = [
+                BuilderInterface::NETWORK_MAGENTO => [
+                    'aliases' => [$config->getHost()]
+                ]
+            ];
+        }
+
+        return $result;
     }
 
     /**

@@ -12,9 +12,7 @@ services:
       - '3306'
     volumes:
       - '.docker/mnt:/mnt:rw,delegated'
-      - '.docker/mysql/mariadb.conf.d:/etc/mysql/mariadb.conf.d'
       - 'mymagento-magento-db:/var/lib/mysql'
-      - '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
     healthcheck:
       test: 'mysqladmin ping -h localhost -pmagento2'
       interval: 30s
@@ -93,16 +91,6 @@ services:
     depends_on:
       fpm:
         condition: service_started
-  varnish:
-    hostname: varnish.magento2.docker
-    image: 'magento/magento-cloud-docker-varnish:6.2-1.2.0'
-    networks:
-      magento:
-        aliases:
-          - varnish.magento2.docker
-    depends_on:
-      web:
-        condition: service_started
   tls:
     hostname: tls.magento2.docker
     image: 'magento/magento-cloud-docker-nginx:1.19-1.2.0'
@@ -114,13 +102,13 @@ services:
     environment:
       - NGINX_WORKER_PROCESSES=1
       - NGINX_WORKER_CONNECTIONS=1024
-      - UPSTREAM_HOST=varnish
-      - UPSTREAM_PORT=80
+      - UPSTREAM_HOST=web
+      - UPSTREAM_PORT=8080
     ports:
       - '80:80'
       - '443:443'
     depends_on:
-      varnish:
+      web:
         condition: service_started
   generic:
     hostname: generic.magento2.docker
