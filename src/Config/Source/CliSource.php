@@ -33,6 +33,7 @@ class CliSource implements SourceInterface
     public const OPTION_INSTALLATION_TYPE = 'installation-type';
     public const OPTION_NO_ES = 'no-es';
     public const OPTION_NO_MAILHOG = 'no-mailhog';
+    public const OPTION_NO_TLS = 'no-tls';
 
     /**
      * MailHog configuration
@@ -68,6 +69,8 @@ class CliSource implements SourceInterface
     public const OPTION_HOST = 'host';
     public const OPTION_PORT = 'port';
     public const OPTION_TLS_PORT = 'tls-port';
+    public const OPTION_NGINX_WORKER_PROCESSES = 'nginx-worker-processes';
+    public const OPTION_NGINX_WORKER_CONNECTIONS = 'nginx-worker-connections';
 
     public const OPTION_DB_INCREMENT_INCREMENT = 'db-increment-increment';
     public const OPTION_DB_INCREMENT_OFFSET = 'db-increment-offset';
@@ -116,6 +119,7 @@ class CliSource implements SourceInterface
     private static $disableOptionsMap = [
         self::OPTION_NO_ES => self::SERVICES_ES,
         self::OPTION_NO_MAILHOG => self::SERVICES_MAILHOG,
+        self::OPTION_NO_TLS => self::SERVICES_TLS,
     ];
 
     /**
@@ -302,6 +306,14 @@ class CliSource implements SourceInterface
 
         if ($port = $this->input->getOption(self::OPTION_MAILHOG_HTTP_PORT)) {
             $repository->set(self::SYSTEM_MAILHOG_HTTP_PORT, $port);
+        }
+
+        if ($nginxWorkerProcesses = $this->input->getOption(self::OPTION_NGINX_WORKER_PROCESSES)) {
+            $repository->set(self::SYSTEM_NGINX_WORKER_PROCESSES, $nginxWorkerProcesses);
+        }
+
+        if ($nginxWorkerConnections = $this->input->getOption(self::OPTION_NGINX_WORKER_CONNECTIONS)) {
+            $repository->set(self::SYSTEM_NGINX_WORKER_CONNECTIONS, $nginxWorkerConnections);
         }
 
         $repository->set(self::PHP_DISABLED_EXTENSIONS, $disabledExtensions);

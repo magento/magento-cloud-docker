@@ -10,6 +10,8 @@ ENV MAGENTO_ROOT /app
 ENV MAGENTO_RUN_MODE production
 ENV MFTF_UTILS 0
 ENV DEBUG false
+ENV NGINX_WORKER_PROCESSES 1
+ENV NGINX_WORKER_CONNECTIONS 1024
 
 COPY etc/nginx.conf /etc/nginx/
 COPY etc/vhost.conf /etc/nginx/conf.d/default.conf

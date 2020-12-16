@@ -495,7 +495,11 @@ class TestInfrastructure extends BaseModule
                 $path,
                 preg_replace(
                     '/(magento\/magento-cloud-docker-(\w+)):((\d+\.\d+|latest)(-fpm|-cli)?(-\d+\.\d+\.\d+))/i',
-                    'cloudft/$2:$4$5-' . $this->_getConfig('version_generated_images'),
+                    sprintf(
+                        '%s/$2:$4$5-%s',
+                        $this->_getConfig('generated_images_namespace'),
+                        $this->_getConfig('version_generated_images')
+                    ),
                     file_get_contents($path)
                 )
             );

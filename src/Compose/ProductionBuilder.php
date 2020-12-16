@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
+use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Compose\ProductionBuilder\ServiceBuilderInterface;
 use Magento\CloudDocker\Compose\ProductionBuilder\ServicePool;
 use Magento\CloudDocker\Compose\ProductionBuilder\VolumeResolver;
 use Magento\CloudDocker\Config\Config;
@@ -35,7 +37,6 @@ class ProductionBuilder implements BuilderInterface
         self::SERVICE_GENERIC,
         self::SERVICE_DEPLOY,
         self::SERVICE_BUILD,
-        self::SERVICE_TLS,
         self::SERVICE_WEB,
         self::SERVICE_FPM,
         self::SERVICE_DB,
@@ -91,7 +92,7 @@ class ProductionBuilder implements BuilderInterface
         $manager = $this->managerFactory->create($config);
 
         foreach ($this->servicePool->getServices() as $service) {
-            if ($config->hasServiceEnabled($service->getServiceName())
+            if ($this->hasServiceEnabled($service, $config)
                 || in_array($service->getName(), self::$requiredServices)
             ) {
                 $manager->addService($service);
@@ -134,5 +135,25 @@ class ProductionBuilder implements BuilderInterface
     public function getPath(): string
     {
         return $this->fileList->getMagentoDockerCompose();
+    }
+
+    /**
+     * Checks the availability of the service
+     *
+     * @param ServiceBuilderInterface $service
+     * @param Config $config
+     * @return bool
+     * @throws ConfigurationMismatchException
+     */
+    private function hasServiceEnabled(ServiceBuilderInterface $service, Config $config): bool
+    {
+        $serviceNames = [
+            BuilderInterface::SERVICE_FPM_XDEBUG,
+            BuilderInterface::SERVICE_DB_QUOTE,
+            BuilderInterface::SERVICE_DB_SALES,
+        ];
+        $service = in_array($service->getName(), $serviceNames) ? $service->getServiceName() : $service->getName();
+
+        return $config->hasServiceEnabled($service);
     }
 }
