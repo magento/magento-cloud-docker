@@ -181,6 +181,18 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'MailHog HTTP port'
+            )->addOption(
+                Source\CliSource::OPTION_NGINX_WORKER_PROCESSES,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'The number of NGINX worker processes',
+                Source\BaseSource::DEFAULT_NGINX_WORKER_PROCESSES
+            )->addOption(
+                Source\CliSource::OPTION_NGINX_WORKER_CONNECTIONS,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'The maximum number of connections that each worker process can handle simultaneously',
+                Source\BaseSource::DEFAULT_NGINX_WORKER_CONNECTIONS
             );
 
         $this->addOption(
@@ -256,6 +268,11 @@ class BuildCompose extends Command
             null,
             InputOption::VALUE_REQUIRED,
             'Port'
+        )->addOption(
+            Source\CliSource::OPTION_NO_TLS,
+            null,
+            InputOption::VALUE_NONE,
+            'Disable TLS'
         )->addOption(
             Source\CliSource::OPTION_TLS_PORT,
             null,

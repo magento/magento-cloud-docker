@@ -144,6 +144,10 @@ class BuildCustomComposeTest extends TestCase
                                 'mailhog' => [
                                     'smtp_port' => '1026',
                                     'http_port' => '8026'
+                                ],
+                                'nginx' => [
+                                    'worker_processes' => 'auto',
+                                    'worker_connections' => 4096
                                 ]
                             ],
                             'services' => [
@@ -213,7 +217,83 @@ class BuildCustomComposeTest extends TestCase
                         ])
                     ]
                 ]
-            ]
+            ],
+            'without TLS service' => [
+                __DIR__ . '/_files/custom_cloud_no_tls_service',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => [
+                                'mode' => 'production',
+                                'nginx' => [
+                                    'worker_processes' => 4,
+                                    'worker_connections' => 2048
+                                ]
+                            ],
+                            'services' => [
+                                'php' => [
+                                    'enabled' => true,
+                                    'version' => '7.2',
+                                ],
+                                'mysql' => [
+                                    'enabled' => true,
+                                    'version' => '10.0',
+                                ],
+                                'tls' => ['enabled' => false],
+                            ],
+                        ])
+                    ]
+                ]
+            ],
+            'without Varnish service' => [
+                __DIR__ . '/_files/custom_cloud_no_varnish_service',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => ['mode' => 'production'],
+                            'services' => [
+                                'php' => [
+                                    'enabled' => true,
+                                    'version' => '7.2',
+                                ],
+                                'mysql' => [
+                                    'enabled' => true,
+                                    'version' => '10.0',
+                                ],
+                                'varnish' => ['enabled' => false],
+                            ],
+                        ])
+                    ]
+                ]
+            ],
+            'without Varnish and TLS services' => [
+                __DIR__ . '/_files/custom_cloud_no_varnish_and_tls_services',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => ['mode' => 'production'],
+                            'services' => [
+                                'php' => [
+                                    'enabled' => true,
+                                    'version' => '7.2',
+                                ],
+                                'mysql' => [
+                                    'enabled' => true,
+                                    'version' => '10.0',
+                                ],
+                                'varnish' => ['enabled' => false],
+                                'tls' => ['enabled' => false],
+                            ],
+                        ])
+                    ]
+                ]
+            ],
         ];
     }
 }
