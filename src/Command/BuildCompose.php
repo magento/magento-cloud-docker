@@ -253,11 +253,6 @@ class BuildCompose extends Command
             InputOption::VALUE_NONE,
             'Enables XDebug'
         )->addOption(
-            Source\CliSource::OPTION_WITHOUT_BLACKFIRE,
-            null,
-            InputOption::VALUE_NONE,
-            'Do not load blackfire php extension by default'
-        )->addOption(
             Source\CliSource::OPTION_ENV_VARIABLES,
             null,
             InputOption::VALUE_OPTIONAL,

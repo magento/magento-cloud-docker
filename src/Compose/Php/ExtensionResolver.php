@@ -46,8 +46,7 @@ class ExtensionResolver
         'sysvsem',
         'sysvshm',
         'opcache',
-        'zip',
-        'blackfire'
+        'zip'
     ];
 
     /**
