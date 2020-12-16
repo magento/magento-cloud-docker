@@ -182,6 +182,11 @@ class BuildCompose extends Command
                 InputOption::VALUE_REQUIRED,
                 'MailHog HTTP port'
             )->addOption(
+                Source\CliSource::OPTION_SET_DOCKER_HOST_XDEBUG,
+                null,
+                InputOption::VALUE_NONE,
+                'Deprecated option to resolve host.docker.internal on Linux. Did nothing at the moment'
+            )->addOption(
                 Source\CliSource::OPTION_NGINX_WORKER_PROCESSES,
                 null,
                 InputOption::VALUE_OPTIONAL,

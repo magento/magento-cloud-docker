@@ -57,6 +57,11 @@ class CliSource implements SourceInterface
     public const OPTION_WITH_MARIADB_CONF = 'with-mariadb-conf';
 
     /**
+     * @deprecated Will be removed in next major release
+     */
+    public const OPTION_SET_DOCKER_HOST_XDEBUG = 'set-docker-host';
+
+    /**
      * Environment variables.
      */
     public const OPTION_ENV_VARIABLES = 'env-vars';
