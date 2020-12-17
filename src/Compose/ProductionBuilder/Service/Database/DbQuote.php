@@ -113,7 +113,7 @@ class DbQuote implements ServiceBuilderInterface
         }
 
         $mounts[] = BuilderInterface::VOLUME_MAGENTO_DB_QUOTE . ':/var/lib/mysql';
-        $mounts[] = BuilderInterface::VOLUME_DOCKER_ETRYPOINT_QUOTE . ':/docker-entrypoint-initdb.d';
+        $mounts[] = BuilderInterface::VOLUME_DOCKER_ENTRYPOINT_QUOTE . ':/docker-entrypoint-initdb.d';
 
         return $mounts;
     }

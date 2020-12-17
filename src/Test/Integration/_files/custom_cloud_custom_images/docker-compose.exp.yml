@@ -83,6 +83,8 @@ services:
       - '.docker/mnt:/mnt:rw,delegated'
     environment:
       - WITH_XDEBUG=0
+      - NGINX_WORKER_PROCESSES=auto
+      - NGINX_WORKER_CONNECTIONS=4096
     networks:
       magento:
         aliases:
@@ -109,7 +111,10 @@ services:
         aliases:
           - magento2.test
     environment:
-      UPSTREAM_HOST: varnish
+      - NGINX_WORKER_PROCESSES=auto
+      - NGINX_WORKER_CONNECTIONS=4096
+      - UPSTREAM_HOST=varnish
+      - UPSTREAM_PORT=80
     ports:
       - '8080:80'
       - '443:443'

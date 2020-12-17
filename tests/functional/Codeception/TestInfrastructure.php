@@ -226,7 +226,7 @@ class TestInfrastructure extends BaseModule
             ->wasSuccessful();
 
         $skippedFiles = array_merge(
-            ['..', '.', 'vendor', '.git', '_workdir', 'vendor', 'composer.lock'],
+            ['..', '.', 'vendor', '.git', BaseModule::WORK_DIR, BaseModule::WORK_DIR_CACHE, 'composer.lock'],
             $skippedFiles
         );
         $files = [];
@@ -303,15 +303,40 @@ class TestInfrastructure extends BaseModule
      */
     public function addDependencyToComposer(string $name, string $version): bool
     {
-        return $this->taskComposerRequire('composer')
-            ->dependency($name, $version)
-            ->noInteraction()
-            ->option('--no-update')
-            ->printOutput($this->_getConfig('printOutput'))
-            ->interactive(false)
-            ->dir($this->getWorkDirPath())
-            ->run()
-            ->wasSuccessful();
+        return $this->retry(
+            function () use ($name, $version) {
+                return $this->taskComposerRequire('composer')
+                    ->dependency($name, $version)
+                    ->noInteraction()
+                    ->option('--no-update')
+                    ->printOutput($this->_getConfig('printOutput'))
+                    ->interactive(false)
+                    ->dir($this->getWorkDirPath())
+                    ->run()
+                    ->wasSuccessful();
+            }
+        );
+    }
+
+    /**
+     * @param callable $callback
+     * @param int $retries
+     * @return bool
+     */
+    private function retry(callable $callback, int $retries = 2): bool
+    {
+        $result = false;
+
+        for ($i = $retries; $i > 0; $i--) {
+            $result = $callback();
+            if ($result) {
+                return $result;
+            }
+
+            sleep(5);
+        }
+
+        return $result;
     }
 
     /**
@@ -470,7 +495,11 @@ class TestInfrastructure extends BaseModule
                 $path,
                 preg_replace(
                     '/(magento\/magento-cloud-docker-(\w+)):((\d+\.\d+|latest)(-fpm|-cli)?(-\d+\.\d+\.\d+))/i',
-                    'cloudft/$2:$4$5-' . $this->_getConfig('version_generated_images'),
+                    sprintf(
+                        '%s/$2:$4$5-%s',
+                        $this->_getConfig('generated_images_namespace'),
+                        $this->_getConfig('version_generated_images')
+                    ),
                     file_get_contents($path)
                 )
             );
@@ -507,12 +536,16 @@ class TestInfrastructure extends BaseModule
      */
     public function composerUpdate(): bool
     {
-        return $this->taskComposerUpdate('composer')
-            ->printOutput($this->_getConfig('printOutput'))
-            ->interactive(false)
-            ->dir($this->getWorkDirPath())
-            ->run()
-            ->wasSuccessful();
+        return $this->retry(
+            function () {
+                return $this->taskComposerUpdate('composer')
+                    ->printOutput($this->_getConfig('printOutput'))
+                    ->interactive(false)
+                    ->dir($this->getWorkDirPath())
+                    ->run()
+                    ->wasSuccessful();
+            }
+        );
     }
 
     /**

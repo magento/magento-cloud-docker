@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose;
 
-use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
@@ -97,14 +96,6 @@ class DeveloperBuilder implements BuilderInterface
             $volumes = [$volumePrefix . self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':nocopy'];
         }
 
-        if ($config->hasMariaDbConf()) {
-            $volumesList[$volumePrefix . self::VOLUME_MARIADB_CONF] = [];
-        }
-
-        if ($config->hasDbEntrypoint()) {
-            $volumesList[self::VOLUME_DOCKER_ETRYPOINT] = [];
-        }
-
         $manager->setVolumes($volumesList);
 
         /**
@@ -129,11 +120,11 @@ class DeveloperBuilder implements BuilderInterface
         ];
 
         if ($config->hasMariaDbConf()) {
-            $dbVolumes[] = $volumePrefix . self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d';
+            $dbVolumes[] = self::VOLUME_MARIADB_CONF . ':/etc/mysql/mariadb.conf.d';
         }
 
         if ($config->hasDbEntrypoint()) {
-            $dbVolumes[] = self::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d';
+            $dbVolumes[] = self::VOLUME_DOCKER_ENTRYPOINT . ':/docker-entrypoint-initdb.d';
         }
 
         $manager->updateService(self::SERVICE_DB, [

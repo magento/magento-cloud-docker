@@ -79,6 +79,14 @@ class BuildComposeTest extends TestCase
                     [CliSource::OPTION_WITH_MARIADB_CONF, true]
                 ]
             ],
+            'cloud-base-developer' => [
+                __DIR__ . '/_files/cloud_base_developer',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_DEVELOPER],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true]
+                ]
+            ],
             'cloud-base-mftf' => [
                 __DIR__ . '/_files/cloud_base_mftf',
                 [
@@ -94,7 +102,9 @@ class BuildComposeTest extends TestCase
                     [CliSource::OPTION_WITH_ENTRYPOINT, true],
                     [CliSource::OPTION_WITH_MARIADB_CONF, true],
                     [CliSource::OPTION_TLS_PORT, '4443'],
-                    [CliSource::OPTION_NO_MAILHOG, true]
+                    [CliSource::OPTION_NO_MAILHOG, true],
+                    [CliSource::OPTION_NGINX_WORKER_PROCESSES, '8'],
+                    [CliSource::OPTION_NGINX_WORKER_CONNECTIONS, '4096'],
                 ]
             ],
             'cloud-base-test' => [
@@ -111,9 +121,32 @@ class BuildComposeTest extends TestCase
                     [CliSource::OPTION_WITH_ENTRYPOINT, true],
                     [CliSource::OPTION_WITH_MARIADB_CONF, true],
                     [CliSource::OPTION_TLS_PORT, '4443'],
-                    [CliSource::OPTION_NO_MAILHOG, true]
+                    [CliSource::OPTION_NO_MAILHOG, true],
+                    [CliSource::OPTION_NGINX_WORKER_PROCESSES, 'auto'],
                 ]
-            ]
+            ],
+            'without TLS service' => [
+                __DIR__ . '/_files/cloud_no_tls_service',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_NO_TLS, true],
+                ]
+            ],
+            'without Varnish service' => [
+                __DIR__ . '/_files/cloud_no_varnish_service',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_NO_VARNISH, true],
+                ]
+            ],
+            'without Varnish and TLS services' => [
+                __DIR__ . '/_files/cloud_no_varnish_and_tls_service',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_NO_VARNISH, true],
+                    [CliSource::OPTION_NO_TLS, true],
+                ]
+            ],
         ];
     }
 }

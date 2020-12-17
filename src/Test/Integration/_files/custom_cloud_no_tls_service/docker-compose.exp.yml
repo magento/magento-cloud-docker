@@ -1,0 +1,119 @@
+version: '2.1'
+services:
+  db:
+    hostname: db.magento2.docker
+    image: 'mariadb:10.0'
+    environment:
+      - MYSQL_ROOT_PASSWORD=magento2
+      - MYSQL_DATABASE=magento2
+      - MYSQL_USER=magento2
+      - MYSQL_PASSWORD=magento2
+    ports:
+      - '3306'
+    volumes:
+      - '.docker/mnt:/mnt:rw,delegated'
+      - 'magento-magento-db:/var/lib/mysql'
+    healthcheck:
+      test: 'mysqladmin ping -h localhost -pmagento2'
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    networks:
+      magento:
+        aliases:
+          - db.magento2.docker
+  fpm:
+    hostname: fpm.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.2-fpm-1.2.0'
+    extends: generic
+    volumes:
+      - '.:/app:ro,delegated'
+      - 'magento-vendor:/app/vendor:ro,delegated'
+      - 'magento-generated:/app/generated:ro,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
+    networks:
+      magento:
+        aliases:
+          - fpm.magento2.docker
+    depends_on:
+      db:
+        condition: service_healthy
+  web:
+    hostname: web.magento2.docker
+    image: 'magento/magento-cloud-docker-nginx:1.19-1.2.0'
+    extends: generic
+    volumes:
+      - '.:/app:ro,delegated'
+      - 'magento-vendor:/app/vendor:ro,delegated'
+      - 'magento-generated:/app/generated:ro,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
+    environment:
+      - WITH_XDEBUG=0
+      - NGINX_WORKER_PROCESSES=4
+      - NGINX_WORKER_CONNECTIONS=2048
+    networks:
+      magento:
+        aliases:
+          - web.magento2.docker
+    depends_on:
+      fpm:
+        condition: service_started
+  varnish:
+    hostname: varnish.magento2.docker
+    image: 'magento/magento-cloud-docker-varnish:6.2-1.2.0'
+    ports:
+      - '80:80'
+    networks:
+      magento:
+        aliases:
+          - magento2.docker
+    depends_on:
+      web:
+        condition: service_started
+  generic:
+    hostname: generic.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.2-cli-1.2.0'
+    env_file: ./.docker/config.env
+    environment:
+      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip'
+  build:
+    hostname: build.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.2-cli-1.2.0'
+    extends: generic
+    volumes:
+      - '.:/app:rw,delegated'
+      - 'magento-vendor:/app/vendor:rw,delegated'
+      - 'magento-generated:/app/generated:rw,delegated'
+      - '~/.composer/cache:/root/.composer/cache:rw,delegated'
+    networks:
+      magento-build:
+        aliases:
+          - build.magento2.docker
+    depends_on:
+      db:
+        condition: service_healthy
+  deploy:
+    hostname: deploy.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.2-cli-1.2.0'
+    extends: generic
+    volumes:
+      - '.:/app:ro,delegated'
+      - 'magento-vendor:/app/vendor:ro,delegated'
+      - 'magento-generated:/app/generated:ro,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
+    networks:
+      magento:
+        aliases:
+          - deploy.magento2.docker
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  magento-vendor: {  }
+  magento-generated: {  }
+  magento-magento-db: {  }
+networks:
+  magento:
+    driver: bridge
+  magento-build:
+    driver: bridge

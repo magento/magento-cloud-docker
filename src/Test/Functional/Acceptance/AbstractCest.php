@@ -40,7 +40,7 @@ abstract class AbstractCest
         $I->addEceToolsGitRepoToComposer();
         $I->addDependencyToComposer('magento/ece-tools', 'dev-develop as 2002.1.99');
 
-        $I->composerUpdate();
+        $I->assertTrue($I->composerUpdate(), 'Composer update failed');
         $I->cacheWorkDir(static::TEMPLATE_VERSION);
     }
 

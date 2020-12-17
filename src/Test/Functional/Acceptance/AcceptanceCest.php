@@ -20,7 +20,7 @@ class AcceptanceCest extends AbstractCest
      */
     public function testProductionMode(\CliTester $I): void
     {
-        $I->runEceDockerCommand('build:compose --mode=production');
+        $I->assertTrue($I->runEceDockerCommand('build:compose --mode=production'), 'Command build:compose failed');
         $I->replaceImagesWithGenerated();
         $I->startEnvironment();
         $I->runDockerComposeCommand('run build cloud-build');

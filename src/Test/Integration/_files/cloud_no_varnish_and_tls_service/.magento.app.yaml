@@ -1,0 +1,29 @@
+name: mymagento
+
+type: php:7.3
+build:
+  flavor: composer
+
+runtime:
+  extensions:
+    - redis
+    - xsl
+    - json
+    - newrelic
+    - sodium
+
+relationships:
+  database: "mysql:mysql"
+  redis: "redis:redis"
+  elasticsearch: "elasticsearch:elasticsearch"
+
+mounts:
+  "var": "shared:files/var"
+  "app/etc": "shared:files/etc"
+  "pub/media": "shared:files/media"
+  "pub/static": "shared:files/static"
+
+crons:
+  cronrun:
+    spec: "* * * * *"
+    cmd: "php bin/magento cron:run"
