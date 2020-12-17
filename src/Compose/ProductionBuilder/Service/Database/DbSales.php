@@ -113,7 +113,7 @@ class DbSales implements ServiceBuilderInterface
         }
 
         $mounts[] = BuilderInterface::VOLUME_MAGENTO_DB_SALES . ':/var/lib/mysql';
-        $mounts[] = BuilderInterface::VOLUME_DOCKER_ETRYPOINT_SALES . ':/docker-entrypoint-initdb.d';
+        $mounts[] = BuilderInterface::VOLUME_DOCKER_ENTRYPOINT_SALES . ':/docker-entrypoint-initdb.d';
 
         return $mounts;
     }
