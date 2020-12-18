@@ -182,7 +182,8 @@ class GeneratorTest extends TestCase
                 ],
                 [
                     [
-                        'hooks' => []
+                        'hooks' => [],
+                        'mounts' => []
                     ],
                     2,
                     'exported_application_value',
