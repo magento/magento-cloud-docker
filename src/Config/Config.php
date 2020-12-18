@@ -467,4 +467,28 @@ class Config
     {
         return $this->all()->get(SourceInterface::SYSTEM_MAILHOG_HTTP_PORT);
     }
+
+    /**
+     * Returns the value of the `worker_processes` parameter of the Nginx service
+     *
+     * @return string
+     * @throws ConfigurationMismatchException
+     */
+    public function getNginxWorkerProcesses(): string
+    {
+        $value = $this->all()->get(SourceInterface::SYSTEM_NGINX_WORKER_PROCESSES);
+        if (SourceInterface::NGINX_WORKER_PROCESSES_AUTO === $value) {
+            return $value;
+        }
+        return (string)$value;
+    }
+
+    /**
+     * @return int
+     * @throws ConfigurationMismatchException
+     */
+    public function getNginxWorkerConnections()
+    {
+        return (int)$this->all()->get(SourceInterface::SYSTEM_NGINX_WORKER_CONNECTIONS);
+    }
 }

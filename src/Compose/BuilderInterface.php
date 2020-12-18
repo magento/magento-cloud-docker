@@ -48,9 +48,9 @@ interface BuilderInterface
     public const VOLUME_MAGENTO_DB_QUOTE = 'magento-db-quote';
     public const VOLUME_MAGENTO_DB_SALES = 'magento-db-sales';
     public const VOLUME_MAGENTO_DEV = './dev';
-    public const VOLUME_DOCKER_ETRYPOINT = '.docker/mysql/docker-entrypoint-initdb.d';
-    public const VOLUME_DOCKER_ETRYPOINT_QUOTE = '.docker/mysql-quote/docker-entrypoint-initdb.d';
-    public const VOLUME_DOCKER_ETRYPOINT_SALES = '.docker/mysql-sales/docker-entrypoint-initdb.d';
+    public const VOLUME_DOCKER_ENTRYPOINT = '.docker/mysql/docker-entrypoint-initdb.d';
+    public const VOLUME_DOCKER_ENTRYPOINT_QUOTE = '.docker/mysql-quote/docker-entrypoint-initdb.d';
+    public const VOLUME_DOCKER_ENTRYPOINT_SALES = '.docker/mysql-sales/docker-entrypoint-initdb.d';
 
     public const SYNC_ENGINE_NATIVE = 'native';
 

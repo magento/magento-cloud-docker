@@ -11,6 +11,7 @@ use Magento\CloudDocker\Compose\BuilderInterface;
 use Magento\CloudDocker\Compose\ProductionBuilder\ServiceBuilderInterface;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Service\ServiceFactory;
+use Magento\CloudDocker\Service\ServiceInterface;
 
 /**
  * Returns Varnish service configuration
@@ -51,13 +52,24 @@ class Varnish implements ServiceBuilderInterface
      */
     public function getConfig(Config $config): array
     {
-        return $this->serviceFactory->create(
+        $result = $this->serviceFactory->create(
             $this->getServiceName(),
             $config->getServiceVersion($this->getServiceName()),
             [],
             $config->getServiceImage($this->getServiceName()),
             $config->getServiceImagePattern($this->getServiceName())
         );
+
+        if (!$config->hasServiceEnabled(ServiceInterface::SERVICE_TLS)) {
+            $result['ports'] = [$config->getPort() . ':80'];
+            $result['networks'] = [
+                BuilderInterface::NETWORK_MAGENTO => [
+                    'aliases' => [$config->getHost()]
+                ]
+            ];
+        }
+
+        return $result;
     }
 
     /**
