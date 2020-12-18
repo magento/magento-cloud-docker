@@ -20,6 +20,8 @@ interface SourceInterface
     public const MOUNTS = 'mounts';
     public const NAME = 'name';
 
+    public const NGINX_WORKER_PROCESSES_AUTO = 'auto';
+
     /**
      * Services
      */
@@ -126,6 +128,11 @@ interface SourceInterface
     public const MAGENTO_VERSION = 'magento.version';
 
     /**
+     * TLS
+     */
+    public const SERVICES_TLS = self::SERVICES . '.' . ServiceInterface::SERVICE_TLS;
+
+    /**
      * Config
      */
     public const SYSTEM_SYNC_ENGINE = 'system.sync_engine';
@@ -142,6 +149,8 @@ interface SourceInterface
     public const SYSTEM_SET_DOCKER_HOST = 'system.set_docker_host';
     public const SYSTEM_MAILHOG_SMTP_PORT = 'system.mailhog.smtp_port';
     public const SYSTEM_MAILHOG_HTTP_PORT = 'system.mailhog.http_port';
+    public const SYSTEM_NGINX_WORKER_PROCESSES = 'system.nginx.worker_processes';
+    public const SYSTEM_NGINX_WORKER_CONNECTIONS = 'system.nginx.worker_connections';
 
     public const SYSTEM_DB_INCREMENT_INCREMENT = 'system.db.increment_increment';
     public const SYSTEM_DB_INCREMENT_OFFSET = 'system.db.increment_offset';

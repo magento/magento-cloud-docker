@@ -29,6 +29,8 @@ class BaseSource implements SourceInterface
     public const DEFAULT_TLS_PORT = '443';
     public const DEFAULT_MAILHOG_SMTP_PORT = '1025';
     public const DEFAULT_MAILHOG_HTTP_PORT = '8025';
+    public const DEFAULT_NGINX_WORKER_PROCESSES = '1';
+    public const DEFAULT_NGINX_WORKER_CONNECTIONS = '1024';
 
     /**
      * @var EnvReader
@@ -77,7 +79,9 @@ class BaseSource implements SourceInterface
             self::INSTALLATION_TYPE => self::INSTALLATION_TYPE_COMPOSER,
             self::MAGENTO_VERSION => $this->getMagentoVersion(),
             self::SYSTEM_MAILHOG_SMTP_PORT => self::DEFAULT_MAILHOG_SMTP_PORT,
-            self::SYSTEM_MAILHOG_HTTP_PORT => self::DEFAULT_MAILHOG_HTTP_PORT
+            self::SYSTEM_MAILHOG_HTTP_PORT => self::DEFAULT_MAILHOG_HTTP_PORT,
+            self::SYSTEM_NGINX_WORKER_PROCESSES => self::DEFAULT_NGINX_WORKER_PROCESSES,
+            self::SYSTEM_NGINX_WORKER_CONNECTIONS => self::DEFAULT_NGINX_WORKER_CONNECTIONS,
         ]);
 
         try {

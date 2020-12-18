@@ -118,7 +118,7 @@ class Db implements ServiceBuilderInterface
         $mounts[] = $config->getNameWithPrefix() . BuilderInterface::VOLUME_MAGENTO_DB . ':/var/lib/mysql';
 
         if ($config->hasDbEntrypoint()) {
-            $mounts[] = BuilderInterface::VOLUME_DOCKER_ETRYPOINT . ':/docker-entrypoint-initdb.d';
+            $mounts[] = BuilderInterface::VOLUME_DOCKER_ENTRYPOINT . ':/docker-entrypoint-initdb.d';
         }
 
         return $mounts;
