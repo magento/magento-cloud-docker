@@ -79,6 +79,14 @@ class BuildComposeTest extends TestCase
                     [CliSource::OPTION_WITH_MARIADB_CONF, true]
                 ]
             ],
+            'cloud-base-developer' => [
+                __DIR__ . '/_files/cloud_base_developer',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_DEVELOPER],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true]
+                ]
+            ],
             'cloud-base-mftf' => [
                 __DIR__ . '/_files/cloud_base_mftf',
                 [
