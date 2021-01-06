@@ -1,11 +1,11 @@
 parameters:
     level: 5
     paths:
-        - src
+        - ../../src
     excludes_analyse:
-        - %currentWorkingDirectory%/src/Test/*
+        - ../../src/Test/*
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         - message: "#.*Ternary operator condition is always true*#"
-          path: %currentWorkingDirectory%/src/Command/Image/GeneratePhp.php
+          path: ../../src/Command/Image/GeneratePhp.php
 
