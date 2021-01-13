@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Command;
 
 use Magento\CloudDocker\App\GenericException;
+use Magento\CloudDocker\Cli;
 use Magento\CloudDocker\Compose\DeveloperBuilder;
 use Magento\CloudDocker\Compose\BuilderFactory;
 use Magento\CloudDocker\Config\ConfigFactory;
@@ -15,6 +16,7 @@ use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Config\Source;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -308,7 +310,7 @@ class BuildCompose extends Command
      *
      * @throws GenericException
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $config = $this->configFactory->create([
             $this->sourceFactory->create(Source\BaseSource::class),
@@ -323,16 +325,24 @@ class BuildCompose extends Command
 
         $this->distGenerator->generate($config);
 
+        $content = Yaml::dump([
+            'version' => $compose->getVersion(),
+            'services' => $compose->getServices(),
+            'volumes' => $compose->getVolumes(),
+            'networks' => $compose->getNetworks()
+        ], 6, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK);
+
+        if ($input instanceof ArgvInput) {
+            $content = '# ./vendor/bin/ece-docker ' . $input . PHP_EOL . $content;
+        }
+
         $this->filesystem->put(
             $builder->getPath(),
-            Yaml::dump([
-                'version' => $compose->getVersion(),
-                'services' => $compose->getServices(),
-                'volumes' => $compose->getVolumes(),
-                'networks' => $compose->getNetworks()
-            ], 6, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
+            $content
         );
 
         $output->writeln('<info>Configuration was built.</info>');
+
+        return Cli::SUCCESS;
     }
 }

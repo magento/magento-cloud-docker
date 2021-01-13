@@ -16,6 +16,7 @@ ENV VARNISHD_PARAMS -p default_ttl=3600 -p default_grace=3600 -p feature=+esi_ig
 
 COPY etc/varnish.vcl /data/varnish.vcl
 
+RUN ["chmod", "644", "/data/varnish.vcl"]
 RUN ["chmod", "+x", "/entrypoint.sh"]
 
 ENTRYPOINT ["/entrypoint.sh"]
