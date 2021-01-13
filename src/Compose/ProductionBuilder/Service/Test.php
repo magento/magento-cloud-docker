@@ -73,6 +73,7 @@ class Test implements ServiceBuilderInterface
             $config->getServiceVersion(ServiceInterface::SERVICE_PHP),
             ['volumes' => $this->volume->getRw($config)],
             $config->getServiceImage(ServiceInterface::SERVICE_PHP),
+            $config->getCustomRegistry(),
             $config->getServiceImagePattern(ServiceInterface::SERVICE_PHP_CLI)
         );
     }

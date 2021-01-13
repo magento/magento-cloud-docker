@@ -56,13 +56,13 @@ class SplitDbCest extends AbstractCest
             ]
         ]);
 
-        $I->runEceDockerCommand(sprintf(
-            'build:compose --mode=production --expose-db-port=%s --expose-db-quote-port=%s --expose-db-sales-port=%s',
+        $I->generateDockerCompose(sprintf(
+            '--mode=production --expose-db-port=%s --expose-db-quote-port=%s --expose-db-sales-port=%s',
             $I->getExposedPort(),
             $I->getExposedPort(MagentoDb::KEY_DB_QUOTE),
             $I->getExposedPort(MagentoDb::KEY_DB_SALES)
         ));
-        $I->replaceImagesWithGenerated();
+        $I->replaceImagesWithCustom();
         $I->startEnvironment();
         $I->runDockerComposeCommand('run build cloud-build');
         $I->runDockerComposeCommand('run deploy cloud-deploy');

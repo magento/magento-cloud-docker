@@ -161,6 +161,7 @@ class ServiceFactory
      * @param string $version
      * @param array $config
      * @param string $image
+     * @param string|null $customRegistry
      * @param string|null $imagePattern
      * @return array
      * @throws ConfigurationMismatchException
@@ -170,6 +171,7 @@ class ServiceFactory
         string $version,
         array $config = [],
         string $image = null,
+        string $customRegistry = null,
         string $imagePattern = null
     ): array {
         if (!array_key_exists($name, self::$config)) {
@@ -182,7 +184,7 @@ class ServiceFactory
         $metaConfig = self::$config[$name];
         $defaultConfig = $metaConfig['config'] ?? [];
 
-        $image = $image ?: $metaConfig['image'];
+        $image = ($customRegistry ? $customRegistry . '/' : '') . ($image ?: $metaConfig['image']);
         $pattern = $imagePattern ?: $metaConfig['pattern'];
 
         return array_replace(

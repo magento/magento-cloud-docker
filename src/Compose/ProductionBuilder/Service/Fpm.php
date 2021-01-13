@@ -65,6 +65,7 @@ class Fpm implements ServiceBuilderInterface
             $config->getServiceVersion(ServiceInterface::SERVICE_PHP),
             ['volumes' => $this->volume->getRo($config)],
             $config->getServiceImage(ServiceInterface::SERVICE_PHP),
+            $config->getCustomRegistry(),
             $config->getServiceImagePattern($this->getServiceName())
         );
     }

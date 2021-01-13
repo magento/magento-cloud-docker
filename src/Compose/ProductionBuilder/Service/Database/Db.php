@@ -82,7 +82,8 @@ class Db implements ServiceBuilderInterface
             ServiceInterface::SERVICE_DB,
             $config->getServiceVersion(ServiceInterface::SERVICE_DB),
             $dbConfig,
-            $config->getServiceImage(ServiceInterface::SERVICE_DB)
+            $config->getServiceImage(ServiceInterface::SERVICE_DB),
+            $config->getCustomRegistry()
         );
     }
 

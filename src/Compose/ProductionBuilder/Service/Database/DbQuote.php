@@ -79,7 +79,8 @@ class DbQuote implements ServiceBuilderInterface
             ServiceInterface::SERVICE_DB_QUOTE,
             $config->getServiceVersion(ServiceInterface::SERVICE_DB),
             $dbConfig,
-            $config->getServiceImage(ServiceInterface::SERVICE_DB)
+            $config->getServiceImage(ServiceInterface::SERVICE_DB),
+            $config->getCustomRegistry()
         );
     }
 

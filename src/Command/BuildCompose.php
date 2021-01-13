@@ -200,6 +200,11 @@ class BuildCompose extends Command
                 InputOption::VALUE_OPTIONAL,
                 'The maximum number of connections that each worker process can handle simultaneously',
                 Source\BaseSource::DEFAULT_NGINX_WORKER_CONNECTIONS
+            )->addOption(
+                Source\CliSource::OPTION_CUSTOM_REGISTRY,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'The custom registry. It can be your mirror with all needed images. For example: 123.example.com'
             );
 
         $this->addOption(

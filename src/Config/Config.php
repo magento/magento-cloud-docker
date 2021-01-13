@@ -216,6 +216,15 @@ class Config
     }
 
     /**
+     * @return string|null
+     * @throws ConfigurationMismatchException
+     */
+    public function getCustomRegistry(): ?string
+    {
+        return $this->all()->get(SourceInterface::SYSTEM_CUSTOM_REGISTRY);
+    }
+
+    /**
      * @param string $name
      * @return string|null
      * @throws ConfigurationMismatchException

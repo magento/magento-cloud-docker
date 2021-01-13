@@ -28,16 +28,6 @@ class Elasticsearch72Cest extends ElasticsearchCest
     {
         return [
             [
-                'version' => '1.7',
-                'xms' => '512m',
-                'xmx' => '512m',
-            ],
-            [
-                'version' => '2.4',
-                'xms' => '514m',
-                'xmx' => '514m',
-            ],
-            [
                 'version' => '5.2',
                 'xms' => '516m',
                 'xmx' => '516m',
