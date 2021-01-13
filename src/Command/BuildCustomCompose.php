@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Command;
 
 use Magento\CloudDocker\App\ConfigurationMismatchException;
+use Magento\CloudDocker\Cli;
 use Magento\CloudDocker\Compose\BuilderFactory;
 use Magento\CloudDocker\Config\ConfigFactory;
 use Magento\CloudDocker\Config\Dist\Generator;
@@ -101,7 +102,7 @@ class BuildCustomCompose extends Command
      * @throws ConfigurationMismatchException
      * @throws FilesystemException
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = json_decode($input->getArgument(self::ARG_SOURCE), true);
 
@@ -134,5 +135,7 @@ class BuildCustomCompose extends Command
         );
 
         $output->writeln('<info>Configuration was built.</info>');
+
+        return Cli::SUCCESS;
     }
 }
