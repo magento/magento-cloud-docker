@@ -7,10 +7,6 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
-use CliTester;
-use Codeception\Example;
-use Robo\Exception\TaskException;
-
 /**
  * @group php72
  */
