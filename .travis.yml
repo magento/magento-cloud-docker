@@ -86,7 +86,9 @@ before_install:
   # https://github.com/kylekatarnls/update-helper/issues/9
   - if [ -n "${COMPOSER_VERSION}" ]; then travis_retry composer self-update ${COMPOSER_VERSION}; fi;
 
-install: if [[ $TEST_SUITE != "build-images" ]]; then composer update; fi;
+install:
+  - phpenv config-add travis.php.ini
+  - if [[ $TEST_SUITE != "build-images" ]]; then composer update; fi;
 
 before_script:
   - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && ([ $TEST_SUITE == "build-images" ] || [ $TEST_SUITE == "functional" ]); then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi;
