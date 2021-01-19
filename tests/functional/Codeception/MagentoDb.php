@@ -65,7 +65,7 @@ class MagentoDb extends Db
      *
      * @return string
      */
-    public function getExposedPort(string $dbKey = self::KEY_DB): string
+    public function getExposedPort(string $dbKey = 'db'): string
     {
         $key = 'exposed_port';
         if (self::KEY_DB === $dbKey) {

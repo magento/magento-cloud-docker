@@ -34,6 +34,11 @@ class CliSource implements SourceInterface
     public const OPTION_NO_ES = 'no-es';
 
     /**
+     * Custom registry
+     */
+    public const OPTION_CUSTOM_REGISTRY = 'custom-registry';
+
+    /**
      * State modifiers.
      */
     public const OPTION_NODE = 'node';
@@ -129,6 +134,12 @@ class CliSource implements SourceInterface
     public function read(): Repository
     {
         $repository = new Repository();
+
+        if ($customRegistry = $this->input->getOption(self::OPTION_CUSTOM_REGISTRY)) {
+            $repository->set([
+                self::SYSTEM_CUSTOM_REGISTRY => $customRegistry
+            ]);
+        }
 
         if ($mode = $this->input->getOption(self::OPTION_MODE)) {
             $repository->set([

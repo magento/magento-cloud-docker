@@ -167,11 +167,17 @@ class ServiceFactory
      * @param string $version
      * @param array $config
      * @param string $image
+     * @param string|null $customRegistry
      * @return array
      * @throws ConfigurationMismatchException
      */
-    public function create(string $name, string $version, array $config = [], string $image = null): array
-    {
+    public function create(
+        string $name,
+        string $version,
+        array $config = [],
+        string $image = null,
+        string $customRegistry = null
+    ): array {
         if (!array_key_exists($name, self::$config)) {
             throw new ConfigurationMismatchException(sprintf(
                 'Service "%s" is not supported',
@@ -189,7 +195,7 @@ class ServiceFactory
         /** Extract minor version. Patch version should not affect images. */
         preg_match('/^\d+\.\d+/', $mcdVersion, $matches);
 
-        $image = $image ?: $metaConfig['image'];
+        $image = ($customRegistry ? $customRegistry . '/' : '') . ($image ?: $metaConfig['image']);
         $pattern = $metaConfig['pattern'];
 
         return array_replace(

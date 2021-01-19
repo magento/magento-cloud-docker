@@ -166,6 +166,11 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'Disable Elasticsearch'
+            )->addOption(
+                Source\CliSource::OPTION_CUSTOM_REGISTRY,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'The custom registry. It can be your mirror with all needed images. For example: 123.example.com'
             );
 
         $this->addOption(

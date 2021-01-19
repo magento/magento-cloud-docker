@@ -89,12 +89,16 @@ jobs:
       env:
         - TEST_SUITE=functional
 
-install: if [[ $TEST_SUITE != "build-images" ]]; then phpenv config-add travis.php.ini && composer update; fi;
+before_install:
+  # https://github.com/kylekatarnls/update-helper/issues/9
+  - if [ -n "${COMPOSER_VERSION}" ]; then travis_retry composer self-update ${COMPOSER_VERSION}; fi;
+
+install: if [[ $TEST_SUITE != "build-images" ]]; then composer update; fi;
 
 before_script:
-  - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "build-images" ]; then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi;
+  - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && ([ $TEST_SUITE == "build-images" ] || [ $TEST_SUITE == "functional" ]); then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi;
   - if [ $TEST_SUITE == "functional" ]; then sudo sysctl -w vm.max_map_count=262144; fi;
-  - if [ $TEST_SUITE == "functional" ]; then cp codeception.dist.yml codeception.yml && sed -i "s/use_generated_images:\ false/use_generated_images:\ true/" codeception.yml; fi;
+  - if [ $TEST_SUITE == "functional" ]; then cp codeception.dist.yml codeception.yml && sed -i "s/use_custom_images:\ false/use_custom_images:\ true/" codeception.yml; fi;
 
 script:
   - if [ $TRAVIS_SECURE_ENV_VARS == "true" ] && [ $TEST_SUITE == "functional" ]; then ./tests/travis/functional.sh; fi;

@@ -53,7 +53,7 @@ class ServicesCest extends AbstractCest
         self::$counter++;
 
         try {
-            $I->assertTrue($I->runEceDockerCommand('build:compose --mode=production ' . $data['options']));
+            $I->assertTrue($I->generateDockerCompose('--mode=production ' . $data['options']));
             $I->assertTrue($I->startEnvironment());
             $I->assertTrue($I->runBashCommand('docker ps'));
             $I->seeInOutput($data['expectedResult']);

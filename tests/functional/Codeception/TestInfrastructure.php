@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Codeception;
 
+use Composer\Factory;
+use Composer\IO\NullIO;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -224,7 +226,7 @@ class TestInfrastructure extends BaseModule
             ->wasSuccessful();
 
         $skippedFiles = array_merge(
-            ['..', '.', 'vendor', '.git', '_workdir', 'vendor', 'composer.lock'],
+            ['..', '.', 'vendor', '.git', BaseModule::WORK_DIR, BaseModule::WORK_DIR_CACHE, 'composer.lock'],
             $skippedFiles
         );
         $files = [];
@@ -301,15 +303,40 @@ class TestInfrastructure extends BaseModule
      */
     public function addDependencyToComposer(string $name, string $version): bool
     {
-        return $this->taskComposerRequire('composer')
-            ->dependency($name, $version)
-            ->noInteraction()
-            ->option('--no-update')
-            ->printOutput($this->_getConfig('printOutput'))
-            ->interactive(false)
-            ->dir($this->getWorkDirPath())
-            ->run()
-            ->wasSuccessful();
+        return $this->retry(
+            function () use ($name, $version) {
+                return $this->taskComposerRequire('composer')
+                    ->dependency($name, $version)
+                    ->noInteraction()
+                    ->option('--no-update')
+                    ->printOutput($this->_getConfig('printOutput'))
+                    ->interactive(false)
+                    ->dir($this->getWorkDirPath())
+                    ->run()
+                    ->wasSuccessful();
+            }
+        );
+    }
+
+    /**
+     * @param callable $callback
+     * @param int $retries
+     * @return bool
+     */
+    private function retry(callable $callback, int $retries = 2): bool
+    {
+        $result = false;
+
+        for ($i = $retries; $i > 0; $i--) {
+            $result = $callback();
+            if ($result) {
+                return $result;
+            }
+
+            sleep(5);
+        }
+
+        return $result;
     }
 
     /**
@@ -454,21 +481,42 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Replace magento images with cloud FT images in docker-compose.yml
+     * Generates docker-compose.yaml using ece-docker command
+     *
+     * @param string $options
+     * @return bool
+     * @throws \Robo\Exception\TaskException
+     */
+    public function generateDockerCompose(string $options = ''): bool
+    {
+        $customRegistry = $this->_getConfig('custom_registry');
+        $options .= $customRegistry
+            ? ' --custom-registry=' . $customRegistry
+            : '';
+
+        return $this->runEceDockerCommand('build:compose ' . $options);
+    }
+
+    /**
+     * Replace magento images with custom images in docker-compose.yml
      *
      * @return bool
      */
-    public function replaceImagesWithGenerated(): bool
+    public function replaceImagesWithCustom(): bool
     {
-        if (true === $this->_getConfig('use_generated_images')) {
-            $this->debug('Tests use new generated Docker images');
+        if (true === $this->_getConfig('use_custom_images')) {
+            $this->debug('Tests use custom Docker images');
             $path = $this->getWorkDirPath() . DIRECTORY_SEPARATOR . 'docker-compose.yml';
 
             return (bool)file_put_contents(
                 $path,
                 preg_replace(
-                    '/(magento\/magento-cloud-docker-(\w+)):((\d+\.\d+|latest)(\-fpm|\-cli)?(\-\d+\.\d+))/i',
-                    'cloudft/$2:$4$5-' . $this->_getConfig('version_generated_images'),
+                    '/(magento\/magento-cloud-docker-(\w+)):((\d+\.\d+|latest)(-fpm|-cli)?-(\d+\.\d+\.\d+))/i',
+                    sprintf(
+                        '%s/magento-cloud-docker-$2:$4$5-%s',
+                        $this->_getConfig('custom_images_namespace'),
+                        $this->_getConfig('version_custom_images') ?: '$6'
+                    ),
                     file_get_contents($path)
                 )
             );
@@ -480,18 +528,41 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Replace magento images versions with current magento-cloud-docker version
+     *
+     * @return bool
+     */
+    public function replaceImagesWithCurrentDockerVersion(): bool
+    {
+        $composePath = $this->getWorkDirPath() . DIRECTORY_SEPARATOR . 'docker-compose.yml';
+
+        return (bool)file_put_contents(
+            $composePath,
+            preg_replace(
+                '/magento\/magento-cloud-docker-(.*?)(-\d+\.\d+\.\d+)/i',
+                'magento/magento-cloud-docker-$1-' . $this->getMcdVersion(),
+                file_get_contents($composePath)
+            )
+        );
+    }
+
+    /**
      * Runs composer update
      *
      * @return bool
      */
     public function composerUpdate(): bool
     {
-        return $this->taskComposerUpdate('composer')
-            ->printOutput($this->_getConfig('printOutput'))
-            ->interactive(false)
-            ->dir($this->getWorkDirPath())
-            ->run()
-            ->wasSuccessful();
+        return $this->retry(
+            function () {
+                return $this->taskComposerUpdate('composer')
+                    ->printOutput($this->_getConfig('printOutput'))
+                    ->interactive(false)
+                    ->dir($this->getWorkDirPath())
+                    ->run()
+                    ->wasSuccessful();
+            }
+        );
     }
 
     /**
@@ -628,5 +699,21 @@ class TestInfrastructure extends BaseModule
             ->line(Yaml::dump($data, 10, 4, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK))
             ->run()
             ->wasSuccessful();
+    }
+
+    /**
+     * Returns magento-cloud-docker original version
+     *
+     * @return string
+     */
+    private function getMcdVersion(): string
+    {
+        $mcdVersion = Factory::create(new NullIO(), $this->getRootDirPath() . '/composer.json')
+            ->getPackage()
+            ->getVersion();
+
+        preg_match('/^\d+\.\d+\.\d+/', $mcdVersion, $matches);
+
+        return $matches[0];
     }
 }

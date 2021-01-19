@@ -31,7 +31,7 @@ class ElasticsearchCest extends AbstractCest
     public function testElasticsearch(CliTester $I, Example $data)
     {
         $command = sprintf(
-            'build:compose --mode=production --es=%s --es-env-var="ES_JAVA_OPTS=-Xms%s -Xmx%s"',
+            '--mode=production --es=%s --es-env-var="ES_JAVA_OPTS=-Xms%s -Xmx%s"',
             $data['version'],
             $data['xms'],
             $data['xmx']
@@ -40,8 +40,8 @@ class ElasticsearchCest extends AbstractCest
         if (!empty($data['param'])) {
             $command .= " --es-env-var={$data['param']['key']}={$data['param']['value']}";
         }
-        $I->runEceDockerCommand($command);
-        $I->replaceImagesWithGenerated();
+        $I->generateDockerCompose($command);
+        $I->replaceImagesWithCustom();
         $I->startEnvironment();
         $I->runDockerComposeCommand('exec -T elasticsearch ps aux | grep elasticsearch');
         $I->seeInOutput('-Xms' . $data['xms']);
