@@ -92,6 +92,16 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
     }
 
     /**
+     * Returns the path to root directory
+     *
+     * @return string
+     */
+    public function getRootDirPath(): string
+    {
+        return codecept_root_dir();
+    }
+
+    /**
      * Returns the path to work directory
      *
      * @return string

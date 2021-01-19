@@ -72,6 +72,7 @@ class Web implements ServiceBuilderInterface
                 ],
             ],
             $config->getServiceImage(ServiceInterface::SERVICE_NGINX),
+            $config->getCustomRegistry(),
             $config->getServiceImagePattern(ServiceInterface::SERVICE_NGINX)
         );
 

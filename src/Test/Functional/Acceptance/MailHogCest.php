@@ -20,7 +20,7 @@ class MailHogCest extends AbstractCest
     {
         $I->updateBaseUrl('http://magento2.docker:8025/');
         $I->assertTrue(
-            $I->runEceDockerCommand('build:compose'),
+            $I->generateDockerCompose(),
             'Command build:compose failed'
         );
         $this->runAndAssert($I);
@@ -34,7 +34,7 @@ class MailHogCest extends AbstractCest
     {
         $I->updateBaseUrl('http://magento2.docker:8026/');
         $I->assertTrue(
-            $I->runEceDockerCommand('build:compose --mailhog-http-port=8026 --mailhog-smtp-port=1026'),
+            $I->generateDockerCompose('--mailhog-http-port=8026 --mailhog-smtp-port=1026'),
             'Command build:compose failed'
         );
         $this->runAndAssert($I);
@@ -46,7 +46,7 @@ class MailHogCest extends AbstractCest
      */
     private function runAndAssert(\CliTester $I): void
     {
-        $I->replaceImagesWithGenerated();
+        $I->replaceImagesWithCustom();
         $I->startEnvironment();
         $I->amOnPage('/');
         $I->see('MailHog');

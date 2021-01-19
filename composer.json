@@ -2,7 +2,7 @@
     "name": "magento/magento-cloud-docker",
     "description": "Magento Cloud Docker",
     "type": "magento2-component",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "license": [
         "OSL-3.0",
         "AFL-3.0"
@@ -67,6 +67,10 @@
             [
                 "dist/mutagen.sh",
                 "mutagen.sh"
+            ],
+            [
+                "dist/php.dev.ini",
+                "php.dev.ini"
             ],
             [
                 "dist/mnt",

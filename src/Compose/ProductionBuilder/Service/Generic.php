@@ -83,6 +83,7 @@ class Generic implements ServiceBuilderInterface
                 )
             ],
             $config->getServiceImage(ServiceInterface::SERVICE_PHP),
+            $config->getCustomRegistry(),
             $config->getServiceImagePattern(ServiceInterface::SERVICE_PHP_CLI)
         );
     }

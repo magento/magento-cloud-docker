@@ -93,6 +93,7 @@ class FpmXdebug implements ServiceBuilderInterface
                 'environment' => $this->converter->convert($envVariables)
             ],
             $config->getServiceImage(ServiceInterface::SERVICE_PHP),
+            $config->getCustomRegistry(),
             $config->getServiceImagePattern($this->getServiceName())
         );
     }

@@ -25,10 +25,10 @@ modules:
       composer_magento_username: "%REPO_USERNAME%"
       composer_magento_password: "%REPO_PASSWORD%"
       composer_github_token: "%GITHUB_TOKEN%"
-      use_generated_images: false
-      generated_images_namespace: "cloudft"
+      use_custom_images: false
+      custom_images_namespace: "cloudft"
+      version_custom_images: "%TRAVIS_BUILD_NUMBER%"
       use_cached_workdir: true
-      version_generated_images: "%TRAVIS_BUILD_NUMBER%"
       printOutput: false
     Magento\CloudDocker\Test\Functional\Codeception\Docker:
       system_magento_dir: "%Magento.docker.settings.system.magento_dir%"

@@ -46,6 +46,9 @@ fi
 # Add custom php.ini if it exists
 [ -f "/app/php.ini" ] && cp /app/php.ini ${PHP_EXT_DIR}/zzz-custom-php.ini
 
+# Add developer php.ini if it exists
+[ -f "/app/php.dev.ini" ] && [ "$MAGENTO_RUN_MODE" == "developer" ] && cp /app/php.dev.ini ${PHP_EXT_DIR}/zzz-dev-php.ini
+
 # Enable PHP extensions
 PHP_EXT_COM_ON=docker-php-ext-enable
 

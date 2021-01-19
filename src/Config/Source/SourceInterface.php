@@ -135,6 +135,7 @@ interface SourceInterface
     /**
      * Config
      */
+    public const SYSTEM_CUSTOM_REGISTRY = 'system.custom_registry';
     public const SYSTEM_SYNC_ENGINE = 'system.sync_engine';
     public const SYSTEM_TMP_MOUNTS = 'system.tmp_mounts';
     public const SYSTEM_MODE = 'system.mode';

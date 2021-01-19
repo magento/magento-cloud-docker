@@ -30,8 +30,8 @@ class ElasticsearchCest extends AbstractCest
      */
     public function testElasticsearch(CliTester $I, Example $data)
     {
-        $I->runEceDockerCommand($this->buildCommand($data));
-        $I->replaceImagesWithGenerated();
+        $I->generateDockerCompose($this->buildCommand($data));
+        $I->replaceImagesWithCustom();
         $I->startEnvironment();
         if (!empty($data['plugins'])) {
             $I->runDockerComposeCommand('logs elasticsearch');
@@ -58,7 +58,7 @@ class ElasticsearchCest extends AbstractCest
     private function buildCommand(Example $data): string
     {
         $command = sprintf(
-            'build:compose --mode=production --es=%s --es-env-var="ES_JAVA_OPTS=-Xms%s -Xmx%s"',
+            '--mode=production --es=%s --es-env-var="ES_JAVA_OPTS=-Xms%s -Xmx%s"',
             $data['version'],
             $data['xms'],
             $data['xmx']

@@ -72,6 +72,7 @@ class ElasticSearch implements ServiceBuilderInterface
             $config->getServiceVersion($this->getServiceName()),
             !empty($esEnvVars) ? ['environment' => $esEnvVars] : [],
             $config->getServiceImage($this->getServiceName()),
+            $config->getCustomRegistry(),
             $config->getServiceImagePattern($this->getServiceName())
         );
     }

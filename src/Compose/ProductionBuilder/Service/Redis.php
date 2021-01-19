@@ -62,7 +62,8 @@ class Redis implements ServiceBuilderInterface
                     'retries' => 3
                 ]
             ],
-            $config->getServiceImage($this->getServiceName())
+            $config->getServiceImage($this->getServiceName()),
+            $config->getCustomRegistry()
         );
     }
 
