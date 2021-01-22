@@ -9,6 +9,7 @@ namespace Magento\CloudDocker\Command\Image;
 
 use Magento\CloudDocker\Cli;
 use Magento\CloudDocker\Filesystem\DirectoryList;
+use Magento\CloudDocker\Filesystem\FileNotFoundException;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -93,6 +94,8 @@ class GenerateEs extends Command
      * Generates data for elasticsearch images.
      *
      * {@inheritDoc}
+     * @throws FileNotFoundException
+     * @throws \Magento\CloudDocker\Filesystem\FileSystemException
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
