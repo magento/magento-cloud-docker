@@ -85,6 +85,11 @@ class CliSource implements SourceInterface
     public const OPTION_ES_ENVIRONMENT_VARIABLE = 'es-env-var';
 
     /**
+     * Root directory
+     */
+    public const OPTION_ROOT_DIR = 'root-dir';
+
+    /**
      * List of service enabling options
      *
      * @var array
@@ -319,6 +324,10 @@ class CliSource implements SourceInterface
 
         if ($nginxWorkerConnections = $this->input->getOption(self::OPTION_NGINX_WORKER_CONNECTIONS)) {
             $repository->set(self::SYSTEM_NGINX_WORKER_CONNECTIONS, $nginxWorkerConnections);
+        }
+
+        if ($rootDir = $this->input->getOption(self::OPTION_ROOT_DIR)) {
+            $repository->set(self::SYSTEM_ROOT_DIR, $rootDir);
         }
 
         return $repository;

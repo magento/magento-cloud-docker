@@ -3,6 +3,7 @@ services:
   db:
     hostname: db.magento2.test
     image: 'mariadb-v1:10.2'
+    shm_size: 2gb
     environment:
       - MYSQL_ROOT_PASSWORD=magento2
       - MYSQL_DATABASE=magento2
@@ -30,6 +31,13 @@ services:
       - /data
     ports:
       - 6379
+    sysctls:
+      net.core.somaxconn: 1024
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
     healthcheck:
       test: 'redis-cli ping || exit 1'
       interval: 30s
@@ -42,6 +50,13 @@ services:
   elasticsearch:
     hostname: elasticsearch.magento2.test
     image: 'elasticsearch-v1:7.6'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
     networks:
       magento:
         aliases:

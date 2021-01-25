@@ -15,16 +15,24 @@ use FilesystemIterator;
 class Filesystem
 {
     /**
-     * Write contents to file in given path
+     * Write the content of a file.
      *
      * @param string $path
      * @param string $content
-     * @return int The number of bytes that were written.
-     * @throws FileSystemException In case if can write content into file
+     * @return int|bool
+     *
+     * @throws FilesystemException
      */
-    public function put($path, $content)
+    public function put(string $path, string $content)
     {
+        $dirname = dirname($path);
+
+        if (!$this->exists($dirname)) {
+            $this->makeDirectory($dirname, 0755, true);
+        }
+
         $result = @file_put_contents($path, $content);
+
         if (!$result) {
             throw new FilesystemException(sprintf(
                 'The specified "%s" file could not be written %s',

@@ -40,8 +40,8 @@ class Volume
     public function getRo(Config $config): array
     {
         return $this->volumeResolver->normalize(array_merge(
-            $this->volumeResolver->getRootVolume(true),
-            $this->volumeResolver->getDevVolumes($config->hasServiceEnabled(ServiceInterface::SERVICE_TEST)),
+            $this->volumeResolver->getRootVolume($config, true),
+            $this->volumeResolver->getDevVolumes($config, $config->hasServiceEnabled(ServiceInterface::SERVICE_TEST)),
             $this->volumeResolver->getMagentoVolumes($config->getMounts(), true, $this->hasGenerated($config)),
             $this->volumeResolver->getMountVolumes($config->hasTmpMounts())
         ));
@@ -57,8 +57,8 @@ class Volume
     public function getRw(Config $config): array
     {
         return $this->volumeResolver->normalize(array_merge(
-            $this->volumeResolver->getRootVolume(false),
-            $this->volumeResolver->getDevVolumes($config->hasServiceEnabled(ServiceInterface::SERVICE_TEST)),
+            $this->volumeResolver->getRootVolume($config, false),
+            $this->volumeResolver->getDevVolumes($config, $config->hasServiceEnabled(ServiceInterface::SERVICE_TEST)),
             $this->volumeResolver->getMagentoVolumes($config->getMounts(), false, $this->hasGenerated($config)),
             $this->volumeResolver->getMountVolumes($config->hasTmpMounts()),
             $this->volumeResolver->getComposerVolumes()
@@ -75,7 +75,7 @@ class Volume
     public function getBuild(Config $config): array
     {
         return $this->volumeResolver->normalize(array_merge(
-            $this->volumeResolver->getRootVolume(false),
+            $this->volumeResolver->getRootVolume($config, false),
             $this->volumeResolver->getDefaultMagentoVolumes(false, $this->hasGenerated($config)),
             $this->volumeResolver->getComposerVolumes()
         ));

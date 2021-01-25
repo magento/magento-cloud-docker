@@ -152,6 +152,7 @@ interface SourceInterface
     public const SYSTEM_MAILHOG_HTTP_PORT = 'system.mailhog.http_port';
     public const SYSTEM_NGINX_WORKER_PROCESSES = 'system.nginx.worker_processes';
     public const SYSTEM_NGINX_WORKER_CONNECTIONS = 'system.nginx.worker_connections';
+    public const SYSTEM_ROOT_DIR = 'system.root_dir';
 
     public const SYSTEM_DB_INCREMENT_INCREMENT = 'system.db.increment_increment';
     public const SYSTEM_DB_INCREMENT_OFFSET = 'system.db.increment_offset';

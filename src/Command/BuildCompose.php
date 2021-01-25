@@ -305,6 +305,11 @@ class BuildCompose extends Command
             null,
             InputOption::VALUE_REQUIRED,
             '"auto_increment_offset" database variable'
+        )->addOption(
+            Source\CliSource::OPTION_ROOT_DIR,
+            null,
+            InputOption::VALUE_REQUIRED,
+            'Root directory'
         );
 
         parent::configure();

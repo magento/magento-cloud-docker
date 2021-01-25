@@ -152,8 +152,9 @@ class ProductionBuilder implements BuilderInterface
             BuilderInterface::SERVICE_DB_QUOTE,
             BuilderInterface::SERVICE_DB_SALES,
         ];
-        $service = in_array($service->getName(), $serviceNames) ? $service->getServiceName() : $service->getName();
 
-        return $config->hasServiceEnabled($service);
+        return $config->hasServiceEnabled(
+            in_array($service->getName(), $serviceNames, true) ? $service->getServiceName() : $service->getName()
+        );
     }
 }
