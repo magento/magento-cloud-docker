@@ -120,6 +120,7 @@ class Generator
      *
      * @param string $filePath
      * @param array $config
+     * @throws FileSystemException
      */
     private function saveConfigDist(string $filePath, array $config): void
     {
@@ -140,6 +141,7 @@ class Generator
      * @param array $config
      *
      * @throws ConfigurationMismatchException
+     * @throws FileSystemException
      */
     private function saveConfigEnv(string $filePath, array $config): void
     {

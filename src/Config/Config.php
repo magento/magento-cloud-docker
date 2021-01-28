@@ -14,6 +14,7 @@ use Magento\CloudDocker\Compose\DeveloperBuilder;
 use Magento\CloudDocker\Compose\ProductionBuilder;
 use Magento\CloudDocker\Config\Source\SourceException;
 use Magento\CloudDocker\Config\Source\SourceInterface;
+use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Service\ServiceInterface;
 
 /**
@@ -32,6 +33,11 @@ class Config
     private $data;
 
     /**
+     * @var DirectoryList
+     */
+    private $directoryList;
+
+    /**
      * Available engines per mode
      *
      * @var array
@@ -42,10 +48,12 @@ class Config
     ];
 
     /**
+     * @param DirectoryList $directoryList
      * @param SourceInterface[] $sources
      */
-    public function __construct(array $sources = [])
+    public function __construct(DirectoryList $directoryList, array $sources = [])
     {
+        $this->directoryList = $directoryList;
         $this->sources = $sources;
         $this->data = new Repository();
     }
@@ -401,11 +409,17 @@ class Config
      */
     public function getName(): string
     {
-        if (!$this->all()->has(SourceInterface::NAME)) {
+        $name = $this->all()->get(SourceInterface::NAME);
+
+        if (!$name) {
+            $name = str_replace(['.'], ['-'], basename($this->directoryList->getMagentoRoot()));
+        }
+
+        if (!$name) {
             throw new ConfigurationMismatchException('Required parameter "name" is not provided');
         }
 
-        return $this->all()->get(SourceInterface::NAME);
+        return $name;
     }
 
     /**
@@ -489,6 +503,7 @@ class Config
         if (SourceInterface::NGINX_WORKER_PROCESSES_AUTO === $value) {
             return $value;
         }
+
         return (string)$value;
     }
 
@@ -499,5 +514,21 @@ class Config
     public function getNginxWorkerConnections()
     {
         return (int)$this->all()->get(SourceInterface::SYSTEM_NGINX_WORKER_CONNECTIONS);
+    }
+
+    /**
+     * Retrieves root folder for Docker mount.
+     * Can be relative - `./magento2` or absolute
+     *
+     * @return string
+     * @throws ConfigurationMismatchException
+     */
+    public function getRootDirectory(): string
+    {
+        if ($this->all()->has(SourceInterface::SYSTEM_ROOT_DIR)) {
+            return (string)$this->all()->get(SourceInterface::SYSTEM_ROOT_DIR);
+        }
+
+        return '.';
     }
 }

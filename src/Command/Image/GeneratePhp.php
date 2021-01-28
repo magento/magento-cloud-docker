@@ -10,10 +10,10 @@ namespace Magento\CloudDocker\Command\Image;
 use Composer\Semver\Semver;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Cli;
-use Magento\CloudDocker\Filesystem\FileNotFoundException;
-use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Filesystem\DirectoryList;
+use Magento\CloudDocker\Filesystem\FileNotFoundException;
+use Magento\CloudDocker\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -133,6 +133,7 @@ class GeneratePhp extends Command
      *
      * @throws ConfigurationMismatchException
      * @throws FileNotFoundException
+     * @throws \Magento\CloudDocker\Filesystem\FileSystemException
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -161,6 +162,7 @@ class GeneratePhp extends Command
      * @param string $edition
      * @throws ConfigurationMismatchException
      * @throws FileNotFoundException
+     * @throws \Magento\CloudDocker\Filesystem\FileSystemException
      */
     private function build(string $version, string $edition): void
     {

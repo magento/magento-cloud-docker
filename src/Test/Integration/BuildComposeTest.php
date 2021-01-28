@@ -114,6 +114,7 @@ class BuildComposeTest extends TestCase
                     [CliSource::OPTION_NO_MAILHOG, true],
                     [CliSource::OPTION_NGINX_WORKER_PROCESSES, '8'],
                     [CliSource::OPTION_NGINX_WORKER_CONNECTIONS, '4096'],
+                    [CliSource::OPTION_ROOT_DIR, './magento2ce']
                 ]
             ],
             'cloud-base-test' => [

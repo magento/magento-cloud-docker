@@ -7,19 +7,26 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Compose\ProductionBuilder;
 
+use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Compose\BuilderInterface;
+use Magento\CloudDocker\Config\Config;
 
 /**
  * Resolves the volume definitions.
  */
 class VolumeResolver
 {
-    public function getRootVolume(bool $isReadOnly): array
+    /**
+     * @param Config $config
+     * @param bool $isReadOnly
+     * @return array[]
+     */
+    public function getRootVolume(Config $config, bool $isReadOnly): array
     {
         $mode = $isReadOnly ? 'ro,delegated' : 'rw,delegated';
 
         return [
-            BuilderInterface::VOLUME_MAGENTO => [
+            $this->getMagentoVolume($config) => [
                 'path' => BuilderInterface::DIR_MAGENTO,
                 'volume' => '/',
                 'mode' => $mode
@@ -28,14 +35,15 @@ class VolumeResolver
     }
 
     /**
+     * @param Config $config
      * @param bool $hasTest
      * @return array
      */
-    public function getDevVolumes(bool $hasTest): array
+    public function getDevVolumes(Config $config, bool $hasTest): array
     {
         if ($hasTest) {
             return [
-                BuilderInterface::VOLUME_MAGENTO_DEV => [
+                $this->getMagentoDevVolume($config) => [
                     'path' => BuilderInterface::DIR_MAGENTO . '/dev',
                     'volume' => '/dev',
                     'mode' => 'rw,delegated'
@@ -152,5 +160,25 @@ class VolumeResolver
         }
 
         return $normalized;
+    }
+
+    /**
+     * @param Config $config
+     * @return string
+     * @throws ConfigurationMismatchException
+     */
+    public function getMagentoVolume(Config $config): string
+    {
+        return $config->getRootDirectory();
+    }
+
+    /**
+     * @param Config $config
+     * @return string
+     * @throws ConfigurationMismatchException
+     */
+    public function getMagentoDevVolume(Config $config): string
+    {
+        return $config->getRootDirectory() . '/dev';
     }
 }

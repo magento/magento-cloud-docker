@@ -39,7 +39,6 @@ interface BuilderInterface
     public const NETWORK_MAGENTO = 'magento';
     public const NETWORK_MAGENTO_BUILD = 'magento-build';
 
-    public const VOLUME_MAGENTO = '.';
     public const VOLUME_DOCKER_MNT = '.docker/mnt';
     public const VOLUME_MARIADB_CONF = '.docker/mysql/mariadb.conf.d';
     public const VOLUME_MAGENTO_VENDOR = 'magento-vendor';
@@ -47,7 +46,6 @@ interface BuilderInterface
     public const VOLUME_MAGENTO_DB = 'magento-db';
     public const VOLUME_MAGENTO_DB_QUOTE = 'magento-db-quote';
     public const VOLUME_MAGENTO_DB_SALES = 'magento-db-sales';
-    public const VOLUME_MAGENTO_DEV = './dev';
     public const VOLUME_DOCKER_ENTRYPOINT = '.docker/mysql/docker-entrypoint-initdb.d';
     public const VOLUME_DOCKER_ENTRYPOINT_QUOTE = '.docker/mysql-quote/docker-entrypoint-initdb.d';
     public const VOLUME_DOCKER_ENTRYPOINT_SALES = '.docker/mysql-sales/docker-entrypoint-initdb.d';

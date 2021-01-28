@@ -54,10 +54,13 @@ class ElasticSearch implements ServiceBuilderInterface
      */
     public function getConfig(Config $config): array
     {
-        $esEnvVars = [];
+        $esEnvVars = [
+            'cluster.name=docker-cluster',
+            'bootstrap.memory_lock=true'
+        ];
 
         if (!empty($config->get(SourceInterface::SERVICES_ES_VARS))) {
-            $esEnvVars = $config->get(SourceInterface::SERVICES_ES_VARS);
+            $esEnvVars = array_merge($esEnvVars, $config->get(SourceInterface::SERVICES_ES_VARS));
         }
 
         if (!empty($plugins = $config->get(SourceInterface::SERVICES_ES_PLUGINS)) && is_array($plugins)) {

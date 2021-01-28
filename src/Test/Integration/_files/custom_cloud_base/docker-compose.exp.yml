@@ -3,6 +3,7 @@ services:
   db:
     hostname: db.magento2.test
     image: 'mariadb:10.0'
+    shm_size: 2gb
     environment:
       - MYSQL_ROOT_PASSWORD=magento2
       - MYSQL_DATABASE=magento2
