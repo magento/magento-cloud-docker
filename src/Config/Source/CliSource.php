@@ -58,9 +58,13 @@ class CliSource implements SourceInterface
     public const OPTION_NO_TMP_MOUNTS = 'no-tmp-mounts';
     public const OPTION_SYNC_ENGINE = 'sync-engine';
     public const OPTION_WITH_XDEBUG = 'with-xdebug';
-    public const OPTION_SET_DOCKER_HOST_XDEBUG = 'set-docker-host';
     public const OPTION_WITH_ENTRYPOINT = 'with-entrypoint';
     public const OPTION_WITH_MARIADB_CONF = 'with-mariadb-conf';
+
+    /**
+     * @deprecated Will be removed in next major release
+     */
+    public const OPTION_SET_DOCKER_HOST_XDEBUG = 'set-docker-host';
 
     /**
      * Environment variables.
@@ -252,10 +256,6 @@ class CliSource implements SourceInterface
             $repository->set([
                 self::SERVICES_XDEBUG . '.enabled' => true
             ]);
-        }
-
-        if ($this->input->getOption(self::OPTION_SET_DOCKER_HOST_XDEBUG)) {
-            $repository->set(self::SYSTEM_SET_DOCKER_HOST, true);
         }
 
         if ($envs = $this->input->getOption(self::OPTION_ENV_VARIABLES)) {
