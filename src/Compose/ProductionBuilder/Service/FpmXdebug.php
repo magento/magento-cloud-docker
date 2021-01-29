@@ -84,9 +84,6 @@ class FpmXdebug implements ServiceBuilderInterface
         $envVariables = [
             'PHP_EXTENSIONS' => implode(' ', array_unique(array_merge($this->phpExtension->get($config), ['xdebug'])))
         ];
-        if ($config->get(SourceInterface::SYSTEM_SET_DOCKER_HOST)) {
-            $envVariables['SET_DOCKER_HOST'] = true;
-        }
 
         return $this->serviceFactory->create(
             $this->getServiceName(),

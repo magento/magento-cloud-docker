@@ -187,7 +187,7 @@ class BuildCompose extends Command
                 Source\CliSource::OPTION_SET_DOCKER_HOST_XDEBUG,
                 null,
                 InputOption::VALUE_NONE,
-                'Sets host.docker.internal for fpm_xdebug container to resolve debug issue for LINUX system'
+                'Deprecated option to resolve host.docker.internal on Linux. Did nothing at the moment'
             )->addOption(
                 Source\CliSource::OPTION_NGINX_WORKER_PROCESSES,
                 null,
