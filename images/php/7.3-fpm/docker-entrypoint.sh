@@ -61,6 +61,13 @@ fi
 # Configure PHP-FPM
 [ ! -z "${MAGENTO_RUN_MODE}" ] && sed -i "s/!MAGENTO_RUN_MODE!/${MAGENTO_RUN_MODE}/" /usr/local/etc/php-fpm.conf
 
+# Use www user on FPM pool when on developer mode
+# to avoid permission issues with mounted volumes.
+if [ "$MAGENTO_RUN_MODE" == "developer" ]; then
+    sed -i 's/user = .*/user = www/' /usr/local/etc/php-fpm.conf
+    sed -i 's/group = .*/group = www/' /usr/local/etc/php-fpm.conf
+fi
+
 # Set host.docker.inernal if not available
 HOST_NAME="host.docker.internal"
 HOST_IP=$(php -r "putenv('RES_OPTIONS=retrans:1 retry:1 timeout:1 attempts:1'); echo gethostbyname('$HOST_NAME');")

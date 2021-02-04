@@ -78,4 +78,10 @@ fi
     composer config --global http-basic.repo.magento.com \
         $COMPOSER_MAGENTO_USERNAME $COMPOSER_MAGENTO_PASSWORD
 
-exec gosu www "$@"
+# Launch container as www when developer mode is active
+# to avoid permission issues with mounted volumes.
+if [ "$MAGENTO_RUN_MODE" == "developer" ]; then
+    exec gosu www "$@"
+else
+    exec gosu root "$@"
+fi
