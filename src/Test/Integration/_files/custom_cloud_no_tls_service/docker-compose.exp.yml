@@ -76,7 +76,7 @@ services:
     image: 'magento/magento-cloud-docker-php:7.2-cli-1.2.0'
     env_file: ./.docker/config.env
     environment:
-      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip'
+      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl sodium'
   build:
     hostname: build.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.2-cli-1.2.0'
