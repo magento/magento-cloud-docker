@@ -14,7 +14,7 @@ services:
     volumes:
       - '.docker/mnt:/mnt:rw,delegated'
       - '.docker/mysql/mariadb.conf.d:/etc/mysql/mariadb.conf.d'
-      - 'mymagento-magento-db:/var/lib/mysql'
+      - 'magento-magento-db:/var/lib/mysql'
       - '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
     healthcheck:
       test: 'mysqladmin ping -h localhost -pmagento2'
@@ -203,7 +203,7 @@ volumes:
   magento-app-etc: {  }
   magento-pub-media: {  }
   magento-pub-static: {  }
-  mymagento-magento-db: {  }
+  magento-magento-db: {  }
 networks:
   magento:
     driver: bridge

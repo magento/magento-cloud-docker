@@ -106,15 +106,17 @@ class ProductionBuilder implements BuilderInterface
 
         $volumes = [];
 
-        foreach (array_keys($this->volumeResolver->getMagentoVolumes(
-            $config->getMounts(),
-            false,
-            $hasGenerated
-        )) as $volumeName) {
-            $volumes[$volumeName] = [];
-        }
+        if ($config->getSyncEngine() !== self::SYNC_ENGINE_NATIVE) {
+            foreach (array_keys($this->volumeResolver->getMagentoVolumes(
+                $config,
+                false,
+                $hasGenerated
+            )) as $volumeName) {
+                $volumes[$volumeName] = [];
+            }
 
-        $manager->setVolumes($volumes);
+            $manager->setVolumes($volumes);
+        }
 
         $manager->addVolume($config->getNameWithPrefix() . BuilderInterface::VOLUME_MAGENTO_DB, []);
 

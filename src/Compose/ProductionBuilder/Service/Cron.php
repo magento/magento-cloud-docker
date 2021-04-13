@@ -82,9 +82,9 @@ class Cron implements ServiceBuilderInterface
             $preparedCronConfig[] = sprintf(
                 '%s root cd %s && %s >> %s/var/log/cron.log',
                 $job['schedule'],
-                BuilderInterface::DIR_MAGENTO,
+                BuilderInterface::TARGET_ROOT,
                 str_replace('php ', '/usr/local/bin/php ', $job['command']),
-                BuilderInterface::DIR_MAGENTO
+                BuilderInterface::TARGET_ROOT
             );
         }
 

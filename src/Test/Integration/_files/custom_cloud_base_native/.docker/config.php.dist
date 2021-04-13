@@ -1,0 +1,39 @@
+<?php
+
+return [
+    'MAGENTO_CLOUD_RELATIONSHIPS' => base64_encode(json_encode([
+        'database' => [
+            [
+                'host' => 'db',
+                'path' => 'magento2',
+                'password' => 'magento2',
+                'username' => 'magento2',
+                'port' => '3306'
+            ]
+        ]
+    ])),
+    'MAGENTO_CLOUD_ROUTES' => base64_encode(json_encode([
+        'http://magento2.test:8080/' => [
+            'type' => 'upstream',
+            'original_url' => 'http://{default}'
+        ],
+        'https://magento2.test:8080/' => [
+            'type' => 'upstream',
+            'original_url' => 'https://{default}'
+        ]
+    ])),
+    'MAGENTO_CLOUD_VARIABLES' => base64_encode(json_encode([
+        'ADMIN_EMAIL' => 'admin@example.com',
+        'ADMIN_PASSWORD' => '123123q',
+        'ADMIN_URL' => 'admin'
+    ])),
+    'MAGENTO_CLOUD_APPLICATION' => base64_encode(json_encode([
+        'hooks' => [
+            'build' => 'set -e
+php ./vendor/bin/ece-tools run scenario/build/generate.xml
+php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+            'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+            'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+        ]
+    ])),
+];

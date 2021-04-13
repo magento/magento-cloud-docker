@@ -126,6 +126,61 @@ class BuildCustomComposeTest extends TestCase
                     ]
                 ]
             ],
+            'cloud-base-native' => [
+                __DIR__ . '/_files/custom_cloud_base_native',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => [
+                                'mode' => 'production',
+                                'host' => 'magento2.test',
+                                'port' => '8080',
+                                'db' => [
+                                    'increment_increment' => 3,
+                                    'increment_offset' => 2
+                                ],
+                                'mailhog' => [
+                                    'smtp_port' => '1026',
+                                    'http_port' => '8026'
+                                ],
+                                'sync_mode' => 'native'
+                            ],
+                            'services' => [
+                                'php' => [
+                                    'version' => '7.2',
+                                    'enabled' => true,
+                                    'extensions' => [
+                                        'enabled' => ['xsl']
+                                    ],
+                                ],
+                                'mysql' => [
+                                    'version' => '10.0',
+                                    'image' => 'mariadb',
+                                    'enabled' => true,
+                                ],
+                                'mailhog' => [
+                                    'enabled' => true,
+                                ]
+                            ],
+                            'hooks' => [
+                                'build' => 'set -e' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/generate.xml' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+                                'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+                                'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+                            ],
+                            'mounts' => [
+                                'var' => ['path' => 'var'],
+                                'app-etc' => ['path' => 'app/etc',],
+                                'pub-media' => ['path' => 'pub/media',],
+                                'pub-static' => ['path' => 'pub/static']
+                            ]
+                        ])
+                    ]
+                ]
+            ],
             'cloud-base-with-custom-images' => [
                 __DIR__ . '/_files/custom_cloud_custom_images',
                 [

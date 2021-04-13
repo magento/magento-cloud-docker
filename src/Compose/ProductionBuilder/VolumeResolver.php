@@ -27,7 +27,7 @@ class VolumeResolver
 
         return [
             $this->getMagentoVolume($config) => [
-                'path' => BuilderInterface::DIR_MAGENTO,
+                'target' => BuilderInterface::TARGET_ROOT,
                 'volume' => '/',
                 'mode' => $mode
             ]
@@ -44,7 +44,7 @@ class VolumeResolver
         if ($hasTest) {
             return [
                 $this->getMagentoDevVolume($config) => [
-                    'path' => BuilderInterface::DIR_MAGENTO . '/dev',
+                    'target' => BuilderInterface::TARGET_ROOT . '/dev',
                     'volume' => '/dev',
                     'mode' => 'rw,delegated'
                 ]
@@ -55,25 +55,35 @@ class VolumeResolver
     }
 
     /**
+     * @param Config $config
      * @param bool $isReadOnly
      * @param bool $hasGenerated
      * @return array
+     * @throws ConfigurationMismatchException
      */
-    public function getDefaultMagentoVolumes(bool $isReadOnly, bool $hasGenerated = true): array
+    public function getDefaultMagentoVolumes(Config $config, bool $isReadOnly, bool $hasGenerated = true): array
     {
         $mode = $isReadOnly ? 'ro,delegated' : 'rw,delegated';
 
         $volumes = [
-            BuilderInterface::VOLUME_MAGENTO_VENDOR => [
-                'path' => BuilderInterface::DIR_MAGENTO . '/vendor',
+            $this->getVolume(
+                $config,
+                BuilderInterface::VOLUME_MAGENTO_VENDOR,
+                BuilderInterface::VOLUME_MAGENTO_VENDOR
+            ) => [
+                'target' => BuilderInterface::TARGET_ROOT . '/vendor',
                 'volume' => '/vendor',
                 'mode' => $mode,
             ]
         ];
 
         if ($hasGenerated) {
-            $volumes[BuilderInterface::VOLUME_MAGENTO_GENERATED] = [
-                'path' => BuilderInterface::DIR_MAGENTO . '/generated',
+            $volumes[$this->getVolume(
+                $config,
+                BuilderInterface::VOLUME_MAGENTO_GENERATED,
+                BuilderInterface::VOLUME_MAGENTO_GENERATED
+            )] = [
+                'target' => BuilderInterface::TARGET_ROOT . '/generated',
                 'volume' => '/generated',
                 'mode' => $mode
             ];
@@ -83,24 +93,23 @@ class VolumeResolver
     }
 
     /**
-     * @param array $mounts
+     * @param Config $config
      * @param bool $isReadOnly
      * @param bool $hasGenerated
-     * @return array
+     * @return string[][]
+     * @throws ConfigurationMismatchException
      */
     public function getMagentoVolumes(
-        array $mounts,
+        Config $config,
         bool $isReadOnly,
         bool $hasGenerated = true
     ): array {
-        $volumes = $this->getDefaultMagentoVolumes($isReadOnly, $hasGenerated);
+        $volumes = $this->getDefaultMagentoVolumes($config, $isReadOnly, $hasGenerated);
 
-        foreach ($mounts as $volumeData) {
+        foreach ($config->getMounts() as $name => $volumeData) {
             $path = $volumeData['path'];
-            $volumeName = 'magento-' . str_replace('/', '-', $path);
-
-            $volumes[$volumeName] = [
-                'path' => BuilderInterface::DIR_MAGENTO . '/' . $path,
+            $volumes[$this->getVolume($config, $name, $path)] = [
+                'target' => BuilderInterface::TARGET_ROOT . '/' . $path,
                 'volume' => '/' . $path,
                 'mode' => 'rw,delegated'
             ];
@@ -116,7 +125,7 @@ class VolumeResolver
     {
         return [
             '~/.composer/cache' => [
-                'path' => '/root/.composer/cache',
+                'target' => '/root/.composer/cache',
                 'mode' => 'rw,delegated'
             ]
         ];
@@ -131,7 +140,7 @@ class VolumeResolver
         if ($hasTmpMounts) {
             return [
                 BuilderInterface::VOLUME_DOCKER_MNT => [
-                    'path' => '/mnt',
+                    'target' => '/mnt',
                     'mode' => 'rw,delegated'
                 ],
             ];
@@ -154,7 +163,7 @@ class VolumeResolver
             $normalized[] = sprintf(
                 '%s:%s:%s',
                 $name,
-                $config['path'],
+                $config['target'],
                 $config['mode'] ?? 'rw,delegated'
             );
         }
@@ -180,5 +189,21 @@ class VolumeResolver
     public function getMagentoDevVolume(Config $config): string
     {
         return $config->getRootDirectory() . '/dev';
+    }
+
+    /**
+     * @param Config $config
+     * @param string $name
+     * @param string $path
+     * @return string
+     * @throws ConfigurationMismatchException
+     */
+    private function getVolume(Config $config, string $name, string $path): string
+    {
+        if ($config->getSyncEngine() === BuilderInterface::SYNC_ENGINE_NATIVE) {
+            return $config->getRootDirectory() . '/' . $path;
+        }
+
+        return $config->getNameWithPrefix() . str_replace('/', '-', $name);
     }
 }

@@ -13,7 +13,7 @@ services:
       - '3306'
     volumes:
       - '.:/app:delegated'
-      - 'mymagento-magento-db:/var/lib/mysql'
+      - 'magento-magento-db:/var/lib/mysql'
       - '.docker/mysql/mariadb.conf.d:/etc/mysql/mariadb.conf.d'
       - '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
     healthcheck:
@@ -174,7 +174,7 @@ services:
         aliases:
           - mailhog.magento2.docker
 volumes:
-  mymagento-magento-db: {  }
+  magento-magento-db: {  }
 networks:
   magento:
     driver: bridge

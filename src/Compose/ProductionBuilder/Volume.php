@@ -42,7 +42,7 @@ class Volume
         return $this->volumeResolver->normalize(array_merge(
             $this->volumeResolver->getRootVolume($config, true),
             $this->volumeResolver->getDevVolumes($config, $config->hasServiceEnabled(ServiceInterface::SERVICE_TEST)),
-            $this->volumeResolver->getMagentoVolumes($config->getMounts(), true, $this->hasGenerated($config)),
+            $this->volumeResolver->getMagentoVolumes($config, true, $this->hasGenerated($config)),
             $this->volumeResolver->getMountVolumes($config->hasTmpMounts())
         ));
     }
@@ -59,7 +59,7 @@ class Volume
         return $this->volumeResolver->normalize(array_merge(
             $this->volumeResolver->getRootVolume($config, false),
             $this->volumeResolver->getDevVolumes($config, $config->hasServiceEnabled(ServiceInterface::SERVICE_TEST)),
-            $this->volumeResolver->getMagentoVolumes($config->getMounts(), false, $this->hasGenerated($config)),
+            $this->volumeResolver->getMagentoVolumes($config, false, $this->hasGenerated($config)),
             $this->volumeResolver->getMountVolumes($config->hasTmpMounts()),
             $this->volumeResolver->getComposerVolumes()
         ));
@@ -76,7 +76,7 @@ class Volume
     {
         return $this->volumeResolver->normalize(array_merge(
             $this->volumeResolver->getRootVolume($config, false),
-            $this->volumeResolver->getDefaultMagentoVolumes(false, $this->hasGenerated($config)),
+            $this->volumeResolver->getDefaultMagentoVolumes($config, false, $this->hasGenerated($config)),
             $this->volumeResolver->getComposerVolumes()
         ));
     }
