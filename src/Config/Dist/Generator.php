@@ -186,7 +186,8 @@ class Generator
                 'ADMIN_URL' => 'admin'
             ],
             'MAGENTO_CLOUD_APPLICATION' => [
-                'hooks' => $config->getHooks()
+                'hooks' => $config->getHooks(),
+                'mounts' => $config->getMounts()
             ]
         ];
     }
