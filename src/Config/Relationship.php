@@ -82,7 +82,10 @@ class Relationship
     {
         $relationships = [];
         foreach (self::$defaultConfiguration as $serviceName => $serviceConfig) {
-            if ($config->hasServiceEnabled($this->convertServiceName($serviceName))) {
+            if ($config->hasServiceEnabled($this->convertServiceName($serviceName))
+                && !empty($serviceConfig[0])) {
+                $serviceConfig[0]['type'] = $this->convertServiceName($serviceName) . ':'
+                    . $config->getServiceVersion($this->convertServiceName($serviceName));
                 $relationships[$serviceName] = $serviceConfig;
             }
         }
