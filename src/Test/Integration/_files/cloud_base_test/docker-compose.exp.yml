@@ -3,6 +3,7 @@ services:
   db:
     hostname: db.magento2.docker
     image: 'mariadb:10.2'
+    shm_size: 2gb
     environment:
       - MYSQL_ROOT_PASSWORD=magento2
       - MYSQL_DATABASE=magento2
@@ -32,6 +33,13 @@ services:
       - /data
     ports:
       - 6379
+    sysctls:
+      net.core.somaxconn: 1024
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
     healthcheck:
       test: 'redis-cli ping || exit 1'
       interval: 30s
@@ -48,12 +56,12 @@ services:
     volumes:
       - '.:/app:ro,delegated'
       - './dev:/app/dev:rw,delegated'
-      - 'magento-vendor:/app/vendor:ro,delegated'
-      - 'magento-generated:/app/generated:ro,delegated'
-      - 'magento-var:/app/var:rw,delegated'
-      - 'magento-app-etc:/app/app/etc:rw,delegated'
-      - 'magento-pub-media:/app/pub/media:rw,delegated'
-      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - 'mymagento-vendor:/app/vendor:ro,delegated'
+      - 'mymagento-generated:/app/generated:ro,delegated'
+      - 'mymagento-var:/app/var:rw,delegated'
+      - 'mymagento-app-etc:/app/app/etc:rw,delegated'
+      - 'mymagento-pub-media:/app/pub/media:rw,delegated'
+      - 'mymagento-pub-static:/app/pub/static:rw,delegated'
       - '.docker/mnt:/mnt:rw,delegated'
     networks:
       magento:
@@ -69,12 +77,12 @@ services:
     volumes:
       - '.:/app:ro,delegated'
       - './dev:/app/dev:rw,delegated'
-      - 'magento-vendor:/app/vendor:ro,delegated'
-      - 'magento-generated:/app/generated:ro,delegated'
-      - 'magento-var:/app/var:rw,delegated'
-      - 'magento-app-etc:/app/app/etc:rw,delegated'
-      - 'magento-pub-media:/app/pub/media:rw,delegated'
-      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - 'mymagento-vendor:/app/vendor:ro,delegated'
+      - 'mymagento-generated:/app/generated:ro,delegated'
+      - 'mymagento-var:/app/var:rw,delegated'
+      - 'mymagento-app-etc:/app/app/etc:rw,delegated'
+      - 'mymagento-pub-media:/app/pub/media:rw,delegated'
+      - 'mymagento-pub-static:/app/pub/static:rw,delegated'
       - '.docker/mnt:/mnt:rw,delegated'
     environment:
       - WITH_XDEBUG=1
@@ -123,12 +131,12 @@ services:
     volumes:
       - '.:/app:rw,delegated'
       - './dev:/app/dev:rw,delegated'
-      - 'magento-vendor:/app/vendor:rw,delegated'
-      - 'magento-generated:/app/generated:rw,delegated'
-      - 'magento-var:/app/var:rw,delegated'
-      - 'magento-app-etc:/app/app/etc:rw,delegated'
-      - 'magento-pub-media:/app/pub/media:rw,delegated'
-      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - 'mymagento-vendor:/app/vendor:rw,delegated'
+      - 'mymagento-generated:/app/generated:rw,delegated'
+      - 'mymagento-var:/app/var:rw,delegated'
+      - 'mymagento-app-etc:/app/app/etc:rw,delegated'
+      - 'mymagento-pub-media:/app/pub/media:rw,delegated'
+      - 'mymagento-pub-static:/app/pub/static:rw,delegated'
       - '.docker/mnt:/mnt:rw,delegated'
       - '~/.composer/cache:/root/.composer/cache:rw,delegated'
     networks:
@@ -147,15 +155,15 @@ services:
     volumes:
       - '.:/app:ro,delegated'
       - './dev:/app/dev:rw,delegated'
-      - 'magento-vendor:/app/vendor:ro,delegated'
-      - 'magento-generated:/app/generated:ro,delegated'
-      - 'magento-var:/app/var:rw,delegated'
-      - 'magento-app-etc:/app/app/etc:rw,delegated'
-      - 'magento-pub-media:/app/pub/media:rw,delegated'
-      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - 'mymagento-vendor:/app/vendor:ro,delegated'
+      - 'mymagento-generated:/app/generated:ro,delegated'
+      - 'mymagento-var:/app/var:rw,delegated'
+      - 'mymagento-app-etc:/app/app/etc:rw,delegated'
+      - 'mymagento-pub-media:/app/pub/media:rw,delegated'
+      - 'mymagento-pub-static:/app/pub/static:rw,delegated'
       - '.docker/mnt:/mnt:rw,delegated'
     environment:
-      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip redis xsl sodium xdebug'
+      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl sodium redis xdebug'
     networks:
       magento:
         aliases:
@@ -168,15 +176,15 @@ services:
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'
     env_file: ./.docker/config.env
     environment:
-      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip redis xsl sodium'
+      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl sodium redis'
   build:
     hostname: build.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'
     extends: generic
     volumes:
       - '.:/app:rw,delegated'
-      - 'magento-vendor:/app/vendor:rw,delegated'
-      - 'magento-generated:/app/generated:rw,delegated'
+      - 'mymagento-vendor:/app/vendor:rw,delegated'
+      - 'mymagento-generated:/app/generated:rw,delegated'
       - '~/.composer/cache:/root/.composer/cache:rw,delegated'
     networks:
       magento-build:
@@ -194,12 +202,12 @@ services:
     volumes:
       - '.:/app:ro,delegated'
       - './dev:/app/dev:rw,delegated'
-      - 'magento-vendor:/app/vendor:ro,delegated'
-      - 'magento-generated:/app/generated:ro,delegated'
-      - 'magento-var:/app/var:rw,delegated'
-      - 'magento-app-etc:/app/app/etc:rw,delegated'
-      - 'magento-pub-media:/app/pub/media:rw,delegated'
-      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - 'mymagento-vendor:/app/vendor:ro,delegated'
+      - 'mymagento-generated:/app/generated:ro,delegated'
+      - 'mymagento-var:/app/var:rw,delegated'
+      - 'mymagento-app-etc:/app/app/etc:rw,delegated'
+      - 'mymagento-pub-media:/app/pub/media:rw,delegated'
+      - 'mymagento-pub-static:/app/pub/static:rw,delegated'
       - '.docker/mnt:/mnt:rw,delegated'
     networks:
       magento:
@@ -220,12 +228,12 @@ services:
     volumes:
       - '.:/app:ro,delegated'
       - './dev:/app/dev:rw,delegated'
-      - 'magento-vendor:/app/vendor:ro,delegated'
-      - 'magento-generated:/app/generated:ro,delegated'
-      - 'magento-var:/app/var:rw,delegated'
-      - 'magento-app-etc:/app/app/etc:rw,delegated'
-      - 'magento-pub-media:/app/pub/media:rw,delegated'
-      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - 'mymagento-vendor:/app/vendor:ro,delegated'
+      - 'mymagento-generated:/app/generated:ro,delegated'
+      - 'mymagento-var:/app/var:rw,delegated'
+      - 'mymagento-app-etc:/app/app/etc:rw,delegated'
+      - 'mymagento-pub-media:/app/pub/media:rw,delegated'
+      - 'mymagento-pub-static:/app/pub/static:rw,delegated'
       - '.docker/mnt:/mnt:rw,delegated'
     networks:
       magento:
@@ -237,12 +245,12 @@ services:
       redis:
         condition: service_healthy
 volumes:
-  magento-vendor: {  }
-  magento-generated: {  }
-  magento-var: {  }
-  magento-app-etc: {  }
-  magento-pub-media: {  }
-  magento-pub-static: {  }
+  mymagento-vendor: {  }
+  mymagento-generated: {  }
+  mymagento-var: {  }
+  mymagento-app-etc: {  }
+  mymagento-pub-media: {  }
+  mymagento-pub-static: {  }
   mymagento-magento-db: {  }
 networks:
   magento:

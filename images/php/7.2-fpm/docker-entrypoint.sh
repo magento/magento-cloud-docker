@@ -46,6 +46,9 @@ fi
 # Add custom php.ini if it exists
 [ -f "/app/php.ini" ] && cp /app/php.ini ${PHP_EXT_DIR}/zzz-custom-php.ini
 
+# Add developer php.ini if it exists
+[ -f "/app/php.dev.ini" ] && [ "$MAGENTO_RUN_MODE" == "developer" ] && cp /app/php.dev.ini ${PHP_EXT_DIR}/zzz-dev-php.ini
+
 # Enable PHP extensions
 PHP_EXT_COM_ON=docker-php-ext-enable
 
@@ -58,11 +61,12 @@ fi
 # Configure PHP-FPM
 [ ! -z "${MAGENTO_RUN_MODE}" ] && sed -i "s/!MAGENTO_RUN_MODE!/${MAGENTO_RUN_MODE}/" /usr/local/etc/php-fpm.conf
 
-# Set host.docker.inernal for LINUX os
-if [[ "$SET_DOCKER_HOST" = "true" ]]; then
-  apt update
-  apt install -y iproute2
-  echo -e "`/sbin/ip route|awk '/default/ { print $3 }'`\thost.docker.internal" | sudo tee -a /etc/hosts > /dev/null
+# Set host.docker.inernal if not available
+HOST_NAME="host.docker.internal"
+HOST_IP=$(php -r "putenv('RES_OPTIONS=retrans:1 retry:1 timeout:1 attempts:1'); echo gethostbyname('$HOST_NAME');")
+if [[ "$HOST_IP" == "$HOST_NAME" ]]; then
+  HOST_IP=$(/sbin/ip route|awk '/default/ { print $3 }')
+  printf "\n%s %s\n" "$HOST_IP" "$HOST_NAME" >> /etc/hosts
 fi
 
 exec "$@"

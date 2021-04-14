@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Compose;
 
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
+use Magento\CloudDocker\Compose\ProductionBuilder\VolumeResolver;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\Filesystem\FileList;
@@ -52,21 +53,29 @@ class DeveloperBuilder implements BuilderInterface
     private $extensionResolver;
 
     /**
+     * @var VolumeResolver
+     */
+    private $volumeResolver;
+
+    /**
      * @param BuilderFactory $builderFactory
      * @param FileList $fileList
      * @param Converter $converter
      * @param ExtensionResolver $extensionResolver
+     * @param VolumeResolver $volumeResolver
      */
     public function __construct(
         BuilderFactory $builderFactory,
         FileList $fileList,
         Converter $converter,
-        ExtensionResolver $extensionResolver
+        ExtensionResolver $extensionResolver,
+        VolumeResolver $volumeResolver
     ) {
         $this->builderFactory = $builderFactory;
         $this->fileList = $fileList;
         $this->converter = $converter;
         $this->extensionResolver = $extensionResolver;
+        $this->volumeResolver = $volumeResolver;
     }
 
     /**
@@ -76,7 +85,7 @@ class DeveloperBuilder implements BuilderInterface
      */
     public function build(Config $config): Manager
     {
-        $volumePrefix = $config->getName() . '-';
+        $volumePrefix = $config->getNameWithPrefix();
 
         $manager = $this->builderFactory
             ->create(BuilderFactory::BUILDER_PRODUCTION)
@@ -87,13 +96,13 @@ class DeveloperBuilder implements BuilderInterface
             $volumePrefix . self::VOLUME_MAGENTO_DB => []
         ];
 
-        $volumes = [self::VOLUME_MAGENTO . ':' . self::DIR_MAGENTO . ':delegated'];
+        $volumes = [$this->volumeResolver->getMagentoVolume($config) . ':' . self::TARGET_ROOT . ':delegated'];
 
         if (in_array($syncEngine, [self::SYNC_ENGINE_MUTAGEN, self::SYNC_ENGINE_DOCKER_SYNC], true)) {
             $volumesList[$volumePrefix . self::VOLUME_MAGENTO_SYNC] = $syncEngine === self::SYNC_ENGINE_DOCKER_SYNC
                 ? ['external' => true]
                 : [];
-            $volumes = [$volumePrefix . self::VOLUME_MAGENTO_SYNC . ':' . self::DIR_MAGENTO . ':nocopy'];
+            $volumes = [$volumePrefix . self::VOLUME_MAGENTO_SYNC . ':' . self::TARGET_ROOT . ':nocopy'];
         }
 
         $manager->setVolumes($volumesList);

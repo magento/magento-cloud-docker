@@ -18,7 +18,14 @@ COPY etc/vhost.conf /etc/nginx/conf.d/default.conf
 COPY etc/xdebug-upstream.conf /etc/nginx/conf.d/xdebug/upstream.conf
 
 RUN mkdir /etc/nginx/ssl
-COPY certs/* /etc/nginx/ssl/
+
+RUN apt-get update && \
+    apt-get install -y openssl
+
+RUN openssl req -x509 -nodes -days 730 \
+    -subj  "/C=US/ST=TX/L=Austin/O=Magento/OU=Cloud Docker/CN=magento.com" \
+     -newkey rsa:2048 -keyout /etc/nginx/ssl/magento.key \
+     -out /etc/nginx/ssl/magento.crt;
 
 VOLUME ${MAGENTO_ROOT}
 

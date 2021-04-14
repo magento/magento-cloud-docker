@@ -63,6 +63,7 @@ class Node implements ServiceBuilderInterface
             $config->getServiceVersion($this->getServiceName()),
             ['volumes' => $this->volume->getRo($config)],
             $config->getServiceImage($this->getServiceName()),
+            $config->getCustomRegistry(),
             $config->getServiceImagePattern($this->getServiceName())
         );
     }

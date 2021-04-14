@@ -57,6 +57,7 @@ class Varnish implements ServiceBuilderInterface
             $config->getServiceVersion($this->getServiceName()),
             [],
             $config->getServiceImage($this->getServiceName()),
+            $config->getCustomRegistry(),
             $config->getServiceImagePattern($this->getServiceName())
         );
 

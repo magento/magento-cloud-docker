@@ -69,8 +69,8 @@ add_host()
     echo "127.0.0.1 $DOMAIN" | sudo tee -a /etc/hosts
 }
 
-PHP_VERSION="7.2"
-IMAGE_VERSION="1.1"
+PHP_VERSION="7.4"
+IMAGE_VERSION="1.2.1"
 ADD_HOST=true
 DOMAIN="magento2.docker"
 USAGE="Init Docker

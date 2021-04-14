@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Command;
 
 use Magento\CloudDocker\App\GenericException;
+use Magento\CloudDocker\Cli;
 use Magento\CloudDocker\Compose\DeveloperBuilder;
 use Magento\CloudDocker\Compose\BuilderFactory;
 use Magento\CloudDocker\Config\ConfigFactory;
@@ -15,6 +16,7 @@ use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Config\Source;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -185,7 +187,7 @@ class BuildCompose extends Command
                 Source\CliSource::OPTION_SET_DOCKER_HOST_XDEBUG,
                 null,
                 InputOption::VALUE_NONE,
-                'Sets host.docker.internal for fpm_xdebug container to resolve debug issue for LINUX system'
+                'Deprecated option to resolve host.docker.internal on Linux. Did nothing at the moment'
             )->addOption(
                 Source\CliSource::OPTION_NGINX_WORKER_PROCESSES,
                 null,
@@ -198,6 +200,11 @@ class BuildCompose extends Command
                 InputOption::VALUE_OPTIONAL,
                 'The maximum number of connections that each worker process can handle simultaneously',
                 Source\BaseSource::DEFAULT_NGINX_WORKER_CONNECTIONS
+            )->addOption(
+                Source\CliSource::OPTION_CUSTOM_REGISTRY,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'The custom registry. It can be your mirror with all needed images. For example: 123.example.com'
             );
 
         $this->addOption(
@@ -298,6 +305,11 @@ class BuildCompose extends Command
             null,
             InputOption::VALUE_REQUIRED,
             '"auto_increment_offset" database variable'
+        )->addOption(
+            Source\CliSource::OPTION_ROOT_DIR,
+            null,
+            InputOption::VALUE_REQUIRED,
+            'Root directory'
         );
 
         parent::configure();
@@ -308,7 +320,7 @@ class BuildCompose extends Command
      *
      * @throws GenericException
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $config = $this->configFactory->create([
             $this->sourceFactory->create(Source\BaseSource::class),
@@ -323,16 +335,24 @@ class BuildCompose extends Command
 
         $this->distGenerator->generate($config);
 
+        $content = Yaml::dump([
+            'version' => $compose->getVersion(),
+            'services' => $compose->getServices(),
+            'volumes' => $compose->getVolumes(),
+            'networks' => $compose->getNetworks()
+        ], 6, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK);
+
+        if ($input instanceof ArgvInput) {
+            $content = '# ./vendor/bin/ece-docker ' . $input . PHP_EOL . $content;
+        }
+
         $this->filesystem->put(
             $builder->getPath(),
-            Yaml::dump([
-                'version' => $compose->getVersion(),
-                'services' => $compose->getServices(),
-                'volumes' => $compose->getVolumes(),
-                'networks' => $compose->getNetworks()
-            ], 6, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
+            $content
         );
 
         $output->writeln('<info>Configuration was built.</info>');
+
+        return Cli::SUCCESS;
     }
 }

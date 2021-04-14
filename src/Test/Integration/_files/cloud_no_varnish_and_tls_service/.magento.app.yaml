@@ -1,4 +1,4 @@
-name: mymagento
+name: magento
 
 type: php:7.3
 build:

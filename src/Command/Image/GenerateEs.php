@@ -7,7 +7,9 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Command\Image;
 
+use Magento\CloudDocker\Cli;
 use Magento\CloudDocker\Filesystem\DirectoryList;
+use Magento\CloudDocker\Filesystem\FileNotFoundException;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,7 +23,7 @@ class GenerateEs extends Command
     private const NAME = 'image:generate:es';
 
     private const SINGLE_NODE = 'RUN echo "discovery.type: single-node" >> '
-        . '/usr/share/elasticsearch/config/elasticsearch.yml';
+    . '/usr/share/elasticsearch/config/elasticsearch.yml';
 
     /**
      * Configuration map for generating es images data
@@ -92,8 +94,10 @@ class GenerateEs extends Command
      * Generates data for elasticsearch images.
      *
      * {@inheritDoc}
+     * @throws FileNotFoundException
+     * @throws \Magento\CloudDocker\Filesystem\FileSystemException
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         foreach ($this->versionMap as $version => $versionData) {
             $destination = $this->directoryList->getImagesRoot() . '/elasticsearch/' . $version;
@@ -118,5 +122,7 @@ class GenerateEs extends Command
         }
 
         $output->writeln('<info>Done</info>');
+
+        return Cli::SUCCESS;
     }
 }

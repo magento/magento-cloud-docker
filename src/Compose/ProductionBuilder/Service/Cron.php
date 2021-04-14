@@ -73,6 +73,7 @@ class Cron implements ServiceBuilderInterface
             $config->getServiceVersion(ServiceInterface::SERVICE_PHP),
             ['command' => 'run-cron'],
             $config->getServiceImage(ServiceInterface::SERVICE_PHP),
+            $config->getCustomRegistry(),
             $config->getServiceImagePattern(ServiceInterface::SERVICE_PHP_CLI)
         );
         $preparedCronConfig = [];
@@ -81,9 +82,9 @@ class Cron implements ServiceBuilderInterface
             $preparedCronConfig[] = sprintf(
                 '%s root cd %s && %s >> %s/var/log/cron.log',
                 $job['schedule'],
-                BuilderInterface::DIR_MAGENTO,
+                BuilderInterface::TARGET_ROOT,
                 str_replace('php ', '/usr/local/bin/php ', $job['command']),
-                BuilderInterface::DIR_MAGENTO
+                BuilderInterface::TARGET_ROOT
             );
         }
 

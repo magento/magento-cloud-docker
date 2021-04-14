@@ -36,6 +36,11 @@ class CliSource implements SourceInterface
     public const OPTION_NO_TLS = 'no-tls';
 
     /**
+     * Custom registry
+     */
+    public const OPTION_CUSTOM_REGISTRY = 'custom-registry';
+
+    /**
      * MailHog configuration
      */
     public const OPTION_MAILHOG_SMTP_PORT = 'mailhog-smtp-port';
@@ -53,9 +58,13 @@ class CliSource implements SourceInterface
     public const OPTION_NO_TMP_MOUNTS = 'no-tmp-mounts';
     public const OPTION_SYNC_ENGINE = 'sync-engine';
     public const OPTION_WITH_XDEBUG = 'with-xdebug';
-    public const OPTION_SET_DOCKER_HOST_XDEBUG = 'set-docker-host';
     public const OPTION_WITH_ENTRYPOINT = 'with-entrypoint';
     public const OPTION_WITH_MARIADB_CONF = 'with-mariadb-conf';
+
+    /**
+     * @deprecated Will be removed in next major release
+     */
+    public const OPTION_SET_DOCKER_HOST_XDEBUG = 'set-docker-host';
 
     /**
      * Environment variables.
@@ -78,6 +87,11 @@ class CliSource implements SourceInterface
      * Environment variable for elasticsearch service.
      */
     public const OPTION_ES_ENVIRONMENT_VARIABLE = 'es-env-var';
+
+    /**
+     * Root directory
+     */
+    public const OPTION_ROOT_DIR = 'root-dir';
 
     /**
      * List of service enabling options
@@ -144,6 +158,12 @@ class CliSource implements SourceInterface
     public function read(): Repository
     {
         $repository = new Repository();
+
+        if ($customRegistry = $this->input->getOption(self::OPTION_CUSTOM_REGISTRY)) {
+            $repository->set([
+                self::SYSTEM_CUSTOM_REGISTRY => $customRegistry
+            ]);
+        }
 
         if ($mode = $this->input->getOption(self::OPTION_MODE)) {
             $repository->set([
@@ -238,10 +258,6 @@ class CliSource implements SourceInterface
             ]);
         }
 
-        if ($this->input->getOption(self::OPTION_SET_DOCKER_HOST_XDEBUG)) {
-            $repository->set(self::SYSTEM_SET_DOCKER_HOST, true);
-        }
-
         if ($envs = $this->input->getOption(self::OPTION_ENV_VARIABLES)) {
             $repository->set(self::VARIABLES, (array)json_decode($envs, true));
         }
@@ -308,6 +324,10 @@ class CliSource implements SourceInterface
 
         if ($nginxWorkerConnections = $this->input->getOption(self::OPTION_NGINX_WORKER_CONNECTIONS)) {
             $repository->set(self::SYSTEM_NGINX_WORKER_CONNECTIONS, $nginxWorkerConnections);
+        }
+
+        if ($rootDir = $this->input->getOption(self::OPTION_ROOT_DIR)) {
+            $repository->set(self::SYSTEM_ROOT_DIR, $rootDir);
         }
 
         return $repository;

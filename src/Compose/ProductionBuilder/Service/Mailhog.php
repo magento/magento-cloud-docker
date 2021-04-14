@@ -61,6 +61,7 @@ class Mailhog implements ServiceBuilderInterface
                 ]
             ],
             $config->getServiceImage($this->getServiceName()),
+            $config->getCustomRegistry(),
             $config->getServiceImagePattern($this->getServiceName())
         );
     }

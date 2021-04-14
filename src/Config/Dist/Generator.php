@@ -120,6 +120,7 @@ class Generator
      *
      * @param string $filePath
      * @param array $config
+     * @throws FileSystemException
      */
     private function saveConfigDist(string $filePath, array $config): void
     {
@@ -140,6 +141,7 @@ class Generator
      * @param array $config
      *
      * @throws ConfigurationMismatchException
+     * @throws FileSystemException
      */
     private function saveConfigEnv(string $filePath, array $config): void
     {
@@ -184,7 +186,8 @@ class Generator
                 'ADMIN_URL' => 'admin'
             ],
             'MAGENTO_CLOUD_APPLICATION' => [
-                'hooks' => $config->getHooks()
+                'hooks' => $config->getHooks(),
+                'mounts' => $config->getMounts()
             ]
         ];
     }

@@ -64,7 +64,8 @@ class Blackfire implements ServiceBuilderInterface
                 ],
                 'ports' => ["8707"]
             ],
-            $config->getServiceImage($this->getServiceName())
+            $config->getServiceImage($this->getServiceName()),
+            $config->getCustomRegistry()
         );
     }
 

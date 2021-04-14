@@ -3,6 +3,7 @@ services:
   db:
     hostname: db.magento2.docker
     image: 'mariadb:10.2'
+    shm_size: 2gb
     environment:
       - MYSQL_ROOT_PASSWORD=magento2
       - MYSQL_DATABASE=magento2
@@ -12,7 +13,7 @@ services:
       - '3306'
     volumes:
       - '.docker/mnt:/mnt:rw,delegated'
-      - 'mymagento-magento-db:/var/lib/mysql'
+      - 'magento-magento-db:/var/lib/mysql'
     healthcheck:
       test: 'mysqladmin ping -h localhost -pmagento2'
       interval: 30s
@@ -29,6 +30,13 @@ services:
       - /data
     ports:
       - 6379
+    sysctls:
+      net.core.somaxconn: 1024
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
     healthcheck:
       test: 'redis-cli ping || exit 1'
       interval: 30s
@@ -41,7 +49,13 @@ services:
   elasticsearch:
     hostname: elasticsearch.magento2.docker
     image: 'magento/magento-cloud-docker-elasticsearch:6.5-1.2.0'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
       - 'ES_PLUGINS=plugin_1 plugin_2'
     networks:
       magento:
@@ -115,7 +129,7 @@ services:
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'
     env_file: ./.docker/config.env
     environment:
-      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip redis xsl sodium'
+      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl sodium redis'
   build:
     hostname: build.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'
@@ -177,7 +191,7 @@ volumes:
   magento-app-etc: {  }
   magento-pub-media: {  }
   magento-pub-static: {  }
-  mymagento-magento-db: {  }
+  magento-magento-db: {  }
 networks:
   magento:
     driver: bridge

@@ -481,24 +481,41 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Replace magento images with cloud FT images in docker-compose.yml
+     * Generates docker-compose.yaml using ece-docker command
+     *
+     * @param string $options
+     * @return bool
+     * @throws \Robo\Exception\TaskException
+     */
+    public function generateDockerCompose(string $options = ''): bool
+    {
+        $customRegistry = $this->_getConfig('custom_registry');
+        $options .= $customRegistry
+            ? ' --custom-registry=' . $customRegistry
+            : '';
+
+        return $this->runEceDockerCommand('build:compose ' . $options);
+    }
+
+    /**
+     * Replace magento images with custom images in docker-compose.yml
      *
      * @return bool
      */
-    public function replaceImagesWithGenerated(): bool
+    public function replaceImagesWithCustom(): bool
     {
-        if (true === $this->_getConfig('use_generated_images')) {
-            $this->debug('Tests use new generated Docker images');
+        if (true === $this->_getConfig('use_custom_images')) {
+            $this->debug('Tests use custom Docker images');
             $path = $this->getWorkDirPath() . DIRECTORY_SEPARATOR . 'docker-compose.yml';
 
             return (bool)file_put_contents(
                 $path,
                 preg_replace(
-                    '/(magento\/magento-cloud-docker-(\w+)):((\d+\.\d+|latest)(-fpm|-cli)?(-\d+\.\d+\.\d+))/i',
+                    '/(magento\/magento-cloud-docker-(\w+)):((\d+\.\d+|latest)(-fpm|-cli)?-(\d+\.\d+\.\d+))/i',
                     sprintf(
-                        '%s/$2:$4$5-%s',
-                        $this->_getConfig('generated_images_namespace'),
-                        $this->_getConfig('version_generated_images')
+                        '%s/magento-cloud-docker-$2:$4$5-%s',
+                        $this->_getConfig('custom_images_namespace'),
+                        $this->_getConfig('version_custom_images') ?: '$6'
                     ),
                     file_get_contents($path)
                 )
@@ -691,7 +708,7 @@ class TestInfrastructure extends BaseModule
      */
     private function getMcdVersion(): string
     {
-        $mcdVersion = Factory::create(new NullIO(), $this->getWorkDirPath() . '/../composer.json')
+        $mcdVersion = Factory::create(new NullIO(), $this->getRootDirPath() . '/composer.json')
             ->getPackage()
             ->getVersion();
 

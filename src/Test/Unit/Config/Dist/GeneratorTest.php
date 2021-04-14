@@ -136,7 +136,8 @@ class GeneratorTest extends TestCase
                     'ADMIN_URL' => 'admin'
                 ],
                 'MAGENTO_CLOUD_APPLICATION' => [
-                    'hooks' => []
+                    'hooks' => [],
+                    'mounts' => []
                 ],
             ])
             ->willReturn([
@@ -182,7 +183,8 @@ class GeneratorTest extends TestCase
                 ],
                 [
                     [
-                        'hooks' => []
+                        'hooks' => [],
+                        'mounts' => []
                     ],
                     2,
                     'exported_application_value',

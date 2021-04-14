@@ -135,6 +135,7 @@ interface SourceInterface
     /**
      * Config
      */
+    public const SYSTEM_CUSTOM_REGISTRY = 'system.custom_registry';
     public const SYSTEM_SYNC_ENGINE = 'system.sync_engine';
     public const SYSTEM_TMP_MOUNTS = 'system.tmp_mounts';
     public const SYSTEM_MODE = 'system.mode';
@@ -146,11 +147,11 @@ interface SourceInterface
     public const SYSTEM_EXPOSE_DB_SALES_PORTS = 'system.expose_db_sales_ports';
     public const SYSTEM_DB_ENTRYPOINT = 'system.db_entrypoint';
     public const SYSTEM_MARIADB_CONF = 'system.mariadb_conf';
-    public const SYSTEM_SET_DOCKER_HOST = 'system.set_docker_host';
     public const SYSTEM_MAILHOG_SMTP_PORT = 'system.mailhog.smtp_port';
     public const SYSTEM_MAILHOG_HTTP_PORT = 'system.mailhog.http_port';
     public const SYSTEM_NGINX_WORKER_PROCESSES = 'system.nginx.worker_processes';
     public const SYSTEM_NGINX_WORKER_CONNECTIONS = 'system.nginx.worker_connections';
+    public const SYSTEM_ROOT_DIR = 'system.root_dir';
 
     public const SYSTEM_DB_INCREMENT_INCREMENT = 'system.db.increment_increment';
     public const SYSTEM_DB_INCREMENT_OFFSET = 'system.db.increment_offset';

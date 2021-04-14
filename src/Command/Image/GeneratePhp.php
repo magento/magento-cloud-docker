@@ -9,17 +9,18 @@ namespace Magento\CloudDocker\Command\Image;
 
 use Composer\Semver\Semver;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
-use Magento\CloudDocker\Filesystem\FileNotFoundException;
-use Magento\CloudDocker\Filesystem\Filesystem;
+use Magento\CloudDocker\Cli;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Filesystem\DirectoryList;
+use Magento\CloudDocker\Filesystem\FileNotFoundException;
+use Magento\CloudDocker\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * @inheritdoc
+ * Generates PHP images.
  */
 class GeneratePhp extends Command
 {
@@ -35,7 +36,8 @@ class GeneratePhp extends Command
         'apt-utils',
         'sendmail-bin',
         'sendmail',
-        'sudo'
+        'sudo',
+        'iproute2'
     ];
     private const DEFAULT_PACKAGES_PHP_CLI = [
         'apt-utils',
@@ -129,9 +131,11 @@ class GeneratePhp extends Command
     /**
      * {@inheritdoc}
      *
-     * @throws ConfigurationMismatchException|FileNotFoundException
+     * @throws ConfigurationMismatchException
+     * @throws FileNotFoundException
+     * @throws \Magento\CloudDocker\Filesystem\FileSystemException
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $versions = $input->getArgument(self::ARGUMENT_VERSION);
 
@@ -149,12 +153,16 @@ class GeneratePhp extends Command
         }
 
         $output->writeln('<info>Done</info>');
+
+        return Cli::SUCCESS;
     }
 
     /**
      * @param string $version
      * @param string $edition
-     * @throws ConfigurationMismatchException|FileNotFoundException
+     * @throws ConfigurationMismatchException
+     * @throws FileNotFoundException
+     * @throws \Magento\CloudDocker\Filesystem\FileSystemException
      */
     private function build(string $version, string $edition): void
     {
@@ -176,7 +184,8 @@ class GeneratePhp extends Command
      * @param string $phpVersion
      * @param string $edition
      * @return string
-     * @throws ConfigurationMismatchException|FileNotFoundException
+     * @throws ConfigurationMismatchException
+     * @throws FileNotFoundException
      *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)

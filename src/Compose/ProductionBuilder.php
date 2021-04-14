@@ -106,15 +106,17 @@ class ProductionBuilder implements BuilderInterface
 
         $volumes = [];
 
-        foreach (array_keys($this->volumeResolver->getMagentoVolumes(
-            $config->getMounts(),
-            false,
-            $hasGenerated
-        )) as $volumeName) {
-            $volumes[$volumeName] = [];
-        }
+        if ($config->getSyncEngine() !== self::SYNC_ENGINE_NATIVE) {
+            foreach (array_keys($this->volumeResolver->getMagentoVolumes(
+                $config,
+                false,
+                $hasGenerated
+            )) as $volumeName) {
+                $volumes[$volumeName] = [];
+            }
 
-        $manager->setVolumes($volumes);
+            $manager->setVolumes($volumes);
+        }
 
         $manager->addVolume($config->getNameWithPrefix() . BuilderInterface::VOLUME_MAGENTO_DB, []);
 
@@ -152,8 +154,9 @@ class ProductionBuilder implements BuilderInterface
             BuilderInterface::SERVICE_DB_QUOTE,
             BuilderInterface::SERVICE_DB_SALES,
         ];
-        $service = in_array($service->getName(), $serviceNames) ? $service->getServiceName() : $service->getName();
 
-        return $config->hasServiceEnabled($service);
+        return $config->hasServiceEnabled(
+            in_array($service->getName(), $serviceNames, true) ? $service->getServiceName() : $service->getName()
+        );
     }
 }

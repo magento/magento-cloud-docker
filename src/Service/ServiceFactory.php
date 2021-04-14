@@ -27,6 +27,7 @@ class ServiceFactory
         'image' => 'mariadb',
         'pattern' => self::PATTERN_STD,
         'config' => [
+            'shm_size' => '2gb',
             'environment' => [
                 'MYSQL_ROOT_PASSWORD=magento2',
                 'MYSQL_DATABASE=magento2',
@@ -92,15 +93,33 @@ class ServiceFactory
                     '/data',
                 ],
                 'ports' => [6379],
-            ]
+                'sysctls' => [
+                    'net.core.somaxconn' => 1024,
+                ],
+                'ulimits' => [
+                    'nproc' => 65535,
+                    'nofile' => [
+                        'soft' => 20000,
+                        'hard' => 40000
+                    ],
+                ]
+            ],
         ],
         ServiceInterface::SERVICE_ELASTICSEARCH => [
             'image' => 'magento/magento-cloud-docker-elasticsearch',
-            'pattern' => self::PATTERN_VERSIONED
+            'pattern' => self::PATTERN_VERSIONED,
+            'config' => [
+                'ulimits' => [
+                    'memlock' => [
+                        'soft' => -1,
+                        'hard' => -1
+                    ]
+                ]
+            ]
         ],
         ServiceInterface::SERVICE_RABBITMQ => [
             'image' => 'rabbitmq',
-            'pattern' => self::PATTERN_STD
+            'pattern' => self::PATTERN_STD,
         ],
         ServiceInterface::SERVICE_NODE => [
             'image' => 'node',
@@ -117,7 +136,8 @@ class ServiceFactory
             'pattern' => self::PATTERN_STD,
             'config' => [
                 'ports' => [4444],
-                'extends' => ServiceInterface::SERVICE_GENERIC
+                'extends' => ServiceInterface::SERVICE_GENERIC,
+                'shm_size' => '2gb'
             ]
         ],
         ServiceInterface::SERVICE_BLACKFIRE => [
@@ -129,12 +149,6 @@ class ServiceFactory
             'image' => 'mailhog/mailhog',
             'version' => 'latest',
             'pattern' => self::PATTERN_STD,
-            'config' => [
-                'ports' => [
-                    '1025:1025',
-                    '8025:8025'
-                ]
-            ]
         ]
     ];
 
@@ -161,6 +175,7 @@ class ServiceFactory
      * @param string $version
      * @param array $config
      * @param string $image
+     * @param string|null $customRegistry
      * @param string|null $imagePattern
      * @return array
      * @throws ConfigurationMismatchException
@@ -170,6 +185,7 @@ class ServiceFactory
         string $version,
         array $config = [],
         string $image = null,
+        string $customRegistry = null,
         string $imagePattern = null
     ): array {
         if (!array_key_exists($name, self::$config)) {
@@ -182,7 +198,7 @@ class ServiceFactory
         $metaConfig = self::$config[$name];
         $defaultConfig = $metaConfig['config'] ?? [];
 
-        $image = $image ?: $metaConfig['image'];
+        $image = ($customRegistry ? $customRegistry . '/' : '') . ($image ?: $metaConfig['image']);
         $pattern = $imagePattern ?: $metaConfig['pattern'];
 
         return array_replace(

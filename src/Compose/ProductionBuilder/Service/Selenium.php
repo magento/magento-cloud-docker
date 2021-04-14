@@ -56,7 +56,8 @@ class Selenium implements ServiceBuilderInterface
             $this->getServiceName(),
             $config->getServiceVersion($this->getServiceName()),
             [],
-            $config->getServiceImage($this->getServiceName())
+            $config->getServiceImage($this->getServiceName()),
+            $config->getCustomRegistry()
         );
     }
 

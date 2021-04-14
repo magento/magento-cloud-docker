@@ -6,7 +6,7 @@
          columns="max"
          bootstrap="../../bootstrap.php"
          beStrictAboutTestsThatDoNotTestAnything="false"
-         stopOnFailure="true"
+         stopOnFailure="false"
 >
     <testsuites>
         <testsuite name="Integration">

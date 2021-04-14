@@ -46,7 +46,10 @@ class ExtensionResolver
         'sysvsem',
         'sysvshm',
         'opcache',
-        'zip'
+        'zip',
+        // Required for Magento 2.4.0+
+        'xsl',
+        'sodium'
     ];
 
     /**

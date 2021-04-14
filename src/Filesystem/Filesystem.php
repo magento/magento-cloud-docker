@@ -15,15 +15,33 @@ use FilesystemIterator;
 class Filesystem
 {
     /**
-     * Write the contents of a file.
+     * Write the content of a file.
      *
      * @param string $path
-     * @param string $contents
+     * @param string $content
      * @return int|bool
+     *
+     * @throws FilesystemException
      */
-    public function put($path, $contents)
+    public function put(string $path, string $content)
     {
-        return file_put_contents($path, $contents);
+        $dirname = dirname($path);
+
+        if (!$this->exists($dirname)) {
+            $this->makeDirectory($dirname, 0755, true);
+        }
+
+        $result = @file_put_contents($path, $content);
+
+        if (!$result) {
+            throw new FilesystemException(sprintf(
+                'The specified "%s" file could not be written %s',
+                $path,
+                $this->getWarningMessage()
+            ));
+        }
+
+        return $result;
     }
 
     /**
@@ -240,5 +258,20 @@ class Filesystem
     public function chmod(string $path, int $mode): bool
     {
         return chmod($path, $mode);
+    }
+
+    /**
+     * Returns last warning message string
+     *
+     * @return string|null
+     */
+    private function getWarningMessage()
+    {
+        $warning = error_get_last();
+        if ($warning && $warning['type'] == E_WARNING) {
+            return 'Warning!' . $warning['message'];
+        }
+
+        return null;
     }
 }
