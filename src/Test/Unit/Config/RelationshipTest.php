@@ -27,6 +27,9 @@ class RelationshipTest extends TestCase
      */
     private $configMock;
 
+    /**
+     * @var array
+     */
     public $defaultConfigs = [
         'database' => [
             [
@@ -93,9 +96,7 @@ class RelationshipTest extends TestCase
                 ['elasticsearch'],
                 ['rabbitmq']
             )
-            ->willReturnOnConsecutiveCalls(
-                true, false, false, true, true, true
-            );
+            ->willReturnOnConsecutiveCalls(true, false, false, true, true, true);
         $this->configMock->expects($this->exactly(4))
             ->method('getServiceVersion')
             ->withConsecutive(
@@ -105,7 +106,10 @@ class RelationshipTest extends TestCase
                 ['rabbitmq']
             )
             ->willReturnOnConsecutiveCalls(
-                $mysqlVersion, $redisVersion, $esVersion, $rmqVersion
+                $mysqlVersion,
+                $redisVersion,
+                $esVersion,
+                $rmqVersion
             );
 
         $this->assertEquals($configWithType, $this->relationship->get($this->configMock));
