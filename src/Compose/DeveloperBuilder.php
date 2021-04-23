@@ -99,8 +99,8 @@ class DeveloperBuilder implements BuilderInterface
         ];
 
         if ($syncEngine === self::SYNC_ENGINE_MANUAL_NATIVE) {
-            $volumes = [$volumePrefix . 'app:' . self::TARGET_ROOT];
-            $volumesList[$volumePrefix . 'app'] = [];
+            $volumes = [$volumePrefix . ltrim(self::TARGET_ROOT, '/') . ':' . self::TARGET_ROOT];
+            $volumesList[$volumePrefix . ltrim(self::TARGET_ROOT, '/')] = [];
         } else {
             $volumes = [$this->volumeResolver->getMagentoVolume($config) . ':' . self::TARGET_ROOT . ':delegated'];
         }
