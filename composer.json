@@ -8,9 +8,9 @@
         "AFL-3.0"
     ],
     "require": {
-        "php": "^7.2",
+        "php": "^7.3",
         "ext-json": "*",
-        "composer/composer": "^1.0",
+        "composer/composer": "^1.0||^2.0",
         "composer/semver": "^1.0",
         "illuminate/config": "^5.5",
         "symfony/config": "^4.4",

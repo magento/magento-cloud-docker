@@ -19,10 +19,11 @@ USAGE="Magento Cloud Docker
   flush-redis       clears redis cache
   flush-varnish     clears varnish cache
   ece-db            access to Database
-  php 7.1           run a command in a PHP 7.1 container
-  php 7.2           run a command in a PHP 7.2 container
   php 7.3           run a command in a PHP 7.3 container
   php 7.4           run a command in a PHP 7.4 container
+  copy-to           copy to container (use --all or specific file/directory)
+  copy-from         copy from container (use --all or specific file/directory)
+  fix-owns          fix ownership to www:www
 
 \033[33mOptions:\033[0m
   -h            show this help text\n"
@@ -31,71 +32,123 @@ if [ ${#@} -ne 0 ]; then
     for arg in "$@"; do
         if [ "${arg#"-h"}" = "" ]; then
             printf "$USAGE"
-            exit 0;
+            exit 0
         fi
     done
-fi;
+fi
+
+function fix-owns() {
+    if [ -z "$1" ]; then
+        docker-compose exec -u root -T fpm chown -R www:www /app
+    else
+        docker-compose exec -u root -T fpm chown -R www:www /app/"$1"
+    fi
+}
+
+function copy-to() {
+    [ -z "$1" ] && echo "Please specify a directory or file to copy to container (ex. vendor, --all)" && exit
+
+    if [ "$1" == "--all" ]; then
+        docker cp "./" "$(docker-compose ps -q fpm | awk '{print $1}')":/app/
+        echo "Completed copying all files from host to container"
+        fix-owns
+    else
+        if [ -f "../$1" ]; then
+            docker cp "./${1}" "$(docker-compose ps -q fpm | awk '{print $1}')":/app/"$1"
+        else
+            docker cp "./${1}" "$(docker-compose ps -q fpm | awk '{print $1}')":/app/"$(dirname "$1")"
+        fi
+        echo "Completed copying $1 from host to container"
+        fix-owns "$1"
+    fi
+}
+
+function copy-from() {
+    [ -z "$1" ] && echo "Please specify a directory or file to copy from container (ex. vendor, --all)" && exit
+
+    if [ "$1" == "--all" ]; then
+        docker cp "$(docker-compose ps -q fpm | awk '{print $1}')":/app/ "./"
+        echo "Completed copying all files from container to host"
+    else
+        if [ -f "$1" ]; then
+            docker cp "$(docker-compose ps -q fpm | awk '{print $1}')":/app/"$1" "./$1"
+        else
+            docker cp "$(docker-compose ps -q fpm | awk '{print $1}')":/app/"$1" "./$(dirname "$1")"
+        fi
+        echo "Completed copying $1 from container to host"
+    fi
+}
 
 case "$1" in
-    pull)
-        docker-compose pull
-        ;;
-    up)
-        docker-compose down --volumes
-        docker-compose up --detach
-        ;;
-    down)
-        docker-compose down --volumes
-        ;;
-    bash)
-        docker-compose run --rm deploy bash
-        ;;
-    stop)
-        docker-compose stop
-        ;;
-    start)
-        docker-compose start
-        ;;
-    restart)
-        docker-compose restart
-        ;;
-    ece-build)
-        docker-compose run --rm build cloud-build
-        ;;
-    ece-deploy)
-        docker-compose run --rm deploy cloud-deploy
-        ;;
-    ece-post-deploy)
-        docker-compose run --rm deploy cloud-post-deploy
-        ;;
-    ece-redeploy)
-        docker-compose run --rm build cloud-build
-        docker-compose run --rm deploy cloud-deploy
-        docker-compose run --rm deploy cloud-post-deploy
-        ;;
-    flush-redis)
-        docker-compose exec redis redis-cli FLUSHALL
-        ;;
-    flush-varnish)
-        docker-compose exec varnish varnishadm ban req.url '~' '.'
-        ;;
-    ece-db)
-        docker-compose exec db sh -c 'mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE "$@"'
-        ;;
-    php)
-        version="$2"
-        shift 2
-        # allow ssh-agent forwarding for composer.json files that need access to private repos
-        if [[ $(uname) = Darwin ]]; then
-            # https://docs.docker.com/docker-for-mac/osxfs/#ssh-agent-forwarding (D4M > 2.2)
-            export SSH_AUTH_SOCK="/run/host-services/ssh-auth.sock"
-        fi
-        docker run --rm -it -e "MAGENTO_ROOT=/app" -v "$(pwd)":/app -v ~/.composer/cache:/root/.composer/cache \
-            --mount "type=bind,src=$HOME/.ssh/known_hosts,target=/root/.ssh/known_hosts" \
-            --mount "type=bind,src=$SSH_AUTH_SOCK,target=$SSH_AUTH_SOCK" -e SSH_AUTH_SOCK="$SSH_AUTH_SOCK" \
-            "magento/magento-cloud-docker-php:${version}-cli-1.1" "$@"
-        ;;
-    *)
-        printf "$USAGE"
-        exit 0;
+pull)
+    docker-compose pull
+    ;;
+up)
+    docker-compose down --volumes
+    docker-compose up --detach
+    ;;
+down)
+    docker-compose down --volumes
+    ;;
+bash)
+    docker-compose run --rm deploy bash
+    ;;
+stop)
+    docker-compose stop
+    ;;
+start)
+    docker-compose start
+    ;;
+restart)
+    docker-compose restart
+    ;;
+ece-build)
+    docker-compose run --rm build cloud-build
+    ;;
+ece-deploy)
+    docker-compose run --rm deploy cloud-deploy
+    ;;
+ece-post-deploy)
+    docker-compose run --rm deploy cloud-post-deploy
+    ;;
+ece-redeploy)
+    docker-compose run --rm build cloud-build
+    docker-compose run --rm deploy cloud-deploy
+    docker-compose run --rm deploy cloud-post-deploy
+    ;;
+flush-redis)
+    docker-compose exec redis redis-cli FLUSHALL
+    ;;
+flush-varnish)
+    docker-compose exec varnish varnishadm ban req.url '~' '.'
+    ;;
+ece-db)
+    docker-compose exec db sh -c 'mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE "$@"'
+    ;;
+php)
+    version="$2"
+    shift 2
+    # allow ssh-agent forwarding for composer.json files that need access to private repos
+    if [[ $(uname) == Darwin ]]; then
+        # https://docs.docker.com/docker-for-mac/osxfs/#ssh-agent-forwarding (D4M > 2.2)
+        export SSH_AUTH_SOCK="/run/host-services/ssh-auth.sock"
+    fi
+    docker run --rm -it -e "MAGENTO_ROOT=/app" -v "$(pwd)":/app -v ~/.composer/cache:/root/.composer/cache \
+        --mount "type=bind,src=$HOME/.ssh/known_hosts,target=/root/.ssh/known_hosts" \
+        --mount "type=bind,src=$SSH_AUTH_SOCK,target=$SSH_AUTH_SOCK" -e SSH_AUTH_SOCK="$SSH_AUTH_SOCK" \
+        "magento/magento-cloud-docker-php:${version}-cli-1.1" "$@"
+    ;;
+copy-to)
+    copy-to $2
+    ;;
+copy-from)
+    copy-from $2
+    ;;
+fix-owns)
+    fix-owns
+    ;;
+*)
+    printf "$USAGE"
+    exit 0
+    ;;
 esac

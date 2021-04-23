@@ -22,6 +22,7 @@ class DeveloperBuilder implements BuilderInterface
 {
     public const SYNC_ENGINE_DOCKER_SYNC = 'docker-sync';
     public const SYNC_ENGINE_MUTAGEN = 'mutagen';
+    public const SYNC_ENGINE_MANUAL_NATIVE = 'manual-native';
     public const DEFAULT_SYNC_ENGINE = self::SYNC_ENGINE_NATIVE;
 
     public const VOLUME_MAGENTO_SYNC = 'magento-sync';
@@ -29,7 +30,8 @@ class DeveloperBuilder implements BuilderInterface
     public const SYNC_ENGINES_LIST = [
         self::SYNC_ENGINE_DOCKER_SYNC,
         self::SYNC_ENGINE_MUTAGEN,
-        self::SYNC_ENGINE_NATIVE
+        self::SYNC_ENGINE_NATIVE,
+        self::SYNC_ENGINE_MANUAL_NATIVE
     ];
 
     /**
@@ -96,7 +98,12 @@ class DeveloperBuilder implements BuilderInterface
             $volumePrefix . self::VOLUME_MAGENTO_DB => []
         ];
 
-        $volumes = [$this->volumeResolver->getMagentoVolume($config) . ':' . self::TARGET_ROOT . ':delegated'];
+        if ($syncEngine === self::SYNC_ENGINE_MANUAL_NATIVE) {
+            $volumes = [$volumePrefix . 'app:' . self::TARGET_ROOT];
+            $volumesList[$volumePrefix . 'app'] = [];
+        } else {
+            $volumes = [$this->volumeResolver->getMagentoVolume($config) . ':' . self::TARGET_ROOT . ':delegated'];
+        }
 
         if (in_array($syncEngine, [self::SYNC_ENGINE_MUTAGEN, self::SYNC_ENGINE_DOCKER_SYNC], true)) {
             $volumesList[$volumePrefix . self::VOLUME_MAGENTO_SYNC] = $syncEngine === self::SYNC_ENGINE_DOCKER_SYNC

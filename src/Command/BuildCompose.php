@@ -9,6 +9,7 @@ namespace Magento\CloudDocker\Command;
 
 use Magento\CloudDocker\App\GenericException;
 use Magento\CloudDocker\Cli;
+use Magento\CloudDocker\Compose\BuilderInterface;
 use Magento\CloudDocker\Compose\DeveloperBuilder;
 use Magento\CloudDocker\Compose\BuilderFactory;
 use Magento\CloudDocker\Config\ConfigFactory;
@@ -329,6 +330,12 @@ class BuildCompose extends Command
             $this->sourceFactory->create(Source\ConfigSource::class),
             new Source\CliSource($input)
         ]);
+
+        if (PHP_OS === 'Linux' && $config->getSyncEngine() === BuilderInterface::SYNC_ENGINE_NATIVE) {
+            $output->writeln('Linux does not support mounted volumes. Please use "manual" instead');
+
+            return Cli::FAILURE;
+        }
 
         $builder = $this->builderFactory->create($config->getMode());
         $compose = $builder->build($config);
