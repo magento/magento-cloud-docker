@@ -8,19 +8,22 @@ return [
                 'path' => 'magento2',
                 'password' => 'magento2',
                 'username' => 'magento2',
-                'port' => '3306'
+                'port' => '3306',
+                'type' => 'mysql:10.2'
             ]
         ],
         'redis' => [
             [
                 'host' => 'redis',
-                'port' => '6379'
+                'port' => '6379',
+                'type' => 'redis:5.0'
             ]
         ],
         'elasticsearch' => [
             [
                 'host' => 'elasticsearch',
-                'port' => '9200'
+                'port' => '9200',
+                'type' => 'elasticsearch:6.5'
             ]
         ]
     ])),
@@ -42,6 +45,24 @@ return [
     'MAGENTO_CLOUD_APPLICATION' => base64_encode(json_encode([
         'hooks' => [
 
+        ],
+        'mounts' => [
+            'var' => [
+                'path' => 'var',
+                'orig' => 'shared:files/var'
+            ],
+            'app/etc' => [
+                'path' => 'app/etc',
+                'orig' => 'shared:files/etc'
+            ],
+            'pub/media' => [
+                'path' => 'pub/media',
+                'orig' => 'shared:files/media'
+            ],
+            'pub/static' => [
+                'path' => 'pub/static',
+                'orig' => 'shared:files/static'
+            ]
         ]
     ])),
 ];

@@ -331,12 +331,6 @@ class BuildCompose extends Command
             new Source\CliSource($input)
         ]);
 
-        if (PHP_OS === 'Linux' && $config->getSyncEngine() === BuilderInterface::SYNC_ENGINE_NATIVE) {
-            $output->writeln('Linux does not support mounted volumes. Please use "manual" instead');
-
-            return Cli::FAILURE;
-        }
-
         $builder = $this->builderFactory->create($config->getMode());
         $compose = $builder->build($config);
 
