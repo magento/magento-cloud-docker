@@ -24,8 +24,8 @@ RUN apt-get update && \
 
 RUN openssl req -x509 -nodes -days 730 \
     -subj  "/C=US/ST=TX/L=Austin/O=Magento/OU=Cloud Docker/CN=magento.com" \
-     -newkey rsa:2048 -keyout /etc/nginx/ssl/magento.key \
-     -out /etc/nginx/ssl/magento.crt;
+    -newkey rsa:2048 -keyout /etc/nginx/ssl/magento.key \
+    -out /etc/nginx/ssl/magento.crt;
 
 VOLUME ${MAGENTO_ROOT}
 

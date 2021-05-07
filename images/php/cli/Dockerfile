@@ -1,5 +1,6 @@
 {%note%}
 FROM php:{%version%}-cli-buster
+ARG COMPOSER_VERSION=1.10.22
 
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV PHP_MEMORY_LIMIT 2G
@@ -52,7 +53,7 @@ ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 ADD etc/php-gnupg.ini /usr/local/etc/php/conf.d/gnupg.ini
 
 # Get composer installed to /usr/local/bin/composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=1.10.21 --filename=composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=${COMPOSER_VERSION} --filename=composer
 
 ADD bin/* /usr/local/bin/
 
