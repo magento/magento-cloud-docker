@@ -6,7 +6,8 @@ USAGE="Magento Cloud Docker
 
 \033[33mArguments:\033[0m
   pull              pull latest images
-  up                destroy, re-create and start containers
+  init              destroy, re-create and start containers and volumes
+  up                create or start containers
   down              destroy containers
   bash              connect to bash
   stop              stop containers
@@ -40,12 +41,20 @@ case "$1" in
     pull)
         docker-compose pull
         ;;
+    init)
+        read -p "Any existing data volumes will be removed. Are you sure? [y/N] " -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]
+        then
+            docker-compose down --volumes
+            docker-compose up --detach
+        fi
+        ;;
     up)
-        docker-compose down --volumes
         docker-compose up --detach
         ;;
     down)
-        docker-compose down --volumes
+        docker-compose down
         ;;
     bash)
         docker-compose run --rm deploy bash
