@@ -7,7 +7,7 @@ ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
-ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV COMPOSER_HOME /composer
 ENV ENABLE_SENDMAIL true
 
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sysvmsg sysvsem sysvshm xsl zip pcntl
@@ -205,10 +205,18 @@ RUN ["chmod", "+x", \
 ]
 
 RUN mkdir -p ${MAGENTO_ROOT}
+RUN mkdir -p ${MAGENTO_ROOT}/generated
+RUN mkdir -p ${MAGENTO_ROOT}/vendor
+RUN mkdir -p ${MAGENTO_ROOT}/pub/media
+RUN mkdir -p ${MAGENTO_ROOT}/pub/static
 
 VOLUME ${MAGENTO_ROOT}
+VOLUME ${MAGENTO_ROOT}/generated
+VOLUME ${MAGENTO_ROOT}/vendor
+VOLUME ${MAGENTO_ROOT}/pub/media
+VOLUME ${MAGENTO_ROOT}/pub/static
 
-RUN chown -R www:www /usr/local /var/www /var/log /usr/local/etc/php/conf.d ${MAGENTO_ROOT}
+RUN chown -R www:www /usr/local /var/www /var/log /usr/local/etc/php/conf.d ${MAGENTO_ROOT} /composer
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

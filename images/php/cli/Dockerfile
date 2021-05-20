@@ -7,7 +7,7 @@ ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
-ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV COMPOSER_HOME /composer
 ENV ENABLE_SENDMAIL true
 
 {%env_php_extensions%}
@@ -78,7 +78,7 @@ RUN ["chmod", "+x", \
 
 {%volumes_def%}
 
-RUN chown -R www:www /usr/local /var/www /var/log /usr/local/etc/php/conf.d ${MAGENTO_ROOT}
+RUN chown -R www:www /usr/local /var/www /var/log /usr/local/etc/php/conf.d ${MAGENTO_ROOT} /composer
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

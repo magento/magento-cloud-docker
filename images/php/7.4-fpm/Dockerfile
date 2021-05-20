@@ -167,8 +167,16 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 
 RUN mkdir -p ${MAGENTO_ROOT}
+RUN mkdir -p ${MAGENTO_ROOT}/generated
+RUN mkdir -p ${MAGENTO_ROOT}/vendor
+RUN mkdir -p ${MAGENTO_ROOT}/pub/media
+RUN mkdir -p ${MAGENTO_ROOT}/pub/static
 
 VOLUME ${MAGENTO_ROOT}
+VOLUME ${MAGENTO_ROOT}/generated
+VOLUME ${MAGENTO_ROOT}/vendor
+VOLUME ${MAGENTO_ROOT}/pub/media
+VOLUME ${MAGENTO_ROOT}/pub/static
 
 RUN chown -R www:www /usr/local /var/www /var/log /usr/local/etc/php/conf.d ${MAGENTO_ROOT}
 
