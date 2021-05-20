@@ -209,12 +209,16 @@ RUN mkdir -p ${MAGENTO_ROOT}/generated
 RUN mkdir -p ${MAGENTO_ROOT}/vendor
 RUN mkdir -p ${MAGENTO_ROOT}/pub/media
 RUN mkdir -p ${MAGENTO_ROOT}/pub/static
+RUN mkdir -p ${MAGENTO_ROOT}/app/etc
+RUN mkdir -p ${MAGENTO_ROOT}/var
 
 VOLUME ${MAGENTO_ROOT}
 VOLUME ${MAGENTO_ROOT}/generated
 VOLUME ${MAGENTO_ROOT}/vendor
 VOLUME ${MAGENTO_ROOT}/pub/media
 VOLUME ${MAGENTO_ROOT}/pub/static
+VOLUME ${MAGENTO_ROOT}/app/etc
+VOLUME ${MAGENTO_ROOT}/var
 
 RUN chown -R www:www /usr/local /var/www /var/log /usr/local/etc/php/conf.d ${MAGENTO_ROOT} /composer
 
