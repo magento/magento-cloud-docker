@@ -6,7 +6,8 @@ USAGE="Magento Cloud Docker
 
 \033[33mArguments:\033[0m
   pull              pull latest images
-  up                destroy, re-create and start containers
+  init              destroy, re-create and start containers and volumes
+  up                create or start containers
   down              destroy containers
   bash              connect to bash
   stop              stop containers
@@ -19,6 +20,8 @@ USAGE="Magento Cloud Docker
   flush-redis       clears redis cache
   flush-varnish     clears varnish cache
   ece-db            access to Database
+  php 7.1           run a command in a PHP 7.1 container
+  php 7.2           run a command in a PHP 7.2 container
   php 7.3           run a command in a PHP 7.3 container
   php 7.4           run a command in a PHP 7.4 container
   copy-to           copy to container (use --all or specific file/directory)
@@ -35,7 +38,7 @@ if [ ${#@} -ne 0 ]; then
             exit 0
         fi
     done
-fi
+fi;
 
 function fix-owns() {
     if [ -z "$1" ]; then
@@ -83,8 +86,16 @@ case "$1" in
 pull)
     docker-compose pull
     ;;
+init)
+    read -p "Any existing data volumes will be removed. Are you sure? [y/N] " -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        docker-compose down --volumes
+        docker-compose up --detach
+    fi
+    ;;
 up)
-    docker-compose down --volumes
     docker-compose up --detach
     ;;
 down)
