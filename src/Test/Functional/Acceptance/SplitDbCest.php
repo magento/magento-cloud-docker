@@ -15,6 +15,8 @@ use Robo\Exception\TaskException;
  */
 class SplitDbCest extends AbstractCest
 {
+    protected const TEMPLATE_VERSION = '2.3.7';
+
     private const SPLIT_TYPES = ['quote', 'sales'];
 
     private const QUOTE_TABLES = [

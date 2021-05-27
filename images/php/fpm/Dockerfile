@@ -1,5 +1,5 @@
 {%note%}
-FROM php:{%version%}-fpm-buster
+FROM php:{%version%}-fpm
 ARG GOSU_VERSION=1.11
 
 ENV PHP_MEMORY_LIMIT 2G
@@ -33,8 +33,6 @@ RUN wget https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendma
 {%php-pecl-extensions%}
 
 {%installation_scripts%}
-
-{%docker-php-ext-enable%}
 
 RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
 

@@ -198,7 +198,6 @@ class GeneratePhp extends Command
         $packages = self::EDITION_CLI === $edition ? self::DEFAULT_PACKAGES_PHP_CLI : self::DEFAULT_PACKAGES_PHP_FPM;
         $phpExtCore = [];
         $phpExtCoreConfigOptions = [];
-        $phpExtList = [];
         $phpExtPecl = [];
         $phpExtInstScripts = [];
         $phpExtEnabledDefault = [];
@@ -253,8 +252,6 @@ class GeneratePhp extends Command
                 if (in_array($phpExtName, self::PHP_EXTENSIONS_ENABLED_BY_DEFAULT, true)) {
                     $phpExtEnabledDefault[] = $phpExtName;
                 }
-
-                $phpExtList[] = $phpExtName;
             }
         }
 
@@ -283,9 +280,6 @@ class GeneratePhp extends Command
                     : '',
                 '{%php-pecl-extensions%}' => $phpExtPecl
                     ? "RUN pecl install -o -f \\\n  " . implode(" \\\n  ", $phpExtPecl)
-                    : '',
-                '{%docker-php-ext-enable%}' => $phpExtList
-                    ? "RUN docker-php-ext-enable \\\n  " . implode(" \\\n  ", $phpExtList)
                     : '',
                 '{%installation_scripts%}' => $phpExtInstScripts
                     ? implode(PHP_EOL, $phpExtInstScripts)

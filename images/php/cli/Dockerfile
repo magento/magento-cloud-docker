@@ -1,5 +1,5 @@
 {%note%}
-FROM php:{%version%}-cli-buster
+FROM php:{%version%}-cli
 ARG GOSU_VERSION=1.11
 
 ENV COMPOSER_MEMORY_LIMIT -1
@@ -45,8 +45,6 @@ RUN wget https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendma
 
 {%installation_scripts%}
 
-{%docker-php-ext-enable%}
-
 ADD etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
 ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
 ADD etc/php-pcov.ini /usr/local/etc/php/conf.d/zz-pcov-settings.ini
@@ -54,7 +52,7 @@ ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 ADD etc/php-gnupg.ini /usr/local/etc/php/conf.d/gnupg.ini
 
 # Get composer installed to /usr/local/bin/composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=1.10.16 --filename=composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=1.10.22 --filename=composer
 
 ADD bin/* /usr/local/bin/
 
