@@ -1,14 +1,14 @@
 {%note%}
 FROM php:{%version%}-cli
-ARG GOSU_VERSION=1.11
+ARG COMPOSER_VERSION=1.10.22
 
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV PHP_MEMORY_LIMIT 2G
 ENV MAGENTO_ROOT /app
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
-ENV UPDATE_UID_GID false
 ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV COMPOSER_HOME /composer
 ENV ENABLE_SENDMAIL true
 
 {%env_php_extensions%}
@@ -52,7 +52,7 @@ ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
 ADD etc/php-gnupg.ini /usr/local/etc/php/conf.d/gnupg.ini
 
 # Get composer installed to /usr/local/bin/composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=1.10.22 --filename=composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=${COMPOSER_VERSION} --filename=composer
 
 ADD bin/* /usr/local/bin/
 
@@ -77,10 +77,12 @@ RUN ["chmod", "+x", \
 
 {%volumes_def%}
 
+RUN chown -R www:www /usr/local /var/www /var/log /usr/local/etc/php/conf.d ${MAGENTO_ROOT} /composer
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-USER root
-
 WORKDIR ${MAGENTO_ROOT}
+
+USER root
 
 CMD ["bash"]

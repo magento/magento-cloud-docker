@@ -125,7 +125,7 @@ class VolumeResolver
     {
         return [
             '~/.composer/cache' => [
-                'target' => '/root/.composer/cache',
+                'target' => '/composer/cache',
                 'mode' => 'rw,delegated'
             ]
         ];

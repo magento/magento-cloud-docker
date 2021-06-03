@@ -9,6 +9,7 @@ namespace Magento\CloudDocker\Test\Integration;
 
 use Magento\CloudDocker\Command\BuildCompose;
 use Magento\CloudDocker\Compose\BuilderFactory;
+use Magento\CloudDocker\Compose\DeveloperBuilder;
 use Magento\CloudDocker\Config\ConfigFactory;
 use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Config\Source\CliSource;
@@ -22,7 +23,7 @@ use Magento\CloudDocker\App\GenericException;
 use ReflectionException;
 
 /**
- * @inheritDoc
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class BuildComposeTest extends TestCase
 {
@@ -67,6 +68,8 @@ class BuildComposeTest extends TestCase
 
     /**
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function buildDataProvider(): array
     {
@@ -94,6 +97,13 @@ class BuildComposeTest extends TestCase
                     [CliSource::OPTION_MODE, BuilderFactory::BUILDER_DEVELOPER],
                     [CliSource::OPTION_WITH_ENTRYPOINT, true],
                     [CliSource::OPTION_WITH_MARIADB_CONF, true]
+                ]
+            ],
+            'cloud-base-developer-manual' => [
+                __DIR__ . '/_files/cloud_base_developer_manual',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_DEVELOPER],
+                    [CliSource::OPTION_SYNC_ENGINE, DeveloperBuilder::SYNC_ENGINE_MANUAL_NATIVE]
                 ]
             ],
             'cloud-base-mftf' => [

@@ -8,7 +8,8 @@ return [
                 'path' => 'magento2',
                 'password' => 'magento2',
                 'username' => 'magento2',
-                'port' => '3306'
+                'port' => '3306',
+                'type' => 'mysql:10.0'
             ]
         ]
     ])),
@@ -34,6 +35,20 @@ php ./vendor/bin/ece-tools run scenario/build/generate.xml
 php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
             'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
             'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+        ],
+        'mounts' => [
+            'var' => [
+                'path' => 'var'
+            ],
+            'app-etc' => [
+                'path' => 'app/etc'
+            ],
+            'pub-media' => [
+                'path' => 'pub/media'
+            ],
+            'pub-static' => [
+                'path' => 'pub/static'
+            ]
         ]
     ])),
 ];

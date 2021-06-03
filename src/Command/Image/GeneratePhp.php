@@ -259,7 +259,7 @@ class GeneratePhp extends Command
             'root' => [
                 'def' => 'VOLUME ${MAGENTO_ROOT}',
                 'cmd' => 'RUN mkdir -p ${MAGENTO_ROOT}'
-            ],
+            ]
         ];
         $volumesCmd = '';
         $volumesDef = '';

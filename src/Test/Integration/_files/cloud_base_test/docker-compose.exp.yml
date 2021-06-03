@@ -138,7 +138,7 @@ services:
       - 'mymagento-pub-media:/app/pub/media:rw,delegated'
       - 'mymagento-pub-static:/app/pub/static:rw,delegated'
       - '.docker/mnt:/mnt:rw,delegated'
-      - '~/.composer/cache:/root/.composer/cache:rw,delegated'
+      - '~/.composer/cache:/composer/cache:rw,delegated'
     networks:
       magento:
         aliases:
@@ -185,7 +185,7 @@ services:
       - '.:/app:rw,delegated'
       - 'mymagento-vendor:/app/vendor:rw,delegated'
       - 'mymagento-generated:/app/generated:rw,delegated'
-      - '~/.composer/cache:/root/.composer/cache:rw,delegated'
+      - '~/.composer/cache:/composer/cache:rw,delegated'
     networks:
       magento-build:
         aliases:
