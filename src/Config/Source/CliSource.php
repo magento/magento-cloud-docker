@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config\Source;
 
+use Composer\Semver\Semver;
 use Illuminate\Config\Repository;
 use Symfony\Component\Console\Input\InputInterface;
 
@@ -328,6 +329,17 @@ class CliSource implements SourceInterface
 
         if ($rootDir = $this->input->getOption(self::OPTION_ROOT_DIR)) {
             $repository->set(self::SYSTEM_ROOT_DIR, $rootDir);
+        }
+
+        $phpVersion = $this->input->getOption(self::OPTION_PHP);
+        if ($phpVersion) {
+            $variableName = Semver::satisfies($phpVersion, '<8.0') ? 'remote_host' : 'client_host';
+            $repository->set([
+                self::VARIABLES => [
+                    # Docker host for developer environments, can be different for your OS
+                    'XDEBUG_CONFIG' => $variableName.'=host.docker.internal',
+                ]
+            ]);
         }
 
         return $repository;

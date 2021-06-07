@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config\Source;
 
+use Composer\Semver\Semver;
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\FileList;
@@ -138,6 +139,14 @@ class CloudSource implements SourceInterface
             $appConfig['name']
         );
         $repository->set(self::HOOKS, $appConfig['hooks'] ?? []);
+
+        $variableName = Semver::satisfies($version, '<8.0') ? 'remote_host' : 'client_host';
+        $repository->set([
+            self::VARIABLES => [
+                # Docker host for developer environments, can be different for your OS
+                'XDEBUG_CONFIG' => $variableName.'=host.docker.internal',
+            ]
+        ]);
 
         return $repository;
     }

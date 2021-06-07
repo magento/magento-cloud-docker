@@ -11,6 +11,7 @@ use Composer\Semver\Semver;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Cli;
 use Magento\CloudDocker\Compose\Php\ExtensionResolver;
+use Magento\CloudDocker\Compose\Php\ConfigFilesResolver;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\FileNotFoundException;
 use Magento\CloudDocker\Filesystem\Filesystem;
@@ -25,7 +26,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GeneratePhp extends Command
 {
     private const NAME = 'image:generate:php';
-    private const SUPPORTED_VERSIONS = ['7.2', '7.3', '7.4'];
+    private const SUPPORTED_VERSIONS = ['7.2', '7.3', '7.4', '8.0'];
 
     private const EDITION_CLI = 'cli';
     private const EDITION_FPM = 'fpm';
@@ -174,7 +175,28 @@ class GeneratePhp extends Command
 
         $this->filesystem->deleteDirectory($destination);
         $this->filesystem->makeDirectory($destination);
-        $this->filesystem->copyDirectory($dataDir, $destination);
+        $this->filesystem->copyDirectory($dataDir, $destination, null, false);
+
+        foreach (ConfigFilesResolver::getFolders($edition) as $folder) {
+            $this->filesystem->copyDirectory(
+                $dataDir . '/' . $folder,
+                $destination . '/' . $folder
+            );
+        }
+
+        $this->filesystem->makeDirectory($destination . '/etc');
+        foreach (ConfigFilesResolver::getConfigFiles($edition) as $config) {
+            foreach ($config as $constraint => $paths) {
+                if (!$this->semver::satisfies($version, $constraint)) {
+                    continue;
+                }
+
+                $this->filesystem->copy(
+                    $dataDir . '/' . $paths[ConfigFilesResolver::FROM_PATH],
+                    $destination . '/' . $paths[ConfigFilesResolver::TO_PATH]
+                );
+            }
+        }
 
         $this->filesystem->put($dockerfile, $this->buildDockerfile($dockerfile, $version, $edition));
     }

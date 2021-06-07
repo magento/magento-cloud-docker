@@ -63,7 +63,7 @@ RUN pip3 install --upgrade setuptools \
 RUN npm install -g grunt-cli
 
 # Install MailHog
-RUN wget https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 \
+RUN curl -L -O https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 \
     && sudo chmod +x mhsendmail_linux_amd64 \
     && sudo mv mhsendmail_linux_amd64 /usr/local/bin/mhsendmail
 
