@@ -36,7 +36,7 @@ class GenerateEs extends Command
             'single-node' => false,
         ],
         '6.8' => [
-            'real-version' => '6.8.8',
+            'real-version' => '6.8.15',
             'single-node' => true,
         ],
         '7.5' => [
@@ -53,6 +53,10 @@ class GenerateEs extends Command
         ],
         '7.9' => [
             'real-version' => '7.9.3',
+            'single-node' => true,
+        ],
+        '7.11' => [
+            'real-version' => '7.11.2',
             'single-node' => true,
         ],
     ];

@@ -335,6 +335,12 @@ class BuildCompose extends Command
 
         $this->distGenerator->generate($config);
 
+        if ($config->getSyncEngine() === DeveloperBuilder::SYNC_ENGINE_DOCKER_SYNC) {
+            $output->writeln(
+                '<comment>"Docker Sync" synchronization will be removed in next minor release.</comment>'
+            );
+        }
+
         $content = Yaml::dump([
             'version' => $compose->getVersion(),
             'services' => $compose->getServices(),

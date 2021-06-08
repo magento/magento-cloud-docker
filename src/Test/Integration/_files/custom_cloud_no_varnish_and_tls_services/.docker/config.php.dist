@@ -8,7 +8,8 @@ return [
                 'path' => 'magento2',
                 'password' => 'magento2',
                 'username' => 'magento2',
-                'port' => '3306'
+                'port' => '3306',
+                'type' => 'mysql:10.0'
             ]
         ]
     ])),
@@ -29,6 +30,9 @@ return [
     ])),
     'MAGENTO_CLOUD_APPLICATION' => base64_encode(json_encode([
         'hooks' => [
+
+        ],
+        'mounts' => [
 
         ]
     ])),

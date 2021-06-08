@@ -139,9 +139,10 @@ class Filesystem
      * @param string $directory
      * @param string $destination
      * @param int|null $options
+     * @param bool $recursive
      * @return bool
      */
-    public function copyDirectory($directory, $destination, $options = null): bool
+    public function copyDirectory($directory, $destination, $options = null, $recursive = true): bool
     {
         if (!$this->isDirectory($directory)) {
             return false;
@@ -165,6 +166,10 @@ class Filesystem
             $target = $destination . '/' . $item->getBasename();
 
             if ($item->isDir()) {
+                if (!$recursive) {
+                    continue;
+                }
+
                 $path = $item->getPathname();
 
                 if (!$this->copyDirectory($path, $target, $options)) {

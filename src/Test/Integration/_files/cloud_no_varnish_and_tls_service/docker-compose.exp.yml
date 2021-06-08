@@ -121,7 +121,7 @@ services:
       - '.:/app:rw,delegated'
       - 'magento-vendor:/app/vendor:rw,delegated'
       - 'magento-generated:/app/generated:rw,delegated'
-      - '~/.composer/cache:/root/.composer/cache:rw,delegated'
+      - '~/.composer/cache:/composer/cache:rw,delegated'
     networks:
       magento-build:
         aliases:

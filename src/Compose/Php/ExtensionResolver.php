@@ -210,10 +210,9 @@ BASH
                         '--with-jpeg=/usr/include/'
                     ],
                 ],
-
             ],
             'geoip' => [
-                '>=7.0' => [
+                '>=7.0 <8.0' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_OS_DEPENDENCIES => ['libgeoip-dev', 'wget'],
                     self::EXTENSION_PACKAGE_NAME => 'geoip-1.1.1',
@@ -235,10 +234,10 @@ BASH
                 ],
             ],
             'igbinary' => [
-                '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
+                '>=7.0 <8.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
             ],
             'imagick' => [
-                '>=7.0' => [
+                '>=7.0 <8.0' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_OS_DEPENDENCIES => ['libmagickwand-dev', 'libmagickcore-dev'],
                 ],
@@ -279,7 +278,11 @@ BASH
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
             'oauth' => [
-                '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
+                '>=7.0 <8.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
+                '>=8.0' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
+                    self::EXTENSION_OS_DEPENDENCIES => ['libpcre3-dev'],
+                ],
             ],
             'opcache' => [
                 '>=7.0' => [
@@ -294,7 +297,7 @@ BASH
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
             'propro' => [
-                '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
+                '>=7.0 <8.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
             ],
             'pspell' => [
                 '>=7.0' => [
@@ -327,14 +330,14 @@ BASH
                 '>=7.0 <7.2' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
                     self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
-mkdir -p /tmp/libsodium 
+mkdir -p /tmp/libsodium
 curl -sL https://github.com/jedisct1/libsodium/archive/1.0.18-RELEASE.tar.gz | tar xzf - -C  /tmp/libsodium
 cd /tmp/libsodium/libsodium-1.0.18-RELEASE/
 ./configure
 make && make check
-make install 
+make install
 cd /
-rm -rf /tmp/libsodium 
+rm -rf /tmp/libsodium
 pecl install -o -f libsodium
 BASH
                 ],
@@ -343,15 +346,15 @@ BASH
                     self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
 rm -f /usr/local/etc/php/conf.d/*sodium.ini
 rm -f /usr/local/lib/php/extensions/*/*sodium.so
-apt-get remove libsodium* -y 
-mkdir -p /tmp/libsodium 
+apt-get remove libsodium* -y
+mkdir -p /tmp/libsodium
 curl -sL https://github.com/jedisct1/libsodium/archive/1.0.18-RELEASE.tar.gz | tar xzf - -C  /tmp/libsodium
 cd /tmp/libsodium/libsodium-1.0.18-RELEASE/
 ./configure
 make && make check
-make install 
+make install
 cd /
-rm -rf /tmp/libsodium 
+rm -rf /tmp/libsodium
 pecl install -o -f libsodium
 BASH
                 ]
@@ -391,13 +394,21 @@ BASH
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_PACKAGE_NAME => 'xdebug-2.7.1',
                 ],
-                '>=7.4' => [
+                '>=7.4 <8.0' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
-                    self::EXTENSION_PACKAGE_NAME => 'xdebug-2.9.3',
+                    self::EXTENSION_PACKAGE_NAME => 'xdebug-2.9.8',
+                ],
+                '>=8.0' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
+                    self::EXTENSION_PACKAGE_NAME => 'xdebug-3.0.4',
                 ],
             ],
             'xmlrpc' => [
-                '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
+                '>=7.0 <8.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
+                '>=8.0' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
+                    self::EXTENSION_PACKAGE_NAME => 'xmlrpc-1.0.0RC2',
+                ],
             ],
             'xsl' => [
                 '>=7.0' => [
@@ -406,7 +417,12 @@ BASH
                 ],
             ],
             'yaml' => [
-                '>=7.0' => [
+                '>=7.0 <7.1' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
+                    self::EXTENSION_OS_DEPENDENCIES => ['libyaml-dev'],
+                    self::EXTENSION_PACKAGE_NAME => 'yaml-2.1.0',
+                ],
+                '>=7.1' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_OS_DEPENDENCIES => ['libyaml-dev'],
                 ],
@@ -426,7 +442,7 @@ BASH
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
             'ioncube' => [
-                '>=7.0 <=7.3' => [
+                '>=7.0 <=7.4' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
                     self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
 cd /tmp

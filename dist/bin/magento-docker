@@ -6,7 +6,8 @@ USAGE="Magento Cloud Docker
 
 \033[33mArguments:\033[0m
   pull              pull latest images
-  up                destroy, re-create and start containers
+  init              destroy, re-create and start containers and volumes
+  up                create or start containers
   down              destroy containers
   bash              connect to bash
   stop              stop containers
@@ -23,15 +24,61 @@ USAGE="Magento Cloud Docker
   php 7.2           run a command in a PHP 7.2 container
   php 7.3           run a command in a PHP 7.3 container
   php 7.4           run a command in a PHP 7.4 container
+  php 8.0           run a command in a PHP 8.0 container
+  copy-to           copy to container (use --all or specific file/directory)
+  copy-from         copy from container (use --all or specific file/directory)
+  fix-owns          fix ownership to www:www
 
 \033[33mOptions:\033[0m
   -h            show this help text\n"
+
+function fix-owns() {
+    if [ -z "$1" ]; then
+        docker-compose exec -u root -T fpm chown -R www:www /app
+    else
+        docker-compose exec -u root -T fpm chown -R www:www /app/"$1"
+    fi
+}
+
+function copy-to() {
+    [ -z "$1" ] && echo "Please specify a directory or file to copy to container (ex. vendor, --all)" && exit
+
+    if [ "$1" == "--all" ]; then
+        docker cp "./" "$(docker-compose ps -q fpm | awk '{print $1}')":/app/
+        echo "Completed copying all files from host to container"
+        fix-owns
+    else
+        if [ -f "../$1" ]; then
+            docker cp "./${1}" "$(docker-compose ps -q fpm | awk '{print $1}')":/app/"$1"
+        else
+            docker cp "./${1}" "$(docker-compose ps -q fpm | awk '{print $1}')":/app/"$(dirname "$1")"
+        fi
+        echo "Completed copying $1 from host to container"
+        fix-owns "$1"
+    fi
+}
+
+function copy-from() {
+    [ -z "$1" ] && echo "Please specify a directory or file to copy from container (ex. vendor, --all)" && exit
+
+    if [ "$1" == "--all" ]; then
+        docker cp "$(docker-compose ps -q fpm | awk '{print $1}')":/app/ "./"
+        echo "Completed copying all files from container to host"
+    else
+        if [ -f "$1" ]; then
+            docker cp "$(docker-compose ps -q fpm | awk '{print $1}')":/app/"$1" "./$1"
+        else
+            docker cp "$(docker-compose ps -q fpm | awk '{print $1}')":/app/"$1" "./$(dirname "$1")"
+        fi
+        echo "Completed copying $1 from container to host"
+    fi
+}
 
 if [ ${#@} -ne 0 ]; then
     for arg in "$@"; do
         if [ "${arg#"-h"}" = "" ]; then
             printf "$USAGE"
-            exit 0;
+            exit 0
         fi
     done
 fi;
@@ -40,12 +87,20 @@ case "$1" in
     pull)
         docker-compose pull
         ;;
+    init)
+        read -p "Any existing data volumes will be removed. Are you sure? [y/N] " -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]
+        then
+            docker-compose down --volumes
+            docker-compose up --detach
+        fi
+        ;;
     up)
-        docker-compose down --volumes
         docker-compose up --detach
         ;;
     down)
-        docker-compose down --volumes
+        docker-compose down
         ;;
     bash)
         docker-compose run --rm deploy bash
@@ -86,7 +141,7 @@ case "$1" in
         version="$2"
         shift 2
         # allow ssh-agent forwarding for composer.json files that need access to private repos
-        if [[ $(uname) = Darwin ]]; then
+        if [[ $(uname) == Darwin ]]; then
             # https://docs.docker.com/docker-for-mac/osxfs/#ssh-agent-forwarding (D4M > 2.2)
             export SSH_AUTH_SOCK="/run/host-services/ssh-auth.sock"
         fi
@@ -95,7 +150,17 @@ case "$1" in
             --mount "type=bind,src=$SSH_AUTH_SOCK,target=$SSH_AUTH_SOCK" -e SSH_AUTH_SOCK="$SSH_AUTH_SOCK" \
             "magento/magento-cloud-docker-php:${version}-cli-1.1" "$@"
         ;;
+    copy-to)
+        copy-to $2
+        ;;
+    copy-from)
+        copy-from $2
+        ;;
+    fix-owns)
+        fix-owns
+        ;;
     *)
         printf "$USAGE"
-        exit 0;
+        exit 0
+        ;;
 esac
