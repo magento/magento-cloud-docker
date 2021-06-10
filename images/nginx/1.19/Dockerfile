@@ -22,10 +22,10 @@ RUN mkdir /etc/nginx/ssl
 RUN apt-get update && \
     apt-get install -y openssl
 
-RUN openssl req -x509 -nodes -days 730 \
-    -subj  "/C=US/ST=TX/L=Austin/O=Magento/OU=Cloud Docker/CN=magento.com" \
-     -newkey rsa:2048 -keyout /etc/nginx/ssl/magento.key \
-     -out /etc/nginx/ssl/magento.crt;
+RUN openssl req -x509 -newkey rsa:2048 -sha256 -days 730 -nodes \
+  -keyout /etc/nginx/ssl/magento.key -out /etc/nginx/ssl/magento.crt \
+  -subj "/C=US/ST=TX/L=Austin/O=Adobe Commerce/OU=Cloud Docker/CN=magento2.docker" \
+  -addext "subjectAltName=DNS:magento2.docker,DNS:www.magento2.docker"
 
 VOLUME ${MAGENTO_ROOT}
 
