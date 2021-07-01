@@ -19,11 +19,18 @@ return [
                 'type' => 'redis:5.0'
             ]
         ],
+        'elasticsearch' => [
+            [
+                'host' => 'elasticsearch',
+                'port' => '9200',
+                'type' => 'elasticsearch:6.5'
+            ]
+        ],
         'zookeeper' => [
             [
                 'host' => 'zookeeper',
                 'port' => '2181',
-                'type' => 'zookeeper:latest'
+                'type' => 'zookeeper:3.5'
             ]
         ]
     ])),

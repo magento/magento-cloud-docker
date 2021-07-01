@@ -31,6 +31,8 @@ class CliSource implements SourceInterface
     public const OPTION_RABBIT_MQ = 'rmq';
     public const OPTION_SELENIUM_VERSION = 'selenium-version';
     public const OPTION_SELENIUM_IMAGE = 'selenium-image';
+    public const OPTION_ZOOKEEPER_VERSION = 'zookeeper-version';
+    public const OPTION_ZOOKEEPER_IMAGE = 'zookeeper-image';
     public const OPTION_INSTALLATION_TYPE = 'installation-type';
     public const OPTION_NO_ES = 'no-es';
     public const OPTION_NO_MAILHOG = 'no-mailhog';
@@ -61,6 +63,7 @@ class CliSource implements SourceInterface
     public const OPTION_WITH_XDEBUG = 'with-xdebug';
     public const OPTION_WITH_ENTRYPOINT = 'with-entrypoint';
     public const OPTION_WITH_MARIADB_CONF = 'with-mariadb-conf';
+    public const OPTION_WITH_ZOOKEEPER = 'with-zookeeper';
 
     /**
      * @deprecated Will be removed in next major release
@@ -329,6 +332,29 @@ class CliSource implements SourceInterface
 
         if ($rootDir = $this->input->getOption(self::OPTION_ROOT_DIR)) {
             $repository->set(self::SYSTEM_ROOT_DIR, $rootDir);
+        }
+
+        if ($this->input->getOption(self::OPTION_WITH_ZOOKEEPER)) {
+            $repository->set([
+                self::SERVICES_ZOOKEEPER_ENABLED => true,
+                self::PHP_ENABLED_EXTENSIONS => 'zookeeper'
+            ]);
+        }
+
+        if ($zookeeperImage = $this->input->getOption(self::OPTION_ZOOKEEPER_IMAGE)) {
+            $repository->set([
+                self::SERVICES_ZOOKEEPER_ENABLED => true,
+                self::SERVICES_ZOOKEEPER_IMAGE => $zookeeperImage,
+                self::PHP_ENABLED_EXTENSIONS => 'zookeeper'
+            ]);
+        }
+
+        if ($zookeeperVersion = $this->input->getOption(self::OPTION_ZOOKEEPER_VERSION)) {
+            $repository->set([
+                self::SERVICES_ZOOKEEPER_ENABLED => true,
+                self::SERVICES_ZOOKEEPER_VERSION => $zookeeperVersion,
+                self::PHP_ENABLED_EXTENSIONS => 'zookeeper'
+            ]);
         }
 
         $phpVersion = $this->input->getOption(self::OPTION_PHP);

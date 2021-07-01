@@ -13,15 +13,12 @@ services:
       - '3306'
     volumes:
       - '.docker/mnt:/mnt:rw,delegated'
-      - '.docker/mysql/mariadb.conf.d:/etc/mysql/mariadb.conf.d'
       - 'mymagento-magento-db:/var/lib/mysql'
-      - '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
     healthcheck:
       test: 'mysqladmin ping -h localhost -pmagento2'
       interval: 30s
       timeout: 30s
       retries: 3
-    command: '--auto_increment_increment=3 --auto_increment_offset=2'
     networks:
       magento:
         aliases:
@@ -49,13 +46,26 @@ services:
       magento:
         aliases:
           - redis.magento2.docker
+  elasticsearch:
+    hostname: elasticsearch.magento2.docker
+    image: 'magento/magento-cloud-docker-elasticsearch:6.5-1.2.0'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+    networks:
+      magento:
+        aliases:
+          - elasticsearch.magento2.docker
   fpm:
     hostname: fpm.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.3-fpm-1.2.0'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
-      - './dev:/app/dev:rw,delegated'
       - 'mymagento-vendor:/app/vendor:ro,delegated'
       - 'mymagento-generated:/app/generated:ro,delegated'
       - 'mymagento-var:/app/var:rw,delegated'
@@ -76,7 +86,6 @@ services:
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
-      - './dev:/app/dev:rw,delegated'
       - 'mymagento-vendor:/app/vendor:ro,delegated'
       - 'mymagento-generated:/app/generated:ro,delegated'
       - 'mymagento-var:/app/var:rw,delegated'
@@ -85,8 +94,8 @@ services:
       - 'mymagento-pub-static:/app/pub/static:rw,delegated'
       - '.docker/mnt:/mnt:rw,delegated'
     environment:
-      - WITH_XDEBUG=1
-      - NGINX_WORKER_PROCESSES=auto
+      - WITH_XDEBUG=0
+      - NGINX_WORKER_PROCESSES=1
       - NGINX_WORKER_CONNECTIONS=1024
     networks:
       magento:
@@ -114,62 +123,15 @@ services:
         aliases:
           - magento2.docker
     environment:
-      - NGINX_WORKER_PROCESSES=auto
+      - NGINX_WORKER_PROCESSES=1
       - NGINX_WORKER_CONNECTIONS=1024
       - UPSTREAM_HOST=varnish
       - UPSTREAM_PORT=80
     ports:
       - '80:80'
-      - '4443:443'
+      - '443:443'
     depends_on:
       varnish:
-        condition: service_started
-  test:
-    hostname: test.magento2.docker
-    image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'
-    extends: generic
-    volumes:
-      - '.:/app:rw,delegated'
-      - './dev:/app/dev:rw,delegated'
-      - 'mymagento-vendor:/app/vendor:rw,delegated'
-      - 'mymagento-generated:/app/generated:rw,delegated'
-      - 'mymagento-var:/app/var:rw,delegated'
-      - 'mymagento-app-etc:/app/app/etc:rw,delegated'
-      - 'mymagento-pub-media:/app/pub/media:rw,delegated'
-      - 'mymagento-pub-static:/app/pub/static:rw,delegated'
-      - '.docker/mnt:/mnt:rw,delegated'
-      - '~/.composer/cache:/composer/cache:rw,delegated'
-    networks:
-      magento:
-        aliases:
-          - test.magento2.docker
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-  fpm_xdebug:
-    hostname: fpm_xdebug.magento2.docker
-    image: 'magento/magento-cloud-docker-php:7.3-fpm-1.2.0'
-    extends: generic
-    volumes:
-      - '.:/app:ro,delegated'
-      - './dev:/app/dev:rw,delegated'
-      - 'mymagento-vendor:/app/vendor:ro,delegated'
-      - 'mymagento-generated:/app/generated:ro,delegated'
-      - 'mymagento-var:/app/var:rw,delegated'
-      - 'mymagento-app-etc:/app/app/etc:rw,delegated'
-      - 'mymagento-pub-media:/app/pub/media:rw,delegated'
-      - 'mymagento-pub-static:/app/pub/static:rw,delegated'
-      - '.docker/mnt:/mnt:rw,delegated'
-    environment:
-      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl sodium zookeeper xdebug'
-    networks:
-      magento:
-        aliases:
-          - fpm_xdebug.magento2.docker
-    depends_on:
-      db:
         condition: service_started
   generic:
     hostname: generic.magento2.docker
@@ -195,13 +157,14 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
   deploy:
     hostname: deploy.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
-      - './dev:/app/dev:rw,delegated'
       - 'mymagento-vendor:/app/vendor:ro,delegated'
       - 'mymagento-generated:/app/generated:ro,delegated'
       - 'mymagento-var:/app/var:rw,delegated'
@@ -218,35 +181,21 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-  cron:
-    hostname: cron.magento2.docker
-    image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'
-    extends: generic
-    command: run-cron
-    environment:
-      CRONTAB: '* * * * * root cd /app && /usr/local/bin/php bin/magento cron:run >> /app/var/log/cron.log'
-    volumes:
-      - '.:/app:ro,delegated'
-      - './dev:/app/dev:rw,delegated'
-      - 'mymagento-vendor:/app/vendor:ro,delegated'
-      - 'mymagento-generated:/app/generated:ro,delegated'
-      - 'mymagento-var:/app/var:rw,delegated'
-      - 'mymagento-app-etc:/app/app/etc:rw,delegated'
-      - 'mymagento-pub-media:/app/pub/media:rw,delegated'
-      - 'mymagento-pub-static:/app/pub/static:rw,delegated'
-      - '.docker/mnt:/mnt:rw,delegated'
+      elasticsearch:
+        condition: service_healthy
+  mailhog:
+    hostname: mailhog.magento2.docker
+    image: 'mailhog/mailhog:latest'
+    ports:
+      - '1025:1025'
+      - '8025:8025'
     networks:
       magento:
         aliases:
-          - cron.magento2.docker
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+          - mailhog.magento2.docker
   zookeeper:
     hostname: zookeeper.magento2.docker
-    image: 'zookeeper:latest'
+    image: 'my-zookeeper:latest'
     networks:
       magento:
         aliases:

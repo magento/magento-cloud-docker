@@ -36,6 +36,10 @@ interface SourceInterface
     public const SERVICES_SELENIUM_IMAGE = self::SERVICES_SELENIUM . '.image';
     public const SERVICES_SELENIUM_ENABLED = self::SERVICES_SELENIUM . '.enabled';
     public const SERVICES_TEST_ENABLED = self::SERVICES_TEST . '.enabled';
+    public const SERVICES_ZOOKEEPER = self::SERVICES . '.' . ServiceInterface::SERVICE_ZOOKEEPER;
+    public const SERVICES_ZOOKEEPER_ENABLED = self::SERVICES_ZOOKEEPER . '.enabled';
+    public const SERVICES_ZOOKEEPER_VERSION = self::SERVICES_ZOOKEEPER . '.version';
+    public const SERVICES_ZOOKEEPER_IMAGE = self::SERVICES_ZOOKEEPER . '.image';
 
     /**
      * Varnish

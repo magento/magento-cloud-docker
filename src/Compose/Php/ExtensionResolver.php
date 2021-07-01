@@ -326,6 +326,32 @@ BASH
             'sockets' => [
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
+            'zookeeper' => [
+                '>=7.2' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
+                    // phpcs:disable
+                    self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
+mkdir -p /tmp/zoo
+cd /tmp/zoo
+git clone https://github.com/php-zookeeper/php-zookeeper.git
+curl -LO https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/zookeeper-3.4.14.tar.gz
+tar -xf zookeeper-3.4.14.tar.gz
+cp zookeeper-3.4.14/zookeeper-client/zookeeper-client-c/generated/zookeeper.jute.h zookeeper-3.4.14/zookeeper-client/zookeeper-client-c/include
+cd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c
+./configure
+sed -i 's/CFLAGS = -g -O2 -D_GNU_SOURCE/CFLAGS = -g -O2 -D_GNU_SOURCE -Wno-error=format-overflow -Wno-error=stringop-truncation/g' Makefile
+make
+make install
+ldconfig
+cd /tmp/zoo/php-zookeeper
+phpize
+./configure --with-libzookeeper-dir=../zookeeper-3.4.14/zookeeper-client/zookeeper-client-c
+make
+make install
+BASH
+// phpcs:enable
+                ],
+            ],
             'sodium' => [
                 '>=7.0 <7.2' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,

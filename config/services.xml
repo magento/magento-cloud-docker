@@ -39,6 +39,7 @@
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Mailhog" />
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Blackfire" />
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Cron" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Zookeeper" />
             </argument>
         </service>
         <service id="Magento\CloudDocker\Compose\ProductionBuilder" shared="false">

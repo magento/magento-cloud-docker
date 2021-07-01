@@ -60,6 +60,12 @@ class RelationshipTest extends TestCase
                 'password' => 'guest',
             ]
         ],
+        'zookeeper' => [
+            [
+                'host' => 'zookeeper',
+                'port' => '2181',
+            ]
+        ],
     ];
 
     /**
@@ -80,13 +86,15 @@ class RelationshipTest extends TestCase
         $redisVersion = '5.2';
         $esVersion = '7.7';
         $rmqVersion = '3.5';
+        $zookeeperVersion = 'latest';
         $configWithType = $this->defaultConfigs;
         $configWithType['database'][0]['type'] = "mysql:$mysqlVersion";
         $configWithType['redis'][0]['type'] = "redis:$redisVersion";
         $configWithType['elasticsearch'][0]['type'] = "elasticsearch:$esVersion";
         $configWithType['rabbitmq'][0]['type'] = "rabbitmq:$rmqVersion";
+        $configWithType['zookeeper'][0]['type'] = "zookeeper:$zookeeperVersion";
 
-        $this->configMock->expects($this->exactly(6))
+        $this->configMock->expects($this->exactly(7))
             ->method('hasServiceEnabled')
             ->withConsecutive(
                 [ServiceInterface::SERVICE_DB],
@@ -94,22 +102,25 @@ class RelationshipTest extends TestCase
                 [ServiceInterface::SERVICE_DB_SALES],
                 ['redis'],
                 ['elasticsearch'],
-                ['rabbitmq']
+                ['rabbitmq'],
+                ['zookeeper']
             )
-            ->willReturnOnConsecutiveCalls(true, false, false, true, true, true);
-        $this->configMock->expects($this->exactly(4))
+            ->willReturnOnConsecutiveCalls(true, false, false, true, true, true, true);
+        $this->configMock->expects($this->exactly(5))
             ->method('getServiceVersion')
             ->withConsecutive(
                 [ServiceInterface::SERVICE_DB],
                 ['redis'],
                 ['elasticsearch'],
-                ['rabbitmq']
+                ['rabbitmq'],
+                ['zookeeper']
             )
             ->willReturnOnConsecutiveCalls(
                 $mysqlVersion,
                 $redisVersion,
                 $esVersion,
-                $rmqVersion
+                $rmqVersion,
+                $zookeeperVersion
             );
 
         $this->assertEquals($configWithType, $this->relationship->get($this->configMock));

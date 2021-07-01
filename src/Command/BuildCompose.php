@@ -164,6 +164,16 @@ class BuildCompose extends Command
                 InputOption::VALUE_REQUIRED,
                 'Selenium image'
             )->addOption(
+                Source\CliSource::OPTION_ZOOKEEPER_VERSION,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Zookeeper version'
+            )->addOption(
+                Source\CliSource::OPTION_ZOOKEEPER_IMAGE,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Zookeeper image'
+            )->addOption(
                 Source\CliSource::OPTION_NO_ES,
                 null,
                 InputOption::VALUE_NONE,
@@ -244,6 +254,11 @@ class BuildCompose extends Command
             null,
             InputOption::VALUE_NONE,
             'Add Selenium latest version'
+        )->addOption(
+            Source\CliSource::OPTION_WITH_ZOOKEEPER,
+            null,
+            InputOption::VALUE_NONE,
+            'Add Zookeeper latest version'
         )->addOption(
             Source\CliSource::OPTION_WITH_TEST,
             null,
