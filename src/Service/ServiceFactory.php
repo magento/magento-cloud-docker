@@ -140,6 +140,11 @@ class ServiceFactory
                 'shm_size' => '2gb'
             ]
         ],
+        ServiceInterface::SERVICE_ZOOKEEPER => [
+            'image' => 'zookeeper',
+            'version' => 'latest',
+            'pattern' => self::PATTERN_STD
+        ],
         ServiceInterface::SERVICE_BLACKFIRE => [
             'image' => 'blackfire/blackfire',
             'version' => 'latest',

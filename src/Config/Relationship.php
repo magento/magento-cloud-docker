@@ -69,6 +69,12 @@ class Relationship
                 'password' => 'guest',
             ]
         ],
+        'zookeeper' => [
+            [
+                'host' => 'zookeeper',
+                'port' => '2181',
+            ],
+        ],
     ];
 
     /**

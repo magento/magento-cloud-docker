@@ -133,6 +133,7 @@ class BuildComposeTest extends TestCase
                     [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
                     [CliSource::OPTION_WITH_TEST, true],
                     [CliSource::OPTION_WITH_CRON, true],
+                    [CliSource::OPTION_WITH_ZOOKEEPER, true],
                     [CliSource::OPTION_WITH_XDEBUG, true],
                     [CliSource::OPTION_ES, '5.2'],
                     [CliSource::OPTION_NO_ES, true],
@@ -150,6 +151,28 @@ class BuildComposeTest extends TestCase
                 [
                     [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
                     [CliSource::OPTION_NO_TLS, true],
+                ]
+            ],
+            'cloud_base_with_custom_zookeeper_image' => [
+                __DIR__ . '/_files/cloud_base_with_custom_zookeeper_image',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_ZOOKEEPER_IMAGE, 'my-zookeeper'],
+                ]
+            ],
+            'cloud_base_with_custom_zookeeper_version' => [
+                __DIR__ . '/_files/cloud_base_with_custom_zookeeper_version',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_ZOOKEEPER_VERSION, '3.5'],
+                ]
+            ],
+            'cloud_base_with_custom_zookeeper_image_and_version' => [
+                __DIR__ . '/_files/cloud_base_with_custom_zookeeper_image_and_version',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_ZOOKEEPER_IMAGE, 'my-zookeeper'],
+                    [CliSource::OPTION_ZOOKEEPER_VERSION, '3.5'],
                 ]
             ],
             'without Varnish service' => [

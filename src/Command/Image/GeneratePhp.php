@@ -38,7 +38,8 @@ class GeneratePhp extends Command
         'sendmail-bin',
         'sendmail',
         'sudo',
-        'iproute2'
+        'iproute2',
+        'git',
     ];
     private const DEFAULT_PACKAGES_PHP_CLI = [
         'apt-utils',

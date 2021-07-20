@@ -1,8 +1,8 @@
 #!/bin/bash
-mutagen terminate --label-selector=magento-docker
-mutagen terminate --label-selector=magento-docker-vendor
+mutagen sync terminate --label-selector=magento-docker
+mutagen sync terminate --label-selector=magento-docker-vendor
 
-mutagen create \
+mutagen sync create \
        --label=magento-docker \
        --sync-mode=two-way-resolved \
        --default-file-mode=0644 \
@@ -20,7 +20,7 @@ mutagen create \
        --symlink-mode=posix-raw \
        ./ docker://$(docker-compose ps -q fpm|awk '{print $1}')/app
 
-mutagen create \
+mutagen sync create \
        --label=magento-docker-vendor \
        --sync-mode=two-way-resolved \
        --default-file-mode=0644 \

@@ -27,6 +27,7 @@ class CloudBaseSource implements SourceInterface
      */
     private static $services = [
         ServiceInterface::SERVICE_SELENIUM => false,
+        ServiceInterface::SERVICE_ZOOKEEPER => false,
         ServiceInterface::SERVICE_NGINX => true,
         ServiceInterface::SERVICE_TLS => true,
         ServiceInterface::SERVICE_VARNISH => true,

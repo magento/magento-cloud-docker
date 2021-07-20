@@ -2,7 +2,7 @@
     "name": "magento/magento-cloud-docker",
     "description": "Magento Cloud Docker",
     "type": "magento2-component",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "license": [
         "OSL-3.0",
         "AFL-3.0"
@@ -11,7 +11,7 @@
         "php": "^7.2",
         "ext-json": "*",
         "composer/composer": "^1.0||^2.0",
-        "composer/semver": "^1.0",
+        "composer/semver": "^1.0||^2.0||^3.0",
         "illuminate/config": "^5.5",
         "symfony/config": "^4.4",
         "symfony/console": "^2.8||^4.0",

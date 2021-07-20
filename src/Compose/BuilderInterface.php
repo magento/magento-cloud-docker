@@ -35,6 +35,7 @@ interface BuilderInterface
     public const SERVICE_TEST = ServiceInterface::SERVICE_TEST;
     public const SERVICE_HEALTHCHECK = 'healthcheck';
     public const SERVICE_MAILHOG = ServiceInterface::SERVICE_MAILHOG;
+    public const SERVICE_ZOOKEEPER = ServiceInterface::SERVICE_ZOOKEEPER;
 
     public const NETWORK_MAGENTO = 'magento';
     public const NETWORK_MAGENTO_BUILD = 'magento-build';

@@ -19,6 +19,7 @@ RUN apt-get update \
   sendmail \
   sudo \
   iproute2 \
+  git \
   libbz2-dev \
   libjpeg62-turbo-dev \
   libpng-dev \
@@ -100,6 +101,23 @@ RUN curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire
   && mv /tmp/blackfire/blackfire-*.so $(php -r "echo ini_get ('extension_dir');")/blackfire.so \
   && echo blackfire.agent_socket=tcp://blackfire:8707 > $(php -i | grep "additional .ini" | awk '{print $9}')/blackfire.ini \
   && rm -rf /tmp/blackfire /tmp/blackfire-probe.tar.gz
+RUN mkdir -p /tmp/zoo \
+  && cd /tmp/zoo \
+  && git clone https://github.com/php-zookeeper/php-zookeeper.git \
+  && curl -LO https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/zookeeper-3.4.14.tar.gz \
+  && tar -xf zookeeper-3.4.14.tar.gz \
+  && cp zookeeper-3.4.14/zookeeper-client/zookeeper-client-c/generated/zookeeper.jute.h zookeeper-3.4.14/zookeeper-client/zookeeper-client-c/include \
+  && cd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c \
+  && ./configure \
+  && sed -i 's/CFLAGS = -g -O2 -D_GNU_SOURCE/CFLAGS = -g -O2 -D_GNU_SOURCE -Wno-error=format-overflow -Wno-error=stringop-truncation/g' Makefile \
+  && make \
+  && make install \
+  && ldconfig \
+  && cd /tmp/zoo/php-zookeeper \
+  && phpize \
+  && ./configure --with-libzookeeper-dir=../zookeeper-3.4.14/zookeeper-client/zookeeper-client-c \
+  && make \
+  && make install
 RUN rm -f /usr/local/etc/php/conf.d/*sodium.ini \
   && rm -f /usr/local/lib/php/extensions/*/*sodium.so \
   && apt-get remove libsodium* -y \
