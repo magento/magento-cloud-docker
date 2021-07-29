@@ -130,6 +130,7 @@ services:
     env_file: ./.docker/config.env
     environment:
       - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl sodium redis'
+      - 'SENDMAIL_PATH=/usr/local/bin/mhsendmail --smtp-addr=mailhog:1025'
   build:
     hostname: build.magento2.docker
     image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'

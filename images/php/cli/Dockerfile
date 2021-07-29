@@ -1,15 +1,19 @@
 {%note%}
 FROM php:{%version%}-cli
+
 ARG COMPOSER_VERSION=1.10.22
+ARG MAGENTO_ROOT=/app
+ARG COMPOSER_ALLOW_SUPERUSER=1
+ARG COMPOSER_HOME=/composer
+ARG CRONTAB=""
 
 ENV COMPOSER_MEMORY_LIMIT -1
-ENV PHP_MEMORY_LIMIT 2G
-ENV MAGENTO_ROOT /app
+ENV PHP_MEMORY_LIMIT -1
+ENV PHP_VALIDATE_TIMESTAMPS 1
 ENV DEBUG false
 ENV MAGENTO_RUN_MODE production
-ENV COMPOSER_ALLOW_SUPERUSER 1
-ENV COMPOSER_HOME /composer
-ENV ENABLE_SENDMAIL true
+ENV SENDMAIL_PATH /dev/null
+ENV PHPRC ${MAGENTO_ROOT}/php.ini
 
 {%env_php_extensions%}
 
@@ -77,7 +81,8 @@ RUN ["chmod", "+x", \
 
 {%volumes_def%}
 
-RUN chown -R www:www /usr/local /var/www /var/log /usr/local/etc/php/conf.d ${MAGENTO_ROOT} /composer
+RUN chown -R www:www /usr/local /var/www /var/log /usr/local/etc/php/conf.d /etc/cron.d ${MAGENTO_ROOT} ${COMPOSER_HOME}
+RUN if [[ ! -z "${CRONTAB}" ]]; then echo "${CRONTAB}" > /etc/cron.d/magento && touch /var/log/cron.log ; fi
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

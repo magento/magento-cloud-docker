@@ -71,16 +71,20 @@ class Generic implements ServiceBuilderInterface
      */
     public function getConfig(Config $config): array
     {
+        $variables = [
+            'PHP_EXTENSIONS' => implode(' ', $this->phpExtension->get($config)),
+        ];
+
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_MAILHOG)) {
+            $variables['SENDMAIL_PATH'] = '/usr/local/bin/mhsendmail --smtp-addr=mailhog:1025';
+        }
+
         return $this->serviceFactory->create(
             $this->getServiceName(),
             $config->getServiceVersion(ServiceInterface::SERVICE_PHP),
             [
                 'env_file' => './.docker/config.env',
-                'environment' => $this->converter->convert(
-                    [
-                        'PHP_EXTENSIONS' => implode(' ', $this->phpExtension->get($config)),
-                    ]
-                )
+                'environment' => $this->converter->convert($variables)
             ],
             $config->getServiceImage(ServiceInterface::SERVICE_PHP),
             $config->getCustomRegistry(),
