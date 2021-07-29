@@ -105,7 +105,7 @@ RUN pecl install -o -f \
   raphf \
   redis \
   ssh2-1.1.2 \
-  xdebug-2.6.1 \
+  xdebug-3.0.4 \
   yaml
 
 RUN curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/amd64/$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \

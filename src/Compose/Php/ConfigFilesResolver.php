@@ -35,12 +35,8 @@ class ConfigFilesResolver
                 ],
             ],
             'xdebug' => [
-                '>=7.0 <8.0' => [
-                    self::FROM_PATH => 'etc/php-xdebug-7.0.ini',
-                    self::TO_PATH => 'etc/php-xdebug.ini',
-                ],
-                '>=8.0' => [
-                    self::FROM_PATH => 'etc/php-xdebug-8.0.ini',
+                '>=7.2' => [
+                    self::FROM_PATH => 'etc/php-xdebug-3.ini',
                     self::TO_PATH => 'etc/php-xdebug.ini',
                 ],
             ],
@@ -71,12 +67,8 @@ class ConfigFilesResolver
                 ],
             ],
             'xdebug' => [
-                '>=7.0 <8.0' => [
-                    self::FROM_PATH => 'etc/php-xdebug-7.0.ini',
-                    self::TO_PATH => 'etc/php-xdebug.ini',
-                ],
-                '>=8.0' => [
-                    self::FROM_PATH => 'etc/php-xdebug-8.0.ini',
+                '>=7.2' => [
+                    self::FROM_PATH => 'etc/php-xdebug-3.ini',
                     self::TO_PATH => 'etc/php-xdebug.ini',
                 ],
             ],

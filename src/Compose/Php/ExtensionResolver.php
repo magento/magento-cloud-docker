@@ -410,21 +410,7 @@ BASH
                 ],
             ],
             'xdebug' => [
-                '>=7.0 <7.3' => [
-                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
-                    // https://intellij-support.jetbrains.com/hc/en-us/community/posts/360003310760-XDebug-not-working-anymore
-                    // https://intellij-support.jetbrains.com/hc/en-us/community/posts/360003410140-PHPStorm-with-PHP7-3-and-xdebug-2-7-0
-                    self::EXTENSION_PACKAGE_NAME => 'xdebug-2.6.1',
-                ],
-                '>=7.3 <7.4' => [
-                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
-                    self::EXTENSION_PACKAGE_NAME => 'xdebug-2.7.1',
-                ],
-                '>=7.4 <8.0' => [
-                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
-                    self::EXTENSION_PACKAGE_NAME => 'xdebug-2.9.8',
-                ],
-                '>=8.0' => [
+                '>=7.2' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_PACKAGE_NAME => 'xdebug-3.0.4',
                 ],
