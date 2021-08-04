@@ -23,5 +23,15 @@ if ( varnish=$(curl -I varnish 2>&1 | grep -i "magento2") ); then
     fi
 fi
 
+# set developer mode if it is configured in $MAGENTO_RUN_MODE
+if [ "$MAGENTO_RUN_MODE" == "developer" ]; then
+    output=$(magento-command deploy:mode:set developer)
+    if [[ $output == *"Enabled developer mode."* ]]; then
+        echo "Enabled developer mode."
+    else
+        echo $output
+    fi
+fi
+
 
 echo "Deployment finished."
