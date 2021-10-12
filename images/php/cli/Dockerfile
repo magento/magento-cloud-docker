@@ -18,7 +18,7 @@ ENV PHPRC ${MAGENTO_ROOT}/php.ini
 {%env_php_extensions%}
 
 # Configure Node.js version
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
+RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash
 
 # Install dependencies
 RUN apt-get update \
