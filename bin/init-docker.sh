@@ -40,7 +40,7 @@ parse_bool_flag()
 
 version_is_valid()
 {
-    if [[ ! $OPTARG =~ ^[0-9]+\.[0-9]+$ ]]; then
+    if [[ ! $OPTARG =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
         die "Invalid version number $OPTARG for $OPT"
     fi
 }
