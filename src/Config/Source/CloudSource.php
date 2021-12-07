@@ -45,6 +45,7 @@ class CloudSource implements SourceInterface
         ServiceInterface::SERVICE_DB_QUOTE => ['mysql-quote'],
         ServiceInterface::SERVICE_DB_SALES => ['mysql-sales'],
         ServiceInterface::SERVICE_ELASTICSEARCH => ['elasticsearch', 'es'],
+        ServiceInterface::SERVICE_OPENSEARCH => ['opensearch', 'os'],
         ServiceInterface::SERVICE_REDIS => ['redis'],
         ServiceInterface::SERVICE_RABBITMQ => ['rmq', 'rabbitmq']
     ];

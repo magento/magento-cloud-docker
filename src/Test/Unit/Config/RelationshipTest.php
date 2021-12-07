@@ -52,6 +52,12 @@ class RelationshipTest extends TestCase
                 'port' => '9200',
             ],
         ],
+        'opensearch' => [
+            [
+                'host' => 'opensearch',
+                'port' => '9200',
+            ],
+        ],
         'rabbitmq' => [
             [
                 'host' => 'rabbitmq',
@@ -85,16 +91,18 @@ class RelationshipTest extends TestCase
         $mysqlVersion = '10.4';
         $redisVersion = '5.2';
         $esVersion = '7.7';
+        $osVersion = '1.1';
         $rmqVersion = '3.5';
         $zookeeperVersion = 'latest';
         $configWithType = $this->defaultConfigs;
         $configWithType['database'][0]['type'] = "mysql:$mysqlVersion";
         $configWithType['redis'][0]['type'] = "redis:$redisVersion";
         $configWithType['elasticsearch'][0]['type'] = "elasticsearch:$esVersion";
+        $configWithType['opensearch'][0]['type'] = "opensearch:$osVersion";
         $configWithType['rabbitmq'][0]['type'] = "rabbitmq:$rmqVersion";
         $configWithType['zookeeper'][0]['type'] = "zookeeper:$zookeeperVersion";
 
-        $this->configMock->expects($this->exactly(7))
+        $this->configMock->expects($this->exactly(8))
             ->method('hasServiceEnabled')
             ->withConsecutive(
                 [ServiceInterface::SERVICE_DB],
@@ -102,16 +110,18 @@ class RelationshipTest extends TestCase
                 [ServiceInterface::SERVICE_DB_SALES],
                 ['redis'],
                 ['elasticsearch'],
+                ['opensearch'],
                 ['rabbitmq'],
                 ['zookeeper']
             )
-            ->willReturnOnConsecutiveCalls(true, false, false, true, true, true, true);
-        $this->configMock->expects($this->exactly(5))
+            ->willReturnOnConsecutiveCalls(true, false, false, true, true, true, true, true);
+        $this->configMock->expects($this->exactly(6))
             ->method('getServiceVersion')
             ->withConsecutive(
                 [ServiceInterface::SERVICE_DB],
                 ['redis'],
                 ['elasticsearch'],
+                ['opensearch'],
                 ['rabbitmq'],
                 ['zookeeper']
             )
@@ -119,6 +129,7 @@ class RelationshipTest extends TestCase
                 $mysqlVersion,
                 $redisVersion,
                 $esVersion,
+                $osVersion,
                 $rmqVersion,
                 $zookeeperVersion
             );

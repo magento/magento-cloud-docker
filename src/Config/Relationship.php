@@ -61,6 +61,12 @@ class Relationship
                 'port' => '9200',
             ],
         ],
+        'opensearch' => [
+            [
+                'host' => 'opensearch',
+                'port' => '9200',
+            ],
+        ],
         'rabbitmq' => [
             [
                 'host' => 'rabbitmq',

@@ -79,6 +79,11 @@ interface SourceInterface
     public const SERVICES_ES = self::SERVICES . '.' . ServiceInterface::SERVICE_ELASTICSEARCH;
 
     /**
+     * OS
+     */
+    public const SERVICES_OS = self::SERVICES . '.' . ServiceInterface::SERVICE_OPENSEARCH;
+
+    /**
      * Mailhog
      */
     public const SERVICES_MAILHOG = self::SERVICES . '.' . ServiceInterface::SERVICE_MAILHOG;
@@ -89,9 +94,19 @@ interface SourceInterface
     public const SERVICES_ES_VARS = self::SERVICES_ES . '.' . 'env-vars';
 
     /**
+     * OS environment variables
+     */
+    public const SERVICES_OS_VARS = self::SERVICES_OS . '.' . 'env-vars';
+
+    /**
      * ES plugins
      */
     public const SERVICES_ES_PLUGINS = self::SERVICES_ES . '.configuration.plugins';
+
+    /**
+     * OS plugins
+     */
+    public const SERVICES_OS_PLUGINS = self::SERVICES_OS . '.configuration.plugins';
 
     /**
      * Node
