@@ -412,14 +412,14 @@ BASH
             'xdebug' => [
                 '>=7.2' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
-                    self::EXTENSION_PACKAGE_NAME => 'xdebug-3.0.4',
+                    self::EXTENSION_PACKAGE_NAME => 'xdebug-3.1.2',
                 ],
             ],
             'xmlrpc' => [
                 '>=7.0 <8.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
                 '>=8.0' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
-                    self::EXTENSION_PACKAGE_NAME => 'xmlrpc-1.0.0RC2',
+                    self::EXTENSION_PACKAGE_NAME => 'xmlrpc-1.0.0RC3',
                 ],
             ],
             'xsl' => [

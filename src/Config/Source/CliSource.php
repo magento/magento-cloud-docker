@@ -372,17 +372,6 @@ class CliSource implements SourceInterface
             ]);
         }
 
-        $phpVersion = $this->input->getOption(self::OPTION_PHP);
-        if ($phpVersion) {
-            $variableName = Semver::satisfies($phpVersion, '<8.0') ? 'remote_host' : 'client_host';
-            $repository->set([
-                self::VARIABLES => [
-                    # Docker host for developer environments, can be different for your OS
-                    'XDEBUG_CONFIG' => $variableName.'=host.docker.internal',
-                ]
-            ]);
-        }
-
         return $repository;
     }
 }

@@ -141,14 +141,6 @@ class CloudSource implements SourceInterface
         );
         $repository->set(self::HOOKS, $appConfig['hooks'] ?? []);
 
-        $variableName = Semver::satisfies($version, '<8.0') ? 'remote_host' : 'client_host';
-        $repository->set([
-            self::VARIABLES => [
-                # Docker host for developer environments, can be different for your OS
-                'XDEBUG_CONFIG' => $variableName.'=host.docker.internal',
-            ]
-        ]);
-
         return $repository;
     }
 
