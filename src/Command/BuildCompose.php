@@ -144,6 +144,11 @@ class BuildCompose extends Command
                 InputOption::VALUE_REQUIRED,
                 'Elasticsearch version'
             )->addOption(
+                Source\CliSource::OPTION_OS,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Opensearch version'
+            )->addOption(
                 Source\CliSource::OPTION_RABBIT_MQ,
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -178,6 +183,11 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'Disable Elasticsearch'
+            )->addOption(
+                Source\CliSource::OPTION_NO_OS,
+                null,
+                InputOption::VALUE_NONE,
+                'Disable Opensearch'
             )->addOption(
                 Source\CliSource::OPTION_NO_MAILHOG,
                 null,
@@ -310,6 +320,11 @@ class BuildCompose extends Command
             null,
             InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
             'Environment variable for elasticsearch service'
+        )->addOption(
+            Source\CliSource::OPTION_OS_ENVIRONMENT_VARIABLE,
+            null,
+            InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+            'Environment variable for opensearch service'
         )->addOption(
             Source\CliSource::OPTION_DB_INCREMENT_INCREMENT,
             null,

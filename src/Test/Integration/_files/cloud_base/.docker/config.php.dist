@@ -25,6 +25,13 @@ return [
                 'port' => '9200',
                 'type' => 'elasticsearch:6.5'
             ]
+        ],
+        'opensearch' => [
+            [
+                'host' => 'opensearch',
+                'port' => '9200',
+                'type' => 'opensearch:1.1'
+            ]
         ]
     ])),
     'MAGENTO_CLOUD_ROUTES' => base64_encode(json_encode([

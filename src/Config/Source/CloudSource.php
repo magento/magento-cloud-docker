@@ -45,6 +45,7 @@ class CloudSource implements SourceInterface
         ServiceInterface::SERVICE_DB_QUOTE => ['mysql-quote'],
         ServiceInterface::SERVICE_DB_SALES => ['mysql-sales'],
         ServiceInterface::SERVICE_ELASTICSEARCH => ['elasticsearch', 'es'],
+        ServiceInterface::SERVICE_OPENSEARCH => ['opensearch', 'os'],
         ServiceInterface::SERVICE_REDIS => ['redis'],
         ServiceInterface::SERVICE_RABBITMQ => ['rmq', 'rabbitmq']
     ];
@@ -139,14 +140,6 @@ class CloudSource implements SourceInterface
             $appConfig['name']
         );
         $repository->set(self::HOOKS, $appConfig['hooks'] ?? []);
-
-        $variableName = Semver::satisfies($version, '<8.0') ? 'remote_host' : 'client_host';
-        $repository->set([
-            self::VARIABLES => [
-                # Docker host for developer environments, can be different for your OS
-                'XDEBUG_CONFIG' => $variableName.'=host.docker.internal',
-            ]
-        ]);
 
         return $repository;
     }

@@ -1,5 +1,8 @@
 FROM docker.elastic.co/elasticsearch/elasticsearch:6.8.15
 
+RUN yum -y install zip
+RUN zip -q -d /usr/share/elasticsearch/lib/log4j-core-*.jar org/apache/logging/log4j/core/lookup/JndiLookup.class
+
 RUN echo "xpack.security.enabled: false" >> /usr/share/elasticsearch/config/elasticsearch.yml
 RUN echo "discovery.type: single-node" >> /usr/share/elasticsearch/config/elasticsearch.yml
 RUN bin/elasticsearch-plugin install -b analysis-icu && \

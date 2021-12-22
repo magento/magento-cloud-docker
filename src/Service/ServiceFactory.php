@@ -117,6 +117,18 @@ class ServiceFactory
                 ]
             ]
         ],
+        ServiceInterface::SERVICE_OPENSEARCH => [
+            'image' => 'magento/magento-cloud-docker-opensearch',
+            'pattern' => self::PATTERN_VERSIONED,
+            'config' => [
+                'ulimits' => [
+                    'memlock' => [
+                        'soft' => -1,
+                        'hard' => -1
+                    ]
+                ]
+            ]
+        ],
         ServiceInterface::SERVICE_RABBITMQ => [
             'image' => 'rabbitmq',
             'pattern' => self::PATTERN_STD,

@@ -58,7 +58,7 @@ class CloudBaseSource implements SourceInterface
                 # Name of your server in IDE
                 'PHP_IDE_CONFIG' => 'serverName=magento_cloud_docker',
                 # Docker host for developer environments, can be different for your OS
-                'XDEBUG_CONFIG' => 'remote_host=host.docker.internal',
+                'XDEBUG_CONFIG' => 'client_host=host.docker.internal',
             ]
         ]);
 

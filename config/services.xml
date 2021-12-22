@@ -24,6 +24,7 @@
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Database\DbSales" />
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Redis" />
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\ElasticSearch" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\OpenSearch" />
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Fpm" />
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Web" />
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Varnish" />
