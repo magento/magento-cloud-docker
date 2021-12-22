@@ -137,7 +137,7 @@ class BuildComposeTest extends TestCase
                     [CliSource::OPTION_WITH_CRON, true],
                     [CliSource::OPTION_WITH_ZOOKEEPER, true],
                     [CliSource::OPTION_WITH_XDEBUG, true],
-                    [CliSource::OPTION_ES, '5.2'],
+                    [CliSource::OPTION_ES, '6.5'],
                     [CliSource::OPTION_OS, '1.2'],
                     [CliSource::OPTION_NO_ES, true],
                     [CliSource::OPTION_NO_OS, true],
