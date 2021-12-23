@@ -49,7 +49,7 @@ class ExtensionResolver
         'zip',
         // Required for Magento 2.4.0+
         'xsl',
-        'sodium'
+        'sodium',
     ];
 
     /**
