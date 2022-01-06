@@ -2,6 +2,7 @@
 FROM php:7.2-cli
 
 ARG COMPOSER_VERSION=1.10.22
+ARG NODE_VERSION=lts
 ARG MAGENTO_ROOT=/app
 ARG COMPOSER_ALLOW_SUPERUSER=1
 ARG COMPOSER_HOME=/composer
@@ -20,7 +21,7 @@ ENV PHPRC ${MAGENTO_ROOT}/php.ini
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl
 
 # Configure Node.js version
-RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash
+RUN curl -sL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash
 
 # Install dependencies
 RUN apt-get update \
