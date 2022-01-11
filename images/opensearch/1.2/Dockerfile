@@ -1,4 +1,4 @@
-FROM opensearchproject/opensearch:1.1.0
+FROM opensearchproject/opensearch:1.2.1
 
 USER root
 RUN yum -y install zip && \
