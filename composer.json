@@ -10,13 +10,13 @@
     "require": {
         "php": "^7.2 || ^8.0",
         "ext-json": "*",
-        "composer/composer": "^1.0||^2.0",
-        "composer/semver": "^1.0||^2.0||^3.0",
+        "composer/composer": "^1.4 || ^2.0",
+        "composer/semver": "@stable",
         "illuminate/config": "^5.5||^8.77",
-        "symfony/config": "^4.4||^5.1",
-        "symfony/console": "^2.8||^4.0",
-        "symfony/dependency-injection": "^3.3||^4.3||^5.1",
-        "symfony/yaml": "^3.3||^4.0||^5.1"
+        "symfony/config": "^4.4 || ^5.1",
+        "symfony/console": "^2.8 || ^4.0 || ^5.1",
+        "symfony/dependency-injection": "^3.3 || ^4.3 || ^5.1",
+        "symfony/yaml": "^3.3 || ^4.0 || ^5.1"
     },
     "require-dev": {
         "codeception/codeception": "^4.1",
@@ -27,7 +27,7 @@
         "consolidation/robo": "^1.2",
         "phpmd/phpmd": "@stable",
         "phpstan/phpstan": "^0.12",
-        "phpunit/phpunit": "^8.5",
+        "phpunit/phpunit": "^7.5 || ^9.5",
         "squizlabs/php_codesniffer": "^3.0"
     },
     "bin": [
