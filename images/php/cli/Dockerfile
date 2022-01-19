@@ -1,7 +1,7 @@
 {%note%}
 FROM php:{%version%}-cli
 
-ARG COMPOSER_VERSION=1.10.22
+ARG COMPOSER_VERSION={%composer_version%}
 ARG MAGENTO_ROOT=/app
 ARG COMPOSER_ALLOW_SUPERUSER=1
 ARG COMPOSER_HOME=/composer
