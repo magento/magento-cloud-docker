@@ -103,6 +103,11 @@ class GenerateEs extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+        $fixRepo = <<<FIX
+sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-* && \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-Linux-* && \
+    
+FIX;
         foreach ($this->versionMap as $version => $versionData) {
             $destination = $this->directoryList->getImagesRoot() . '/elasticsearch/' . $version;
             $dataDir = $this->directoryList->getImagesRoot() . '/elasticsearch/es/';
@@ -120,6 +125,7 @@ class GenerateEs extends Command
                     [
                         '{%version%}' => $versionData['real-version'],
                         '{%single_node%}' => $versionData['single-node'] ? self::SINGLE_NODE : '',
+                        '{%fix_repos%}' => ($version === '7.11') ? $fixRepo : '',
                     ]
                 )
             );

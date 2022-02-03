@@ -1,6 +1,6 @@
 FROM docker.elastic.co/elasticsearch/elasticsearch:{%version%}
 
-RUN yum -y install zip && \
+RUN {%fix_repos%}yum -y install zip && \
     zip -q -d /usr/share/elasticsearch/lib/log4j-core-*.jar org/apache/logging/log4j/core/lookup/JndiLookup.class && \
     yum remove -y zip && \
     yum -y clean all && \
