@@ -191,6 +191,13 @@ class TestInfrastructure extends BaseModule
             ],
         ];
 
+        foreach ((array)$this->_getConfig('additional_creds') as $creds) {
+            $auth['http-basic'][$creds['host']] = [
+                'username' => $creds['username'],
+                'password' => $creds['password']
+            ];
+        }
+
         $githubToken = $this->_getConfig('composer_github_token');
         if ($githubToken) {
             $auth['github-oauth'] = [

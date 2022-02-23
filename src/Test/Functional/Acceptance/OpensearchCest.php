@@ -14,7 +14,7 @@ use Robo\Exception\TaskException;
 /**
  * @group php81
  */
-class ElasticsearchCest extends AbstractCest
+class OpensearchCest extends AbstractCest
 {
     /**
      * Template version for testing
@@ -28,23 +28,23 @@ class ElasticsearchCest extends AbstractCest
      * @return void
      * @throws TaskException
      */
-    public function testElasticsearch(CliTester $I, Example $data)
+    public function testOpensearch(CliTester $I, Example $data)
     {
         $I->generateDockerCompose($this->buildCommand($data));
         $I->replaceImagesWithCustom();
         $I->startEnvironment();
         if (!empty($data['plugins'])) {
-            $I->runDockerComposeCommand('logs elasticsearch');
+            $I->runDockerComposeCommand('logs opensearch');
             foreach ($data['plugins'] as $plugin) {
                 $I->seeInOutput($plugin);
             }
         }
-        $I->runDockerComposeCommand('exec -T elasticsearch ps aux | grep elasticsearch');
+        $I->runDockerComposeCommand('exec -T opensearch curl localhost:9200/_nodes');
         $I->seeInOutput('-Xms' . $data['xms']);
         $I->seeInOutput('-Xmx' . $data['xmx']);
 
         if (!empty($data['param'])) {
-            $I->runDockerComposeCommand('exec -T elasticsearch curl http://localhost:9200/_nodes/settings');
+            $I->runDockerComposeCommand('exec -T opensearch curl http://localhost:9200/_nodes/settings');
             $I->seeInOutput($data['param']['needle']);
         }
     }
@@ -58,17 +58,17 @@ class ElasticsearchCest extends AbstractCest
     private function buildCommand(Example $data): string
     {
         $command = sprintf(
-            '--mode=production --es=%s --es-env-var="ES_JAVA_OPTS=-Xms%s -Xmx%s" --no-os',
+            '--mode=production --os=%s --os-env-var="OPENSEARCH_JAVA_OPTS=-Xms%s -Xmx%s"',
             $data['version'],
             $data['xms'],
             $data['xmx']
         );
 
         if (!empty($data['param'])) {
-            $command .= " --es-env-var={$data['param']['key']}={$data['param']['value']}";
+            $command .= " --os-env-var={$data['param']['key']}={$data['param']['value']}";
         }
         if (!empty($data['plugins'])) {
-            $command .= sprintf(' --es-env-var="ES_PLUGINS=%s"', implode(' ', $data['plugins']));
+            $command .= sprintf(' --os-env-var="OS_PLUGINS=%s"', implode(' ', $data['plugins']));
         }
 
         return $command;
@@ -81,7 +81,7 @@ class ElasticsearchCest extends AbstractCest
     {
         return [
             [
-                'version' => '7.6',
+                'version' => '1.2',
                 'xms' => '520m',
                 'xmx' => '520m',
                 'plugins' => ['analysis-nori'],

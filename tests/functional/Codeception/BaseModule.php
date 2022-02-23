@@ -141,10 +141,10 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
     {
         if (is_array($text)) {
             foreach ($text as $value) {
-                Assert::assertContains($value, static::$output);
+                Assert::assertStringContainsString($value, static::$output);
             }
         } else {
-            Assert::assertContains($text, static::$output);
+            Assert::assertStringContainsString($text, static::$output);
         }
     }
 
@@ -157,10 +157,10 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
     {
         if (is_array($text)) {
             foreach ($text as $value) {
-                Assert::assertNotContains($value, static::$output);
+                Assert::assertStringNotContainsString($value, static::$output);
             }
         } else {
-            Assert::assertNotContains($text, static::$output);
+            Assert::assertStringNotContainsString($text, static::$output);
         }
     }
 
