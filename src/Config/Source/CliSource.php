@@ -28,6 +28,7 @@ class CliSource implements SourceInterface
     public const OPTION_EXPOSE_DB_SALES_PORT = 'expose-db-sales-port';
     public const OPTION_REDIS = 'redis';
     public const OPTION_ES = 'es';
+    public const OPTION_OS = 'os';
     public const OPTION_RABBIT_MQ = 'rmq';
     public const OPTION_SELENIUM_VERSION = 'selenium-version';
     public const OPTION_SELENIUM_IMAGE = 'selenium-image';
@@ -35,6 +36,7 @@ class CliSource implements SourceInterface
     public const OPTION_ZOOKEEPER_IMAGE = 'zookeeper-image';
     public const OPTION_INSTALLATION_TYPE = 'installation-type';
     public const OPTION_NO_ES = 'no-es';
+    public const OPTION_NO_OS = 'no-os';
     public const OPTION_NO_MAILHOG = 'no-mailhog';
     public const OPTION_NO_TLS = 'no-tls';
 
@@ -93,6 +95,11 @@ class CliSource implements SourceInterface
     public const OPTION_ES_ENVIRONMENT_VARIABLE = 'es-env-var';
 
     /**
+     * Environment variable for opensearch service.
+     */
+    public const OPTION_OS_ENVIRONMENT_VARIABLE = 'os-env-var';
+
+    /**
      * Root directory
      */
     public const OPTION_ROOT_DIR = 'root-dir';
@@ -120,6 +127,9 @@ class CliSource implements SourceInterface
         self::OPTION_ES => [
             self::SERVICES_ES => true
         ],
+        self::OPTION_OS => [
+            self::SERVICES_OS => true
+        ],
         self::OPTION_NODE => [
             self::SERVICES_NODE => true
         ],
@@ -135,6 +145,7 @@ class CliSource implements SourceInterface
      */
     private static $disableOptionsMap = [
         self::OPTION_NO_ES => self::SERVICES_ES,
+        self::OPTION_NO_OS => self::SERVICES_OS,
         self::OPTION_NO_MAILHOG => self::SERVICES_MAILHOG,
         self::OPTION_NO_TLS => self::SERVICES_TLS,
     ];
@@ -298,6 +309,10 @@ class CliSource implements SourceInterface
             $repository->set(self::SERVICES_ES_VARS, $esEnvVars);
         }
 
+        if ($osEnvVars = $this->input->getOption(self::OPTION_OS_ENVIRONMENT_VARIABLE)) {
+            $repository->set(self::SERVICES_OS_VARS, $osEnvVars);
+        }
+
         if ($incrementIncrement = $this->input->getOption(self::OPTION_DB_INCREMENT_INCREMENT)) {
             $repository->set(SourceInterface::SYSTEM_DB_INCREMENT_INCREMENT, $incrementIncrement);
         }
@@ -354,17 +369,6 @@ class CliSource implements SourceInterface
                 self::SERVICES_ZOOKEEPER_ENABLED => true,
                 self::SERVICES_ZOOKEEPER_VERSION => $zookeeperVersion,
                 self::PHP_ENABLED_EXTENSIONS => 'zookeeper'
-            ]);
-        }
-
-        $phpVersion = $this->input->getOption(self::OPTION_PHP);
-        if ($phpVersion) {
-            $variableName = Semver::satisfies($phpVersion, '<8.0') ? 'remote_host' : 'client_host';
-            $repository->set([
-                self::VARIABLES => [
-                    # Docker host for developer environments, can be different for your OS
-                    'XDEBUG_CONFIG' => $variableName.'=host.docker.internal',
-                ]
             ]);
         }
 

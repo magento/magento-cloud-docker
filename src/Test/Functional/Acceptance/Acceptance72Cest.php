@@ -12,5 +12,8 @@ namespace Magento\CloudDocker\Test\Functional\Acceptance;
  */
 class Acceptance72Cest extends AcceptanceCest
 {
+    /**
+     * Template version for testing
+     */
     protected const TEMPLATE_VERSION = '2.3.2';
 }

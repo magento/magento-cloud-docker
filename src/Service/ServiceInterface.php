@@ -24,6 +24,7 @@ interface ServiceInterface
     public const SERVICE_NGINX = 'nginx';
     public const SERVICE_REDIS = 'redis';
     public const SERVICE_ELASTICSEARCH = 'elasticsearch';
+    public const SERVICE_OPENSEARCH = 'opensearch';
     public const SERVICE_RABBITMQ = 'rabbitmq';
     public const SERVICE_NODE = 'node';
     public const SERVICE_VARNISH = 'varnish';

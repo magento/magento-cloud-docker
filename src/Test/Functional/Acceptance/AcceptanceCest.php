@@ -10,10 +10,15 @@ namespace Magento\CloudDocker\Test\Functional\Acceptance;
 use Robo\Exception\TaskException;
 
 /**
- * @group php74
+ * @group php81
  */
 class AcceptanceCest extends AbstractCest
 {
+    /**
+     * Template version for testing
+     */
+    protected const TEMPLATE_VERSION = '2.4.4';
+
     /**
      * @param \CliTester $I
      * @throws TaskException
@@ -39,9 +44,9 @@ class AcceptanceCest extends AbstractCest
      */
     public function testCustomHost(\CliTester $I): void
     {
-        $I->updateBaseUrl('http://magento2.test:8080/');
+        $I->updateBaseUrl('http://magento2.test/');
         $I->assertTrue(
-            $I->generateDockerCompose('--mode=production --host=magento2.test --port=8080'),
+            $I->generateDockerCompose('--mode=production --host=magento2.test'),
             'Command build:compose failed'
         );
         $I->replaceImagesWithCustom();

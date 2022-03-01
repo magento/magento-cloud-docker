@@ -30,6 +30,9 @@ class CliDepend
         BuilderInterface::SERVICE_ELASTICSEARCH => [
             'condition' => 'service_healthy'
         ],
+        BuilderInterface::SERVICE_OPENSEARCH => [
+            'condition' => 'service_healthy'
+        ],
         BuilderInterface::SERVICE_NODE => [
             'condition' => 'service_started'
         ],

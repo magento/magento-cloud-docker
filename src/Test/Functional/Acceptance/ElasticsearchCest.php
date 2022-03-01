@@ -12,14 +12,14 @@ use Codeception\Example;
 use Robo\Exception\TaskException;
 
 /**
- * @group php74
+ * @group php81
  */
 class ElasticsearchCest extends AbstractCest
 {
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.0';
+    protected const TEMPLATE_VERSION = '2.4.4';
 
     /**
      * @param CliTester $I
@@ -58,7 +58,7 @@ class ElasticsearchCest extends AbstractCest
     private function buildCommand(Example $data): string
     {
         $command = sprintf(
-            '--mode=production --es=%s --es-env-var="ES_JAVA_OPTS=-Xms%s -Xmx%s"',
+            '--mode=production --es=%s --es-env-var="ES_JAVA_OPTS=-Xms%s -Xmx%s" --no-os',
             $data['version'],
             $data['xms'],
             $data['xmx']
@@ -81,17 +81,7 @@ class ElasticsearchCest extends AbstractCest
     {
         return [
             [
-                'version' => '6.5',
-                'xms' => '518m',
-                'xmx' => '518m',
-                'param' => [
-                    'key' => 'node.store.allow_mmapfs',
-                    'value' => 'false',
-                    'needle' => '"store":{"allow_mmapfs":"false"}',
-                ]
-            ],
-            [
-                'version' => '7.5',
+                'version' => '7.6',
                 'xms' => '520m',
                 'xmx' => '520m',
                 'plugins' => ['analysis-nori'],

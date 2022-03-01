@@ -15,7 +15,7 @@ class Services72Cest extends ServicesCest
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.3.0';
+    protected const TEMPLATE_VERSION = '2.3.1';
 
     /**
      * @return array
@@ -30,7 +30,7 @@ class Services72Cest extends ServicesCest
                     'magento/magento-cloud-docker-varnish:6.2-1.3',
                     'magento/magento-cloud-docker-nginx:1.19-1.3',
                     'magento/magento-cloud-docker-php:7.2-fpm-1.3',
-                    'magento/magento-cloud-docker-elasticsearch:5.2-1.3',
+                    'magento/magento-cloud-docker-elasticsearch:6.5-1.3',
                     'mariadb:10.2'
                 ],
                 'notExpectedResult' => ['rabbitmq', 'selenium/standalone-chrome:latest', 'cron'],
@@ -42,7 +42,7 @@ class Services72Cest extends ServicesCest
                     'magento/magento-cloud-docker-varnish:6.2-1.3',
                     'magento/magento-cloud-docker-nginx:1.19-1.3',
                     'magento/magento-cloud-docker-php:7.4-fpm-1.3',
-                    'magento/magento-cloud-docker-elasticsearch:5.2-1.3',
+                    'magento/magento-cloud-docker-elasticsearch:6.5-1.3',
                     'mariadb:10.1',
                     'rabbitmq:3.5'
                 ],
@@ -55,7 +55,7 @@ class Services72Cest extends ServicesCest
                     'magento/magento-cloud-docker-varnish:6.2-1.3',
                     'magento/magento-cloud-docker-nginx:1.19-1.3',
                     'magento/magento-cloud-docker-php:7.2-fpm-1.3',
-                    'magento/magento-cloud-docker-elasticsearch:5.2-1.3',
+                    'magento/magento-cloud-docker-elasticsearch:6.5-1.3',
                     'mariadb:10.2',
                     'rabbitmq:3.6'
                 ],
@@ -68,7 +68,7 @@ class Services72Cest extends ServicesCest
                     'magento/magento-cloud-docker-varnish:6.2-1.3',
                     'magento/magento-cloud-docker-nginx:1.19-1.3',
                     'magento/magento-cloud-docker-php:7.2-fpm-1.3',
-                    'magento/magento-cloud-docker-elasticsearch:5.2-1.3',
+                    'magento/magento-cloud-docker-elasticsearch:6.5-1.3',
                     'mariadb:10.2',
                     'cron',
                     'selenium/standalone-chrome:latest'
