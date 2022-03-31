@@ -55,6 +55,10 @@ class GenerateEs extends Command
             'real-version' => '7.9.3',
             'single-node' => true,
         ],
+        '7.10' => [
+            'real-version' => '7.10.2',
+            'single-node' => true,
+        ],
         '7.11' => [
             'real-version' => '7.11.2',
             'single-node' => true,
@@ -128,7 +132,7 @@ FIX;
                     [
                         '{%version%}' => $versionData['real-version'],
                         '{%single_node%}' => $versionData['single-node'] ? self::SINGLE_NODE : '',
-                        '{%fix_repos%}' => ($version === '7.11') ? $fixRepo : '',
+                        '{%fix_repos%}' => in_array($version, ['7.10', '7.11']) ? $fixRepo : '',
                     ]
                 )
             );
