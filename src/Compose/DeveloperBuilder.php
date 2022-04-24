@@ -12,6 +12,7 @@ use Magento\CloudDocker\Compose\ProductionBuilder\VolumeResolver;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Environment\Converter;
 use Magento\CloudDocker\Filesystem\FileList;
+use Magento\CloudDocker\Service\ServiceInterface;
 
 /**
  * Developer compose configuration.
@@ -149,11 +150,18 @@ class DeveloperBuilder implements BuilderInterface
                 $dbVolumes
             )
         ]);
+
+        $variables = [
+            'MAGENTO_RUN_MODE' => 'developer',
+            'PHP_EXTENSIONS' => implode(' ', $this->extensionResolver->get($config))
+        ];
+
+        if ($config->hasServiceEnabled(ServiceInterface::SERVICE_MAILHOG)) {
+            $variables['SENDMAIL_PATH'] = '/usr/local/bin/mhsendmail --smtp-addr=mailhog:1025';
+        }
+
         $manager->updateService(self::SERVICE_GENERIC, [
-            'environment' => $this->converter->convert(array_merge(
-                ['MAGENTO_RUN_MODE' => 'developer'],
-                ['PHP_EXTENSIONS' => implode(' ', $this->extensionResolver->get($config))]
-            ))
+            'environment' => $this->converter->convert($variables)
         ]);
 
         return $manager;
