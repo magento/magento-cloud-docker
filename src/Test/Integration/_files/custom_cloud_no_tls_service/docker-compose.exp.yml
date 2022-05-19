@@ -61,7 +61,7 @@ services:
         condition: service_started
   varnish:
     hostname: varnish.magento2.docker
-    image: 'magento/magento-cloud-docker-varnish:6.2-1.2.0'
+    image: 'magento/magento-cloud-docker-varnish:6.6-1.2.0'
     ports:
       - '80:80'
     networks:

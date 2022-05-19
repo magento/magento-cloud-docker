@@ -1,4 +1,15 @@
 {%note%}
+FROM golang:1.15 AS builder
+
+RUN if [ $(uname -m) = "x86_64" ]; then mailhog_arch="amd64"; else mailhog_arch="arm64"; fi \
+    && wget -O mhsendmail.tar.gz https://github.com/mailhog/mhsendmail/archive/refs/tags/v0.2.0.tar.gz \
+    && tar -xf mhsendmail.tar.gz \
+    && mkdir -p ./src/github.com/mailhog/ \
+    && mv ./mhsendmail-0.2.0 ./src/github.com/mailhog/mhsendmail \
+    && cd ./src/github.com/mailhog/mhsendmail/ \
+    && go get . \
+    && GOOS=linux GOARCH=${mailhog_arch} go build -o mhsendmail .
+
 FROM php:{%version%}-fpm
 
 ARG MAGENTO_ROOT=/app
@@ -21,9 +32,8 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # Install MailHog
-RUN curl -L -O https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 \
-    && sudo chmod +x mhsendmail_linux_amd64 \
-    && sudo mv mhsendmail_linux_amd64 /usr/local/bin/mhsendmail
+COPY --from=builder /go/src/github.com/mailhog/mhsendmail/mhsendmail /usr/local/bin/
+RUN sudo chmod +x /usr/local/bin/mhsendmail
 
 # Configure the gd library
 {%docker-php-ext-configure%}

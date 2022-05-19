@@ -113,7 +113,7 @@ services:
         condition: service_started
   varnish:
     hostname: varnish.magento2.docker
-    image: 'magento/magento-cloud-docker-varnish:6.2-1.2.0'
+    image: 'magento/magento-cloud-docker-varnish:6.6-1.2.0'
     networks:
       magento:
         aliases:
@@ -188,7 +188,7 @@ services:
         condition: service_healthy
   mailhog:
     hostname: mailhog.magento2.docker
-    image: 'mailhog/mailhog:latest'
+    image: 'magento/magento-cloud-docker-mailhog:1.0-1.2.0'
     ports:
       - '1025:1025'
       - '8025:8025'

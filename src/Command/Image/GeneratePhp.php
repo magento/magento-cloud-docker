@@ -272,9 +272,7 @@ class GeneratePhp extends Command
                             $phpExtType
                         ));
                 }
-                if (isset($phpExtInstallConfig[ExtensionResolver::EXTENSION_OS_DEPENDENCIES])
-                    && $phpExtType !== ExtensionResolver::EXTENSION_TYPE_INSTALLATION_SCRIPT
-                ) {
+                if (isset($phpExtInstallConfig[ExtensionResolver::EXTENSION_OS_DEPENDENCIES])) {
                     $packages = array_merge(
                         $packages,
                         $phpExtInstallConfig[ExtensionResolver::EXTENSION_OS_DEPENDENCIES]
