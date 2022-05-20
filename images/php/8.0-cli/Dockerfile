@@ -52,6 +52,10 @@ RUN apt-get update \
   unzip \
   vim \
   openssh-client \
+  gnupg2 \
+  ca-certificates \
+  lsb-release \
+  software-properties-common \
   libbz2-dev \
   libjpeg62-turbo-dev \
   libpng-dev \
@@ -123,7 +127,8 @@ RUN pecl install -o -f \
   xmlrpc-1.0.0RC3 \
   yaml
 
-RUN curl -L https://packages.blackfire.io/gpg.key | apt-key add \
+RUN curl -L https://packages.blackfire.io/gpg.key | gpg --dearmor > blackfire.io-archive-keyring.gpg \
+  && install -o root -g root -m 644 blackfire.io-archive-keyring.gpg /etc/apt/trusted.gpg.d/ \
   && echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.list.d/blackfire.list \
   && apt-get update \
   && apt-get install blackfire-php \

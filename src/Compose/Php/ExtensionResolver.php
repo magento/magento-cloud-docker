@@ -167,19 +167,7 @@ class ExtensionResolver
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
             'blackfire' => [
-                '>=7.2 <8.1' => [
-                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
-                    // phpcs:disable
-                    self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
-curl -L https://packages.blackfire.io/gpg.key | apt-key add
-echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.list.d/blackfire.list
-apt-get update
-apt-get install blackfire-php
-rm -rf /var/lib/apt/lists/*
-BASH
-// phpcs:enable
-                ],
-                '>=8.1' => [
+                '>=7.2' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
                     self::EXTENSION_OS_DEPENDENCIES => [
                         'gnupg2',
