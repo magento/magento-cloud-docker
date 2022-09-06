@@ -420,6 +420,13 @@ class TestInfrastructure extends BaseModule
      */
     private function addGitRepoToComposer(string $name): bool
     {
+        $repoUrl = $this->_getConfig($name . '_repo');
+
+        // Do not add repo if url is empty
+        if (empty($repoUrl)) {
+            return true;
+        }
+
         return $this->taskComposerConfig()
             ->set('repositories.' . $name, json_encode(
                 [
