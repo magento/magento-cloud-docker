@@ -169,17 +169,23 @@ class ExtensionResolver
             'blackfire' => [
                 '>=7.2' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
+                    self::EXTENSION_OS_DEPENDENCIES => [
+                        'gnupg2',
+                        'ca-certificates',
+                        'lsb-release',
+                        'software-properties-common'
+                    ],
                     // phpcs:disable
                     self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
-curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/amd64/$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;")
-mkdir -p /tmp/blackfire
-tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp/blackfire
-mv /tmp/blackfire/blackfire-*.so $(php -r "echo ini_get ('extension_dir');")/blackfire.so
-echo blackfire.agent_socket=tcp://blackfire:8707 > $(php -i | grep "additional .ini" | awk '{print $9}')/blackfire.ini
-rm -rf /tmp/blackfire /tmp/blackfire-probe.tar.gz
+curl -L https://packages.blackfire.io/gpg.key | gpg --dearmor > blackfire.io-archive-keyring.gpg
+install -o root -g root -m 644 blackfire.io-archive-keyring.gpg /etc/apt/trusted.gpg.d/
+echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.list.d/blackfire.list
+apt-get update
+apt-get install blackfire-php
+rm -rf /var/lib/apt/lists/*
 BASH
 // phpcs:enable
-                ]
+                ],
             ],
             'bz2' => [
                 '>=7.0' => [
@@ -257,9 +263,12 @@ BASH
             ],
             'ldap' => [
                 '>=7.0' => [
-                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE,
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
                     self::EXTENSION_OS_DEPENDENCIES => ['libldap2-dev'],
-                    self::EXTENSION_CONFIGURE_OPTIONS => ['--with-libdir=lib/x86_64-linux-gnu'],
+                    self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
+if [ $(uname -m) = "x86_64" ]; then ldap_arch="x86_64-linux-gnu"; else ldap_arch="aarch64-linux-gnu"; fi
+docker-php-ext-configure ldap --with-libdir=lib/\${ldap_arch}
+BASH
                 ],
             ],
             'mailparse' => [
@@ -458,13 +467,14 @@ BASH
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
                     self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
 cd /tmp
-curl -O https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
-tar zxvf ioncube_loaders_lin_x86-64.tar.gz
+if [ $(uname -m) = "x86_64" ]; then ioncube_arch="x86-64"; else ioncube_arch="aarch64"; fi
+curl -O https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_\${ioncube_arch}.tar.gz
+tar zxvf ioncube_loaders_lin_\${ioncube_arch}.tar.gz
 export PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
 export PHP_EXT_DIR=$(php-config --extension-dir)
 cp "./ioncube/ioncube_loader_lin_\${PHP_VERSION}.so" "\${PHP_EXT_DIR}/ioncube.so"
 rm -rf ./ioncube
-rm ioncube_loaders_lin_x86-64.tar.gz
+rm ioncube_loaders_lin_\${ioncube_arch}.tar.gz
 BASH
                 ],
             ],

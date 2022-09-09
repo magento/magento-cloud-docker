@@ -38,9 +38,16 @@ parse_bool_flag()
     esac
 }
 
-version_is_valid()
+php_version_is_valid()
 {
     if [[ ! $OPTARG =~ ^[0-9]+\.[0-9]+$ ]]; then
+        die "Invalid version number $OPTARG for $OPT"
+    fi
+}
+
+image_version_is_valid()
+{
+    if [[ ! $OPTARG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
         die "Invalid version number $OPTARG for $OPT"
     fi
 }
@@ -70,7 +77,7 @@ add_host()
 }
 
 PHP_VERSION="7.4"
-IMAGE_VERSION="1.2.1"
+IMAGE_VERSION="1.3.2"
 ADD_HOST=true
 DOMAIN="magento2.docker"
 USAGE="Init Docker
@@ -100,13 +107,13 @@ while getopts "hp:i:-:" OPT; do
     case "$OPT" in
         p | php )
             needs_arg "$@"
-            version_is_valid
+            php_version_is_valid
             PHP_VERSION="$OPTARG"
             ;;
 
         i | image )
             needs_arg "$@"
-            version_is_valid
+            image_version_is_valid
             IMAGE_VERSION="$OPTARG"
             ;;
 

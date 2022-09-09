@@ -1,4 +1,15 @@
 {%note%}
+FROM golang:1.15 AS builder
+
+RUN if [ $(uname -m) = "x86_64" ]; then mailhog_arch="amd64"; else mailhog_arch="arm64"; fi \
+    && wget -O mhsendmail.tar.gz https://github.com/mailhog/mhsendmail/archive/refs/tags/v0.2.0.tar.gz \
+    && tar -xf mhsendmail.tar.gz \
+    && mkdir -p ./src/github.com/mailhog/ \
+    && mv ./mhsendmail-0.2.0 ./src/github.com/mailhog/mhsendmail \
+    && cd ./src/github.com/mailhog/mhsendmail/ \
+    && go get . \
+    && GOOS=linux GOARCH=${mailhog_arch} go build -o mhsendmail .
+
 FROM php:{%version%}-cli
 
 ARG COMPOSER_VERSION={%composer_version%}
@@ -37,9 +48,8 @@ RUN pip3 install --upgrade setuptools \
 RUN npm install -g grunt-cli
 
 # Install MailHog
-RUN curl -L -O https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 \
-    && sudo chmod +x mhsendmail_linux_amd64 \
-    && sudo mv mhsendmail_linux_amd64 /usr/local/bin/mhsendmail
+COPY --from=builder /go/src/github.com/mailhog/mhsendmail/mhsendmail /usr/local/bin/
+RUN sudo chmod +x /usr/local/bin/mhsendmail
 
 # Configure the gd library
 {%docker-php-ext-configure%}
@@ -84,7 +94,7 @@ RUN ["chmod", "+x", \
 {%volumes_def%}
 
 RUN chown -R www:www /usr/local /var/www /var/log /usr/local/etc/php/conf.d /etc/cron.d ${MAGENTO_ROOT} ${COMPOSER_HOME}
-RUN if [[ ! -z "${CRONTAB}" ]]; then echo "${CRONTAB}" > /etc/cron.d/magento && touch /var/log/cron.log ; fi
+RUN if [ ! -z "${CRONTAB}" ]; then echo "${CRONTAB}" > /etc/cron.d/magento && touch /var/log/cron.log ; fi
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

@@ -91,7 +91,7 @@ class ServicesCest extends AbstractCest
                 'options' => '',
                 'expectedResult' => [
                     'redis:5.0',
-                    'magento/magento-cloud-docker-varnish:6.2-1.3',
+                    'magento/magento-cloud-docker-varnish:6.6-1.3',
                     'magento/magento-cloud-docker-nginx:1.19-1.3',
                     'magento/magento-cloud-docker-php:7.3-fpm-1.3',
                     'magento/magento-cloud-docker-elasticsearch:6.5-1.3',
@@ -103,7 +103,7 @@ class ServicesCest extends AbstractCest
                 'options' => '--redis=3.2 --db=10.1 --php=7.2 --rmq=3.5',
                 'expectedResult' => [
                     'redis:3.2',
-                    'magento/magento-cloud-docker-varnish:6.2-1.3',
+                    'magento/magento-cloud-docker-varnish:6.6-1.3',
                     'magento/magento-cloud-docker-nginx:1.19-1.3',
                     'magento/magento-cloud-docker-php:7.2-fpm-1.3',
                     'magento/magento-cloud-docker-elasticsearch:6.5-1.3',
@@ -116,7 +116,7 @@ class ServicesCest extends AbstractCest
                 'options' => '--redis=4.0 --db=10.2 --php=7.4 --rmq=3.6',
                 'expectedResult' => [
                     'redis:4.0',
-                    'magento/magento-cloud-docker-varnish:6.2-1.3',
+                    'magento/magento-cloud-docker-varnish:6.6-1.3',
                     'magento/magento-cloud-docker-nginx:1.19-1.3',
                     'magento/magento-cloud-docker-php:7.4-fpm-1.3',
                     'magento/magento-cloud-docker-elasticsearch:6.5-1.3',
@@ -129,7 +129,7 @@ class ServicesCest extends AbstractCest
                 'options' => '--with-cron --with-selenium',
                 'expectedResult' => [
                     'redis:5.0',
-                    'magento/magento-cloud-docker-varnish:6.2-1.3',
+                    'magento/magento-cloud-docker-varnish:6.6-1.3',
                     'magento/magento-cloud-docker-nginx:1.19-1.3',
                     'magento/magento-cloud-docker-php:7.3-fpm-1.3',
                     'magento/magento-cloud-docker-elasticsearch:6.5-1.3',
