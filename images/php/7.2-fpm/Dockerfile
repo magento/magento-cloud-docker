@@ -111,7 +111,7 @@ RUN pecl install -o -f \
   gnupg \
   igbinary \
   imagick \
-  mailparse \
+  mailparse-3.1.3 \
   msgpack \
   oauth \
   pcov \
