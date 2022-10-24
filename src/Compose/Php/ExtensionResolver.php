@@ -272,7 +272,11 @@ BASH
                 ],
             ],
             'mailparse' => [
-                '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
+                '<7.3' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
+                    self::EXTENSION_PACKAGE_NAME => 'mailparse-3.1.3',
+                ],
+                '>=7.3' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
             ],
             'mcrypt' => [
                 '>=7.0.0 <7.2' => [
