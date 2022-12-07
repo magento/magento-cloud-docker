@@ -481,6 +481,20 @@ rm -rf ./ioncube
 rm ioncube_loaders_lin_\${ioncube_arch}.tar.gz
 BASH
                 ],
+                '8.1' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
+                    self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
+cd /tmp
+if [ $(uname -m) = "x86_64" ]; then ioncube_arch="x86-64"; else ioncube_arch="aarch64"; fi
+curl -O https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_\${ioncube_arch}.tar.gz
+tar zxvf ioncube_loaders_lin_\${ioncube_arch}.tar.gz
+export PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
+export PHP_EXT_DIR=$(php-config --extension-dir)
+cp "./ioncube/ioncube_loader_lin_\${PHP_VERSION}.so" "\${PHP_EXT_DIR}/ioncube.so"
+rm -rf ./ioncube
+rm ioncube_loaders_lin_\${ioncube_arch}.tar.gz
+BASH
+                ]
             ],
         ];
     }
