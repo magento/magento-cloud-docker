@@ -467,7 +467,7 @@ BASH
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
             'ioncube' => [
-                '>=7.0 <=7.4' => [
+                '>=7.0 <8.0 || >8.0 <=8.1' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
                     self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
 cd /tmp
