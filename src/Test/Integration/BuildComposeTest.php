@@ -82,6 +82,24 @@ class BuildComposeTest extends TestCase
                     [CliSource::OPTION_WITH_MARIADB_CONF, true]
                 ]
             ],
+            'cloud-base-os-2-cli' => [
+                __DIR__ . '/_files/cloud_base_os_2_cli',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true],
+                    [CliSource::OPTION_OS, '2'],
+                ]
+            ],
+            'cloud-base-os-2.3-cli' => [
+                __DIR__ . '/_files/cloud_base_os_2.3_cli',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true],
+                    [CliSource::OPTION_OS, '2.3'],
+                ]
+            ],
             'custom_registry' => [
                 __DIR__ . '/_files/custom_registry',
                 [

@@ -18,7 +18,15 @@ use Magento\CloudDocker\Service\ServiceFactory;
  */
 class OpenSearch implements ServiceBuilderInterface
 {
+    /**
+     * The list of installed plugins by default
+     */
     private const INSTALLED_PLUGINS = ['analysis-icu', 'analysis-phonetic'];
+
+    /**
+     * The default OpenSearch version, which will be used if config has only major version
+     */
+    private const DEFAULT_VERSION = '2.4';
 
     /**
      * @var ServiceFactory
@@ -75,7 +83,7 @@ class OpenSearch implements ServiceBuilderInterface
 
         return $this->serviceFactory->create(
             $this->getServiceName(),
-            $config->getServiceVersion($this->getServiceName()),
+            $this->getVersion($config),
             !empty($osEnvVars) ? ['environment' => $osEnvVars] : [],
             $config->getServiceImage($this->getServiceName()),
             $config->getCustomRegistry(),
@@ -97,5 +105,19 @@ class OpenSearch implements ServiceBuilderInterface
     public function getDependsOn(Config $config): array
     {
         return [];
+    }
+
+    /**
+     * If config has only major version 2 - returns default OpenSearch version for MCD
+     * @see OpenSearch::DEFAULT_VERSION
+     *
+     * @param Config $config
+     * @return string
+     * @throws \Magento\CloudDocker\App\ConfigurationMismatchException
+     */
+    private function getVersion(Config $config): string
+    {
+        $version = $config->getServiceVersion($this->getServiceName());
+        return $version == '2' ? self::DEFAULT_VERSION : $version;
     }
 }
