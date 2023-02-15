@@ -30,7 +30,7 @@ return [
             [
                 'host' => 'opensearch',
                 'port' => '9200',
-                'type' => 'opensearch:2'
+                'type' => 'opensearch:2.3'
             ]
         ]
     ])),
