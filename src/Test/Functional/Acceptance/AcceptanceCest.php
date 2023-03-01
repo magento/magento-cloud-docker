@@ -10,14 +10,14 @@ namespace Magento\CloudDocker\Test\Functional\Acceptance;
 use Robo\Exception\TaskException;
 
 /**
- * @group php81
+ * @group php82
  */
 class AcceptanceCest extends AbstractCest
 {
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.4';
+    protected const TEMPLATE_VERSION = '2.4.6';
 
     /**
      * @param \CliTester $I

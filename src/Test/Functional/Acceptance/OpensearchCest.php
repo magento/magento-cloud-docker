@@ -12,14 +12,14 @@ use Codeception\Example;
 use Robo\Exception\TaskException;
 
 /**
- * @group php81
+ * @group php82
  */
 class OpensearchCest extends AbstractCest
 {
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.4';
+    protected const TEMPLATE_VERSION = '2.4.6';
 
     /**
      * @param CliTester $I
@@ -81,7 +81,18 @@ class OpensearchCest extends AbstractCest
     {
         return [
             [
-                'version' => '1.2',
+                'version' => '2.3',
+                'xms' => '520m',
+                'xmx' => '520m',
+                'plugins' => ['analysis-nori'],
+                'param' => [
+                    'key' => 'node.store.allow_mmap',
+                    'value' => 'false',
+                    'needle' => '"store":{"allow_mmap":"false"}',
+                ]
+            ],
+            [
+                'version' => '2.4',
                 'xms' => '520m',
                 'xmx' => '520m',
                 'plugins' => ['analysis-nori'],
