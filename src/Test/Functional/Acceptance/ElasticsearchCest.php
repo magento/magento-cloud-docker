@@ -12,14 +12,14 @@ use Codeception\Example;
 use Robo\Exception\TaskException;
 
 /**
- * @group php81
+ * @group php82
  */
 class ElasticsearchCest extends AbstractCest
 {
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.4';
+    protected const TEMPLATE_VERSION = '2.4.6';
 
     /**
      * @param CliTester $I
@@ -81,7 +81,7 @@ class ElasticsearchCest extends AbstractCest
     {
         return [
             [
-                'version' => '7.6',
+                'version' => '7.10',
                 'xms' => '520m',
                 'xmx' => '520m',
                 'plugins' => ['analysis-nori'],

@@ -65,7 +65,7 @@ services:
           - elasticsearch.magento2.docker
   opensearch:
     hostname: opensearch.magento2.docker
-    image: 'magento/magento-cloud-docker-opensearch:1.1-1.2.0'
+    image: 'magento/magento-cloud-docker-opensearch:2.4-1.2.0'
     ulimits:
       memlock:
         soft: -1

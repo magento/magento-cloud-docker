@@ -34,6 +34,12 @@ class GenerateOs extends Command
         '1.2' => [
             'real-version' => '1.2.1',
         ],
+        '2.3' => [
+            'real-version' => '2.3.0'
+        ],
+        '2.4' => [
+            'real-version' => '2.4.0'
+        ]
     ];
 
     /**

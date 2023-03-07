@@ -340,7 +340,7 @@ BASH
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
             'zookeeper' => [
-                '>=7.2' => [
+                '>=7.2 <8.2' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
                     // phpcs:disable
                     self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
@@ -423,9 +423,13 @@ BASH
                 ],
             ],
             'xdebug' => [
-                '>=7.2' => [
+                '>=7.2 <8.2' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_PACKAGE_NAME => 'xdebug-3.1.2',
+                ],
+                '>=8.2' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
+                    self::EXTENSION_PACKAGE_NAME => 'xdebug-3.2.0',
                 ],
             ],
             'xmlrpc' => [
@@ -467,7 +471,7 @@ BASH
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
             'ioncube' => [
-                '>=7.0 <=7.4' => [
+                '>=7.0 <8.0 || >8.0 <=8.1' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
                     self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
 cd /tmp

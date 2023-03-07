@@ -14,7 +14,7 @@ elasticsearch:
       - plugin_2
 
 opensearch:
-  type: opensearchsearch:1.1
+  type: opensearchsearch:2
   disk: 512
   configuration:
     plugins:

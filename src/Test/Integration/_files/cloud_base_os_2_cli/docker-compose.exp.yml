@@ -1,0 +1,234 @@
+version: '2.1'
+services:
+  db:
+    hostname: db.magento2.docker
+    image: 'mariadb:10.2'
+    shm_size: 2gb
+    environment:
+      - MYSQL_ROOT_PASSWORD=magento2
+      - MYSQL_DATABASE=magento2
+      - MYSQL_USER=magento2
+      - MYSQL_PASSWORD=magento2
+    ports:
+      - '3306'
+    volumes:
+      - '.docker/mnt:/mnt:rw,delegated'
+      - '.docker/mysql/mariadb.conf.d:/etc/mysql/mariadb.conf.d'
+      - 'magento-magento-db:/var/lib/mysql'
+      - '.docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
+    healthcheck:
+      test: 'mysqladmin ping -h localhost -pmagento2'
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    networks:
+      magento:
+        aliases:
+          - db.magento2.docker
+  redis:
+    hostname: redis.magento2.docker
+    image: 'redis:5.0'
+    volumes:
+      - /data
+    ports:
+      - 6379
+    sysctls:
+      net.core.somaxconn: 1024
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+    healthcheck:
+      test: 'redis-cli ping || exit 1'
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    networks:
+      magento:
+        aliases:
+          - redis.magento2.docker
+  elasticsearch:
+    hostname: elasticsearch.magento2.docker
+    image: 'magento/magento-cloud-docker-elasticsearch:6.5-1.2.0'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - 'ES_PLUGINS=plugin_1 plugin_2'
+    networks:
+      magento:
+        aliases:
+          - elasticsearch.magento2.docker
+  opensearch:
+    hostname: opensearch.magento2.docker
+    image: 'magento/magento-cloud-docker-opensearch:2.4-1.2.0'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    environment:
+      - cluster.name=docker-cluster
+      - discovery.type=single-node
+      - discovery.seed_hosts=opensearch
+      - bootstrap.memory_lock=true
+      - DISABLE_SECURITY_PLUGIN=true
+      - 'OS_PLUGINS=plugin_3 plugin_4'
+    networks:
+      magento:
+        aliases:
+          - opensearch.magento2.docker
+  fpm:
+    hostname: fpm.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.3-fpm-1.2.0'
+    extends: generic
+    volumes:
+      - '.:/app:ro,delegated'
+      - 'magento-vendor:/app/vendor:ro,delegated'
+      - 'magento-generated:/app/generated:ro,delegated'
+      - 'magento-var:/app/var:rw,delegated'
+      - 'magento-app-etc:/app/app/etc:rw,delegated'
+      - 'magento-pub-media:/app/pub/media:rw,delegated'
+      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
+    networks:
+      magento:
+        aliases:
+          - fpm.magento2.docker
+    depends_on:
+      db:
+        condition: service_healthy
+  web:
+    hostname: web.magento2.docker
+    image: 'magento/magento-cloud-docker-nginx:1.19-1.2.0'
+    extends: generic
+    volumes:
+      - '.:/app:ro,delegated'
+      - 'magento-vendor:/app/vendor:ro,delegated'
+      - 'magento-generated:/app/generated:ro,delegated'
+      - 'magento-var:/app/var:rw,delegated'
+      - 'magento-app-etc:/app/app/etc:rw,delegated'
+      - 'magento-pub-media:/app/pub/media:rw,delegated'
+      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
+    environment:
+      - WITH_XDEBUG=0
+      - NGINX_WORKER_PROCESSES=1
+      - NGINX_WORKER_CONNECTIONS=1024
+    networks:
+      magento:
+        aliases:
+          - web.magento2.docker
+    depends_on:
+      fpm:
+        condition: service_started
+  varnish:
+    hostname: varnish.magento2.docker
+    image: 'magento/magento-cloud-docker-varnish:6.6-1.2.0'
+    networks:
+      magento:
+        aliases:
+          - varnish.magento2.docker
+    depends_on:
+      web:
+        condition: service_started
+  tls:
+    hostname: tls.magento2.docker
+    image: 'magento/magento-cloud-docker-nginx:1.19-1.2.0'
+    extends: generic
+    networks:
+      magento:
+        aliases:
+          - magento2.docker
+    environment:
+      - NGINX_WORKER_PROCESSES=1
+      - NGINX_WORKER_CONNECTIONS=1024
+      - UPSTREAM_HOST=varnish
+      - UPSTREAM_PORT=80
+    ports:
+      - '80:80'
+      - '443:443'
+    depends_on:
+      varnish:
+        condition: service_started
+  generic:
+    hostname: generic.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'
+    env_file: ./.docker/config.env
+    environment:
+      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl sodium redis'
+      - 'SENDMAIL_PATH=/usr/local/bin/mhsendmail --smtp-addr=mailhog:1025'
+  build:
+    hostname: build.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'
+    extends: generic
+    volumes:
+      - '.:/app:rw,delegated'
+      - 'magento-vendor:/app/vendor:rw,delegated'
+      - 'magento-generated:/app/generated:rw,delegated'
+      - '~/.composer/cache:/composer/cache:rw,delegated'
+    networks:
+      magento-build:
+        aliases:
+          - build.magento2.docker
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+  deploy:
+    hostname: deploy.magento2.docker
+    image: 'magento/magento-cloud-docker-php:7.3-cli-1.2.0'
+    extends: generic
+    volumes:
+      - '.:/app:ro,delegated'
+      - 'magento-vendor:/app/vendor:ro,delegated'
+      - 'magento-generated:/app/generated:ro,delegated'
+      - 'magento-var:/app/var:rw,delegated'
+      - 'magento-app-etc:/app/app/etc:rw,delegated'
+      - 'magento-pub-media:/app/pub/media:rw,delegated'
+      - 'magento-pub-static:/app/pub/static:rw,delegated'
+      - '.docker/mnt:/mnt:rw,delegated'
+    networks:
+      magento:
+        aliases:
+          - deploy.magento2.docker
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+  mailhog:
+    hostname: mailhog.magento2.docker
+    image: 'magento/magento-cloud-docker-mailhog:1.0-1.2.0'
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    networks:
+      magento:
+        aliases:
+          - mailhog.magento2.docker
+volumes:
+  magento-vendor: {  }
+  magento-generated: {  }
+  magento-var: {  }
+  magento-app-etc: {  }
+  magento-pub-media: {  }
+  magento-pub-static: {  }
+  magento-magento-db: {  }
+networks:
+  magento:
+    driver: bridge
+  magento-build:
+    driver: bridge
