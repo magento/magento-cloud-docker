@@ -66,6 +66,7 @@ class GeneratePhp extends Command
         'unzip',
         'vim',
         'openssh-client',
+        'jq'
     ];
 
     private const PHP_EXTENSIONS_ENABLED_BY_DEFAULT = [
