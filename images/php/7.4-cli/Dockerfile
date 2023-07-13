@@ -77,9 +77,8 @@ RUN apt-get update \
   zip \
   && rm -rf /var/lib/apt/lists/*
 
-# Install PyYAML
-RUN pip3 install --upgrade setuptools \
-    && pip3 install pyyaml
+# Install Python packages
+RUN pip3 install --upgrade setuptools && pip3 install pyyaml
 
 # Install Grunt
 RUN npm install -g grunt-cli

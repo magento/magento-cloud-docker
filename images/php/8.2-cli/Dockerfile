@@ -72,11 +72,11 @@ RUN apt-get update \
   libyaml-dev \
   libzip-dev \
   zip \
+  python3-yaml \
   && rm -rf /var/lib/apt/lists/*
 
-# Install PyYAML
-RUN pip3 install --upgrade setuptools \
-    && pip3 install pyyaml
+# Install Python packages
+
 
 # Install Grunt
 RUN npm install -g grunt-cli

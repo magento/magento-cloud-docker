@@ -286,6 +286,13 @@ class GeneratePhp extends Command
             }
         }
 
+        if ($this->semver::satisfies($phpVersion, '8.2.*')) {
+            $packages = array_merge($packages, ['python3-yaml']);
+            $pythonPackages = '';
+        } else {
+            $pythonPackages = 'RUN pip3 install --upgrade setuptools && pip3 install pyyaml';
+        }
+
         $volumes = [
             'root' => [
                 'def' => 'VOLUME ${MAGENTO_ROOT}',
@@ -319,6 +326,7 @@ class GeneratePhp extends Command
                 '{%env_php_extensions%}' => $phpExtEnabledDefault
                     ? 'ENV PHP_EXTENSIONS ' . implode(' ', $phpExtEnabledDefault)
                     : '',
+                '{%python_packages%}' => $pythonPackages,
                 '{%volumes_cmd%}' => rtrim($volumesCmd),
                 '{%volumes_def%}' => rtrim($volumesDef)
             ]
