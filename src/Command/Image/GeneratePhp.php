@@ -287,7 +287,7 @@ class GeneratePhp extends Command
         }
 
         if ($this->semver::satisfies($phpVersion, '8.2.*')) {
-            $packages[] = 'python3-yaml'
+            $packages[] = 'python3-yaml';
             $pythonPackages = '';
         } else {
             $pythonPackages = 'RUN pip3 install --upgrade setuptools && pip3 install pyyaml';
