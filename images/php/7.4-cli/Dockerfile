@@ -21,6 +21,7 @@ ARG CRONTAB=""
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_ALLOW_SUPERUSER ${COMPOSER_ALLOW_SUPERUSER}
 ENV COMPOSER_HOME ${COMPOSER_HOME}
+ENV COMPOSER_CLEAR_CACHE false
 ENV PHP_MEMORY_LIMIT -1
 ENV PHP_VALIDATE_TIMESTAMPS 1
 ENV DEBUG false
@@ -76,9 +77,8 @@ RUN apt-get update \
   zip \
   && rm -rf /var/lib/apt/lists/*
 
-# Install PyYAML
-RUN pip3 install --upgrade setuptools \
-    && pip3 install pyyaml
+# Install Python packages
+RUN pip3 install --upgrade setuptools && pip3 install pyyaml
 
 # Install Grunt
 RUN npm install -g grunt-cli
