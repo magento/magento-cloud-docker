@@ -53,6 +53,7 @@ RUN apt-get update \
   libyaml-dev \
   libzip-dev \
   zip \
+  python3-yaml \
   && rm -rf /var/lib/apt/lists/*
 
 # Install MailHog

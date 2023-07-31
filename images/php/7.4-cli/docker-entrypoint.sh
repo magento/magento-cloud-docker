@@ -17,9 +17,12 @@ if [ -x "$(command -v ${PHP_EXT_COM_ON})" ] && [ ! -z "${PHP_EXTENSIONS}" ]; the
   ${PHP_EXT_COM_ON} ${PHP_EXTENSIONS}
 fi
 
+# Clear composer cache if needed
+[ "$COMPOSER_CLEAR_CACHE" = "true" ] && \
+    composer clearcache
+
 # Configure composer
 [ ! -z "${COMPOSER_VERSION}" ] && \
-    composer clearcache && \
     composer self-update $COMPOSER_VERSION
 
 [ ! -z "${COMPOSER_GITHUB_TOKEN}" ] && \
