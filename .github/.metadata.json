@@ -1,14 +1,14 @@
 {
-  "templateVersion": "0.1",
+  "templateVersion": "0.2",
   "product": {
     "name": "Magento Cloud Docker",
     "description": "The Magento Cloud Docker implementation deploys Cloud projects to a local workstation so that you can develop and test your code in a simulated Cloud environment"
   },
   "contacts": {
     "team": {
-      "name": "Magic Mountain",
-      "DL": "Grp-magento-cloud-all",
-      "slackChannel": "magic_mountain"
+      "name": "Mystic Mountain",
+      "DL": "Grp-Mystic-Mountain",
+      "slackChannel": "#mystic-mountain-team"
     }
   },
   "ticketTracker": {
@@ -17,10 +17,8 @@
     },
     "securityJiraQueue": {
       "projectKey": "MAGREQ",
-      "component": "Magento Cloud Engineering"
+      "component": "MAGREQ/Magento Cloud Engineering"
     }
   },
-  "staticScan": {
-    "enable": false
-  }
+  "productionCodeBranches": ["1.0", "1.1", "1.2", "1.3"]
 }
