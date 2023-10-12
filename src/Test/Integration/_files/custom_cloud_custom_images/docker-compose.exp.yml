@@ -84,7 +84,7 @@ services:
         condition: service_healthy
   web:
     hostname: web.magento2.test
-    image: 'nginx-v1:1.19'
+    image: 'nginx-v1:1.24'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
@@ -119,7 +119,7 @@ services:
         condition: service_started
   tls:
     hostname: tls.magento2.test
-    image: 'nginx-v1:1.19'
+    image: 'nginx-v1:1.24'
     extends: generic
     networks:
       magento:

@@ -248,7 +248,7 @@ class BuildCustomComposeTest extends TestCase
                                 ],
                                 'nginx' => [
                                     'image' => 'nginx-v1',
-                                    'version' => '1.19',
+                                    'version' => '1.24',
                                     'image-pattern' => '%s:%s',
                                     'enabled' => 'true',
                                 ],

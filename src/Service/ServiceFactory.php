@@ -42,7 +42,7 @@ class ServiceFactory
      */
     private const SERVICE_NGINX_CONFIG = [
         'image' => 'magento/magento-cloud-docker-nginx',
-        'version' => '1.19',
+        'version' => '1.24',
         'pattern' => self::PATTERN_VERSIONED,
         'config' => [
             'extends' => ServiceInterface::SERVICE_GENERIC,
