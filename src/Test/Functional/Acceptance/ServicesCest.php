@@ -92,7 +92,7 @@ class ServicesCest extends AbstractCest
                 'expectedResult' => [
                     'redis:5.0',
                     'magento/magento-cloud-docker-varnish:6.6-1.3',
-                    'magento/magento-cloud-docker-nginx:1.19-1.3',
+                    'magento/magento-cloud-docker-nginx:1.24-1.3',
                     'magento/magento-cloud-docker-php:7.3-fpm-1.3',
                     'magento/magento-cloud-docker-elasticsearch:6.5-1.3',
                     'mariadb:10.2'
@@ -104,7 +104,7 @@ class ServicesCest extends AbstractCest
                 'expectedResult' => [
                     'redis:3.2',
                     'magento/magento-cloud-docker-varnish:6.6-1.3',
-                    'magento/magento-cloud-docker-nginx:1.19-1.3',
+                    'magento/magento-cloud-docker-nginx:1.24-1.3',
                     'magento/magento-cloud-docker-php:7.2-fpm-1.3',
                     'magento/magento-cloud-docker-elasticsearch:6.5-1.3',
                     'mariadb:10.1',
@@ -117,7 +117,7 @@ class ServicesCest extends AbstractCest
                 'expectedResult' => [
                     'redis:4.0',
                     'magento/magento-cloud-docker-varnish:6.6-1.3',
-                    'magento/magento-cloud-docker-nginx:1.19-1.3',
+                    'magento/magento-cloud-docker-nginx:1.24-1.3',
                     'magento/magento-cloud-docker-php:7.4-fpm-1.3',
                     'magento/magento-cloud-docker-elasticsearch:6.5-1.3',
                     'mariadb:10.2',
@@ -130,7 +130,7 @@ class ServicesCest extends AbstractCest
                 'expectedResult' => [
                     'redis:5.0',
                     'magento/magento-cloud-docker-varnish:6.6-1.3',
-                    'magento/magento-cloud-docker-nginx:1.19-1.3',
+                    'magento/magento-cloud-docker-nginx:1.24-1.3',
                     'magento/magento-cloud-docker-php:7.3-fpm-1.3',
                     'magento/magento-cloud-docker-elasticsearch:6.5-1.3',
                     'mariadb:10.2',

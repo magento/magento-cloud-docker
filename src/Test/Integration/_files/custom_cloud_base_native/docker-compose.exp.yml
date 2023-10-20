@@ -46,7 +46,7 @@ services:
         condition: service_healthy
   web:
     hostname: web.magento2.test
-    image: 'magento/magento-cloud-docker-nginx:1.19-1.2.0'
+    image: 'magento/magento-cloud-docker-nginx:1.24-1.2.0'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
@@ -80,7 +80,7 @@ services:
         condition: service_started
   tls:
     hostname: tls.magento2.test
-    image: 'magento/magento-cloud-docker-nginx:1.19-1.2.0'
+    image: 'magento/magento-cloud-docker-nginx:1.24-1.2.0'
     extends: generic
     networks:
       magento:
