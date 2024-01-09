@@ -433,9 +433,8 @@ BASH
                 ],
                 '>=8.3' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
-                    self::EXTENSION_PACKAGE_NAME => 'xdebug-3.2.0',
+                    self::EXTENSION_PACKAGE_NAME => 'xdebug-3.3.0',
                 ],
-
             ],
             'xmlrpc' => [
                 '>=7.0 <8.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
