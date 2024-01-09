@@ -75,6 +75,7 @@ class GeneratePhp extends Command
         'exif',
         'gd',
         'gettext',
+        'imagick',
         'intl',
         'mysqli',
         'mcrypt',

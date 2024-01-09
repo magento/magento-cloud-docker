@@ -29,7 +29,7 @@ ENV MAGENTO_RUN_MODE production
 ENV SENDMAIL_PATH /dev/null
 ENV PHPRC ${MAGENTO_ROOT}/php.ini
 
-ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl
+ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext imagick intl mysqli opcache pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl
 
 # Configure Node.js version
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash
@@ -63,6 +63,8 @@ RUN apt-get update \
   libfreetype6-dev \
   libgmp-dev \
   libgpgme11-dev \
+  libmagickwand-dev \
+  libmagickcore-dev \
   libicu-dev \
   libldap2-dev \
   libpcre3-dev \
@@ -117,6 +119,7 @@ RUN docker-php-ext-install -j$(nproc) \
 
 RUN pecl install -o -f \
   gnupg \
+  imagick \
   mailparse \
   msgpack \
   oauth \
