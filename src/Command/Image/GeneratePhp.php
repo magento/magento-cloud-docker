@@ -26,7 +26,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GeneratePhp extends Command
 {
     private const NAME = 'image:generate:php';
-    private const SUPPORTED_VERSIONS = ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2'];
+    private const SUPPORTED_VERSIONS = ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3'];
 
     private const VERSION_MAP = [
         '7.2' => '7.2',
@@ -34,7 +34,8 @@ class GeneratePhp extends Command
         '7.4' => '7.4',
         '8.0' => '8.0.14',
         '8.1' => '8.1.1',
-        '8.2' => '8.2'
+        '8.2' => '8.2',
+        '8.3' => '8.3'
     ];
 
     private const EDITION_CLI = 'cli';
@@ -286,7 +287,7 @@ class GeneratePhp extends Command
             }
         }
 
-        if ($this->semver::satisfies($phpVersion, '8.2.*')) {
+        if ($this->semver::satisfies($phpVersion, '>=8.2')) {
             $packages[] = 'python3-yaml';
             $pythonPackages = '';
         } else {
