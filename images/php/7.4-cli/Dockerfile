@@ -190,6 +190,9 @@ ADD etc/php-gnupg.ini /usr/local/etc/php/conf.d/gnupg.ini
 # Get composer installed to /usr/local/bin/composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=${COMPOSER_VERSION} --filename=composer
 
+# Install n98-magerun2.phar and move to /usr/local/bin/
+RUN curl -O https://files.magerun.net/n98-magerun2.phar && chmod +x ./n98-magerun2.phar && mv ./n98-magerun2.phar /usr/local/bin/
+
 ADD bin/* /usr/local/bin/
 
 RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
@@ -206,7 +209,8 @@ RUN ["chmod", "+x", \
     "/usr/local/bin/cloud-deploy", \
     "/usr/local/bin/cloud-post-deploy", \
     "/usr/local/bin/run-cron", \
-    "/usr/local/bin/run-hooks" \
+    "/usr/local/bin/run-hooks", \
+    "/usr/local/bin/magerun2" \
 ]
 
 RUN mkdir -p ${MAGENTO_ROOT}
