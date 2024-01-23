@@ -13,10 +13,10 @@
         "composer/composer": "^1.4 || ^2.0",
         "composer/semver": "@stable",
         "illuminate/config": "^5.5||^8.77",
-        "symfony/config": "^4.4 || ^5.1",
-        "symfony/console": "^2.8 || ^4.0 || ^5.1",
-        "symfony/dependency-injection": "^3.3 || ^4.3 || ^5.1",
-        "symfony/yaml": "^3.3 || ^4.0 || ^5.1"
+        "symfony/config": "^4.4 || ^5.1|| ^5.4 || ^6.4",
+        "symfony/console": "^2.8 || ^4.0 || ^5.1 || ^5.4 || ^6.4",
+        "symfony/dependency-injection": "^3.3 || ^4.3 || ^5.1|| ^5.4 || ^6.4",
+        "symfony/yaml": "^3.3 || ^4.0 || ^5.1 || ^5.4|| ^6.4"
     },
     "require-dev": {
         "codeception/codeception": "^4.1",
