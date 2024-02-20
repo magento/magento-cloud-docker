@@ -61,7 +61,7 @@ class MailHogCest extends AbstractCest
         $I->assertSame([0], $I->grabDataFromResponseByJsonPath('$.total'));
 
         $I->assertTrue(
-            $I->runDockerComposeCommand('run deploy bash -c "php -r \"mail(\'test@example.com\',\'test\',\'test\');\""')
+            $I->runDockerComposeCommand('run --rm deploy bash -c "php -r \"mail(\'test@example.com\',\'test\',\'test\');\""')
         );
         $I->sendAjaxGetRequest('/api/v2/messages', ['limit' => 10]);
         $I->seeResponseIsJson();

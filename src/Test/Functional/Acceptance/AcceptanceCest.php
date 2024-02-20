@@ -28,9 +28,9 @@ class AcceptanceCest extends AbstractCest
         $I->assertTrue($I->generateDockerCompose('--mode=production'), 'Command build:compose failed');
         $I->replaceImagesWithCustom();
         $I->startEnvironment();
-        $I->runDockerComposeCommand('run build cloud-build');
-        $I->runDockerComposeCommand('run deploy cloud-deploy');
-        $I->runDockerComposeCommand('run deploy cloud-post-deploy');
+        $I->runDockerComposeCommand('run --rm build cloud-build');
+        $I->runDockerComposeCommand('run --rm deploy cloud-deploy');
+        $I->runDockerComposeCommand('run --rm deploy cloud-post-deploy');
         $I->amOnPage('/');
         $I->see('Home page');
         $I->see('CMS homepage content goes here.');
@@ -51,9 +51,9 @@ class AcceptanceCest extends AbstractCest
         );
         $I->replaceImagesWithCustom();
         $I->startEnvironment();
-        $I->assertTrue($I->runDockerComposeCommand('run build cloud-build'), 'Build phase failed');
-        $I->assertTrue($I->runDockerComposeCommand('run deploy cloud-deploy'), 'Deploy phase failed');
-        $I->assertTrue($I->runDockerComposeCommand('run deploy cloud-post-deploy'), 'Post deploy phase failed');
+        $I->assertTrue($I->runDockerComposeCommand('run --rm build cloud-build'), 'Build phase failed');
+        $I->assertTrue($I->runDockerComposeCommand('run --rm deploy cloud-deploy'), 'Deploy phase failed');
+        $I->assertTrue($I->runDockerComposeCommand('run --rm deploy cloud-post-deploy'), 'Post deploy phase failed');
         $I->amOnPage('/');
         $I->see('Home page');
         $I->see('CMS homepage content goes here.');
