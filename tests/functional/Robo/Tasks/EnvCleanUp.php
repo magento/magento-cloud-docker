@@ -44,7 +44,7 @@ class EnvCleanUp extends BaseTask implements CommandInterface
 
         foreach ($this->volumes as $volume) {
             $commands[] = sprintf(
-                'docker-compose run %s bash -c "mkdir -p %s"',
+                'docker-compose run --rm %s bash -c "mkdir -p %s"',
                 Docker::BUILD_CONTAINER,
                 $volume
             );

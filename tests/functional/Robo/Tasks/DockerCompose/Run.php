@@ -63,7 +63,7 @@ class Run extends BaseTask implements CommandInterface
     public function getCommand()
     {
         return trim(sprintf(
-            'docker-compose run -w %s %s %s ' . $this->runWrapper,
+            'docker-compose run --rm -w %s %s %s ' . $this->runWrapper,
             escapeshellarg($this->workingDir),
             $this->arguments,
             escapeshellarg($this->container),
