@@ -128,7 +128,7 @@ class MagentoDb extends Db
      * This method is overridden to avoid connection attempts before running Docker
      * {@inheritdoc}
      */
-    public function _beforeSuite($settings = []) {}
+    public function _beforeSuite($settings = []): void {}
 
     /**
      * This method is overridden to avoid connection attempts before running Docker
