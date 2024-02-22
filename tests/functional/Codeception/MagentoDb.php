@@ -122,7 +122,7 @@ class MagentoDb extends Db
      * This method is overridden to avoid connection attempts before running Docker
      * {@inheritdoc}
      */
-    public function _initialize() {}
+    public function _initialize(): void {}
 
     /**
      * This method is overridden to avoid connection attempts before running Docker
