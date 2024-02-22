@@ -31,10 +31,10 @@ class DeveloperCest extends AbstractCest
         $I->replaceImagesWithCustom();
         $I->startEnvironment();
 
-        $I->runDockerComposeCommand('run --rm deploy php -i | grep opcache.validate_timestamps');
+        $I->runDockerComposeCommand('run deploy php -i | grep opcache.validate_timestamps');
         $I->seeInOutput('=> On');
 
-        $I->runDockerComposeCommand('run --rm fpm php -i | grep opcache.validate_timestamps');
+        $I->runDockerComposeCommand('run fpm php -i | grep opcache.validate_timestamps');
         $I->seeInOutput('=> On');
     }
 }
