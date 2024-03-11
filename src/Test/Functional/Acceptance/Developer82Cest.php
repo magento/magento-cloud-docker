@@ -10,14 +10,14 @@ namespace Magento\CloudDocker\Test\Functional\Acceptance;
 use CliTester;
 
 /**
- * @group php83
+ * @group php82
  */
-class DeveloperCest extends AbstractCest
+class Developer82Cest extends DeveloperCest
 {
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.7-beta-test';
+    protected const TEMPLATE_VERSION = '2.4.6';
 
     /**
      * Tests that php settings contains configuration from php.dev.ini

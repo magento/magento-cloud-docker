@@ -8,14 +8,14 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 /**
- * @group php83
+ * @group php82
  */
-class MailHogCest extends AbstractCest
+class MailHog82Cest extends MailHogCest
 {
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.7-beta-test';
+    protected const TEMPLATE_VERSION = '2.4.6';
 
     /**
      * @param \CliTester $I
