@@ -18,23 +18,4 @@ class Developer82Cest extends DeveloperCest
      * Template version for testing
      */
     protected const TEMPLATE_VERSION = '2.4.6';
-
-    /**
-     * Tests that php settings contains configuration from php.dev.ini
-     *
-     * @param CliTester $I
-     * @throws \Robo\Exception\TaskException
-     */
-    public function testDevPhpIni(CliTester $I)
-    {
-        $I->generateDockerCompose('--mode=developer');
-        $I->replaceImagesWithCustom();
-        $I->startEnvironment();
-
-        $I->runDockerComposeCommand('run deploy php -i | grep opcache.validate_timestamps');
-        $I->seeInOutput('=> On');
-
-        $I->runDockerComposeCommand('run fpm php -i | grep opcache.validate_timestamps');
-        $I->seeInOutput('=> On');
-    }
 }
