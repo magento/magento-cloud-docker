@@ -12,7 +12,7 @@ RUN if [ $(uname -m) = "x86_64" ]; then mailhog_arch="amd64"; else mailhog_arch=
 
 FROM php:8.2-cli
 
-ARG COMPOSER_VERSION=2.2.18
+ARG COMPOSER_VERSION=2.2.23
 ARG MAGENTO_ROOT=/app
 ARG COMPOSER_ALLOW_SUPERUSER=1
 ARG COMPOSER_HOME=/composer
