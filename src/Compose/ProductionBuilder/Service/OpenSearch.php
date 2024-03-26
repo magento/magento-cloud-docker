@@ -84,7 +84,7 @@ class OpenSearch implements ServiceBuilderInterface
         return $this->serviceFactory->create(
             $this->getServiceName(),
             $this->getVersion($config),
-            !empty($osEnvVars) ? ['environment' => $osEnvVars] : [],
+            ['environment' => $osEnvVars],
             $config->getServiceImage($this->getServiceName()),
             $config->getCustomRegistry(),
             $config->getServiceImagePattern($this->getServiceName())

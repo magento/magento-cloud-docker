@@ -113,7 +113,7 @@ class MagentoDb extends Db
     /**
      * @inheritdoc
      */
-    public function _after(TestInterface $test)
+    public function _after(TestInterface $test): void
     {
         $this->disconnectDatabases();
     }
@@ -122,17 +122,17 @@ class MagentoDb extends Db
      * This method is overridden to avoid connection attempts before running Docker
      * {@inheritdoc}
      */
-    public function _initialize() {}
+    public function _initialize(): void {}
 
     /**
      * This method is overridden to avoid connection attempts before running Docker
      * {@inheritdoc}
      */
-    public function _beforeSuite($settings = []) {}
+    public function _beforeSuite($settings = []): void {}
 
     /**
      * This method is overridden to avoid connection attempts before running Docker
      * {@inheritdoc}
      */
-    public function _before(TestInterface $test) {}
+    public function _before(TestInterface $test): void {}
 }
