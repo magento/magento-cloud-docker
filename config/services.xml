@@ -9,6 +9,7 @@
         <prototype namespace="Magento\CloudDocker\" resource="../src/*" exclude="../src/{Test}"/>
         <service id="Magento\CloudDocker\App\Container" autowire="false"/>
         <service id="Magento\CloudDocker\App\ContainerInterface" alias="container"/>
+        <service id="Psr\Container\ContainerInterface" alias="service_container"/>
         <service id="Magento\CloudDocker\App\ContainerException" autowire="false"/>
         <service id="Magento\CloudDocker\Compose\BuilderFactory">
             <argument key="$strategies" type="collection">

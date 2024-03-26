@@ -23,7 +23,7 @@ class Docker extends BaseModule
     /**
      * @var array
      */
-    protected $config = [
+    protected array $config = [
         'system_magento_dir' => '',
         'printOutput' => false,
     ];
@@ -31,12 +31,12 @@ class Docker extends BaseModule
     /**
      * @var array
      */
-    protected $services = [];
+    protected array $services = [];
 
     /**
      * @inheritdoc
      */
-    public function _initialize()
+    public function _initialize(): void
     {
         $container = Robo::createDefaultContainer();
         $builder = CollectionBuilder::create($container, $this);
