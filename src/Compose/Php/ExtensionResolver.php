@@ -210,10 +210,11 @@ BASH
                 ],
                 '>=7.4' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE,
-                    self::EXTENSION_OS_DEPENDENCIES => ['libjpeg62-turbo-dev', 'libpng-dev', 'libfreetype6-dev'],
+                    self::EXTENSION_OS_DEPENDENCIES => ['libjpeg62-turbo-dev', 'libpng-dev', 'libfreetype6-dev', 'libwebp-dev'],
                     self::EXTENSION_CONFIGURE_OPTIONS => [
                         '--with-freetype=/usr/include/',
-                        '--with-jpeg=/usr/include/'
+                        '--with-jpeg=/usr/include/',
+                        '--with-webp=/usr/include/'
                     ],
                 ],
             ],
@@ -243,7 +244,7 @@ BASH
                 '>=7.0 <8.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
             ],
             'imagick' => [
-                '>=7.0 <8.0' => [
+                '>=7.0' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_OS_DEPENDENCIES => ['libmagickwand-dev', 'libmagickcore-dev'],
                 ],

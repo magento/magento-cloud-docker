@@ -22,7 +22,7 @@ ENV UPLOAD_MAX_FILESIZE 64M
 ENV SENDMAIL_PATH /dev/null
 ENV PHPRC ${MAGENTO_ROOT}/php.ini
 
-ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl
+ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext imagick intl mysqli opcache pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl
 
 # Install dependencies
 RUN apt-get update \
@@ -42,6 +42,7 @@ RUN apt-get update \
   libjpeg62-turbo-dev \
   libpng-dev \
   libfreetype6-dev \
+  libwebp-dev \
   libgeoip-dev \
   wget \
   libgmp-dev \
@@ -64,7 +65,7 @@ RUN sudo chmod +x /usr/local/bin/mhsendmail
 
 # Configure the gd library
 RUN docker-php-ext-configure \
-  gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
+  gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ --with-webp=/usr/include/
 RUN docker-php-ext-configure \
   opcache --enable-opcache
 
