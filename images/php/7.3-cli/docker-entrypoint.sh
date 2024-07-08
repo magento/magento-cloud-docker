@@ -23,6 +23,7 @@ fi
 
 # Configure composer
 [ ! -z "${COMPOSER_VERSION}" ] && \
+    composer clearcache && \
     composer self-update $COMPOSER_VERSION
 
 [ ! -z "${COMPOSER_GITHUB_TOKEN}" ] && \

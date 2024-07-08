@@ -53,6 +53,7 @@ RUN apt-get update \
   unzip \
   vim \
   openssh-client \
+  jq \
   gnupg2 \
   ca-certificates \
   lsb-release \
