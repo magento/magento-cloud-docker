@@ -39,8 +39,7 @@ ENV PHP_EXTENSIONS="\
   intl \
   mysqli \
   opcache \
-  pdo_\
-  mysql \
+  pdo_mysql \
   redis \
   soap \
   sockets \
@@ -50,7 +49,8 @@ ENV PHP_EXTENSIONS="\
   sysvshm \
   xsl \
   zip \
-  pcntl"
+  pcntl \
+  ftp"
 
 # Configure Node.js version
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash
@@ -134,7 +134,8 @@ RUN docker-php-ext-install -j$(nproc) \
   tidy \
   xsl \
   zip \
-  pcntl
+  pcntl \
+  ftp
 
 RUN pecl install -o -f \
   gnupg \

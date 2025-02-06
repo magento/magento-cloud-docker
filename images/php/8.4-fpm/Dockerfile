@@ -42,7 +42,8 @@ ENV PHP_EXTENSIONS="\
   sysvshm \
   xsl \
   zip \
-  pcntl"
+  pcntl \
+  ftp"
 
 # Install dependencies
 RUN apt-get update \
@@ -108,7 +109,8 @@ RUN docker-php-ext-install -j$(nproc) \
   tidy \
   xsl \
   zip \
-  pcntl
+  pcntl \
+  ftp
 
 RUN pecl install -o -f \
   gnupg \
