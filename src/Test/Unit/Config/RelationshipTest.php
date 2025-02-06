@@ -104,35 +104,68 @@ class RelationshipTest extends TestCase
 
         $this->configMock->expects($this->exactly(8))
             ->method('hasServiceEnabled')
-            ->withConsecutive(
-                [ServiceInterface::SERVICE_DB],
-                [ServiceInterface::SERVICE_DB_QUOTE],
-                [ServiceInterface::SERVICE_DB_SALES],
-                ['redis'],
-                ['elasticsearch'],
-                ['opensearch'],
-                ['rabbitmq'],
-                ['zookeeper']
-            )
-            ->willReturnOnConsecutiveCalls(true, false, false, true, true, true, true, true);
+            ->willReturnCallback(function ($service) {
+                static $services = [
+                    ServiceInterface::SERVICE_DB,
+                    ServiceInterface::SERVICE_DB_QUOTE,
+                    ServiceInterface::SERVICE_DB_SALES,
+                    'redis',
+                    'elasticsearch',
+                    'opensearch',
+                    'rabbitmq',
+                    'zookeeper'
+                ];
+
+                static $responses = [
+                    true,
+                    false,
+                    false,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true
+                ];
+
+                $expectedService = array_shift($services);
+                $expectedResponse = array_shift($responses);
+
+                $this->assertSame($expectedService, $service);
+
+                return $expectedResponse;
+            });
+
+        $services = [
+            ServiceInterface::SERVICE_DB,
+            'redis',
+            'elasticsearch',
+            'opensearch',
+            'rabbitmq',
+            'zookeeper'
+        ];
+        
+        $versions = [
+            $mysqlVersion,
+            $redisVersion,
+            $esVersion,
+            $osVersion,
+            $rmqVersion,
+            $zookeeperVersion
+            ];
+
         $this->configMock->expects($this->exactly(6))
             ->method('getServiceVersion')
-            ->withConsecutive(
-                [ServiceInterface::SERVICE_DB],
-                ['redis'],
-                ['elasticsearch'],
-                ['opensearch'],
-                ['rabbitmq'],
-                ['zookeeper']
-            )
-            ->willReturnOnConsecutiveCalls(
-                $mysqlVersion,
-                $redisVersion,
-                $esVersion,
-                $osVersion,
-                $rmqVersion,
-                $zookeeperVersion
-            );
+            ->willReturnCallback(function ($service) use (
+                &$services,
+                &$versions
+            ) {
+                $expectedService = array_shift($services);
+                $expectedVersion = array_shift($versions);
+        
+                $this->assertSame($expectedService, $service);
+        
+                return $expectedVersion;
+            });
 
         $this->assertEquals($configWithType, $this->relationship->get($this->configMock));
     }

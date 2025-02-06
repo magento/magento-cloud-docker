@@ -69,7 +69,7 @@ class BuildCustomComposeTest extends TestCase
      *
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
-    public function buildDataProvider(): array
+    public static function buildDataProvider(): array
     {
         return [
             'cloud-base' => [

@@ -25,7 +25,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Builds Docker configuration for Magento project.
  *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 class BuildCompose extends Command
 {
@@ -82,7 +82,7 @@ class BuildCompose extends Command
     /**
      * {@inheritdoc}
      *
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     * @SuppressWarnings("PHPMD.ExcessiveMethodLength")
      */
     protected function configure(): void
     {
