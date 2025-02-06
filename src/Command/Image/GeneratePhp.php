@@ -88,7 +88,8 @@ class GeneratePhp extends Command
         'opcache',
         'xsl',
         'zip',
-        'sodium'
+        'sodium',
+        'ftp'
     ];
 
     private const DOCKERFILE = 'Dockerfile';

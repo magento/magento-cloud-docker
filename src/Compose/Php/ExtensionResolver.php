@@ -50,6 +50,7 @@ class ExtensionResolver
         // Required for Magento 2.4.0+
         'xsl',
         'sodium',
+        'ftp'
     ];
 
     /**
@@ -493,6 +494,9 @@ rm -rf ./ioncube
 rm ioncube_loaders_lin_\${ioncube_arch}.tar.gz
 BASH
                 ],
+            ],
+            'ftp' => [
+                '>=8.4' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
         ];
     }
