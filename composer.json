@@ -2,7 +2,7 @@
     "name": "magento/magento-cloud-docker",
     "description": "Magento Cloud Docker",
     "type": "magento2-component",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "license": [
         "OSL-3.0",
         "AFL-3.0"
