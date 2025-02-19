@@ -131,7 +131,7 @@ class ExtensionResolver
 
         foreach ($phpExtensions as $phpExtName) {
             if (isset(self::BUILTIN_EXTENSIONS[$phpExtName])
-                && $this->semver::satisfies($phpVersion, self::BUILTIN_EXTENSIONS[$phpExtName])
+                && $this->semver::satisfies($phpVersion, (float) self::BUILTIN_EXTENSIONS[$phpExtName])
             ) {
                 continue;
             }
