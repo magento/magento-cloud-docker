@@ -50,6 +50,7 @@ class ExtensionResolver
         // Required for Magento 2.4.0+
         'xsl',
         'sodium',
+        'ftp'
     ];
 
     /**
@@ -435,6 +436,10 @@ BASH
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_PACKAGE_NAME => 'xdebug-3.3.0',
                 ],
+                '>=8.4' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
+                    self::EXTENSION_PACKAGE_NAME => 'xdebug-3.4.0',
+                ],
             ],
             'xmlrpc' => [
                 '>=7.0 <8.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
@@ -488,6 +493,11 @@ cp "./ioncube/ioncube_loader_lin_\${PHP_VERSION}.so" "\${PHP_EXT_DIR}/ioncube.so
 rm -rf ./ioncube
 rm ioncube_loaders_lin_\${ioncube_arch}.tar.gz
 BASH
+                ],
+            ],
+            'ftp' => [
+                '>=8.2' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE,
                 ],
             ],
         ];
