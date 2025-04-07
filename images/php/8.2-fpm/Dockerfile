@@ -22,7 +22,7 @@ ENV UPLOAD_MAX_FILESIZE 64M
 ENV SENDMAIL_PATH /dev/null
 ENV PHPRC ${MAGENTO_ROOT}/php.ini
 
-ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl
+ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl ftp
 
 # Install dependencies
 RUN apt-get update \
@@ -89,7 +89,8 @@ RUN docker-php-ext-install -j$(nproc) \
   tidy \
   xsl \
   zip \
-  pcntl
+  pcntl \
+  ftp
 
 RUN pecl install -o -f \
   gnupg \

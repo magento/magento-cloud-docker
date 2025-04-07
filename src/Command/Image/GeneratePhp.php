@@ -26,13 +26,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GeneratePhp extends Command
 {
     private const NAME = 'image:generate:php';
-    private const SUPPORTED_VERSIONS = ['8.0', '8.1', '8.2', '8.3'];
+    private const SUPPORTED_VERSIONS = ['8.0', '8.1', '8.2', '8.3', '8.4'];
 
     private const VERSION_MAP = [
         '8.0' => '8.0.14',
         '8.1' => '8.1.1',
         '8.2' => '8.2',
-        '8.3' => '8.3'
+        '8.3' => '8.3',
+        '8.4' => '8.4'
     ];
 
     private const EDITION_CLI = 'cli';
@@ -87,7 +88,8 @@ class GeneratePhp extends Command
         'opcache',
         'xsl',
         'zip',
-        'sodium'
+        'sodium',
+        'ftp'
     ];
 
     private const DOCKERFILE = 'Dockerfile';
@@ -218,9 +220,9 @@ class GeneratePhp extends Command
      * @throws ConfigurationMismatchException
      * @throws FileNotFoundException
      *
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @SuppressWarnings(PHPMD.NPathComplexity)
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     * @SuppressWarnings("PHPMD.CyclomaticComplexity")
+     * @SuppressWarnings("PHPMD.NPathComplexity")
+     * @SuppressWarnings("PHPMD.ExcessiveMethodLength")
      */
     private function buildDockerfile(string $dockerfile, string $phpVersion, string $edition): string
     {

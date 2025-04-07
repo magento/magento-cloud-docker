@@ -10,49 +10,51 @@ RUN if [ $(uname -m) = "x86_64" ]; then mailhog_arch="amd64"; else mailhog_arch=
     && go get . \
     && GOOS=linux GOARCH=${mailhog_arch} go build -o mhsendmail .
 
-FROM php:8.2-cli
+FROM php:8.4-fpm
 
-ARG COMPOSER_VERSION=2.2.23
 ARG MAGENTO_ROOT=/app
-ARG COMPOSER_ALLOW_SUPERUSER=1
-ARG COMPOSER_HOME=/composer
-ARG CRONTAB=""
 
-ENV COMPOSER_MEMORY_LIMIT -1
-ENV COMPOSER_ALLOW_SUPERUSER ${COMPOSER_ALLOW_SUPERUSER}
-ENV COMPOSER_HOME ${COMPOSER_HOME}
-ENV COMPOSER_CLEAR_CACHE false
-ENV PHP_MEMORY_LIMIT -1
-ENV PHP_VALIDATE_TIMESTAMPS 1
-ENV DEBUG false
-ENV MAGENTO_RUN_MODE production
-ENV SENDMAIL_PATH /dev/null
-ENV PHPRC ${MAGENTO_ROOT}/php.ini
+ENV PHP_MEMORY_LIMIT=2G
+ENV PHP_VALIDATE_TIMESTAMPS=1
+ENV DEBUG=false
+ENV MAGENTO_RUN_MODE=production
+ENV UPLOAD_MAX_FILESIZE=64M
+ENV SENDMAIL_PATH=/dev/null
+ENV PHPRC=${MAGENTO_ROOT}/php.ini
 
-ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl ftp
-
-# Configure Node.js version
-RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash
+ENV PHP_EXTENSIONS="\
+  bcmath \
+  bz2 \
+  calendar \
+  exif \
+  gd \
+  gettext \
+  intl \
+  mysqli \
+  opcache \
+  pdo_mysql \
+  redis \
+  soap \
+  sockets \
+  sodium \
+  sysvmsg \
+  sysvsem \
+  sysvshm \
+  xsl \
+  zip \
+  pcntl \
+  ftp"
 
 # Install dependencies
 RUN apt-get update \
   && apt-get upgrade -y \
   && apt-get install -y --no-install-recommends \
   apt-utils \
-  cron \
-  git \
-  mariadb-client \
-  nano \
-  nodejs \
-  python3 \
-  python3-pip \
-  redis-tools \
   sendmail-bin \
   sendmail \
   sudo \
-  unzip \
-  vim \
-  openssh-client \
+  iproute2 \
+  git \
   gnupg2 \
   ca-certificates \
   lsb-release \
@@ -74,12 +76,6 @@ RUN apt-get update \
   zip \
   python3-yaml \
   && rm -rf /var/lib/apt/lists/*
-
-# Install Python packages
-
-
-# Install Grunt
-RUN npm install -g grunt-cli
 
 # Install MailHog
 COPY --from=builder /go/src/github.com/mailhog/mhsendmail/mhsendmail /usr/local/bin/
@@ -104,7 +100,6 @@ RUN docker-php-ext-install -j$(nproc) \
   mysqli \
   opcache \
   pdo_mysql \
-  pspell \
   shmop \
   soap \
   sockets \
@@ -125,9 +120,10 @@ RUN pecl install -o -f \
   pcov \
   raphf \
   redis \
-  xdebug-3.2.0 \
+  xdebug-3.4.0 \
   xmlrpc-1.0.0RC3 \
-  yaml
+  yaml \
+  pspell
 
 RUN curl -L https://packages.blackfire.io/gpg.key | gpg --dearmor > blackfire.io-archive-keyring.gpg \
   && install -o root -g root -m 644 blackfire.io-archive-keyring.gpg /etc/apt/trusted.gpg.d/ \
@@ -150,40 +146,23 @@ RUN rm -f /usr/local/etc/php/conf.d/*sodium.ini \
   && rm -rf /tmp/libsodium \
   && pecl install -o -f libsodium
 
-ADD etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
-ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
-ADD etc/php-pcov.ini /usr/local/etc/php/conf.d/zz-pcov-settings.ini
-ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
-ADD etc/php-gnupg.ini /usr/local/etc/php/conf.d/gnupg.ini
-
-# Get composer installed to /usr/local/bin/composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=${COMPOSER_VERSION} --filename=composer
-
-ADD bin/* /usr/local/bin/
+COPY etc/php-fpm.ini /usr/local/etc/php/conf.d/zz-magento.ini
+COPY etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
+COPY etc/php-pcov.ini /usr/local/etc/php/conf.d/zz-pcov-settings.ini
+COPY etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
+COPY etc/php-fpm.conf /usr/local/etc/
+COPY etc/php-gnupg.ini /usr/local/etc/php/conf.d/gnupg.ini
 
 RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/bash www
 
-ADD docker-entrypoint.sh /docker-entrypoint.sh
-
-RUN ["chmod", "+x", \
-    "/docker-entrypoint.sh", \
-    "/usr/local/bin/magento-installer", \
-    "/usr/local/bin/magento-command", \
-    "/usr/local/bin/mftf-command", \
-    "/usr/local/bin/ece-command", \
-    "/usr/local/bin/cloud-build", \
-    "/usr/local/bin/cloud-deploy", \
-    "/usr/local/bin/cloud-post-deploy", \
-    "/usr/local/bin/run-cron", \
-    "/usr/local/bin/run-hooks" \
-]
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN ["chmod", "+x", "/docker-entrypoint.sh"]
 
 RUN mkdir -p ${MAGENTO_ROOT}
 
 VOLUME ${MAGENTO_ROOT}
 
-RUN chown -R www:www /usr/local /var/www /var/log /usr/local/etc/php/conf.d /etc/cron.d ${MAGENTO_ROOT} ${COMPOSER_HOME}
-RUN if [ ! -z "${CRONTAB}" ]; then echo "${CRONTAB}" > /etc/cron.d/magento && touch /var/log/cron.log ; fi
+RUN chown -R www:www /usr/local /var/www /var/log /usr/local/etc/php/conf.d ${MAGENTO_ROOT}
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
@@ -191,4 +170,4 @@ WORKDIR ${MAGENTO_ROOT}
 
 USER root
 
-CMD ["bash"]
+CMD ["php-fpm", "-R"]

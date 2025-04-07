@@ -84,7 +84,7 @@ class DeveloperBuilder implements BuilderInterface
     /**
      * {@inheritDoc}
      *
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings("PHPMD.CyclomaticComplexity")
      */
     public function build(Config $config): Manager
     {

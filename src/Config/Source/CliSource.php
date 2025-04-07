@@ -166,9 +166,9 @@ class CliSource implements SourceInterface
     /**
      * {@inheritDoc}
      *
-     * @SuppressWarnings(PHPMD.NPathComplexity)
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     * @SuppressWarnings("PHPMD.NPathComplexity")
+     * @SuppressWarnings("PHPMD.CyclomaticComplexity")
+     * @SuppressWarnings("PHPMD.ExcessiveMethodLength")
      */
     public function read(): Repository
     {

@@ -19,7 +19,7 @@ class ElasticsearchCest extends AbstractCest
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.7-beta-test';
+    protected const TEMPLATE_VERSION = '2.4.7';
 
     /**
      * @param CliTester $I

@@ -29,7 +29,7 @@ class Container extends \Magento\CloudDocker\App\Container
     public static function getInstance(
         string $root,
         string $magentoBasePath,
-        string $toolsBasePath = null
+        ?string $toolsBasePath = null
     ): self {
         $key = crc32($root . $magentoBasePath . $toolsBasePath);
 

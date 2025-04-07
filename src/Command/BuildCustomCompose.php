@@ -27,7 +27,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Build configuration from custom-provided source.
  *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 class BuildCustomCompose extends Command
 {

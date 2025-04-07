@@ -191,7 +191,7 @@ class ServiceFactory
      * @param string $name
      * @param string $version
      * @param array $config
-     * @param string $image
+     * @param string|null $image
      * @param string|null $customRegistry
      * @param string|null $imagePattern
      * @return array
@@ -201,9 +201,9 @@ class ServiceFactory
         string $name,
         string $version,
         array $config = [],
-        string $image = null,
-        string $customRegistry = null,
-        string $imagePattern = null
+        ?string $image = null,
+        ?string $customRegistry = null,
+        ?string $imagePattern = null
     ): array {
         if (!array_key_exists($name, self::$config)) {
             throw new ConfigurationMismatchException(sprintf(

@@ -2,7 +2,7 @@
     "name": "magento/magento-cloud-docker",
     "description": "Magento Cloud Docker",
     "type": "magento2-component",
-    "version": "1.4.0",
+    "version": "1.4.2",
     "license": [
         "OSL-3.0",
         "AFL-3.0"
@@ -10,9 +10,9 @@
     "require": {
         "php": "^8.0",
         "ext-json": "*",
-        "composer/composer": "^1.9 || ^2.0",
+        "composer/composer": "^1.9 || ^2.8 || !=2.2.16",
         "composer/semver": "@stable",
-        "illuminate/config": "^5.5||^8.77",
+        "illuminate/config": "^8.77 || ^10.0 || ^11.0",
         "symfony/config": "^4.4 || ^5.1|| ^5.4 || ^6.4",
         "symfony/console": "^4.4 || ^5.1 || ^5.4 || ^6.4",
         "symfony/dependency-injection": "^4.4 || ^5.1|| ^5.4 || ^6.4",
@@ -26,9 +26,9 @@
         "codeception/module-rest": "^1.2 || ^3.0",
         "consolidation/robo": "^2.0 || ^3.0",
         "phpmd/phpmd": "@stable",
-        "phpstan/phpstan": "^1.8",
-        "phpunit/phpunit": "^9.5",
-        "squizlabs/php_codesniffer": "^3.6"
+        "phpstan/phpstan": "^1.8 || ^2.0",
+        "phpunit/phpunit": "^10.0",
+        "squizlabs/php_codesniffer": "^3.7"
     },
     "bin": [
         "bin/ece-docker"
@@ -55,7 +55,8 @@
         "test:integration": "phpunit --configuration tests/integration"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "optimize-autoloader": true
     },
     "prefer-stable": true,
     "extra": {
