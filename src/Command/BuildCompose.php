@@ -139,6 +139,11 @@ class BuildCompose extends Command
                 InputOption::VALUE_REQUIRED,
                 'Redis version'
             )->addOption(
+                Source\CliSource::OPTION_VALKEY,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Valkey version'
+            )->addOption(
                 Source\CliSource::OPTION_ES,
                 null,
                 InputOption::VALUE_REQUIRED,

@@ -74,6 +74,11 @@ interface SourceInterface
     public const SERVICES_REDIS = self::SERVICES . '.' . ServiceInterface::SERVICE_REDIS;
 
     /**
+     * Valkey
+     */
+    public const SERVICES_VALKEY = self::SERVICES . '.' . ServiceInterface::SERVICE_VALKEY;
+
+    /**
      * ES
      */
     public const SERVICES_ES = self::SERVICES . '.' . ServiceInterface::SERVICE_ELASTICSEARCH;

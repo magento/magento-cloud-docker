@@ -105,6 +105,26 @@ class ServiceFactory
                 ]
             ],
         ],
+        ServiceInterface::SERVICE_VALKEY => [
+          'image' => 'valkey',
+          'pattern' => self::PATTERN_STD,
+          'config' => [
+            'volumes' => [
+              '/data',
+            ],
+            'ports' => [6379],
+            'sysctls' => [
+              'net.core.somaxconn' => 1024,
+            ],
+            'ulimits' => [
+              'nproc' => 65535,
+              'nofile' => [
+                'soft' => 20000,
+                'hard' => 40000
+              ],
+            ]
+          ],
+        ],
         ServiceInterface::SERVICE_ELASTICSEARCH => [
             'image' => 'magento/magento-cloud-docker-elasticsearch',
             'pattern' => self::PATTERN_VERSIONED,

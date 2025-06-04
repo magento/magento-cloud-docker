@@ -27,6 +27,9 @@ class CliDepend
         BuilderInterface::SERVICE_REDIS => [
             'condition' => 'service_healthy'
         ],
+        BuilderInterface::SERVICE_VALKEY => [
+            'condition' => 'service_healthy'
+        ],
         BuilderInterface::SERVICE_ELASTICSEARCH => [
             'condition' => 'service_healthy'
         ],
