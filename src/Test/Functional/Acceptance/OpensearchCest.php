@@ -12,14 +12,14 @@ use Codeception\Example;
 use Robo\Exception\TaskException;
 
 /**
- * @group php83
+ * @group php84
  */
 class OpensearchCest extends AbstractCest
 {
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.7';
+    protected const TEMPLATE_VERSION = '2.4.9';
 
     /**
      * @param CliTester $I
