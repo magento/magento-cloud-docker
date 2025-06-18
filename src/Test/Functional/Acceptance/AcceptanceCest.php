@@ -17,7 +17,7 @@ class AcceptanceCest extends AbstractCest
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.8';
+    protected const TEMPLATE_VERSION = '2.4.8-php8.3';
 
     /**
      * @param \CliTester $I
