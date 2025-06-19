@@ -1,7 +1,0 @@
-#!/bin/bash
-
-[ "$DEBUG" = "true" ] && set -x
-
-ECE_COMMAND="$MAGENTO_ROOT/vendor/bin/ece-tools"
-
-exec $ECE_COMMAND "$@"
