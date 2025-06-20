@@ -106,7 +106,7 @@ class ServiceFactory
             ],
         ],
         ServiceInterface::SERVICE_VALKEY => [
-          'image' => 'valkey',
+          'image' => 'valkey/valkey',
           'pattern' => self::PATTERN_STD,
           'config' => [
             'volumes' => [

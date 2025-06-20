@@ -47,7 +47,7 @@ class CloudSource implements SourceInterface
         ServiceInterface::SERVICE_ELASTICSEARCH => ['elasticsearch', 'es'],
         ServiceInterface::SERVICE_OPENSEARCH => ['opensearch', 'os'],
         ServiceInterface::SERVICE_REDIS => ['redis'],
-        ServiceInterface::SERVICE_VALKEY => ['valkey'],
+        ServiceInterface::SERVICE_VALKEY => ['cache'],
         ServiceInterface::SERVICE_RABBITMQ => ['rmq', 'rabbitmq']
     ];
 

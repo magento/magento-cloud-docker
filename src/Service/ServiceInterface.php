@@ -23,7 +23,7 @@ interface ServiceInterface
     public const SERVICE_DB_SALES = 'mysql-sales';
     public const SERVICE_NGINX = 'nginx';
     public const SERVICE_REDIS = 'redis';
-    public const SERVICE_VALKEY = 'valkey';
+    public const SERVICE_VALKEY = 'cache';
     public const SERVICE_ELASTICSEARCH = 'elasticsearch';
     public const SERVICE_OPENSEARCH = 'opensearch';
     public const SERVICE_RABBITMQ = 'rabbitmq';
