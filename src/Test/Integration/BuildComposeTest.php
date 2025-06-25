@@ -51,12 +51,12 @@ class BuildComposeTest extends TestCase
         );
 
         /** @var MockObject|InputInterface $inputMock */
-        $inputMock = $this->getMockForAbstractClass(InputInterface::class);
+        $inputMock = $this->createMock(InputInterface::class);
 
         $inputMock->method('getOption')
             ->willReturnMap($options);
         /** @var MockObject|OutputInterface $outputMock */
-        $outputMock = $this->getMockForAbstractClass(OutputInterface::class);
+        $outputMock = $this->createMock(OutputInterface::class);
 
         $command->execute($inputMock, $outputMock);
 
