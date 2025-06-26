@@ -57,7 +57,7 @@ class Relationship
         ],
         'valkey' => [
           [
-            'host' => 'valkey',
+            'host' => 'cache',
             'port' => '6379'
           ]
         ],
