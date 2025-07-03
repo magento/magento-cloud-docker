@@ -50,20 +50,20 @@ class Valkey implements ServiceBuilderInterface
      * @inheritDoc
      */
     public function getConfig(Config $config): array
-      {
+    {
         $configArray = $this->serviceFactory->create(
-          $this->getServiceName(),
-          $config->getServiceVersion($this->getServiceName()),
-          [
+            $this->getServiceName(),
+            $config->getServiceVersion($this->getServiceName()),
+            [
             BuilderInterface::SERVICE_HEALTHCHECK => [
               'test' => 'valkey-cli ping || exit 1',
               'interval' => '30s',
               'timeout' => '30s',
               'retries' => 3
             ]
-          ],
-          $config->getServiceImage($this->getServiceName()),
-          $config->getCustomRegistry()
+            ],
+            $config->getServiceImage($this->getServiceName()),
+            $config->getCustomRegistry()
         );
 
         // Set both 'cache' and 'valkey.magento2.docker' as aliases unconditionally
@@ -73,7 +73,7 @@ class Valkey implements ServiceBuilderInterface
         ];
 
         return $configArray;
-      }
+    }
 
     /**
      * @inheritDoc
