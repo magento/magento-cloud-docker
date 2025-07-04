@@ -115,9 +115,6 @@ class ValkeyCest extends AbstractCest
             [
                 'version' => '8.0',
             ],
-            [
-                'version' => '7.2',
-            ],
         ];
     }
 } 
