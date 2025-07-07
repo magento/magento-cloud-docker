@@ -194,6 +194,16 @@ class BuildCompose extends Command
                 InputOption::VALUE_NONE,
                 'Disable Opensearch'
             )->addOption(
+                Source\CliSource::OPTION_NO_REDIS,
+                null,
+                InputOption::VALUE_NONE,
+                'Disable Redis'
+            )->addOption(
+                Source\CliSource::OPTION_NO_DB,
+                null,
+                InputOption::VALUE_NONE,
+                'Disable Database'
+            )->addOption(
                 Source\CliSource::OPTION_NO_MAILHOG,
                 null,
                 InputOption::VALUE_NONE,

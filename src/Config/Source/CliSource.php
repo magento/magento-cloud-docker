@@ -38,6 +38,8 @@ class CliSource implements SourceInterface
     public const OPTION_INSTALLATION_TYPE = 'installation-type';
     public const OPTION_NO_ES = 'no-es';
     public const OPTION_NO_OS = 'no-os';
+    public const OPTION_NO_REDIS = 'no-redis';
+    public const OPTION_NO_DB = 'no-db';
     public const OPTION_NO_MAILHOG = 'no-mailhog';
     public const OPTION_NO_TLS = 'no-tls';
 
@@ -150,6 +152,8 @@ class CliSource implements SourceInterface
     private static $disableOptionsMap = [
         self::OPTION_NO_ES => self::SERVICES_ES,
         self::OPTION_NO_OS => self::SERVICES_OS,
+        self::OPTION_NO_REDIS => self::SERVICES_REDIS,
+        self::OPTION_NO_DB => self::SERVICES_DB,
         self::OPTION_NO_MAILHOG => self::SERVICES_MAILHOG,
         self::OPTION_NO_TLS => self::SERVICES_TLS,
     ];
