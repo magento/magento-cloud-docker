@@ -16,4 +16,4 @@ class Valkey84Cest extends ValkeyCest
      * Template version for testing
      */
     protected const TEMPLATE_VERSION = '2.4.8';
-} 
+}

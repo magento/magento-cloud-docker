@@ -22,11 +22,11 @@ class ValkeyCest extends AbstractCest
     protected const TEMPLATE_VERSION = '2.4.7';
 
     /**
-     * @param CliTester $I
-     * @param Example $data
+     * @param        CliTester $I
+     * @param        Example   $data
      * @dataProvider dataProvider
-     * @return void
-     * @throws TaskException
+     * @return       void
+     * @throws       TaskException
      */
     public function testValkey(CliTester $I, Example $data)
     {
@@ -92,7 +92,7 @@ class ValkeyCest extends AbstractCest
     /**
      * Builds build:compose command from given test data
      *
-     * @param Example $data
+     * @param  Example $data
      * @return string
      */
     private function buildCommand(Example $data): string
@@ -116,4 +116,4 @@ class ValkeyCest extends AbstractCest
             ],
         ];
     }
-} 
+}
