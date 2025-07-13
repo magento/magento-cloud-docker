@@ -20,7 +20,10 @@ class HealthCheck
     public function getConfig(): array
     {
         return [
-            'test' => ['CMD-SHELL', 'mariadb-admin ping -h localhost -pmagento2'],
+            'test' => [
+                'CMD-SHELL',
+                '(mariadb-admin ping -h localhost -pmagento2 || mysqladmin ping -h localhost -pmagento2)'
+            ],
             'interval' => '30s',
             'timeout' => '30s',
             'retries' => 3
