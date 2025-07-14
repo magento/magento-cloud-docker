@@ -8,12 +8,12 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 /**
- * @group php84
+ * @group php83
  */
-class Valkey84Cest extends ValkeyCest
+class Valkey83Cest extends ValkeyCest
 {
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.8';
+    protected const TEMPLATE_VERSION = '2.4.7';
 }
