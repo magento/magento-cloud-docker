@@ -63,7 +63,7 @@ class ExtensionResolver
         'dom' => '>=7.0',
         'fileinfo' => '>=7.0',
         'filter' => '>=7.0',
-        'ftp' => '>=7.0',
+        'ftp' => '>=7.0 <8.2',
         'hash' => '>=7.0',
         'iconv' => '>=7.0',
         'json' => '>=7.0',
