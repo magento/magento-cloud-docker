@@ -55,6 +55,12 @@ class Relationship
                 'port' => '6379'
             ]
         ],
+        'valkey' => [
+          [
+            'host' => 'cache',
+            'port' => '6379'
+          ]
+        ],
         'elasticsearch' => [
             [
                 'host' => 'elasticsearch',

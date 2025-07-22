@@ -46,6 +46,12 @@ class RelationshipTest extends TestCase
                 'port' => '6379'
             ]
         ],
+        'valkey' => [
+            [
+                'host' => 'cache',
+                'port' => '6379'
+            ]
+        ],
         'elasticsearch' => [
             [
                 'host' => 'elasticsearch',
@@ -90,6 +96,7 @@ class RelationshipTest extends TestCase
     {
         $mysqlVersion = '10.4';
         $redisVersion = '5.2';
+        $valkeyVersion = '8.0';
         $esVersion = '7.7';
         $osVersion = '1.1';
         $rmqVersion = '3.5';
@@ -97,12 +104,13 @@ class RelationshipTest extends TestCase
         $configWithType = $this->defaultConfigs;
         $configWithType['database'][0]['type'] = "mysql:$mysqlVersion";
         $configWithType['redis'][0]['type'] = "redis:$redisVersion";
+        $configWithType['valkey'][0]['type'] = "valkey:$valkeyVersion";
         $configWithType['elasticsearch'][0]['type'] = "elasticsearch:$esVersion";
         $configWithType['opensearch'][0]['type'] = "opensearch:$osVersion";
         $configWithType['rabbitmq'][0]['type'] = "rabbitmq:$rmqVersion";
         $configWithType['zookeeper'][0]['type'] = "zookeeper:$zookeeperVersion";
 
-        $this->configMock->expects($this->exactly(8))
+        $this->configMock->expects($this->exactly(9))
             ->method('hasServiceEnabled')
             ->willReturnCallback(function ($service) {
                 static $services = [
@@ -110,6 +118,7 @@ class RelationshipTest extends TestCase
                     ServiceInterface::SERVICE_DB_QUOTE,
                     ServiceInterface::SERVICE_DB_SALES,
                     'redis',
+                    'valkey',
                     'elasticsearch',
                     'opensearch',
                     'rabbitmq',
@@ -120,6 +129,7 @@ class RelationshipTest extends TestCase
                     true,
                     false,
                     false,
+                    true,
                     true,
                     true,
                     true,
@@ -138,6 +148,7 @@ class RelationshipTest extends TestCase
         $services = [
             ServiceInterface::SERVICE_DB,
             'redis',
+            'valkey',
             'elasticsearch',
             'opensearch',
             'rabbitmq',
@@ -147,13 +158,14 @@ class RelationshipTest extends TestCase
         $versions = [
             $mysqlVersion,
             $redisVersion,
+            $valkeyVersion,
             $esVersion,
             $osVersion,
             $rmqVersion,
             $zookeeperVersion
             ];
 
-        $this->configMock->expects($this->exactly(6))
+        $this->configMock->expects($this->exactly(7))
             ->method('getServiceVersion')
             ->willReturnCallback(function ($service) use (
                 &$services,
