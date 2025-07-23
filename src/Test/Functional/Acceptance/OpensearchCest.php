@@ -19,7 +19,7 @@ class OpensearchCest extends AbstractCest
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.9-alpha';
+    protected const TEMPLATE_VERSION = '2.4.8';
 
     /**
      * @param CliTester $I

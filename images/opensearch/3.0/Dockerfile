@@ -1,4 +1,4 @@
-FROM opensearchproject/opensearch:2.12.0
+FROM opensearchproject/opensearch:3.0.0
 
 USER opensearch
 

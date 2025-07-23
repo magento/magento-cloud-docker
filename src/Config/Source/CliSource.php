@@ -27,6 +27,7 @@ class CliSource implements SourceInterface
     public const OPTION_EXPOSE_DB_QUOTE_PORT = 'expose-db-quote-port';
     public const OPTION_EXPOSE_DB_SALES_PORT = 'expose-db-sales-port';
     public const OPTION_REDIS = 'redis';
+    public const OPTION_VALKEY = 'valkey';
     public const OPTION_ES = 'es';
     public const OPTION_OS = 'os';
     public const OPTION_RABBIT_MQ = 'rmq';
@@ -37,6 +38,8 @@ class CliSource implements SourceInterface
     public const OPTION_INSTALLATION_TYPE = 'installation-type';
     public const OPTION_NO_ES = 'no-es';
     public const OPTION_NO_OS = 'no-os';
+    public const OPTION_NO_REDIS = 'no-redis';
+    public const OPTION_NO_DB = 'no-db';
     public const OPTION_NO_MAILHOG = 'no-mailhog';
     public const OPTION_NO_TLS = 'no-tls';
 
@@ -124,6 +127,9 @@ class CliSource implements SourceInterface
         self::OPTION_REDIS => [
             self::SERVICES_REDIS => true
         ],
+        self::OPTION_VALKEY => [
+          self::SERVICES_VALKEY => true
+        ],
         self::OPTION_ES => [
             self::SERVICES_ES => true
         ],
@@ -146,6 +152,8 @@ class CliSource implements SourceInterface
     private static $disableOptionsMap = [
         self::OPTION_NO_ES => self::SERVICES_ES,
         self::OPTION_NO_OS => self::SERVICES_OS,
+        self::OPTION_NO_REDIS => self::SERVICES_REDIS,
+        self::OPTION_NO_DB => self::SERVICES_DB,
         self::OPTION_NO_MAILHOG => self::SERVICES_MAILHOG,
         self::OPTION_NO_TLS => self::SERVICES_TLS,
     ];
