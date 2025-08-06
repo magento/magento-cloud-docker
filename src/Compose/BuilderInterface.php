@@ -29,6 +29,7 @@ interface BuilderInterface
     public const SERVICE_TLS = ServiceInterface::SERVICE_TLS;
     public const SERVICE_RABBITMQ = ServiceInterface::SERVICE_RABBITMQ;
     public const SERVICE_REDIS = ServiceInterface::SERVICE_REDIS;
+    public const SERVICE_VALKEY = ServiceInterface::SERVICE_VALKEY;
     public const SERVICE_ELASTICSEARCH = ServiceInterface::SERVICE_ELASTICSEARCH;
     public const SERVICE_OPENSEARCH = ServiceInterface::SERVICE_OPENSEARCH;
     public const SERVICE_NODE = ServiceInterface::SERVICE_NODE;

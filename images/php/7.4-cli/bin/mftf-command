@@ -1,7 +1,0 @@
-#!/bin/bash
-
-[ "$DEBUG" = "true" ] && set -x
-
-MFTF_COMMAND="$MAGENTO_ROOT/vendor/bin/mftf"
-
-exec $MFTF_COMMAND "$@"

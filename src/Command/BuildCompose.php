@@ -139,6 +139,11 @@ class BuildCompose extends Command
                 InputOption::VALUE_REQUIRED,
                 'Redis version'
             )->addOption(
+                Source\CliSource::OPTION_VALKEY,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Valkey version'
+            )->addOption(
                 Source\CliSource::OPTION_ES,
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -188,6 +193,16 @@ class BuildCompose extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'Disable Opensearch'
+            )->addOption(
+                Source\CliSource::OPTION_NO_REDIS,
+                null,
+                InputOption::VALUE_NONE,
+                'Disable Redis'
+            )->addOption(
+                Source\CliSource::OPTION_NO_DB,
+                null,
+                InputOption::VALUE_NONE,
+                'Disable Database'
             )->addOption(
                 Source\CliSource::OPTION_NO_MAILHOG,
                 null,
