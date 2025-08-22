@@ -48,7 +48,8 @@ class CloudSource implements SourceInterface
         ServiceInterface::SERVICE_OPENSEARCH => ['opensearch', 'os'],
         ServiceInterface::SERVICE_REDIS => ['redis'],
         ServiceInterface::SERVICE_VALKEY => ['cache','valkey'],
-        ServiceInterface::SERVICE_RABBITMQ => ['rmq', 'rabbitmq']
+        ServiceInterface::SERVICE_RABBITMQ => ['rmq', 'rabbitmq'],
+        ServiceInterface::SERVICE_ACTIVEMQ_ARTEMIS => ['activemq', 'artemis', 'activemq-artemis']
     ];
 
     /**

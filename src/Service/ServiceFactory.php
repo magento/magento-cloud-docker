@@ -153,6 +153,21 @@ class ServiceFactory
             'image' => 'rabbitmq',
             'pattern' => self::PATTERN_STD,
         ],
+        ServiceInterface::SERVICE_ACTIVEMQ_ARTEMIS => [
+            'image' => 'apache/activemq-artemis',
+            'pattern' => self::PATTERN_STD,
+            'config' => [
+                'ports' => [61616, 8161],
+                'environment' => [
+                    'ARTEMIS_USER' => 'admin',
+                    'ARTEMIS_PASSWORD' => 'admin',
+                ],
+                'volumes' => [
+                    '/var/lib/artemis/data',
+                    '/var/log/artemis',
+                ]
+            ],
+        ],
         ServiceInterface::SERVICE_NODE => [
             'image' => 'node',
             'pattern' => self::PATTERN_STD

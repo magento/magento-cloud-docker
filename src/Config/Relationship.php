@@ -81,6 +81,15 @@ class Relationship
                 'password' => 'guest',
             ]
         ],
+        'activemq-artemis' => [
+            [
+                'host' => 'activemq-artemis',
+                'port' => '61616',
+                'username' => 'admin',
+                'password' => 'admin',
+                'web_console_port' => '8161',
+            ]
+        ],
         'zookeeper' => [
             [
                 'host' => 'zookeeper',
