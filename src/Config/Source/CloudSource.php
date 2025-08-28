@@ -79,8 +79,16 @@ class CloudSource implements SourceInterface
         }
 
         try {
+            $flags = 0;
+            if (defined(Yaml::class . '::PARSE_CONSTANT')) {
+                $flags |= Yaml::PARSE_CONSTANT;
+            }
+            if (defined(Yaml::class . '::PARSE_CUSTOM_TAGS')) {
+                $flags |= Yaml::PARSE_CUSTOM_TAGS;
+            }
             $appConfig = Yaml::parse(
-                $this->filesystem->get($this->fileList->getAppConfig())
+                $this->filesystem->get($this->fileList->getAppConfig()),
+                $flags
             );
         } catch (\Exception $exception) {
             throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
@@ -361,8 +369,16 @@ class CloudSource implements SourceInterface
     private function getServiceConfig(): array
     {
         try {
+            $flags = 0;
+            if (defined(Yaml::class . '::PARSE_CONSTANT')) {
+                $flags |= Yaml::PARSE_CONSTANT;
+            }
+            if (defined(Yaml::class . '::PARSE_CUSTOM_TAGS')) {
+                $flags |= Yaml::PARSE_CUSTOM_TAGS;
+            }
             $servicesConfig = Yaml::parse(
-                $this->filesystem->get($this->fileList->getServicesConfig())
+                $this->filesystem->get($this->fileList->getServicesConfig()),
+                $flags
             );
         } catch (Exception $exception) {
             throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
