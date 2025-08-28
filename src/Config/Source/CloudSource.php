@@ -68,6 +68,9 @@ class CloudSource implements SourceInterface
 
     /**
      * @inheritDoc
+     *
+     * @SuppressWarnings("PMD.CyclomaticComplexity")
+     * @SuppressWarnings("PMD.NPathComplexity")
      */
     public function read(): Repository
     {
@@ -154,9 +157,13 @@ class CloudSource implements SourceInterface
     }
 
     /**
+     * Adds service relationships to the repository.
+     *
      * @param Repository $repository
      * @param array $relationships
+     *
      * @return Repository
+     *
      * @throws SourceException
      */
     private function addRelationships(Repository $repository, array $relationships): Repository
