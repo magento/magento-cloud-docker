@@ -176,6 +176,23 @@ class Docker extends BaseModule
      */
     public function downloadFromContainer(string $source, string $destination, string $container): bool
     {
+        // Validate inputs
+        if (empty($source)) {
+            throw new \RuntimeException("Source path is empty.");
+        }
+        if (empty($destination)) {
+            throw new \RuntimeException("Destination path is empty.");
+        }
+        if (empty($container)) {
+            throw new \RuntimeException("Container name is empty.");
+        }
+
+        // Construct the full source path
+        $fullSourcePath = $this->_getConfig('system_magento_dir') . $source;
+        if (empty($fullSourcePath)) {
+            throw new \RuntimeException("Failed to construct full source path. Check 'system_magento_dir' configuration.");
+        }
+
         /** @var Result $result */
         $result = $this->taskCopyFromDocker($container)
             ->printOutput($this->_getConfig('printOutput'))
@@ -253,8 +270,17 @@ class Docker extends BaseModule
     public function grabFileContent(string $source, string $container = self::DEPLOY_CONTAINER)
     {
         $tmpFile = tempnam(sys_get_temp_dir(), md5($source));
-        $this->downloadFromContainer($source, $tmpFile, $container);
-
+        if (!file_exists($tmpFile) || filesize($tmpFile) === 0) {
+            throw new \RuntimeException("Temporary file is empty or not created: $tmpFile");
+        }
+        if (!$this->downloadFromContainer($source, $tmpFile, $container)) {
+            throw new \RuntimeException("Failed to download file from container: $source");
+        }
+        // static::$output = $this->downloadFromContainer($source, $tmpFile, $container);
+        $content = file_get_contents($tmpFile);
+        if ($content === false || $content === '') {
+            throw new \RuntimeException("File is empty: $source");
+        }
         return file_get_contents($tmpFile);
     }
 }
