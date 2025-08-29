@@ -270,7 +270,7 @@ class Docker extends BaseModule
     public function grabFileContent(string $source, string $container = self::DEPLOY_CONTAINER)
     {
         $tmpFile = tempnam(sys_get_temp_dir(), md5($source));
-        if (!file_exists($tmpFile) || filesize($tmpFile) === 0) {
+        if (!file_exists($tmpFile)) {
             throw new \RuntimeException("Temporary file is empty or not created: $tmpFile");
         }
         if (!$this->downloadFromContainer($source, $tmpFile, $container)) {
