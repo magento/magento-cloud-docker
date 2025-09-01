@@ -273,8 +273,13 @@ class Docker extends BaseModule
         if (!file_exists($tmpFile)) {
             throw new \RuntimeException("Temporary file is empty or not created: $tmpFile");
         }
+
+        
         if (!$this->downloadFromContainer($source, $tmpFile, $container)) {
-            throw new \RuntimeException("Failed to download file from container: $source");
+            $errorMessage = sprintf(
+                "Failed to download file from container. Source: %s, Container: %s, Temporary File: %s",$source, $container,$tmpFile
+            );
+            throw new \RuntimeException($errorMessage);
         }
         // static::$output = $this->downloadFromContainer($source, $tmpFile, $container);
         $content = file_get_contents($tmpFile);
