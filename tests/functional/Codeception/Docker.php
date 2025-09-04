@@ -267,7 +267,7 @@ class Docker extends BaseModule
      * @param string $container
      * @return string|false
      */
-    public function grabFileContent(string $source, string $container = self::DEPLOY_CONTAINER)
+    public function grabFileContent(string $source, string $container = self::BUILD_CONTAINER)
     {
           // Check if the system has write permissions for the temporary directory
         $tempDir = sys_get_temp_dir();
