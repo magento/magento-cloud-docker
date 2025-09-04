@@ -269,12 +269,19 @@ class Docker extends BaseModule
      */
     public function grabFileContent(string $source, string $container = self::DEPLOY_CONTAINER)
     {
+          // Check if the system has write permissions for the temporary directory
+        $tempDir = sys_get_temp_dir();
+        if (!is_writable($tempDir)) {
+            throw new \RuntimeException("Temporary directory is not writable: $tempDir");
+        }
+
         $tmpFile = tempnam(sys_get_temp_dir(), md5($source));
         if (!file_exists($tmpFile)) {
             throw new \RuntimeException("Temporary file is empty or not created: $tmpFile");
         }
-
-        
+        if (!is_writable($tmpFile)) {
+            throw new \RuntimeException("Temporary file is not writable: $tmpFile");
+        }
         if (!$this->downloadFromContainer($source, $tmpFile, $container)) {
             $errorMessage = sprintf(
                 "Failed to download file from container. Source: %s, Container: %s, Temporary File: %s",$source, $container,$tmpFile
