@@ -201,9 +201,10 @@ class Docker extends BaseModule
             ->destination($destination)
             ->dir($this->getWorkDirPath())
             ->run();
-        if (!$result->wasSuccessful()) {
-            throw new \RuntimeException("Task failed: " . $result);
-        }
+            if (!$result->wasSuccessful()) {
+                $message = is_string($result->getMessage()) ? $result->getMessage() : json_encode($result->getMessage());
+                throw new \RuntimeException("Task failed: " . $message);
+            }
             
         static::$output = $result->getMessage();
 
