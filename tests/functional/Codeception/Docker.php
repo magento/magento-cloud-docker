@@ -202,7 +202,12 @@ class Docker extends BaseModule
             ->dir($this->getWorkDirPath())
             ->run();
             if (!$result->wasSuccessful()) {
-                $message = is_string($result->getMessage()) ? $result->getMessage() : json_encode($result->getMessage());
+                $message = $result->getMessage();
+                if (empty($message)) {
+                    $message = 'Unknown error occurred during task execution.';
+                } elseif (!is_string($message)) {
+                    $message = json_encode($message);
+                }
                 throw new \RuntimeException("Task failed: " . $message);
             }
             
