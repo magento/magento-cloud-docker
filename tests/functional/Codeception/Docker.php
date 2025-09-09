@@ -186,6 +186,23 @@ class Docker extends BaseModule
         if (empty($container)) {
             throw new \RuntimeException("Container name is empty.");
         }
+        $printOutput = $this->_getConfig('printOutput');
+        if (!is_bool($printOutput)) {
+            throw new \RuntimeException("Invalid 'printOutput' configuration. Expected a boolean value.");
+        }
+
+        // Validate 'system_magento_dir' configuration
+        $systemMagentoDir = $this->_getConfig('system_magento_dir');
+        if (empty($systemMagentoDir)) {
+            throw new \RuntimeException("Invalid 'system_magento_dir' configuration. It cannot be empty.");
+        }
+
+        // Validate source path
+        $fullSourcePath = $systemMagentoDir . $source;
+        if (!is_string($fullSourcePath) || empty($fullSourcePath)) {
+            throw new \RuntimeException("Invalid source path. Constructed path: $fullSourcePath");
+        }
+
 
         // Construct the full source path
         $fullSourcePath = $this->_getConfig('system_magento_dir') . $source;
