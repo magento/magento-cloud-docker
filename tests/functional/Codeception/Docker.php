@@ -175,86 +175,82 @@ class Docker extends BaseModule
      * @return bool
      */
     public function downloadFromContainer(string $source, string $destination, string $container): bool
-{
-    // Validate inputs
-    if (empty($source)) {
-        throw new \RuntimeException("Source path is empty.");
-    }
-    if (empty($destination)) {
-        throw new \RuntimeException("Destination path is empty.");
-    }
-    if (empty($container)) {
-        throw new \RuntimeException("Container name is empty.");
-    }
-
-    // Log inputs
-    error_log("Starting downloadFromContainer...");
-    error_log("Source: $source");
-    error_log("Destination: $destination");
-    error_log("Container: $container");
-
-    $printOutput = $this->_getConfig('printOutput');
-    if (!is_bool($printOutput)) {
-        throw new \RuntimeException("Invalid 'printOutput' configuration. Expected a boolean value.");
-    }
-
-    // Validate 'system_magento_dir' configuration
-    $systemMagentoDir = $this->_getConfig('system_magento_dir');
-    if (empty($systemMagentoDir)) {
-        throw new \RuntimeException("Invalid 'system_magento_dir' configuration. It cannot be empty.");
-    }
-
-    // Log configuration
-    error_log("System Magento Directory: $systemMagentoDir");
-
-    // Validate source path
-    $fullSourcePath = $systemMagentoDir . $source;
-    if (!is_string($fullSourcePath) || empty($fullSourcePath)) {
-        throw new \RuntimeException("Invalid source path. Constructed path: $fullSourcePath");
-    }
-
-    // Log full source path
-    error_log("Full Source Path: $fullSourcePath");
-
-    // Construct the full source path
-    $fullSourcePath = $this->_getConfig('system_magento_dir') . $source;
-    if (empty($fullSourcePath)) {
-        throw new \RuntimeException("Failed to construct full source path. Check 'system_magento_dir' configuration.");
-    }
-
-    // Log task execution
-    error_log("Executing taskCopyFromDocker...");
-
-    /** @var Result $result */
-    $result = $this->taskCopyFromDocker($container)
-        ->printOutput($this->_getConfig('printOutput'))
-        ->interactive(false)
-        ->source($this->_getConfig('system_magento_dir') . $source)
-        ->destination($destination)
-        ->dir($this->getWorkDirPath())
-        ->run();
-
-    // Log result status
-    if ($result->wasSuccessful()) {
-        error_log("taskCopyFromDocker completed successfully.");
-    } else {
-        $message = $result->getMessage();
-        if (empty($message)) {
-            $message = 'Unknown error occurred during task execution.';
-        } elseif (!is_string($message)) {
-            $message = json_encode($message);
+    {
+        // Validate inputs
+        if (empty($source)) {
+            throw new \RuntimeException("Source path is empty.");
         }
-        error_log("taskCopyFromDocker failed. Message: $message");
-        throw new \RuntimeException("Task failed: " . $message);
+        if (empty($destination)) {
+            throw new \RuntimeException("Destination path is empty.");
+        }
+        if (empty($container)) {
+            throw new \RuntimeException("Container name is empty.");
+        }
+    
+        // Log inputs
+        error_log("Starting downloadFromContainer...");
+        error_log("Source: $source");
+        error_log("Destination: $destination");
+        error_log("Container: $container");
+    
+        $printOutput = $this->_getConfig('printOutput');
+        if (!is_bool($printOutput)) {
+            throw new \RuntimeException("Invalid 'printOutput' configuration. Expected a boolean value.");
+        }
+    
+        // Validate 'system_magento_dir' configuration
+        $systemMagentoDir = $this->_getConfig('system_magento_dir');
+        if (empty($systemMagentoDir)) {
+            throw new \RuntimeException("Invalid 'system_magento_dir' configuration. It cannot be empty.");
+        }
+    
+        // Log configuration
+        error_log("System Magento Directory: $systemMagentoDir");
+    
+        // Validate source path
+        $fullSourcePath = $systemMagentoDir . $source;
+        if (!is_string($fullSourcePath) || empty($fullSourcePath)) {
+            throw new \RuntimeException("Invalid source path. Constructed path: $fullSourcePath");
+        }
+    
+        // Log full source path
+        error_log("Full Source Path: $fullSourcePath");
+    
+        // Log task execution
+        error_log("Executing taskCopyFromDocker...");
+    
+        /** @var Result $result */
+        $result = $this->taskCopyFromDocker($container)
+            ->printOutput($this->_getConfig('printOutput'))
+            ->interactive(false)
+            ->source($fullSourcePath)
+            ->destination($destination)
+            ->dir($this->getWorkDirPath())
+            ->run();
+    
+        // Log result status
+        if ($result->wasSuccessful()) {
+            error_log("taskCopyFromDocker completed successfully.");
+        } else {
+            error_log("Inspecting Result object...");
+            var_dump($result); // Inspect the full Result object
+            $message = $result->getMessage();
+            if (empty($message)) {
+                $message = 'Unknown error occurred during task execution.';
+            } elseif (!is_string($message)) {
+                $message = json_encode($message);
+            }
+            error_log("taskCopyFromDocker failed. Message: $message");
+            throw new \RuntimeException("Task failed: " . $message);
+        }
+    
+        static::$output = $result->getMessage();
+    
+        // Log final output
+        error_log("Task output: " . static::$output);
+    
+        return $result->wasSuccessful();
     }
-
-    static::$output = $result->getMessage();
-
-    // Log final output
-    error_log("Task output: " . static::$output);
-
-    return $result->wasSuccessful();
-}
 
     /**
      * Creates folder on Docker
