@@ -212,7 +212,9 @@ class Docker extends BaseModule
     if (!is_string($fullSourcePath) || empty($fullSourcePath)) {
         throw new \RuntimeException("Invalid source path. Constructed path: $fullSourcePath");
     }
-
+    error_log("Constructed Full Source Path: $fullSourcePath");
+    $fullSourcePath2= rtrim($systemMagentoDir, '/') . '/' . ltrim($source, '/');
+    error_log("Constructed Full Source Path2: $fullSourcePath2");
     // Log full source path
     error_log("Full Source Path: $fullSourcePath");
 
