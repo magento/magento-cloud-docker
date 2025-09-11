@@ -175,95 +175,20 @@ class Docker extends BaseModule
      * @return bool
      */
     public function downloadFromContainer(string $source, string $destination, string $container): bool
-{
-    // Validate inputs
-    if (empty($source)) {
-        throw new \RuntimeException("Source path is empty.");
-    }
-    if (empty($destination)) {
-        throw new \RuntimeException("Destination path is empty.");
-    }
-    if (empty($container)) {
-        throw new \RuntimeException("Container name is empty.");
-    }
-
-    // Log inputs
-    error_log("Starting downloadFromContainer...");
-    error_log("Source: $source");
-    error_log("Destination: $destination");
-    error_log("Container: $container");
-
-    $printOutput = $this->_getConfig('printOutput');
-    if (!is_bool($printOutput)) {
-        throw new \RuntimeException("Invalid 'printOutput' configuration. Expected a boolean value.");
-    }
-
-    // Validate 'system_magento_dir' configuration
-    $systemMagentoDir = $this->_getConfig('system_magento_dir');
-    if (empty($systemMagentoDir)) {
-        throw new \RuntimeException("Invalid 'system_magento_dir' configuration. It cannot be empty.");
-    }
-
-    // Log configuration
-    error_log("System Magento Directory: $systemMagentoDir");
-
-    // Validate source path
-    $fullSourcePath = $systemMagentoDir . $source;
-    if (!is_string($fullSourcePath) || empty($fullSourcePath)) {
-        throw new \RuntimeException("Invalid source path. Constructed path: $fullSourcePath");
-    }
-    error_log("Constructed Full Source Path: $fullSourcePath");
-    $fullSourcePath2= rtrim($systemMagentoDir, '/') . '/' . ltrim($source, '/');
-    error_log("Constructed Full Source Path2: $fullSourcePath2");
-    // Log full source path
-    error_log("Full Source Path: $fullSourcePath");
-
-    // Attempt to use taskCopyFromDocker
-    try {
-        error_log("Executing taskCopyFromDocker...");
+    {
         /** @var Result $result */
         $result = $this->taskCopyFromDocker($container)
             ->printOutput($this->_getConfig('printOutput'))
             ->interactive(false)
-            ->source($fullSourcePath)
+            ->source($this->_getConfig('system_magento_dir') . $source)
             ->destination($destination)
             ->dir($this->getWorkDirPath())
             ->run();
 
-        // Log result status
-        if ($result->wasSuccessful()) {
-            error_log("taskCopyFromDocker completed successfully.");
-            static::$output = $result->getMessage();
-            error_log("Task output: " . static::$output);
-            return true;
-        } else {
-            error_log("taskCopyFromDocker failed. Falling back to docker cp...");
-        }
-    } catch (\Exception $e) {
-        error_log("taskCopyFromDocker threw an exception: " . $e->getMessage());
-        error_log("Falling back to docker cp...");
+        static::$output = $result->getMessage();
+
+        return $result->wasSuccessful();
     }
-
-    // Fallback to docker cp command
-    $command = sprintf(
-        'docker cp %s:%s %s',
-        escapeshellarg($container),
-        escapeshellarg($fullSourcePath),
-        escapeshellarg($destination)
-    );
-
-    exec($command, $output, $returnVar);
-
-    if ($returnVar !== 0) {
-        throw new \RuntimeException("Failed to execute docker cp command: " . implode("\n", $output));
-    }
-    else {
-        error_log("docker cp command executed: $command");
-    }
-
-    error_log("docker cp command executed successfully.");
-    return true;
-}
 
     /**
      * Creates folder on Docker
@@ -327,30 +252,9 @@ class Docker extends BaseModule
      */
     public function grabFileContent(string $source, string $container = self::DEPLOY_CONTAINER)
     {
-          // Check if the system has write permissions for the temporary directory
-        $tempDir = sys_get_temp_dir();
-        if (!is_writable($tempDir)) {
-            throw new \RuntimeException("Temporary directory is not writable: $tempDir");
-        }
-
         $tmpFile = tempnam(sys_get_temp_dir(), md5($source));
-        if (!file_exists($tmpFile)) {
-            throw new \RuntimeException("Temporary file is empty or not created: $tmpFile");
-        }
-        if (!is_writable($tmpFile)) {
-            throw new \RuntimeException("Temporary file is not writable: $tmpFile");
-        }
-        if (!$this->downloadFromContainer($source, $tmpFile, $container)) {
-            $errorMessage = sprintf(
-                "Failed to download file from container. Source: %s, Container: %s, Temporary File: %s",$source, $container,$tmpFile
-            );
-            throw new \RuntimeException($errorMessage);
-        }
-        // static::$output = $this->downloadFromContainer($source, $tmpFile, $container);
-        $content = file_get_contents($tmpFile);
-        if ($content === false || $content === '') {
-            throw new \RuntimeException("File is empty: $source");
-        }
+        $this->downloadFromContainer($source, $tmpFile, $container);
+
         return file_get_contents($tmpFile);
     }
 }
