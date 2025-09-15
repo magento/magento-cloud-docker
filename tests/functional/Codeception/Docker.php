@@ -110,12 +110,10 @@ class Docker extends BaseModule
         // return $this->runDockerComposeCommand(
         //     'run --user root build bash -c "uid=$(stat -c %u . 2>/dev/null || stat -f %u .); gid=$(stat -c %g . 2>/dev/null || stat -f %g .); chown -R $uid:$gid . /composer/cache"'
         // );
-        // return $this->runDockerComposeCommand(
-        //     'run build bash -c "sudo chown -R $(id -u):$(id -g) . /composer/cache"'
-        // );
-        $this->runDockerComposeCommand(
-            'run --user root build bash -c "chown -R $(id -u):$(id -g) . /composer/cache"'
+        return $this->runDockerComposeCommand(
+            'run build bash -c "chmod -R u+rwX . /composer/cache"'
         );
+        
     }
 
     /**
