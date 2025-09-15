@@ -107,12 +107,12 @@ class Docker extends BaseModule
      */
     public function resetFilesOwner(): bool
     {
-        // return $this->runDockerComposeCommand(
-        //     'run --user root build bash -c "uid=$(stat -c %u . 2>/dev/null || stat -f %u .); gid=$(stat -c %g . 2>/dev/null || stat -f %g .); chown -R $uid:$gid . /composer/cache"'
-        // );
         return $this->runDockerComposeCommand(
-            'run build bash -c "sudo chown -R $(id -u):$(id -g) . /composer/cache"'
+            'run --user root build bash -c "uid=$(stat -c %u . 2>/dev/null || stat -f %u .); gid=$(stat -c %g . 2>/dev/null || stat -f %g .); chown -R $uid:$gid . /composer/cache"'
         );
+        // return $this->runDockerComposeCommand(
+        //     'run build bash -c "sudo chown -R $(id -u):$(id -g) . /composer/cache"'
+        // );
     }
 
     /**
