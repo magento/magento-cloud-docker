@@ -157,7 +157,7 @@ class ServiceFactory
             'image' => 'apache/activemq-artemis',
             'pattern' => self::PATTERN_STD,
             'config' => [
-                'ports' => [61616, 8161],
+                 'ports' => [61616, 61613, 8161],
                 'environment' => [
                     'ARTEMIS_USER' => 'admin',
                     'ARTEMIS_PASSWORD' => 'admin',
