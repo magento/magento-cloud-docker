@@ -92,7 +92,7 @@ class CopyFromDocker extends BaseTask implements CommandInterface
     //     $this->destination
     // );
     return sprintf(
-        'docker cp "$(docker-compose ps -q %s)":%s %s',
+        'docker-compose cp %s %s:%s',
         $this->container,
         $this->source,
         $this->destination
