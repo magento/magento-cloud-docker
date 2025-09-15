@@ -72,6 +72,15 @@ class RelationshipTest extends TestCase
                 'password' => 'guest',
             ]
         ],
+        'activemq-artemis' => [
+            [
+                'host' => 'activemq-artemis',
+                'port' => '61616',
+                'username' => 'admin',
+                'password' => 'admin',
+                'web_console_port' => '8161',
+            ]
+        ],
         'zookeeper' => [
             [
                 'host' => 'zookeeper',
@@ -100,6 +109,7 @@ class RelationshipTest extends TestCase
         $esVersion = '7.7';
         $osVersion = '1.1';
         $rmqVersion = '3.5';
+        $activemqArtemisVersion = '2.17';
         $zookeeperVersion = 'latest';
         $configWithType = $this->defaultConfigs;
         $configWithType['database'][0]['type'] = "mysql:$mysqlVersion";
@@ -108,9 +118,10 @@ class RelationshipTest extends TestCase
         $configWithType['elasticsearch'][0]['type'] = "elasticsearch:$esVersion";
         $configWithType['opensearch'][0]['type'] = "opensearch:$osVersion";
         $configWithType['rabbitmq'][0]['type'] = "rabbitmq:$rmqVersion";
+        $configWithType['activemq-artemis'][0]['type'] = "activemq-artemis:$activemqArtemisVersion";
         $configWithType['zookeeper'][0]['type'] = "zookeeper:$zookeeperVersion";
 
-        $this->configMock->expects($this->exactly(9))
+        $this->configMock->expects($this->exactly(10))
             ->method('hasServiceEnabled')
             ->willReturnCallback(function ($service) {
                 static $services = [
@@ -122,6 +133,7 @@ class RelationshipTest extends TestCase
                     'elasticsearch',
                     'opensearch',
                     'rabbitmq',
+                    'activemq-artemis',
                     'zookeeper'
                 ];
 
@@ -129,6 +141,7 @@ class RelationshipTest extends TestCase
                     true,
                     false,
                     false,
+                    true,
                     true,
                     true,
                     true,
@@ -152,6 +165,7 @@ class RelationshipTest extends TestCase
             'elasticsearch',
             'opensearch',
             'rabbitmq',
+            'activemq-artemis',
             'zookeeper'
         ];
         
@@ -162,10 +176,11 @@ class RelationshipTest extends TestCase
             $esVersion,
             $osVersion,
             $rmqVersion,
+            $activemqArtemisVersion,
             $zookeeperVersion
             ];
 
-        $this->configMock->expects($this->exactly(7))
+        $this->configMock->expects($this->exactly(8))
             ->method('getServiceVersion')
             ->willReturnCallback(function ($service) use (
                 &$services,
