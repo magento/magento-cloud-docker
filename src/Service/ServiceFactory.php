@@ -52,7 +52,7 @@ class ServiceFactory
     /**
      * @var array
      */
-    private static $config = [
+    private static array $config = [
         ServiceInterface::SERVICE_PHP_CLI => [
             'image' => 'magento/magento-cloud-docker-php',
             'pattern' => '%s:%s-cli-%s',
@@ -207,7 +207,7 @@ class ServiceFactory
     /**
      * @var FileList
      */
-    private $fileList;
+    private FileList $fileList;
 
     /**
      * @var string

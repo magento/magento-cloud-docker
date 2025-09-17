@@ -25,22 +25,22 @@ class CloudSource implements SourceInterface
     /**
      * @var FileList
      */
-    private $fileList;
+    private FileList $fileList;
 
     /**
      * @var Filesystem
      */
-    private $filesystem;
+    private Filesystem $filesystem;
 
     /**
      * @var ServiceFactory
      */
-    private $serviceFactory;
+    private ServiceFactory $serviceFactory;
 
     /**
      * @var array
      */
-    private static $map = [
+    private static array $map = [
         ServiceInterface::SERVICE_DB => ['db', 'database', 'mysql'],
         ServiceInterface::SERVICE_DB_QUOTE => ['mysql-quote'],
         ServiceInterface::SERVICE_DB_SALES => ['mysql-sales'],
@@ -67,9 +67,10 @@ class CloudSource implements SourceInterface
         $this->serviceFactory = $serviceFactory;
     }
 
-    /**
-     * @inheritDoc
-     */
+  /**
+   * @inheritDoc
+   * @throws ConfigurationMismatchException
+   */
     public function read(): Repository
     {
         $appConfigFile = $this->fileList->getAppConfig();

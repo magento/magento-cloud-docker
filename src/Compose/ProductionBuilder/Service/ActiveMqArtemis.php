@@ -20,7 +20,7 @@ class ActiveMqArtemis implements ServiceBuilderInterface
     /**
      * @var ServiceFactory
      */
-    private $serviceFactory;
+    private ServiceFactory $serviceFactory;
 
     /**
      * @param ServiceFactory $serviceFactory
