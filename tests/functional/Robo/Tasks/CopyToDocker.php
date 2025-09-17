@@ -79,10 +79,18 @@ class CopyToDocker extends BaseTask implements CommandInterface
      */
     public function getCommand(): string
     {
-        $containerId = trim(shell_exec(sprintf('docker-compose ps -q %s', escapeshellarg($this->container))));
+        $rawOutput = shell_exec(sprintf('docker-compose ps -q %s', escapeshellarg($this->container)));
+
+        if ($rawOutput === null) {
+            throw new \RuntimeException('Failed to execute shell command.');
+        }
+        
+        $containerId = trim($rawOutput);
+        
         if (!$containerId) {
             throw new \RuntimeException(sprintf('Container "%s" not found or not running.', $this->container));
         }
+        
         return sprintf(
             'docker-compose cp %s %s:%s',
             $containerId,
