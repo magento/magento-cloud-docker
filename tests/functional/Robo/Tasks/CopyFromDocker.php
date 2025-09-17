@@ -77,26 +77,52 @@ class CopyFromDocker extends BaseTask implements CommandInterface
     /**
      * @inheritdoc
      */
-    public function getCommand(): string
+    private function runShell(string $command): string
     {
-        
-      // Log the values before using them
-    error_log('Container for cp: ' . $this->container);
-    error_log('Source: ' . $this->source);
-    error_log('Destination: ' . $this->destination);
-
-    $rawOutput = shell_exec(sprintf('docker-compose ps -q %s', escapeshellarg($this->container)));
-
-    if ($rawOutput === null) {
-        throw new \RuntimeException('Failed to execute shell command.');
+        // Capture stdout and stderr
+        $output = shell_exec($command . ' 2>&1');
+     
+        if ($output === null) {
+            throw new \RuntimeException(sprintf('Shell command failed to execute: %s', $command));
+        }
+     
+        return trim((string)$output);
     }
-    
-    $containerId = trim($rawOutput);
-    
-    if (!$containerId) {
-        throw new \RuntimeException(sprintf('Container "%s" not found or not running.', $this->container));
+     
+    private function getContainerId(): string
+    {
+        // First try docker-compose
+        $cmdCompose = sprintf(
+            'docker-compose ps -q %s',
+            escapeshellarg($this->container)
+        );
+     
+        $output = $this->runShell($cmdCompose);
+        if ($output !== '') {
+            return $output;
+        }
+     
+        // Fallback to plain docker ps
+        $cmdDocker = sprintf(
+            'docker ps -q --filter "name=%s$"',
+            escapeshellarg($this->container)
+        );
+     
+        $output = $this->runShell($cmdDocker);
+        if ($output !== '') {
+            return $output;
+        }
+     
+        throw new \RuntimeException(sprintf(
+            'Container "%s" not found or not running.',
+            $this->container
+        ));
     }
-    
+     
+    public function getDockerCpCommand(): string
+    {
+        $containerId = $this->getContainerId();
+     
         return sprintf(
             'docker cp %s:%s %s',
             $containerId,
