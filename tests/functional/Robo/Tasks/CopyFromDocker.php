@@ -85,12 +85,16 @@ class CopyFromDocker extends BaseTask implements CommandInterface
     error_log('Source: ' . $this->source);
     error_log('Destination: ' . $this->destination);
 
-    return sprintf(
-        'docker-compose cp %s:%s %s',
-        $this->container,
-        $this->source,
-        $this->destination
-    );
+    $containerId = trim(shell_exec(sprintf('docker-compose ps -q %s', escapeshellarg($this->container))));
+        if (!$containerId) {
+            throw new \RuntimeException(sprintf('Container "%s" not found or not running.', $this->container));
+        }
+        return sprintf(
+            'docker cp %s:%s %s',
+            $containerId,
+            $this->source,
+            $this->destination
+        );
     }
 
     /**
