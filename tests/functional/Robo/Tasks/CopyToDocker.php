@@ -77,19 +77,52 @@ class CopyToDocker extends BaseTask implements CommandInterface
     /**
      * @inheritdoc
      */
+        private function runShell(string $command): string
+    {
+        // Capture stdout and stderr
+        $output = shell_exec($command . ' 2>&1');
+    
+        if ($output === null) {
+            throw new \RuntimeException(sprintf('Shell command failed to execute: %s', $command));
+        }
+    
+        return trim((string)$output);
+    }
+ 
+    private function getContainerId(): string
+    {
+        // First try docker-compose
+        $cmdCompose = sprintf(
+            'docker-compose ps -q %s',
+            escapeshellarg($this->container)
+        );
+    
+        $output = $this->runShell($cmdCompose);
+        if ($output !== '') {
+            return $output;
+        }
+    
+        // Fallback to plain docker ps
+        $cmdDocker = sprintf(
+            'docker ps -q --filter "name=%s$"',
+            escapeshellarg($this->container)
+        );
+    
+        $output = $this->runShell($cmdDocker);
+        if ($output !== '') {
+            return $output;
+        }
+    
+        throw new \RuntimeException(sprintf(
+            'Container "%s" not found or not running.',
+            $this->container
+        ));
+    }
+ 
+
     public function getCommand(): string
     {
-        $rawOutput = shell_exec(sprintf('docker-compose ps -q %s', escapeshellarg($this->container)));
-
-        if ($rawOutput === null) {
-            throw new \RuntimeException('Failed to execute shell command.');
-        }
-        
-        $containerId = trim($rawOutput);
-        
-        if (!$containerId) {
-            throw new \RuntimeException(sprintf('Container "%s" not found or not running.', $this->container));
-        }
+        $containerId = $this->getContainerId();
         
         return sprintf(
             'docker-compose cp %s %s:%s',
