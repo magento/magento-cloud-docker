@@ -77,59 +77,21 @@ class CopyFromDocker extends BaseTask implements CommandInterface
     /**
      * @inheritdoc
      */
-private function runShell(string $command): string
-{
-    // Capture stdout and stderr
-    $output = shell_exec($command . ' 2>&1');
- 
-    if ($output === null) {
-        throw new \RuntimeException(sprintf('Shell command failed to execute: %s', $command));
-    }
- 
-    return trim((string)$output);
-}
- 
-private function getContainerId(): string
-{
-    // First try docker-compose
-    $cmdCompose = sprintf(
-        'docker-compose ps -q %s',
-        escapeshellarg($this->container)
-    );
- 
-    $output = $this->runShell($cmdCompose);
-    if ($output !== '') {
-        return $output;
-    }
- 
-    // Fallback to plain docker ps
-    $cmdDocker = sprintf(
-        'docker ps -q --filter "name=%s$"',
-        escapeshellarg($this->container)
-    );
- 
-    $output = $this->runShell($cmdDocker);
-    if ($output !== '') {
-        return $output;
-    }
- 
-    throw new \RuntimeException(sprintf(
-        'Container "%s" not found or not running.',
-        $this->container
-    ));
-}
- 
-public function getCommand(): string
-{
-    $containerId = $this->getContainerId();
- 
+    public function getCommand(): string
+    {
+        
+      // Log the values before using them
+    error_log('Container for cp: ' . $this->container);
+    error_log('Source: ' . $this->source);
+    error_log('Destination: ' . $this->destination);
+
     return sprintf(
-        'docker cp %s:%s %s',
-        $containerId,
+        'docker-compose cp %s:%s %s',
+        $this->container,
         $this->source,
         $this->destination
     );
-}
+    }
 
     /**
      * @inheritdoc
