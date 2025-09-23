@@ -79,43 +79,17 @@ class CopyFromDocker extends BaseTask implements CommandInterface
      */
    public function getCommand(): string
 {
+   // Log the values before using them
     error_log('Container for cp: ' . $this->container);
     error_log('Source: ' . $this->source);
     error_log('Destination: ' . $this->destination);
- 
-    if (!$this->container) {
-        throw new \RuntimeException('No container defined for copy operation.');
-    }
- 
-    $rawOutput = shell_exec(sprintf('docker-compose ps -q %s', escapeshellarg($this->container)));
-    if ($rawOutput === null) {
-        throw new \RuntimeException(sprintf(
-            'Failed to execute docker-compose command for container "%s".',
-            $this->container
-        ));
-    }
- 
-    $containerId = trim($rawOutput);
-    if ($containerId === '') {
-        throw new \RuntimeException(sprintf(
-            'Container "%s" is not running or does not exist.',
-            $this->container
-        ));
-    }
- 
-    error_log('Resolved container ID: ' . $containerId);
- 
-    // Safely escape arguments
-    $command = sprintf(
+
+    return sprintf(
         'docker cp %s:%s %s',
-        escapeshellarg($containerId),
-        escapeshellarg($this->source),
-        escapeshellarg($this->destination)
+        $this->container,
+        $this->source,
+        $this->destination
     );
- 
-    error_log('Generated command: ' . $command);
- 
-    return $command;
 }
     /**
      * @inheritdoc
