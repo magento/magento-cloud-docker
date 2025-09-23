@@ -77,35 +77,46 @@ class CopyFromDocker extends BaseTask implements CommandInterface
     /**
      * @inheritdoc
      */
-    public function getCommand(): string
-    {
-    error_log('Container for cp: ' . $this->container);
- 
+   public function getCommand(): string
+{
     error_log('Container for cp: ' . $this->container);
     error_log('Source: ' . $this->source);
     error_log('Destination: ' . $this->destination);
-    $this->container  = $this->container ?? null;
-   
-    if (!$this->container ) {
-        throw new \RuntimeException('No container or service defined for copy operation.');
-    }
-    $containerId = trim(shell_exec(sprintf('docker-compose ps -q %s', $this->container)));
-    if (!$containerId) {
-        throw new \RuntimeException(sprintf('Service "%s" is not running.', $this->container));
-    }
-    error_log('containerID' . $containerId);
  
+    if (!$this->container) {
+        throw new \RuntimeException('No container defined for copy operation.');
+    }
+ 
+    $rawOutput = shell_exec(sprintf('docker-compose ps -q %s', escapeshellarg($this->container)));
+    if ($rawOutput === null) {
+        throw new \RuntimeException(sprintf(
+            'Failed to execute docker-compose command for container "%s".',
+            $this->container
+        ));
+    }
+ 
+    $containerId = trim($rawOutput);
+    if ($containerId === '') {
+        throw new \RuntimeException(sprintf(
+            'Container "%s" is not running or does not exist.',
+            $this->container
+        ));
+    }
+ 
+    error_log('Resolved container ID: ' . $containerId);
+ 
+    // Safely escape arguments
     $command = sprintf(
         'docker cp %s:%s %s',
-        $containerId,
-        $this->source,
-        $this->destination
+        escapeshellarg($containerId),
+        escapeshellarg($this->source),
+        escapeshellarg($this->destination)
     );
-      // Log the values before using them
-    
-
-    }
-
+ 
+    error_log('Generated command: ' . $command);
+ 
+    return $command;
+}
     /**
      * @inheritdoc
      */
