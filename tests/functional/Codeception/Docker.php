@@ -107,33 +107,9 @@ class Docker extends BaseModule
      */
     public function resetFilesOwner(): bool
     {
-        // return $this->runDockerComposeCommand(
-        //     'run --user root build bash -c "uid=$(stat -c %u . 2>/dev/null || stat -f %u .); gid=$(stat -c %g . 2>/dev/null || stat -f %g .); chown -R $uid:$gid . /composer/cache"'
-        // ); 
-          // Determine if running locally (macOS/Linux) or in CI
-        $os = PHP_OS_FAMILY;
-    
-        if ($os === 'Darwin' || $os === 'Linux') {
-            // Local dev: determine host directory UID/GID for chown
-            $command = sprintf(
-                'run --user root build bash -c %s',
-                escapeshellarg(
-                    'uid=$(stat -c %u . 2>/dev/null || stat -f %u .); ' .
-                    'gid=$(stat -c %g . 2>/dev/null || stat -f %g .); ' .
-                    'chown -R $uid:$gid . /composer/cache'
-                )
-            );
-        } else {
-            // CI/Jenkins: simple id -u:id -g works
-            $command = sprintf(
-                'run build bash -c %s',
-                escapeshellarg('chown -R $(id -u):$(id -g) . /composer/cache')
-            );
-        }
-    
-        // Run the command through your existing DockerCompose wrapper
-        $this->runDockerComposeCommand($command);
-
+        return $this->runDockerComposeCommand(
+            'run --user root build bash -c "uid=$(stat -c %u . 2>/dev/null || stat -f %u .); gid=$(stat -c %g . 2>/dev/null || stat -f %g .); chown -R $uid:$gid . /composer/cache"'
+        ); 
     }
 
     /**
