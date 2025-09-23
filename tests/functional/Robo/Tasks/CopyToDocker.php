@@ -85,7 +85,7 @@ class CopyToDocker extends BaseTask implements CommandInterface
     error_log('Destination: ' . $this->destination);
 
     return sprintf(
-        'docker cp %s %s:%s',
+        'docker-compose cp %s %s:%s',
         $this->container,
         $this->source,
         $this->destination
