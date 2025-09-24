@@ -77,27 +77,19 @@ class CopyFromDocker extends BaseTask implements CommandInterface
     /**
      * @inheritdoc
      */
-   public function getCommand(): string
-{
-   // Log the values before using them
-    error_log('Container for cp: ' . $this->container);
-    error_log('Source: ' . $this->source);
-    error_log('Destination: ' . $this->destination);
-    $check_ps_command = sprintf('docker-compose ps -q %s', $this->container);
-    error_log('ps command: ' . $check_ps_command);
-    return sprintf(
-    '(docker cp %s:%s %s) || (docker-compose cp %s:%s %s)',
-    $check_ps_command,
-    $this->source,
-    $this->destination,
-    $this->container,
-    $this->source,
-    $this->destination
-);
+    public function getCommand(): string
+    {
+        return sprintf(
+            '(docker-compose cp %s:%s %s) || (docker cp $(docker-compose ps -q %s):%s %s)',
+            $this->container,
+            $this->source,
+            $this->destination,
+            $this->container,
+            $this->source,
+            $this->destination
+        );
+    }
 
-
-
-}
     /**
      * @inheritdoc
      */
