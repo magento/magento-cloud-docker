@@ -13,7 +13,7 @@ use Robo\Exception\TaskException;
 
 /**
  * Tests ActiveMQ Artemis functionality in Docker environment
- * 
+ *
  * @group php84
  */
 abstract class ActivemqArtemisCest extends AbstractCest
@@ -262,19 +262,4 @@ abstract class ActivemqArtemisCest extends AbstractCest
         $I->seeInOutput('ARTEMIS_USER=admin');
         $I->seeInOutput('ARTEMIS_PASSWORD=admin');
     }
-
-    /**
-     * Builds build:compose command from given test data
-     *
-     * @param  Example $data
-     * @return string
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    private function buildCommand(Example $data): string
-    {
-        // Note: $data is not used as ActiveMQ Artemis is configured via services.yaml
-        // rather than CLI options, but parameter is kept for consistency with other tests
-        return '--mode=production --no-es --no-os --no-redis --no-valkey';
-    }
-
 }
