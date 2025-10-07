@@ -13,7 +13,7 @@ use Robo\Exception\TaskException;
 
 /**
  * Tests ActiveMQ Artemis functionality in Docker environment
- * 
+ *
  * @group php84
  */
 class ActivemqArtemisCest extends AbstractCest
@@ -141,6 +141,7 @@ class ActivemqArtemisCest extends AbstractCest
         $I->seeInOutput('ARTEMIS_USER=admin');
         $I->seeInOutput('ARTEMIS_PASSWORD=admin');
     }
+
 
     /**
      * Builds build:compose command from given test data

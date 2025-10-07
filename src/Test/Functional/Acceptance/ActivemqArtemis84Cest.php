@@ -9,7 +9,7 @@ namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 /**
  * ActiveMQ Artemis acceptance tests for PHP 8.4 and Magento 2.4.x
- * 
+ *
  * @group php84
  */
 class ActivemqArtemis84Cest extends ActivemqArtemisCest
