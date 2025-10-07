@@ -28,6 +28,7 @@ interface BuilderInterface
     public const SERVICE_SELENIUM = ServiceInterface::SERVICE_SELENIUM;
     public const SERVICE_TLS = ServiceInterface::SERVICE_TLS;
     public const SERVICE_RABBITMQ = ServiceInterface::SERVICE_RABBITMQ;
+    public const SERVICE_ACTIVEMQ_ARTEMIS = ServiceInterface::SERVICE_ACTIVEMQ_ARTEMIS;
     public const SERVICE_REDIS = ServiceInterface::SERVICE_REDIS;
     public const SERVICE_VALKEY = ServiceInterface::SERVICE_VALKEY;
     public const SERVICE_ELASTICSEARCH = ServiceInterface::SERVICE_ELASTICSEARCH;

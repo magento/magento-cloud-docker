@@ -52,7 +52,7 @@ class ServiceFactory
     /**
      * @var array
      */
-    private static $config = [
+    private static array $config = [
         ServiceInterface::SERVICE_PHP_CLI => [
             'image' => 'magento/magento-cloud-docker-php',
             'pattern' => '%s:%s-cli-%s',
@@ -153,6 +153,21 @@ class ServiceFactory
             'image' => 'rabbitmq',
             'pattern' => self::PATTERN_STD,
         ],
+        ServiceInterface::SERVICE_ACTIVEMQ_ARTEMIS => [
+            'image' => 'apache/activemq-artemis',
+            'pattern' => self::PATTERN_STD,
+            'config' => [
+                 'ports' => [61616, 61613, 8161],
+                'environment' => [
+                    'ARTEMIS_USER' => 'admin',
+                    'ARTEMIS_PASSWORD' => 'admin',
+                 ],
+                 'volumes' => [
+                    '/var/lib/artemis/data',
+                    '/var/log/artemis',
+                 ]
+            ],
+        ],
         ServiceInterface::SERVICE_NODE => [
             'image' => 'node',
             'pattern' => self::PATTERN_STD
@@ -192,7 +207,7 @@ class ServiceFactory
     /**
      * @var FileList
      */
-    private $fileList;
+    private FileList $fileList;
 
     /**
      * @var string
@@ -208,12 +223,12 @@ class ServiceFactory
     }
 
     /**
-     * @param string $name
-     * @param string $version
-     * @param array $config
-     * @param string|null $image
-     * @param string|null $customRegistry
-     * @param string|null $imagePattern
+     * @param  string      $name
+     * @param  string      $version
+     * @param  array       $config
+     * @param  string|null $image
+     * @param  string|null $customRegistry
+     * @param  string|null $imagePattern
      * @return array
      * @throws ConfigurationMismatchException
      */
@@ -226,10 +241,12 @@ class ServiceFactory
         ?string $imagePattern = null
     ): array {
         if (!array_key_exists($name, self::$config)) {
-            throw new ConfigurationMismatchException(sprintf(
-                'Service "%s" is not supported',
-                $name
-            ));
+            throw new ConfigurationMismatchException(
+                sprintf(
+                    'Service "%s" is not supported',
+                    $name
+                )
+            );
         }
 
         $metaConfig = self::$config[$name];
@@ -246,7 +263,7 @@ class ServiceFactory
     }
 
     /**
-     * @param string $name
+     * @param  string $name
      * @return string
      * @throws ConfigurationMismatchException
      */
@@ -256,14 +273,16 @@ class ServiceFactory
             return self::$config[$name]['image'];
         }
 
-        throw new ConfigurationMismatchException(sprintf(
-            'Default image for %s cannot be resolved',
-            $name
-        ));
+        throw new ConfigurationMismatchException(
+            sprintf(
+                'Default image for %s cannot be resolved',
+                $name
+            )
+        );
     }
 
     /**
-     * @param string $name
+     * @param  string $name
      * @return string
      * @throws ConfigurationMismatchException
      */
@@ -273,10 +292,12 @@ class ServiceFactory
             return self::$config[$name]['version'];
         }
 
-        throw new ConfigurationMismatchException(sprintf(
-            'Default version for %s cannot be resolved',
-            $name
-        ));
+        throw new ConfigurationMismatchException(
+            sprintf(
+                'Default version for %s cannot be resolved',
+                $name
+            )
+        );
     }
 
     /**

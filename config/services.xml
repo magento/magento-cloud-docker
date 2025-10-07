@@ -38,6 +38,7 @@
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Build" />
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Deploy" />
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\RabbitMq" />
+                <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\ActiveMqArtemis" />
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Node" />
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Mailhog" />
                 <argument type="service" id="Magento\CloudDocker\Compose\ProductionBuilder\Service\Blackfire" />
