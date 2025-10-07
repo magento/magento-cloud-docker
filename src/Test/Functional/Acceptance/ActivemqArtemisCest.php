@@ -263,3 +263,4 @@ abstract class ActivemqArtemisCest extends AbstractCest
         $I->seeInOutput('ARTEMIS_PASSWORD=admin');
     }
 }
+
