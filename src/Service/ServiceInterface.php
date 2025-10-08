@@ -27,6 +27,7 @@ interface ServiceInterface
     public const SERVICE_ELASTICSEARCH = 'elasticsearch';
     public const SERVICE_OPENSEARCH = 'opensearch';
     public const SERVICE_RABBITMQ = 'rabbitmq';
+    public const SERVICE_ACTIVEMQ_ARTEMIS = 'activemq-artemis';
     public const SERVICE_NODE = 'node';
     public const SERVICE_VARNISH = 'varnish';
     public const SERVICE_SELENIUM = 'selenium';
