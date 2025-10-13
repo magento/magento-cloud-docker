@@ -15,6 +15,8 @@ use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Tag\TaggedValue;
+
 use Exception;
 
 /**
@@ -94,6 +96,8 @@ class CloudSource implements SourceInterface
                 $this->filesystem->get($this->fileList->getAppConfig()),
                 $flags
             );
+
+            $appConfig = $this->normalizeYamlData($appConfig);
         } catch (\Exception $exception) {
             throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
         }
@@ -155,6 +159,55 @@ class CloudSource implements SourceInterface
         $repository->set(self::HOOKS, $appConfig['hooks'] ?? []);
 
         return $repository;
+    }
+
+    /**
+     * Recursively unwrap Symfony YAML TaggedValue objects and handle common tags.
+     *
+     * This method handles !env, !include, !php/const, and unknown tags,
+     * ensuring all YAML values are normalized to arrays or scalars for safe merging.
+     *
+     * @param mixed $data
+     * @return mixed
+     *
+     * @SuppressWarnings("PHPMD.CyclomaticComplexity") Method is intentionally complex due to tag handling.
+     */
+    private function normalizeYamlData(mixed $data): mixed
+    {
+        if ($data instanceof TaggedValue) {
+            $tag = $data->getTag();
+            $value = $data->getValue();
+
+            switch ($tag) {
+                case '!env':
+                    $envValue = getenv((string)$value);
+                    return $envValue !== false ? $envValue : null;
+
+                case '!include':
+                    if (file_exists((string)$value)) {
+                        $included = Yaml::parseFile((string)$value);
+                        return $this->normalizeYamlData($included);
+                    }
+                    return null;
+
+                case '!php/const':
+                    // Evaluate the PHP constant
+                    return defined($value) ? constant($value) : null;
+
+                default:
+                    $val = $this->normalizeYamlData($value);
+                    return is_array($val) ? $val : [$val];
+            }
+        }
+
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = $this->normalizeYamlData($value);
+            }
+            return $data;
+        }
+
+        return $data;
     }
 
     /**
