@@ -25,22 +25,22 @@ class CloudSource implements SourceInterface
     /**
      * @var FileList
      */
-    private $fileList;
+    private FileList $fileList;
 
     /**
      * @var Filesystem
      */
-    private $filesystem;
+    private Filesystem $filesystem;
 
     /**
      * @var ServiceFactory
      */
-    private $serviceFactory;
+    private ServiceFactory $serviceFactory;
 
     /**
      * @var array
      */
-    private static $map = [
+    private static array $map = [
         ServiceInterface::SERVICE_DB => ['db', 'database', 'mysql'],
         ServiceInterface::SERVICE_DB_QUOTE => ['mysql-quote'],
         ServiceInterface::SERVICE_DB_SALES => ['mysql-sales'],
@@ -48,7 +48,8 @@ class CloudSource implements SourceInterface
         ServiceInterface::SERVICE_OPENSEARCH => ['opensearch', 'os'],
         ServiceInterface::SERVICE_REDIS => ['redis'],
         ServiceInterface::SERVICE_VALKEY => ['cache','valkey'],
-        ServiceInterface::SERVICE_RABBITMQ => ['rmq', 'rabbitmq']
+        ServiceInterface::SERVICE_RABBITMQ => ['rmq', 'rabbitmq'],
+        ServiceInterface::SERVICE_ACTIVEMQ_ARTEMIS => ['activemq', 'artemis', 'activemq-artemis']
     ];
 
     /**
