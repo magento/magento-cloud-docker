@@ -731,7 +731,7 @@ class TestInfrastructure extends BaseModule
     private function normalizeYamlData(mixed $data): mixed
     {
         if ($data instanceof TaggedValue) {
-            $tag = $data->getTag();   // e.g. "php/const:\PDO::MYSQL_ATTR_LOCAL_INFILE"
+            $tag   = $data->getTag();   // e.g. "php/const:\PDO::MYSQL_ATTR_LOCAL_INFILE"
             $value = $data->getValue();
 
             // Handle php/const tags (Symfony strips leading '!')
