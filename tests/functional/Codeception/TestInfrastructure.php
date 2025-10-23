@@ -712,49 +712,70 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Recursively unwrap Symfony YAML TaggedValue objects and handle common tags.
+     * Recursively normalizes Symfony YAML TaggedValue objects into PHP-native values.
      *
-     * This method handles !env, !include, !php/const, and unknown tags,
-     * ensuring all YAML values are normalized to arrays or scalars for safe merging.
+     * Handles the following YAML tags:
+     *  - !env: resolves environment variables.
+     *  - !include: parses and normalizes included YAML files.
+     *  - !php/const: resolves PHP constants (e.g. !php/const:\PDO::ATTR_ERRMODE).
+     *  - Other or unknown tags: recursively normalize their values.
      *
-     * @param mixed $data
-     * @return mixed
+     * Ensures all YAML data is converted to scalars or arrays suitable for safe merging.
      *
-     * @SuppressWarnings("PHPMD.CyclomaticComplexity") Method is intentionally complex due to tag handling.
+     * @param mixed $data The parsed YAML data (array, scalar, or TaggedValue).
+     * @return mixed The normalized data structure.
+     *
+     * @SuppressWarnings("PHPMD.NPathComplexity")
+     * @SuppressWarnings("PHPMD.CyclomaticComplexity") Method is intentionally complex due to tag resolution logic.
      */
     private function normalizeYamlData(mixed $data): mixed
     {
         if ($data instanceof TaggedValue) {
-            $tag = $data->getTag();
+            $tag = $data->getTag();   // e.g. "php/const:\PDO::MYSQL_ATTR_LOCAL_INFILE"
             $value = $data->getValue();
 
-            switch ($tag) {
-                case '!env':
-                    $envValue = getenv((string)$value);
-                    return $envValue !== false ? $envValue : null;
+            // Handle php/const tags (Symfony strips leading '!')
+            if (str_starts_with($tag, 'php/const:')) {
+                // Extract the constant name
+                $constName = substr($tag, strlen('php/const:'));
+                $constName = ltrim($constName, '\\');
 
-                case '!include':
-                    if (file_exists((string)$value)) {
-                        $included = Yaml::parseFile((string)$value);
-                        return $this->normalizeYamlData($included);
-                    }
-                    return null;
+                // Resolve the constant name to its value if defined
+                $constKey = defined($constName) ? constant($constName) : $constName;
 
-                case '!php/const':
-                    // Evaluate the PHP constant
-                    return defined($value) ? constant($value) : null;
+                // Handle YAML quirk where ": 1" is parsed literally
+                $raw = is_string($value) ? $value : (string)$value;
+                $cleanVal = str_replace([':', ' '], '', $raw);
+                $constVal = is_numeric($cleanVal) ? (int)$cleanVal : $cleanVal;
 
-                default:
-                    $val = $this->normalizeYamlData($value);
-                    return is_array($val) ? $val : [$val];
+                return [$constKey => $constVal];
             }
+
+            // Handle !env
+            if ($tag === 'env') {
+                $envValue = getenv((string)$value);
+                return $envValue !== false ? $envValue : null;
+            }
+
+            // Handle !include
+            if ($tag === 'include') {
+                if (file_exists((string)$value)) {
+                    $included = Yaml::parseFile((string)$value);
+                    return $this->normalizeYamlData($included);
+                }
+                return null;
+            }
+
+            // Default — recursively normalize nested tagged structures
+            $normalized = $this->normalizeYamlData($value);
+            return is_array($normalized) ? $normalized : [$normalized];
         }
 
+        // Recursively normalize arrays
         if (is_array($data)) {
             foreach ($data as $key => $value) {
                 $data[$key] = $this->normalizeYamlData($value);
             }
-            return $data;
         }
 
         return $data;
