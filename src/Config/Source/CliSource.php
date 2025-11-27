@@ -28,6 +28,7 @@ class CliSource implements SourceInterface
     public const OPTION_EXPOSE_DB_SALES_PORT = 'expose-db-sales-port';
     public const OPTION_REDIS = 'redis';
     public const OPTION_VALKEY = 'valkey';
+    public const OPTION_ACTIVEMQ_ARTEMIS = 'activemq-artemis';
     public const OPTION_ES = 'es';
     public const OPTION_OS = 'os';
     public const OPTION_RABBIT_MQ = 'rmq';
@@ -129,6 +130,9 @@ class CliSource implements SourceInterface
         ],
         self::OPTION_VALKEY => [
           self::SERVICES_VALKEY => true
+        ],
+        self::OPTION_ACTIVEMQ_ARTEMIS => [
+            self::SERVICES_ACTIVEMQ_ARTEMIS => true
         ],
         self::OPTION_ES => [
             self::SERVICES_ES => true

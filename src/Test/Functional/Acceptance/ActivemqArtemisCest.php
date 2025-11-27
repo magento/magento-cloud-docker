@@ -21,7 +21,7 @@ class ActivemqArtemisCest extends AbstractCest
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.9-alpha-opensearch3.0';
+    protected const TEMPLATE_VERSION = '2.4.9-alpha';
 
     /**
      * Test basic ActiveMQ Artemis functionality
@@ -37,21 +37,21 @@ class ActivemqArtemisCest extends AbstractCest
         $I->generateDockerCompose($this->buildCommand($data));
         $I->replaceImagesWithCustom();
         $I->startEnvironment();
-        
+
         // Test that ActiveMQ Artemis container is running and healthy
         $I->runDockerComposeCommand('ps');
         $I->seeInOutput('activemq-artemis');
         $I->seeInOutput('(healthy)');
-        
+
         // Test network connectivity
         $this->testNetworkConnectivity($I);
-        
+
         // Test ActiveMQ Artemis CLI functionality
         $this->testArtemisCLI($I);
-        
+
         // Test message producer/consumer functionality
         $this->testMessageQueuing($I);
-        
+
         // Test environment variables
         $this->testEnvironmentVariables($I);
     }
@@ -147,16 +147,13 @@ class ActivemqArtemisCest extends AbstractCest
      *
      * @param  Example $data
      * @return string
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     private function buildCommand(Example $data): string
     {
-        $command = sprintf(
-            '--mode=production',
-            $data['version']
-        );
-
-        return $command;
+         return sprintf(
+             '--mode=production --activemq-artemis=%s --no-es --no-os --no-redis',
+             $data['version']
+         );
     }
 
     /**

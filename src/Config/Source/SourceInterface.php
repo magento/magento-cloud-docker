@@ -79,6 +79,11 @@ interface SourceInterface
     public const SERVICES_VALKEY = self::SERVICES . '.' . ServiceInterface::SERVICE_VALKEY;
 
     /**
+     * ActiveMQ Artemis
+     */
+    public const SERVICES_ACTIVEMQ_ARTEMIS = self::SERVICES . '.' . ServiceInterface::SERVICE_ACTIVEMQ_ARTEMIS;
+
+    /**
      * ES
      */
     public const SERVICES_ES = self::SERVICES . '.' . ServiceInterface::SERVICE_ELASTICSEARCH;

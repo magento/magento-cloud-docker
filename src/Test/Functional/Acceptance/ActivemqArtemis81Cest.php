@@ -8,14 +8,14 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 /**
- * ActiveMQ Artemis acceptance tests for PHP 8.4 and Magento 2.4.x
+ * ActiveMQ Artemis acceptance tests for PHP 8.1 and Magento 2.4.x
  *
- * @group php84
+ * @group php81
  */
-class ActivemqArtemis84Cest extends ActivemqArtemisCest
+class ActivemqArtemis81Cest extends ActivemqArtemisCest
 {
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.9-alpha';
+    protected const TEMPLATE_VERSION = '2.4.6';
 }
