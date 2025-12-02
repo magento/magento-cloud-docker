@@ -14,6 +14,7 @@ use Magento\CloudDocker\Config\ConfigFactory;
 use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Config\Source\SourceFactory;
 use Magento\CloudDocker\Filesystem\Filesystem;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
@@ -26,6 +27,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class BuildCustomComposeTest extends TestCase
 {
     /**
+     * Test build method.
+     *
      * @param string $directory
      * @param array $arguments
      *
@@ -34,6 +37,7 @@ class BuildCustomComposeTest extends TestCase
      *
      * @dataProvider buildDataProvider
      */
+    #[DataProvider('buildDataProvider')]
     public function testBuild(string $directory, array $arguments): void
     {
         $container = Container::getInstance(__DIR__ . '/_files', $directory);
@@ -49,12 +53,12 @@ class BuildCustomComposeTest extends TestCase
         );
 
         /** @var MockObject|InputInterface $inputMock */
-        $inputMock = $this->getMockForAbstractClass(InputInterface::class);
+        $inputMock = $this->createMock(InputInterface::class);
 
         $inputMock->method('getArgument')
             ->willReturnMap($arguments);
         /** @var MockObject|OutputInterface $outputMock */
-        $outputMock = $this->getMockForAbstractClass(OutputInterface::class);
+        $outputMock = $this->createMock(OutputInterface::class);
 
         $command->execute($inputMock, $outputMock);
 

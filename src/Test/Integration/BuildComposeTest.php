@@ -15,6 +15,7 @@ use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Config\Source\CliSource;
 use Magento\CloudDocker\Config\Source\SourceFactory;
 use Magento\CloudDocker\Filesystem\Filesystem;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,14 +29,16 @@ use ReflectionException;
 class BuildComposeTest extends TestCase
 {
     /**
+     * Test build method.
+     *
      * @param string $directory
      * @param array $options
-     *
      * @throws GenericException
      * @throws ReflectionException
      *
      * @dataProvider buildDataProvider
      */
+    #[DataProvider('buildDataProvider')]
     public function testBuild(string $directory, array $options): void
     {
         $container = Container::getInstance(__DIR__ . '/_files', $directory);
