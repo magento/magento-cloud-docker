@@ -11,18 +11,20 @@ use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Dist\Formatter;
 use Magento\CloudDocker\Config\Dist\Generator;
+use Magento\CloudDocker\Config\Environment\Encoder;
+use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
 use Magento\CloudDocker\Config\Relationship;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\FilesystemException;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Magento\CloudDocker\Config\Environment\Shared\Reader as EnvReader;
-use Magento\CloudDocker\Config\Environment\Encoder;
 
 /**
  * @inheritdoc
  */
+#[AllowMockObjectsWithoutExpectations]
 class GeneratorTest extends TestCase
 {
     /**

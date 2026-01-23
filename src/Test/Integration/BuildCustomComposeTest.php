@@ -15,7 +15,7 @@ use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Config\Source\SourceFactory;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -52,13 +52,13 @@ class BuildCustomComposeTest extends TestCase
             $container->get(Filesystem::class)
         );
 
-        /** @var MockObject|InputInterface $inputMock */
-        $inputMock = $this->createMock(InputInterface::class);
+        /** @var Stub|InputInterface $inputMock */
+        $inputMock = $this->createStub(InputInterface::class);
 
         $inputMock->method('getArgument')
             ->willReturnMap($arguments);
-        /** @var MockObject|OutputInterface $outputMock */
-        $outputMock = $this->createMock(OutputInterface::class);
+        /** @var Stub|OutputInterface $outputMock */
+        $outputMock = $this->createStub(OutputInterface::class);
 
         $command->execute($inputMock, $outputMock);
 

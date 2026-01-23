@@ -16,7 +16,7 @@ use Magento\CloudDocker\Config\Source\CliSource;
 use Magento\CloudDocker\Config\Source\SourceFactory;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -53,13 +53,13 @@ class BuildComposeTest extends TestCase
             $container->get(SourceFactory::class)
         );
 
-        /** @var MockObject|InputInterface $inputMock */
-        $inputMock = $this->createMock(InputInterface::class);
+        /** @var Stub|InputInterface $inputMock */
+        $inputMock = $this->createStub(InputInterface::class);
 
         $inputMock->method('getOption')
             ->willReturnMap($options);
-        /** @var MockObject|OutputInterface $outputMock */
-        $outputMock = $this->createMock(OutputInterface::class);
+        /** @var Stub|OutputInterface $outputMock */
+        $outputMock = $this->createStub(OutputInterface::class);
 
         $command->execute($inputMock, $outputMock);
 

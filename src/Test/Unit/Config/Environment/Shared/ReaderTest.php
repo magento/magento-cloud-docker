@@ -8,16 +8,18 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Unit\Config\Environment\Shared;
 
 use Magento\CloudDocker\Config\Environment\Shared\Reader;
+use Magento\CloudDocker\Config\Environment\Encoder;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Filesystem\FilesystemException;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
-use Magento\CloudDocker\Config\Environment\Encoder;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @inheritDoc
  */
+#[AllowMockObjectsWithoutExpectations]
 class ReaderTest extends TestCase
 {
     /**
