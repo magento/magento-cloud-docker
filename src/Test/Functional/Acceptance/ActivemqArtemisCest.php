@@ -12,17 +12,11 @@ use Codeception\Example;
 use Robo\Exception\TaskException;
 
 /**
- * Tests ActiveMQ Artemis functionality in Docker environment
- *
- * @group php84
+ * Generic ActiveMQ Artemis tests to validate configuration and
+ * functionality within the Magento Cloud Docker environment.
  */
 class ActivemqArtemisCest extends AbstractCest
 {
-    /**
-     * Template version for testing
-     */
-    protected const TEMPLATE_VERSION = '2.4.9-alpha';
-
     /**
      * Test basic ActiveMQ Artemis functionality
      *
@@ -60,6 +54,7 @@ class ActivemqArtemisCest extends AbstractCest
      * Test network connectivity to ActiveMQ Artemis ports
      *
      * @param CliTester $I
+     * @return void
      */
     private function testNetworkConnectivity(CliTester $I): void
     {
@@ -80,6 +75,7 @@ class ActivemqArtemisCest extends AbstractCest
      * Test ActiveMQ Artemis CLI functionality
      *
      * @param CliTester $I
+     * @return void
      */
     private function testArtemisCLI(CliTester $I): void
     {
@@ -104,6 +100,7 @@ class ActivemqArtemisCest extends AbstractCest
      * Test message producer/consumer functionality
      *
      * @param CliTester $I
+     * @return void
      */
     private function testMessageQueuing(CliTester $I): void
     {
@@ -133,6 +130,7 @@ class ActivemqArtemisCest extends AbstractCest
      * Test environment variables
      *
      * @param CliTester $I
+     * @return void
      */
     private function testEnvironmentVariables(CliTester $I): void
     {

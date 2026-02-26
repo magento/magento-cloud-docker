@@ -7,21 +7,23 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
+use CliTester;
+use Exception;
+
 /**
- * @group php84
+ * Generic MailHog tests to validate connectivity and basic functionality
+ * within the Magento Cloud Docker environment.
  */
 class MailHogCest extends AbstractCest
 {
     /**
-     * Template version for testing
+     * Tests MailHog functionality and connectivity within
+     * the Magento Cloud Docker environment.
+     *
+     * @param CliTester $I
+     * @throws Exception
      */
-    protected const TEMPLATE_VERSION = '2.4.8';
-
-    /**
-     * @param \CliTester $I
-     * @throws \Exception
-     */
-    public function testDefaultPorts(\CliTester $I): void
+    public function testDefaultPorts(CliTester $I): void
     {
         $I->updateBaseUrl('http://magento2.docker:8025/');
         $I->assertTrue(
@@ -32,10 +34,12 @@ class MailHogCest extends AbstractCest
     }
 
     /**
-     * @param \CliTester $I
-     * @throws \Exception
+     * Tests MailHog functionality with custom ports.
+     *
+     * @param CliTester $I
+     * @throws Exception
      */
-    public function testCustomPorts(\CliTester $I): void
+    public function testCustomPorts(CliTester $I): void
     {
         $I->updateBaseUrl('http://magento2.docker:8026/');
         $I->assertTrue(
@@ -46,10 +50,12 @@ class MailHogCest extends AbstractCest
     }
 
     /**
-     * @param \CliTester $I
-     * @throws \Exception
+     * Runs the MailHog tests and asserts the results.
+     *
+     * @param CliTester $I
+     * @throws Exception
      */
-    private function runAndAssert(\CliTester $I): void
+    private function runAndAssert(CliTester $I): void
     {
         $I->replaceImagesWithCustom();
         $I->startEnvironment();

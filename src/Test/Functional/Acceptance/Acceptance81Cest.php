@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
-use Robo\Exception\TaskException;
-
 /**
  * @group php81
  */

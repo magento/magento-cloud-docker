@@ -7,8 +7,10 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
+use CliTester;
+
 /**
- * General Cest
+ * Abstract class for acceptance tests, providing common setup and teardown functionality.
  */
 abstract class AbstractCest
 {
@@ -18,9 +20,12 @@ abstract class AbstractCest
     protected const TEMPLATE_VERSION = 'master';
 
     /**
-     * @param \CliTester $I
+     * Runs before each test to prepare the test environment.
+     *
+     * @param CliTester $I Codeception CLI tester instance.
+     * @return void
      */
-    public function _before(\CliTester $I): void
+    public function _before(CliTester $I): void
     {
         $I->cleanupWorkDir();
 
@@ -33,9 +38,9 @@ abstract class AbstractCest
         $I->cloneTemplateToWorkDir(static::TEMPLATE_VERSION);
         $I->createAuthJson();
         $I->createArtifactsDir();
-        $I->createArtifactCurrentTestedCode('docker', '1.4.3');
+        $I->createArtifactCurrentTestedCode('docker', '1.4.6');
         $I->addArtifactsRepoToComposer();
-        $I->addDependencyToComposer('magento/magento-cloud-docker', '1.4.3');
+        $I->addDependencyToComposer('magento/magento-cloud-docker', '1.4.6');
 
         $I->addEceToolsGitRepoToComposer();
         $I->addDependencyToComposer(
@@ -63,9 +68,12 @@ abstract class AbstractCest
     }
 
     /**
-     * @param \CliTester $I
+     * Runs after each test to clean up the test environment.
+     *
+     * @param CliTester $I Codeception CLI tester instance.
+     * @return void
      */
-    public function _after(\CliTester $I): void
+    public function _after(CliTester $I): void
     {
         $I->runDockerComposeCommand('ps');
         $I->stopEnvironment();

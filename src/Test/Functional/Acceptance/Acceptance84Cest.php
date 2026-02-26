@@ -8,12 +8,12 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 /**
- * @group php83
+ * @group php84
  */
-class Opensearch83Cest extends OpensearchCest
+class Acceptance84Cest extends AcceptanceCest
 {
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.7';
+    protected const TEMPLATE_VERSION = '2.4.8';
 }

@@ -8,12 +8,14 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 /**
- * @group php83
+ * ActiveMQ Artemis acceptance tests for PHP 8.5 and Magento 2.4.x
+ *
+ * @group php85
  */
-class Opensearch83Cest extends OpensearchCest
+class ActivemqArtemis85Cest extends ActivemqArtemisCest
 {
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.7';
+    protected const TEMPLATE_VERSION = '2.4.9-alpha-opensearch3.0';
 }
