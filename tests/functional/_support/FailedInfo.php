@@ -16,15 +16,20 @@ use Codeception\Event\FailEvent;
  */
 class FailedInfo extends Extension
 {
+    /**
+     * Test failed event handler
+     */
     public static $events = [
         Events::TEST_FAIL => 'testFailed'
     ];
 
     /**
      * Method to handle failed tests.
-     * @param \Codeception\Event\FailEvent $e
+     *
+     * @param FailEvent $e
+     * @return void
      */
-    public function testFailed(FailEvent $e) {
+    public function testFailed(FailEvent $e): void {
         $failure = $e->getFail();
         $this->writeln('------------------------------------');
         $this->writeln('Message: ' . $failure->getMessage());

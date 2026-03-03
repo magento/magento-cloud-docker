@@ -35,7 +35,6 @@ class ExtensionResolver
         'calendar',
         'exif',
         'gd',
-        'gettext',
         'intl',
         'mysqli',
         'pcntl',
@@ -70,6 +69,7 @@ class ExtensionResolver
         'mbstring' => '>=7.0',
         'mysqlnd' => '>=7.0',
         'openssl' => '>=7.0',
+        'opcache' => '>=8.5',
         'pcre' => '>=7.0',
         'pdo' => '>=7.0',
         'pdo_sqlite' => '>=7.0',
@@ -168,13 +168,32 @@ class ExtensionResolver
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
             'blackfire' => [
-                '>=7.2' => [
+                '>=7.2 <8.5' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
                     self::EXTENSION_OS_DEPENDENCIES => [
                         'gnupg2',
                         'ca-certificates',
                         'lsb-release',
                         'software-properties-common'
+                    ],
+                    // phpcs:disable
+                    self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
+curl -L https://packages.blackfire.io/gpg.key | gpg --dearmor > blackfire.io-archive-keyring.gpg
+install -o root -g root -m 644 blackfire.io-archive-keyring.gpg /etc/apt/trusted.gpg.d/
+echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.list.d/blackfire.list
+apt-get update
+apt-get install blackfire-php
+rm -rf /var/lib/apt/lists/*
+BASH
+// phpcs:enable
+                ],
+                '>=8.5' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
+                    self::EXTENSION_OS_DEPENDENCIES => [
+                        'gnupg2',
+                        'ca-certificates',
+                        'lsb-release',
+                        'python3-apt'
                     ],
                     // phpcs:disable
                     self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
@@ -226,7 +245,7 @@ BASH
                 ],
             ],
             'gettext' => [
-                '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
+                '>=7.0 <8.5' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
             'gmp' => [
                 '>=7.0' => [
@@ -293,13 +312,17 @@ BASH
             ],
             'oauth' => [
                 '>=7.0 <8.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
-                '>=8.0' => [
+                '>=8.0 <8.5' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_OS_DEPENDENCIES => ['libpcre3-dev'],
                 ],
+                '>=8.5' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
+                    self::EXTENSION_OS_DEPENDENCIES => ['libpcre2-dev'],
+                ],
             ],
             'opcache' => [
-                '>=7.0' => [
+                '>=7.0 <8.5' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE,
                     self::EXTENSION_CONFIGURE_OPTIONS => ['--enable-opcache'],
                 ],
@@ -314,7 +337,7 @@ BASH
                 '>=7.0 <8.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
             ],
             'pspell' => [
-                '>=7.0' => [
+                '>=7.0 <8.5' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE,
                     self::EXTENSION_OS_DEPENDENCIES => ['libpspell-dev'],
                 ],
@@ -432,11 +455,11 @@ BASH
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_PACKAGE_NAME => 'xdebug-3.2.0',
                 ],
-                '>=8.3' => [
+                '>=8.3 <8.4' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_PACKAGE_NAME => 'xdebug-3.3.0',
                 ],
-                '>=8.4' => [
+                '>=8.4 <8.5' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_PACKAGE_NAME => 'xdebug-3.4.0',
                 ],

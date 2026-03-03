@@ -31,11 +31,10 @@ class BuildCustomComposeTest extends TestCase
      *
      * @param string $directory
      * @param array $arguments
-     *
+     * @dataProvider buildDataProvider
+     * @return void
      * @throws GenericException
      * @throws ReflectionException
-     *
-     * @dataProvider buildDataProvider
      */
     #[DataProvider('buildDataProvider')]
     public function testBuild(string $directory, array $arguments): void
@@ -69,8 +68,9 @@ class BuildCustomComposeTest extends TestCase
     }
 
     /**
-     * @return array
+     * Data provider for build method.
      *
+     * @return array
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public static function buildDataProvider(): array
@@ -349,6 +349,53 @@ class BuildCustomComposeTest extends TestCase
                                 'varnish' => ['enabled' => false],
                                 'tls' => ['enabled' => false],
                             ],
+                        ])
+                    ]
+                ]
+            ],
+            'php-8.5-opensearch-3.0' => [
+                __DIR__ . '/_files/custom_cloud_php85_os30',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => ['mode' => 'production'],
+                            'services' => [
+                                'php' => [
+                                    'enabled' => true,
+                                    'version' => '8.5',
+                                ],
+                                'mysql' => [
+                                    'enabled' => true,
+                                    'version' => '11.4',
+                                ],
+                                'opensearch' => [
+                                    'enabled' => true,
+                                    'version' => '3.0',
+                                ],
+                                'nginx' => [
+                                    'enabled' => true,
+                                    'version' => '1.28',
+                                ],
+                                'varnish' => [
+                                    'enabled' => true,
+                                    'version' => '7.1',
+                                ],
+                            ],
+                            'hooks' => [
+                                'build' => 'set -e' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/generate.xml' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+                                'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+                                'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+                            ],
+                            'mounts' => [
+                                'var' => ['path' => 'var'],
+                                'app-etc' => ['path' => 'app/etc',],
+                                'pub-media' => ['path' => 'pub/media',],
+                                'pub-static' => ['path' => 'pub/static']
+                            ]
                         ])
                     ]
                 ]

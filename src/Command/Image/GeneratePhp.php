@@ -14,6 +14,7 @@ use Magento\CloudDocker\Compose\Php\ExtensionResolver;
 use Magento\CloudDocker\Compose\Php\ConfigFilesResolver;
 use Magento\CloudDocker\Filesystem\DirectoryList;
 use Magento\CloudDocker\Filesystem\FileNotFoundException;
+use Magento\CloudDocker\Filesystem\FilesystemException;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -26,14 +27,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GeneratePhp extends Command
 {
     private const NAME = 'image:generate:php';
-    private const SUPPORTED_VERSIONS = ['8.0', '8.1', '8.2', '8.3', '8.4'];
+    private const SUPPORTED_VERSIONS = ['8.0', '8.1', '8.2', '8.3', '8.4', '8.5'];
 
     private const VERSION_MAP = [
         '8.0' => '8.0.14',
         '8.1' => '8.1.1',
         '8.2' => '8.2',
         '8.3' => '8.3',
-        '8.4' => '8.4'
+        '8.4' => '8.4',
+        '8.5' => '8.5',
     ];
 
     private const EDITION_CLI = 'cli';
@@ -110,12 +112,17 @@ class GeneratePhp extends Command
     private $directoryList;
 
     /**
+     * GeneratePhp constructor.
+     *
      * @param Filesystem $filesystem
      * @param Semver $semver
      * @param DirectoryList $directoryList
      */
-    public function __construct(Filesystem $filesystem, Semver $semver, DirectoryList $directoryList)
-    {
+    public function __construct(
+        Filesystem $filesystem,
+        Semver $semver,
+        DirectoryList $directoryList
+    ) {
         $this->filesystem = $filesystem;
         $this->semver = $semver;
         $this->directoryList = $directoryList;
@@ -145,7 +152,7 @@ class GeneratePhp extends Command
      *
      * @throws ConfigurationMismatchException
      * @throws FileNotFoundException
-     * @throws \Magento\CloudDocker\Filesystem\FileSystemException
+     * @throws FilesystemException
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -174,7 +181,7 @@ class GeneratePhp extends Command
      * @param string $edition
      * @throws ConfigurationMismatchException
      * @throws FileNotFoundException
-     * @throws \Magento\CloudDocker\Filesystem\FileSystemException
+     * @throws FilesystemException
      */
     private function build(string $version, string $edition): void
     {
@@ -202,10 +209,16 @@ class GeneratePhp extends Command
                     continue;
                 }
 
-                $this->filesystem->copy(
-                    $dataDir . '/' . $paths[ConfigFilesResolver::FROM_PATH],
-                    $destination . '/' . $paths[ConfigFilesResolver::TO_PATH]
-                );
+                $sourceFile = $dataDir . '/' . $paths[ConfigFilesResolver::FROM_PATH];
+                try {
+                    $this->filesystem->copy(
+                        $sourceFile,
+                        $destination . '/' . $paths[ConfigFilesResolver::TO_PATH]
+                    );
+                } catch (FileNotFoundException $e) {
+                    // Skip missing optional config files
+                    continue;
+                }
             }
         }
 
@@ -342,9 +355,9 @@ class GeneratePhp extends Command
         if ($this->semver::satisfies($phpVersion, '<8.0')) {
             return '1.10.22';
         } else if ($this->semver::satisfies($phpVersion, '<=8.2')) {
-            return '2.2.23';
+            return '2.2.26';
         } else {
-            return '2.7.0';
+            return '2.9.3';
         }
     }
 }

@@ -2,13 +2,13 @@
 FROM golang:1.15 AS builder
 
 RUN if [ $(uname -m) = "x86_64" ]; then mailhog_arch="amd64"; else mailhog_arch="arm64"; fi \
-  && wget -O mhsendmail.tar.gz https://github.com/mailhog/mhsendmail/archive/refs/tags/v0.2.0.tar.gz \
-  && tar -xf mhsendmail.tar.gz \
-  && mkdir -p ./src/github.com/mailhog/ \
-  && mv ./mhsendmail-0.2.0 ./src/github.com/mailhog/mhsendmail \
-  && cd ./src/github.com/mailhog/mhsendmail/ \
-  && go get . \
-  && GOOS=linux GOARCH=${mailhog_arch} go build -o mhsendmail .
+    && wget -O mhsendmail.tar.gz https://github.com/mailhog/mhsendmail/archive/refs/tags/v0.2.0.tar.gz \
+    && tar -xf mhsendmail.tar.gz \
+    && mkdir -p ./src/github.com/mailhog/ \
+    && mv ./mhsendmail-0.2.0 ./src/github.com/mailhog/mhsendmail \
+    && cd ./src/github.com/mailhog/mhsendmail/ \
+    && go get . \
+    && GOOS=linux GOARCH=${mailhog_arch} go build -o mhsendmail .
 
 FROM php:8.5-cli
 
@@ -18,38 +18,18 @@ ARG COMPOSER_ALLOW_SUPERUSER=1
 ARG COMPOSER_HOME=/composer
 ARG CRONTAB=""
 
-ENV COMPOSER_MEMORY_LIMIT=-1
-ENV COMPOSER_ALLOW_SUPERUSER=${COMPOSER_ALLOW_SUPERUSER}
-ENV COMPOSER_HOME=${COMPOSER_HOME}
-ENV COMPOSER_CLEAR_CACHE=false
-ENV PHP_MEMORY_LIMIT=-1
-ENV PHP_VALIDATE_TIMESTAMPS=1
-ENV DEBUG=false
-ENV MAGENTO_RUN_MODE=production
-ENV SENDMAIL_PATH=/dev/null
-ENV PHPRC=${MAGENTO_ROOT}/php.ini
+ENV COMPOSER_MEMORY_LIMIT -1
+ENV COMPOSER_ALLOW_SUPERUSER ${COMPOSER_ALLOW_SUPERUSER}
+ENV COMPOSER_HOME ${COMPOSER_HOME}
+ENV COMPOSER_CLEAR_CACHE false
+ENV PHP_MEMORY_LIMIT -1
+ENV PHP_VALIDATE_TIMESTAMPS 1
+ENV DEBUG false
+ENV MAGENTO_RUN_MODE production
+ENV SENDMAIL_PATH /dev/null
+ENV PHPRC ${MAGENTO_ROOT}/php.ini
 
-ENV PHP_EXTENSIONS="\
-  bcmath \
-  bz2 \
-  calendar \
-  exif \
-  gd \
-  gettext \
-  intl \
-  mysqli \
-  pdo_mysql \
-  redis \
-  soap \
-  sockets \
-  sodium \
-  sysvmsg \
-  sysvsem \
-  sysvshm \
-  xsl \
-  zip \
-  pcntl \
-  ftp"
+ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd intl mysqli pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl ftp
 
 # Configure Node.js version
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash
@@ -76,6 +56,7 @@ RUN apt-get update \
   gnupg2 \
   ca-certificates \
   lsb-release \
+  python3-apt \
   libbz2-dev \
   libjpeg62-turbo-dev \
   libpng-dev \
@@ -85,7 +66,6 @@ RUN apt-get update \
   libicu-dev \
   libldap2-dev \
   libpcre2-dev \
-  libpspell-dev \
   libtidy-dev \
   libxslt1-dev \
   libyaml-dev \
@@ -107,6 +87,7 @@ RUN sudo chmod +x /usr/local/bin/mhsendmail
 # Configure the gd library
 RUN docker-php-ext-configure \
   gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
+
 # Install required PHP extensions
 RUN docker-php-ext-install -j$(nproc) \
   bcmath \
@@ -114,7 +95,6 @@ RUN docker-php-ext-install -j$(nproc) \
   calendar \
   exif \
   gd \
-  gettext \
   gmp \
   intl \
   mysqli \
@@ -139,10 +119,8 @@ RUN pecl install -o -f \
   pcov \
   raphf \
   redis \
-  xdebug-3.5.0 \
   xmlrpc-1.0.0RC3 \
-  yaml \
-  pspell
+  yaml
 
 RUN curl -L https://packages.blackfire.io/gpg.key | gpg --dearmor > blackfire.io-archive-keyring.gpg \
   && install -o root -g root -m 644 blackfire.io-archive-keyring.gpg /etc/apt/trusted.gpg.d/ \
@@ -181,17 +159,17 @@ RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/b
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN ["chmod", "+x", \
-  "/docker-entrypoint.sh", \
-  "/usr/local/bin/magento-installer", \
-  "/usr/local/bin/magento-command", \
-  "/usr/local/bin/mftf-command", \
-  "/usr/local/bin/ece-command", \
-  "/usr/local/bin/cloud-build", \
-  "/usr/local/bin/cloud-deploy", \
-  "/usr/local/bin/cloud-post-deploy", \
-  "/usr/local/bin/run-cron", \
-  "/usr/local/bin/run-hooks" \
-  ]
+    "/docker-entrypoint.sh", \
+    "/usr/local/bin/magento-installer", \
+    "/usr/local/bin/magento-command", \
+    "/usr/local/bin/mftf-command", \
+    "/usr/local/bin/ece-command", \
+    "/usr/local/bin/cloud-build", \
+    "/usr/local/bin/cloud-deploy", \
+    "/usr/local/bin/cloud-post-deploy", \
+    "/usr/local/bin/run-cron", \
+    "/usr/local/bin/run-hooks" \
+]
 
 RUN mkdir -p ${MAGENTO_ROOT}
 

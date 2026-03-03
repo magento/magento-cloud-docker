@@ -2,47 +2,27 @@
 FROM golang:1.15 AS builder
 
 RUN if [ $(uname -m) = "x86_64" ]; then mailhog_arch="amd64"; else mailhog_arch="arm64"; fi \
-  && wget -O mhsendmail.tar.gz https://github.com/mailhog/mhsendmail/archive/refs/tags/v0.2.0.tar.gz \
-  && tar -xf mhsendmail.tar.gz \
-  && mkdir -p ./src/github.com/mailhog/ \
-  && mv ./mhsendmail-0.2.0 ./src/github.com/mailhog/mhsendmail \
-  && cd ./src/github.com/mailhog/mhsendmail/ \
-  && go get . \
-  && GOOS=linux GOARCH=${mailhog_arch} go build -o mhsendmail .
+    && wget -O mhsendmail.tar.gz https://github.com/mailhog/mhsendmail/archive/refs/tags/v0.2.0.tar.gz \
+    && tar -xf mhsendmail.tar.gz \
+    && mkdir -p ./src/github.com/mailhog/ \
+    && mv ./mhsendmail-0.2.0 ./src/github.com/mailhog/mhsendmail \
+    && cd ./src/github.com/mailhog/mhsendmail/ \
+    && go get . \
+    && GOOS=linux GOARCH=${mailhog_arch} go build -o mhsendmail .
 
 FROM php:8.5-fpm
 
 ARG MAGENTO_ROOT=/app
 
-ENV PHP_MEMORY_LIMIT=2G
-ENV PHP_VALIDATE_TIMESTAMPS=1
-ENV DEBUG=false
-ENV MAGENTO_RUN_MODE=production
-ENV UPLOAD_MAX_FILESIZE=64M
-ENV SENDMAIL_PATH=/dev/null
-ENV PHPRC=${MAGENTO_ROOT}/php.ini
+ENV PHP_MEMORY_LIMIT 2G
+ENV PHP_VALIDATE_TIMESTAMPS 1
+ENV DEBUG false
+ENV MAGENTO_RUN_MODE production
+ENV UPLOAD_MAX_FILESIZE 64M
+ENV SENDMAIL_PATH /dev/null
+ENV PHPRC ${MAGENTO_ROOT}/php.ini
 
-ENV PHP_EXTENSIONS="\
-  bcmath \
-  bz2 \
-  calendar \
-  exif \
-  gd \
-  gettext \
-  intl \
-  mysqli \
-  pdo_mysql \
-  redis \
-  soap \
-  sockets \
-  sodium \
-  sysvmsg \
-  sysvsem \
-  sysvshm \
-  xsl \
-  zip \
-  pcntl \
-  ftp"
+ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd intl mysqli pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl ftp
 
 # Install dependencies
 RUN apt-get update \
@@ -57,6 +37,7 @@ RUN apt-get update \
   gnupg2 \
   ca-certificates \
   lsb-release \
+  python3-apt \
   libbz2-dev \
   libjpeg62-turbo-dev \
   libpng-dev \
@@ -66,7 +47,6 @@ RUN apt-get update \
   libicu-dev \
   libldap2-dev \
   libpcre2-dev \
-  libpspell-dev \
   libtidy-dev \
   libxslt1-dev \
   libyaml-dev \
@@ -82,6 +62,7 @@ RUN sudo chmod +x /usr/local/bin/mhsendmail
 # Configure the gd library
 RUN docker-php-ext-configure \
   gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
+
 # Install required PHP extensions
 RUN docker-php-ext-install -j$(nproc) \
   bcmath \
@@ -89,7 +70,6 @@ RUN docker-php-ext-install -j$(nproc) \
   calendar \
   exif \
   gd \
-  gettext \
   gmp \
   intl \
   mysqli \
@@ -114,10 +94,8 @@ RUN pecl install -o -f \
   pcov \
   raphf \
   redis \
-  xdebug-3.5.0 \
   xmlrpc-1.0.0RC3 \
-  yaml \
-  pspell
+  yaml
 
 RUN curl -L https://packages.blackfire.io/gpg.key | gpg --dearmor > blackfire.io-archive-keyring.gpg \
   && install -o root -g root -m 644 blackfire.io-archive-keyring.gpg /etc/apt/trusted.gpg.d/ \

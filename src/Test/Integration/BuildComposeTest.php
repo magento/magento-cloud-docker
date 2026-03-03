@@ -33,10 +33,10 @@ class BuildComposeTest extends TestCase
      *
      * @param string $directory
      * @param array $options
+     * @dataProvider buildDataProvider
+     * @return void
      * @throws GenericException
      * @throws ReflectionException
-     *
-     * @dataProvider buildDataProvider
      */
     #[DataProvider('buildDataProvider')]
     public function testBuild(string $directory, array $options): void
@@ -70,8 +70,9 @@ class BuildComposeTest extends TestCase
     }
 
     /**
-     * @return array
+     * Data provider for build method.
      *
+     * @return array
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public static function buildDataProvider(): array

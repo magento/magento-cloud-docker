@@ -52,7 +52,7 @@ services:
           - redis.magento2.docker
   elasticsearch:
     hostname: elasticsearch.magento2.docker
-    image: 'magento/magento-cloud-docker-elasticsearch:6.5-1.2.0'
+    image: 'magento/magento-cloud-docker-elasticsearch:6.5-1.4.6'
     ulimits:
       memlock:
         soft: -1
@@ -67,7 +67,7 @@ services:
           - elasticsearch.magento2.docker
   opensearch:
     hostname: opensearch.magento2.docker
-    image: 'magento/magento-cloud-docker-opensearch:1.1-1.2.0'
+    image: 'magento/magento-cloud-docker-opensearch:1.1-1.4.6'
     ulimits:
       memlock:
         soft: -1
@@ -85,7 +85,7 @@ services:
           - opensearch.magento2.docker
   fpm:
     hostname: fpm.magento2.docker
-    image: 'magento/magento-cloud-docker-php:8.0-fpm-1.2.0'
+    image: 'magento/magento-cloud-docker-php:8.0-fpm-1.4.6'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
@@ -105,7 +105,7 @@ services:
         condition: service_healthy
   web:
     hostname: web.magento2.docker
-    image: 'magento/magento-cloud-docker-nginx:1.24-1.2.0'
+    image: 'magento/magento-cloud-docker-nginx:1.24-1.4.6'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
@@ -129,7 +129,7 @@ services:
         condition: service_started
   varnish:
     hostname: varnish.magento2.docker
-    image: 'magento/magento-cloud-docker-varnish:6.6-1.2.0'
+    image: 'magento/magento-cloud-docker-varnish:6.6-1.4.6'
     networks:
       magento:
         aliases:
@@ -139,7 +139,7 @@ services:
         condition: service_started
   tls:
     hostname: tls.magento2.docker
-    image: 'magento/magento-cloud-docker-nginx:1.24-1.2.0'
+    image: 'magento/magento-cloud-docker-nginx:1.24-1.4.6'
     extends: generic
     networks:
       magento:
@@ -158,14 +158,14 @@ services:
         condition: service_started
   generic:
     hostname: generic.magento2.docker
-    image: 'magento/magento-cloud-docker-php:8.0-cli-1.2.0'
+    image: 'magento/magento-cloud-docker-php:8.0-cli-1.4.6'
     env_file: ./.docker/config.env
     environment:
-      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl sodium redis'
+      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl sodium redis'
       - 'SENDMAIL_PATH=/usr/local/bin/mhsendmail --smtp-addr=mailhog:1025'
   build:
     hostname: build.magento2.docker
-    image: 'magento/magento-cloud-docker-php:8.0-cli-1.2.0'
+    image: 'magento/magento-cloud-docker-php:8.0-cli-1.4.6'
     extends: generic
     volumes:
       - '.:/app:rw,delegated'
@@ -174,6 +174,9 @@ services:
       - '~/.composer/cache:/composer/cache:rw,delegated'
     networks:
       magento-build:
+        aliases:
+          - build.magento2.docker
+      magento:
         aliases:
           - build.magento2.docker
     depends_on:
@@ -187,7 +190,7 @@ services:
         condition: service_healthy
   deploy:
     hostname: deploy.magento2.docker
-    image: 'magento/magento-cloud-docker-php:8.0-cli-1.2.0'
+    image: 'magento/magento-cloud-docker-php:8.0-cli-1.4.6'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
@@ -213,7 +216,7 @@ services:
         condition: service_healthy
   mailhog:
     hostname: mailhog.magento2.docker
-    image: 'magento/magento-cloud-docker-mailhog:1.0-1.2.0'
+    image: 'magento/magento-cloud-docker-mailhog:1.0-1.4.6'
     ports:
       - '1025:1025'
       - '8025:8025'

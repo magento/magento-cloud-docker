@@ -169,7 +169,7 @@ services:
     image: 'php-v1:7.4-cli'
     env_file: ./.docker/config.env
     environment:
-      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl sodium'
+      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl sodium'
       - 'SENDMAIL_PATH=/usr/local/bin/mhsendmail --smtp-addr=mailhog:1025'
   build:
     hostname: build.magento2.test
@@ -182,6 +182,9 @@ services:
       - '~/.composer/cache:/composer/cache:rw,delegated'
     networks:
       magento-build:
+        aliases:
+          - build.magento2.test
+      magento:
         aliases:
           - build.magento2.test
     depends_on:
@@ -218,7 +221,7 @@ services:
         condition: service_healthy
   mailhog:
     hostname: mailhog.magento2.test
-    image: 'magento/magento-cloud-docker-mailhog:1.0-1.2.0'
+    image: 'magento/magento-cloud-docker-mailhog:1.0-1.4.6'
     ports:
       - '1026:1025'
       - '8026:8025'

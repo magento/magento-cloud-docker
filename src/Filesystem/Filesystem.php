@@ -208,9 +208,14 @@ class Filesystem
      * @param string $path
      * @param string $target
      * @return bool
+     * @throws FileNotFoundException
      */
     public function copy($path, $target): bool
     {
+        if (!file_exists($path)) {
+            throw new FileNotFoundException("Source file does not exist: {$path}");
+        }
+
         return copy($path, $target);
     }
 
