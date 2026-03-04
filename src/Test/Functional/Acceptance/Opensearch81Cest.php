@@ -7,10 +7,6 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
-use CliTester;
-use Codeception\Example;
-use Robo\Exception\TaskException;
-
 /**
  * @group php81
  */
@@ -22,6 +18,8 @@ class Opensearch81Cest extends OpensearchCest
     protected const TEMPLATE_VERSION = '2.4.4';
 
     /**
+     * Provides test data for Opensearch tests.
+     *
      * @return array
      */
     protected function dataProvider(): array

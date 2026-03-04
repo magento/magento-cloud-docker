@@ -14,7 +14,8 @@ use Magento\CloudDocker\Config\ConfigFactory;
 use Magento\CloudDocker\Config\Dist\Generator;
 use Magento\CloudDocker\Config\Source\SourceFactory;
 use Magento\CloudDocker\Filesystem\Filesystem;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,14 +27,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 class BuildCustomComposeTest extends TestCase
 {
     /**
+     * Test build method.
+     *
      * @param string $directory
      * @param array $arguments
-     *
+     * @dataProvider buildDataProvider
+     * @return void
      * @throws GenericException
      * @throws ReflectionException
-     *
-     * @dataProvider buildDataProvider
      */
+    #[DataProvider('buildDataProvider')]
     public function testBuild(string $directory, array $arguments): void
     {
         $container = Container::getInstance(__DIR__ . '/_files', $directory);
@@ -48,13 +51,13 @@ class BuildCustomComposeTest extends TestCase
             $container->get(Filesystem::class)
         );
 
-        /** @var MockObject|InputInterface $inputMock */
-        $inputMock = $this->getMockForAbstractClass(InputInterface::class);
+        /** @var Stub|InputInterface $inputMock */
+        $inputMock = $this->createStub(InputInterface::class);
 
         $inputMock->method('getArgument')
             ->willReturnMap($arguments);
-        /** @var MockObject|OutputInterface $outputMock */
-        $outputMock = $this->getMockForAbstractClass(OutputInterface::class);
+        /** @var Stub|OutputInterface $outputMock */
+        $outputMock = $this->createStub(OutputInterface::class);
 
         $command->execute($inputMock, $outputMock);
 
@@ -65,8 +68,9 @@ class BuildCustomComposeTest extends TestCase
     }
 
     /**
-     * @return array
+     * Data provider for build method.
      *
+     * @return array
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public static function buildDataProvider(): array
@@ -345,6 +349,53 @@ class BuildCustomComposeTest extends TestCase
                                 'varnish' => ['enabled' => false],
                                 'tls' => ['enabled' => false],
                             ],
+                        ])
+                    ]
+                ]
+            ],
+            'php-8.5-opensearch-3.0' => [
+                __DIR__ . '/_files/custom_cloud_php85_os30',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => ['mode' => 'production'],
+                            'services' => [
+                                'php' => [
+                                    'enabled' => true,
+                                    'version' => '8.5',
+                                ],
+                                'mysql' => [
+                                    'enabled' => true,
+                                    'version' => '11.4',
+                                ],
+                                'opensearch' => [
+                                    'enabled' => true,
+                                    'version' => '3.0',
+                                ],
+                                'nginx' => [
+                                    'enabled' => true,
+                                    'version' => '1.28',
+                                ],
+                                'varnish' => [
+                                    'enabled' => true,
+                                    'version' => '7.1',
+                                ],
+                            ],
+                            'hooks' => [
+                                'build' => 'set -e' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/generate.xml' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+                                'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+                                'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+                            ],
+                            'mounts' => [
+                                'var' => ['path' => 'var'],
+                                'app-etc' => ['path' => 'app/etc',],
+                                'pub-media' => ['path' => 'pub/media',],
+                                'pub-static' => ['path' => 'pub/static']
+                            ]
                         ])
                     ]
                 ]

@@ -8,24 +8,22 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 use CliTester;
+use Robo\Exception\TaskException;
 
 /**
- * @group php84
+ * Generic developer mode tests to validate configuration and
+ * functionality within the Magento Cloud Docker environment.
  */
 class DeveloperCest extends AbstractCest
 {
     /**
-     * Template version for testing
-     */
-    protected const TEMPLATE_VERSION = '2.4.8';
-
-    /**
      * Tests that php settings contains configuration from php.dev.ini
      *
      * @param CliTester $I
-     * @throws \Robo\Exception\TaskException
+     * @return void
+     * @throws TaskException
      */
-    public function testDevPhpIni(CliTester $I)
+    public function testDevPhpIni(CliTester $I): void
     {
         $I->generateDockerCompose('--mode=developer');
         $I->replaceImagesWithCustom();

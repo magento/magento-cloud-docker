@@ -12,23 +12,22 @@ use Codeception\Example;
 use Robo\Exception\TaskException;
 
 /**
- * @group php84
+ * Generic Opensearch tests to validate connectivity and
+ * basic functionality within the Magento Cloud Docker environment.
  */
 class OpensearchCest extends AbstractCest
 {
     /**
-     * Template version for testing
-     */
-    protected const TEMPLATE_VERSION = '2.4.9-alpha';
-
-    /**
+     * Tests Opensearch functionality and connectivity within
+     * the Magento Cloud Docker environment.
+     *
      * @param CliTester $I
      * @param Example $data
      * @dataProvider dataProvider
      * @return void
      * @throws TaskException
      */
-    public function testOpensearch(CliTester $I, Example $data)
+    public function testOpensearch(CliTester $I, Example $data): void
     {
         $I->generateDockerCompose($this->buildCommand($data));
         $I->replaceImagesWithCustom();
@@ -75,6 +74,8 @@ class OpensearchCest extends AbstractCest
     }
 
     /**
+     * Provides test data for Opensearch tests.
+     *
      * @return array
      */
     protected function dataProvider(): array

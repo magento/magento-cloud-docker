@@ -24,7 +24,13 @@ modules:
       ece_tools_repo: "https://github.com/magento/ece-tools.git"
       composer_magento_username: "%REPO_USERNAME%"
       composer_magento_password: "%REPO_PASSWORD%"
+      composer_qa_username: "%REPO_USERNAME%"
+      composer_qa_password: "%REPO_PASSWORD%"
       composer_github_token: "%GITHUB_TOKEN%"
+      additional_creds:
+        - host: "connect20-qa01.magedevteam.com"
+          username: "%REPO_USERNAME%"
+          password: "%REPO_PASSWORD%"
       use_custom_images: false
       custom_images_namespace: "cloudft"
       version_custom_images: "%TRAVIS_BUILD_NUMBER%"
@@ -58,3 +64,15 @@ modules:
           password: "%Magento.docker.settings.db.password%"
           exposed_port: "%Magento.docker.settings.db_sales.port%"
           reconnect: true
+suites:
+  acceptance:
+    actor: CliTester
+    path: Acceptance
+    modules:
+      enabled:
+        - Magento\CloudDocker\Test\Functional\Codeception\TestInfrastructure
+        - Magento\CloudDocker\Test\Functional\Codeception\Docker
+        - Magento\CloudDocker\Test\Functional\Codeception\MagentoDb
+        - PhpBrowser
+        - Asserts
+        - REST

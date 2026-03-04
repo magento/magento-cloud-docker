@@ -9,8 +9,8 @@ namespace Magento\CloudDocker\Test\Functional\Codeception;
 
 use Composer\Factory;
 use Composer\IO\NullIO;
+use Magento\CloudDocker\Util\YamlNormalizer;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Yaml\Tag\TaggedValue;
 
 /**
  * The module to work with test infrastructure
@@ -18,6 +18,21 @@ use Symfony\Component\Yaml\Tag\TaggedValue;
 class TestInfrastructure extends BaseModule
 {
     private const USE_CACHED_WORKDIR_OPTION = 'use_cached_workdir';
+
+    /**
+     * @var YamlNormalizer
+     */
+    private YamlNormalizer $yamlNormalizer;
+
+    /**
+     * The file with services configuration
+     */
+    public function _initialize()
+    {
+        parent::_initialize(); // ensure Robo + container are set up
+
+        $this->yamlNormalizer = new YamlNormalizer();
+    }
 
     /**
      * Creates the work directory
@@ -75,6 +90,8 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Checks if cached work directory exists.
+     *
      * @param string $version
      * @return bool
      */
@@ -84,6 +101,8 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Caches work directory.
+     *
      * @param string $version
      * @return void
      */
@@ -97,6 +116,8 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Restores work directory from cache.
+     *
      * @param string $version
      */
     public function restoreWorkDirFromCache(string $version): void
@@ -145,7 +166,7 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Starts docker-sync
+     * Starts docker-sync method.
      *
      * @return bool
      */
@@ -161,7 +182,7 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Stops docker-sync
+     * Stops docker-sync method.
      *
      * @return bool
      */
@@ -177,7 +198,7 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Creates auth.json file in the work directory
+     * Creates auth.json file in the work directory.
      *
      * @return bool
      */
@@ -213,7 +234,7 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Creates ZIP file with tested code
+     * Creates ZIP file with tested code.
      *
      * @param string $name
      * @param string $version
@@ -327,6 +348,8 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Retries a callback function a specified number of times.
+     *
      * @param callable $callback
      * @param int $retries
      * @return bool
@@ -416,6 +439,8 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Adds a git repository to composer.json
+     *
      * @param string $name
      * @return bool
      */
@@ -708,80 +733,12 @@ class TestInfrastructure extends BaseModule
             $flags |= Yaml::PARSE_CUSTOM_TAGS;
         }
         $data = (array) Yaml::parseFile($path, $flags);
-        return $this->normalizeYamlData($data) ?: [];
+        return $this->yamlNormalizer->normalize($data) ?: [];
     }
 
     /**
-     * Recursively normalizes Symfony YAML TaggedValue objects into PHP-native values.
+     * Saves configuration in a YAML file.
      *
-     * Handles the following YAML tags:
-     *  - !env: resolves environment variables.
-     *  - !include: parses and normalizes included YAML files.
-     *  - !php/const: resolves PHP constants (e.g. !php/const:\PDO::ATTR_ERRMODE).
-     *  - Other or unknown tags: recursively normalize their values.
-     *
-     * Ensures all YAML data is converted to scalars or arrays suitable for safe merging.
-     *
-     * @param mixed $data The parsed YAML data (array, scalar, or TaggedValue).
-     * @return mixed The normalized data structure.
-     *
-     * @SuppressWarnings("PHPMD.NPathComplexity")
-     * @SuppressWarnings("PHPMD.CyclomaticComplexity") Method is intentionally complex due to tag resolution logic.
-     */
-    private function normalizeYamlData(mixed $data): mixed
-    {
-        if ($data instanceof TaggedValue) {
-            $tag   = $data->getTag();   // e.g. "php/const:\PDO::MYSQL_ATTR_LOCAL_INFILE"
-            $value = $data->getValue();
-
-            // Handle php/const tags (Symfony strips leading '!')
-            if (str_starts_with($tag, 'php/const:')) {
-                // Extract the constant name
-                $constName = substr($tag, strlen('php/const:'));
-                $constName = ltrim($constName, '\\');
-
-                // Resolve the constant name to its value if defined
-                $constKey = defined($constName) ? constant($constName) : $constName;
-
-                // Handle YAML quirk where ": 1" is parsed literally
-                $raw = is_string($value) ? $value : (string)$value;
-                $cleanVal = str_replace([':', ' '], '', $raw);
-                $constVal = is_numeric($cleanVal) ? (int)$cleanVal : $cleanVal;
-
-                return [$constKey => $constVal];
-            }
-
-            // Handle !env
-            if ($tag === 'env') {
-                $envValue = getenv((string)$value);
-                return $envValue !== false ? $envValue : null;
-            }
-
-            // Handle !include
-            if ($tag === 'include') {
-                if (file_exists((string)$value)) {
-                    $included = Yaml::parseFile((string)$value);
-                    return $this->normalizeYamlData($included);
-                }
-                return null;
-            }
-
-            // Default — recursively normalize nested tagged structures
-            $normalized = $this->normalizeYamlData($value);
-            return is_array($normalized) ? $normalized : [$normalized];
-        }
-
-        // Recursively normalize arrays
-        if (is_array($data)) {
-            foreach ($data as $key => $value) {
-                $data[$key] = $this->normalizeYamlData($value);
-            }
-        }
-
-        return $data;
-    }
-
-    /**
      * @param string $path
      * @param array $data
      * @return bool
@@ -795,7 +752,7 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
-     * Returns magento-cloud-docker original version
+     * Returns magento-cloud-docker original version method.
      *
      * @return string
      */

@@ -12,23 +12,22 @@ use Codeception\Example;
 use Robo\Exception\TaskException;
 
 /**
- * @group php84
+ * Generic Elasticsearch tests to validate connectivity and
+ * basic functionality within the Magento Cloud Docker environment.
  */
 class ElasticsearchCest extends AbstractCest
 {
     /**
-     * Template version for testing
-     */
-    protected const TEMPLATE_VERSION = '2.4.8';
-
-    /**
+     * Tests Elasticsearch functionality and connectivity within
+     * the Magento Cloud Docker environment.
+     *
      * @param CliTester $I
      * @param Example $data
      * @dataProvider dataProvider
      * @return void
      * @throws TaskException
      */
-    public function testElasticsearch(CliTester $I, Example $data)
+    public function testElasticsearch(CliTester $I, Example $data): void
     {
         $I->generateDockerCompose($this->buildCommand($data));
         $I->replaceImagesWithCustom();
@@ -75,6 +74,8 @@ class ElasticsearchCest extends AbstractCest
     }
 
     /**
+     * Provides test data for Elasticsearch tests.
+     *
      * @return array
      */
     protected function dataProvider(): array

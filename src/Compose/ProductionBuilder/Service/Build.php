@@ -83,7 +83,10 @@ class Build implements ServiceBuilderInterface
      */
     public function getNetworks(): array
     {
-        return [BuilderInterface::NETWORK_MAGENTO_BUILD];
+        return [
+            BuilderInterface::NETWORK_MAGENTO_BUILD,
+            BuilderInterface::NETWORK_MAGENTO
+        ];
     }
 
     /**

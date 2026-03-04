@@ -107,9 +107,15 @@ class Docker extends BaseModule
      */
     public function resetFilesOwner(): bool
     {
+        $magentoRoot = rtrim((string)$this->_getConfig('system_magento_dir'), '/');
+        $vendorPath = ($magentoRoot ?: '.') . '/vendor';
+
         return $this->runDockerComposeCommand(
-            'run --user root build bash -c "uid=$(stat -c %u . 2>/dev/null || stat -f %u .); gid=$(stat -c %g . 2>/dev/null || stat -f %g .); chown -R $uid:$gid . /composer/cache"'
-        ); 
+            sprintf(
+                'run --user root build bash -c "uid=$(stat -c %%u . 2>/dev/null || stat -f %%u .); gid=$(stat -c %%g . 2>/dev/null || stat -f %%g .); for path in . /composer/cache %s; do [ -e \"$path\" ] && chown -R $uid:$gid \"$path\"; done"',
+                $vendorPath
+            )
+        );
     }
 
     /**

@@ -7,15 +7,14 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Config\Source;
 
-use Composer\Semver\Semver;
 use Illuminate\Config\Repository;
 use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Filesystem\FileList;
 use Magento\CloudDocker\Filesystem\Filesystem;
 use Magento\CloudDocker\Service\ServiceFactory;
 use Magento\CloudDocker\Service\ServiceInterface;
+use Magento\CloudDocker\Util\YamlNormalizer;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Yaml\Tag\TaggedValue;
 
 use Exception;
 
@@ -40,6 +39,11 @@ class CloudSource implements SourceInterface
     private ServiceFactory $serviceFactory;
 
     /**
+     * @var YamlNormalizer
+     */
+    private YamlNormalizer $yamlNormalizer;
+
+    /**
      * @var array
      */
     private static array $map = [
@@ -55,21 +59,28 @@ class CloudSource implements SourceInterface
     ];
 
     /**
+     * CloudSource constructor method.
+     *
      * @param FileList $fileList
      * @param Filesystem $filesystem
      * @param ServiceFactory $serviceFactory
+     * @param YamlNormalizer $yamlNormalizer
      */
     public function __construct(
         FileList $fileList,
         Filesystem $filesystem,
-        ServiceFactory $serviceFactory
+        ServiceFactory $serviceFactory,
+        YamlNormalizer $yamlNormalizer
     ) {
-        $this->fileList = $fileList;
-        $this->filesystem = $filesystem;
+        $this->fileList       = $fileList;
+        $this->filesystem     = $filesystem;
         $this->serviceFactory = $serviceFactory;
+        $this->yamlNormalizer = $yamlNormalizer;
     }
 
     /**
+     * Reads configuration from Magento Cloud files.
+     *
      * @inheritDoc
      *
      * @SuppressWarnings("PMD.CyclomaticComplexity")
@@ -97,7 +108,7 @@ class CloudSource implements SourceInterface
                 $flags
             );
 
-            $appConfig = $this->normalizeYamlData($appConfig);
+            $appConfig = $this->yamlNormalizer->normalize($appConfig);
         } catch (\Exception $exception) {
             throw new SourceException($exception->getMessage(), $exception->getCode(), $exception);
         }
@@ -159,76 +170,6 @@ class CloudSource implements SourceInterface
         $repository->set(self::HOOKS, $appConfig['hooks'] ?? []);
 
         return $repository;
-    }
-
-    /**
-     * Recursively normalizes Symfony YAML TaggedValue objects into PHP-native values.
-     *
-     * Handles the following YAML tags:
-     *  - !env: resolves environment variables.
-     *  - !include: parses and normalizes included YAML files.
-     *  - !php/const: resolves PHP constants (e.g. !php/const:\PDO::ATTR_ERRMODE).
-     *  - Other or unknown tags: recursively normalize their values.
-     *
-     * Ensures all YAML data is converted to scalars or arrays suitable for safe merging.
-     *
-     * @param mixed $data The parsed YAML data (array, scalar, or TaggedValue).
-     * @return mixed The normalized data structure.
-     *
-     * @SuppressWarnings("PHPMD.NPathComplexity")
-     * @SuppressWarnings("PHPMD.CyclomaticComplexity") Method is intentionally complex due to tag resolution logic.
-     */
-    private function normalizeYamlData(mixed $data): mixed
-    {
-        if ($data instanceof TaggedValue) {
-            $tag   = $data->getTag();   // e.g. "php/const:\PDO::MYSQL_ATTR_LOCAL_INFILE"
-            $value = $data->getValue();
-
-            // Handle php/const tags (Symfony strips leading '!')
-            if (str_starts_with($tag, 'php/const:')) {
-                // Extract the constant name
-                $constName = substr($tag, strlen('php/const:'));
-                $constName = ltrim($constName, '\\');
-
-                // Resolve the constant name to its value if defined
-                $constKey = defined($constName) ? constant($constName) : $constName;
-
-                // Handle YAML quirk where ": 1" is parsed literally
-                $raw = is_string($value) ? $value : (string)$value;
-                $cleanVal = str_replace([':', ' '], '', $raw);
-                $constVal = is_numeric($cleanVal) ? (int)$cleanVal : $cleanVal;
-
-                return [$constKey => $constVal];
-            }
-
-            // Handle !env
-            if ($tag === 'env') {
-                $envValue = getenv((string)$value);
-                return $envValue !== false ? $envValue : null;
-            }
-
-            // Handle !include
-            if ($tag === 'include') {
-                if (file_exists((string)$value)) {
-                    $included = Yaml::parseFile((string)$value);
-                    return $this->normalizeYamlData($included);
-                }
-                return null;
-            }
-
-            // Default — recursively normalize nested tagged structures
-            $normalized = $this->normalizeYamlData($value);
-            return is_array($normalized) ? $normalized : [$normalized];
-        }
-
-        // Recursively normalize arrays
-        if (is_array($data)) {
-            foreach ($data as $key => $value) {
-                $data[$key] = $this->normalizeYamlData($value);
-            }
-        }
-
-        return $data;
     }
 
     /**
@@ -294,6 +235,8 @@ class CloudSource implements SourceInterface
     }
 
     /**
+     * Adds PHP configuration to the repository.
+     *
      * @param Repository $repository
      * @param string $version
      * @param array $extensions
@@ -341,6 +284,8 @@ class CloudSource implements SourceInterface
     }
 
     /**
+     * Adds Xdebug configuration to the repository.
+     *
      * @param Repository $repository
      * @param string $version
      * @return Repository
@@ -364,6 +309,8 @@ class CloudSource implements SourceInterface
     }
 
     /**
+     * Adds cron jobs to the repository.
+     *
      * @param Repository $repository
      * @param array $jobs
      * @return Repository
@@ -397,6 +344,8 @@ class CloudSource implements SourceInterface
     }
 
     /**
+     * Adds mounts to the repository.
+     *
      * @param Repository $repository
      * @param array $mounts
      * @return Repository
@@ -414,6 +363,8 @@ class CloudSource implements SourceInterface
     }
 
     /**
+     * Adds name to the repository.
+     *
      * @param Repository $repository
      * @param string $name
      * @return Repository

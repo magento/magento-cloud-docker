@@ -28,7 +28,7 @@ services:
           - db.magento2.test
   fpm:
     hostname: fpm.magento2.test
-    image: 'magento/magento-cloud-docker-php:8.0-fpm-1.2.0'
+    image: 'magento/magento-cloud-docker-php:8.0-fpm-1.4.6'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
@@ -48,7 +48,7 @@ services:
         condition: service_healthy
   web:
     hostname: web.magento2.test
-    image: 'magento/magento-cloud-docker-nginx:1.24-1.2.0'
+    image: 'magento/magento-cloud-docker-nginx:1.24-1.4.6'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
@@ -72,7 +72,7 @@ services:
         condition: service_started
   varnish:
     hostname: varnish.magento2.test
-    image: 'magento/magento-cloud-docker-varnish:6.6-1.2.0'
+    image: 'magento/magento-cloud-docker-varnish:6.6-1.4.6'
     networks:
       magento:
         aliases:
@@ -82,7 +82,7 @@ services:
         condition: service_started
   tls:
     hostname: tls.magento2.test
-    image: 'magento/magento-cloud-docker-nginx:1.24-1.2.0'
+    image: 'magento/magento-cloud-docker-nginx:1.24-1.4.6'
     extends: generic
     networks:
       magento:
@@ -101,14 +101,14 @@ services:
         condition: service_started
   generic:
     hostname: generic.magento2.test
-    image: 'magento/magento-cloud-docker-php:8.0-cli-1.2.0'
+    image: 'magento/magento-cloud-docker-php:8.0-cli-1.4.6'
     env_file: ./.docker/config.env
     environment:
-      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl sodium'
+      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip xsl sodium'
       - 'SENDMAIL_PATH=/usr/local/bin/mhsendmail --smtp-addr=mailhog:1025'
   build:
     hostname: build.magento2.test
-    image: 'magento/magento-cloud-docker-php:8.0-cli-1.2.0'
+    image: 'magento/magento-cloud-docker-php:8.0-cli-1.4.6'
     extends: generic
     volumes:
       - '.:/app:rw,delegated'
@@ -119,12 +119,15 @@ services:
       magento-build:
         aliases:
           - build.magento2.test
+      magento:
+        aliases:
+          - build.magento2.test
     depends_on:
       db:
         condition: service_healthy
   deploy:
     hostname: deploy.magento2.test
-    image: 'magento/magento-cloud-docker-php:8.0-cli-1.2.0'
+    image: 'magento/magento-cloud-docker-php:8.0-cli-1.4.6'
     extends: generic
     volumes:
       - '.:/app:ro,delegated'
@@ -144,7 +147,7 @@ services:
         condition: service_healthy
   mailhog:
     hostname: mailhog.magento2.test
-    image: 'magento/magento-cloud-docker-mailhog:1.0-1.2.0'
+    image: 'magento/magento-cloud-docker-mailhog:1.0-1.4.6'
     ports:
       - '1026:1025'
       - '8026:8025'

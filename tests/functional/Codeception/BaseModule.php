@@ -8,6 +8,8 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Codeception;
 
 use Codeception\Module;
+use Codeception\Exception\ModuleConfigException;
+use Codeception\Exception\ModuleException;
 use Magento\CloudDocker\Test\Functional\Robo\Tasks as CloudDockerTasks;
 use Robo\LoadAllTasks as RoboTasks;
 use Robo\Robo;
@@ -83,8 +85,8 @@ class BaseModule extends Module implements BuilderAwareInterface, ContainerAware
      * Updates Base Url for PhpBrowser module
      *
      * @param string $url
-     * @throws \Codeception\Exception\ModuleConfigException
-     * @throws \Codeception\Exception\ModuleException
+     * @throws ModuleConfigException
+     * @throws ModuleException
      */
     public function updateBaseUrl(string $url)
     {
