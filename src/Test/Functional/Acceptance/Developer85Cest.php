@@ -15,5 +15,5 @@ class Developer85Cest extends DeveloperCest
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.9-alpha-opensearch3.0';
+    protected const TEMPLATE_VERSION = '2.4.9-beta';
 }
