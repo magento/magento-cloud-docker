@@ -105,7 +105,7 @@ class RelationshipTest extends TestCase
     {
         $mysqlVersion = '10.4';
         $redisVersion = '5.2';
-        $valkeyVersion = '8.0';
+        $valkeyVersion = '9.0';
         $esVersion = '7.7';
         $osVersion = '1.1';
         $rmqVersion = '3.5';
