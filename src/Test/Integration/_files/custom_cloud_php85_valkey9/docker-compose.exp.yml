@@ -29,9 +29,9 @@ services:
     hostname: valkey.magento2.docker
     image: 'valkey/valkey:9.0'
     volumes:
-      - '/data'
+      - /data
     ports:
-      - '6379'
+      - 6379
     sysctls:
       net.core.somaxconn: 1024
     ulimits:
