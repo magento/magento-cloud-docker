@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Unit\Config;
 
+use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Relationship;
 use Magento\CloudDocker\Service\ServiceInterface;
@@ -99,13 +100,20 @@ class RelationshipTest extends TestCase
     }
 
     /**
-     * @throws \Magento\CloudDocker\App\ConfigurationMismatchException
+     * Test complete relationship configuration with multiple services.
+     *
+     * Validates that the Relationship class correctly retrieves and formats
+     * configuration for all enabled services including database, cache (Redis/Valkey),
+     * search (Elasticsearch/OpenSearch), and message queue services.
+     *
+     * @return void
+     * @throws ConfigurationMismatchException
      */
-    public function testGet()
+    public function testGet(): void
     {
         $mysqlVersion = '10.4';
         $redisVersion = '5.2';
-        $valkeyVersion = '8.0';
+        $valkeyVersion = '8.1';
         $esVersion = '7.7';
         $osVersion = '1.1';
         $rmqVersion = '3.5';
@@ -195,5 +203,64 @@ class RelationshipTest extends TestCase
             });
 
         $this->assertEquals($configWithType, $this->relationship->get($this->configMock));
+    }
+
+    /**
+     * Test relationship configuration for Valkey 8.1.
+     *
+     * Validates that Valkey 8.1 service relationships are properly configured
+     * with correct host (cache), port (6379), and type (valkey:8.1).
+     *
+     * @return void
+     * @throws ConfigurationMismatchException
+     */
+    public function testGetWithValkey81(): void
+    {
+        $valkeyVersion = '8.1';
+
+        $this->configMock->method('hasServiceEnabled')
+            ->willReturnCallback(function ($service) {
+                return $service === ServiceInterface::SERVICE_VALKEY;
+            });
+
+        $this->configMock->method('getServiceVersion')
+            ->with(ServiceInterface::SERVICE_VALKEY)
+            ->willReturn($valkeyVersion);
+
+        $relationships = $this->relationship->get($this->configMock);
+
+        $this->assertArrayHasKey('valkey', $relationships);
+        $this->assertSame('cache', $relationships['valkey'][0]['host']);
+        $this->assertSame('6379', $relationships['valkey'][0]['port']);
+        $this->assertSame('valkey:8.1', $relationships['valkey'][0]['type']);
+    }
+
+    /**
+     * Test relationship configuration for Valkey 9.
+     *
+     * Adobe Commerce 2.4.9 line - validates that Valkey 9 service relationships
+     * are properly configured with correct host (cache), port (6379), and type (valkey:9).
+     *
+     * @return void
+     * @throws ConfigurationMismatchException
+     */
+    public function testGetWithValkey9(): void
+    {
+        $valkeyVersion = '9';
+
+        $this->configMock->method('hasServiceEnabled')
+            ->willReturnCallback(function ($service) {
+                return $service === ServiceInterface::SERVICE_VALKEY;
+            });
+
+        $this->configMock->method('getServiceVersion')
+            ->with(ServiceInterface::SERVICE_VALKEY)
+            ->willReturn($valkeyVersion);
+
+        $relationships = $this->relationship->get($this->configMock);
+
+        $this->assertArrayHasKey('valkey', $relationships);
+        $this->assertSame('cache', $relationships['valkey'][0]['host']);
+        $this->assertSame('valkey:9', $relationships['valkey'][0]['type']);
     }
 }

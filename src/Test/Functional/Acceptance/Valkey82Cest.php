@@ -8,16 +8,16 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 /**
- * PHP 8.5 / Adobe Commerce 2.4.9 line — Valkey 9 (per Adobe Commerce Valkey/Redis support matrix).
+ * PHP 8.2 / Adobe Commerce 2.4.6 line — Valkey 8.1 (e.g. 2.4.6-p15 and later per release notes).
  *
- * @group php85
+ * @group php82
  */
-class Valkey85Cest extends ValkeyCest
+class Valkey82Cest extends ValkeyCest
 {
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.9-beta';
+    protected const TEMPLATE_VERSION = '2.4.6';
 
     /**
      * @inheritDoc
@@ -26,7 +26,7 @@ class Valkey85Cest extends ValkeyCest
     {
         return [
             [
-                'version' => '9',
+                'version' => '8.1',
             ],
         ];
     }
