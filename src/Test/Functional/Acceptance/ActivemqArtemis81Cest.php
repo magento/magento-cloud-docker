@@ -17,5 +17,5 @@ class ActivemqArtemis81Cest extends ActivemqArtemisCest
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.6';
+    protected const TEMPLATE_VERSION = '2.4.5';
 }

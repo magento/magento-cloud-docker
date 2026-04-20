@@ -11,6 +11,7 @@ use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Relationship;
 use Magento\CloudDocker\Service\ServiceInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -106,10 +107,11 @@ class RelationshipTest extends TestCase
      * configuration for all enabled services including database, cache (Redis/Valkey),
      * search (Elasticsearch/OpenSearch), and message queue services.
      *
-     * @return void
-     * @throws ConfigurationMismatchException
+     * @param string $activemqArtemisVersion
+     * @throws \Magento\CloudDocker\App\ConfigurationMismatchException
      */
-    public function testGet(): void
+    #[DataProvider('activemqArtemisVersionDataProvider')]
+    public function testGet(string $activemqArtemisVersion)
     {
         $mysqlVersion = '10.4';
         $redisVersion = '5.2';
@@ -117,7 +119,6 @@ class RelationshipTest extends TestCase
         $esVersion = '7.7';
         $osVersion = '1.1';
         $rmqVersion = '3.5';
-        $activemqArtemisVersion = '2.17';
         $zookeeperVersion = 'latest';
         $configWithType = $this->defaultConfigs;
         $configWithType['database'][0]['type'] = "mysql:$mysqlVersion";
@@ -203,6 +204,20 @@ class RelationshipTest extends TestCase
             });
 
         $this->assertEquals($configWithType, $this->relationship->get($this->configMock));
+    }
+
+    /**
+     * Supported ActiveMQ Artemis versions to validate relationship output.
+     *
+     * @return array<string, array{0: string}>
+     */
+    public static function activemqArtemisVersionDataProvider(): array
+    {
+        return [
+            'activemq-artemis 2.17' => ['2.17'],
+            'activemq-artemis 2.42.0' => ['2.42.0'],
+            'activemq-artemis 2.51.0' => ['2.51.0'],
+        ];
     }
 
     /**

@@ -94,6 +94,24 @@ class BuildComposeTest extends TestCase
                     [CliSource::OPTION_WITH_MARIADB_CONF, true]
                 ]
             ],
+            'cloud-base-activemq-artemis-2.42.0' => [
+                __DIR__ . '/_files/cloud_base_activemq_artemis',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true],
+                    [CliSource::OPTION_ACTIVEMQ_ARTEMIS, '2.42.0'],
+                ]
+            ],
+            'cloud-base-activemq-artemis-2.51.0' => [
+                __DIR__ . '/_files/cloud_base_activemq_artemis_251',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true],
+                    [CliSource::OPTION_ACTIVEMQ_ARTEMIS, '2.51.0'],
+                ]
+            ],
             'cloud-base-os-2-cli' => [
                 __DIR__ . '/_files/cloud_base_os_2_cli',
                 [

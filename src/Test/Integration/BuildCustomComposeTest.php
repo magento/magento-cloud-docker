@@ -592,6 +592,100 @@ class BuildCustomComposeTest extends TestCase
                     ]
                 ]
             ],
+            'php-8.5-activemq-artemis-2.42.0' => [
+                __DIR__ . '/_files/custom_cloud_php85_activemq_artemis_242',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => ['mode' => 'production'],
+                            'services' => [
+                                'php' => [
+                                    'enabled' => true,
+                                    'version' => '8.5',
+                                ],
+                                'mysql' => [
+                                    'enabled' => true,
+                                    'version' => '11.4',
+                                ],
+                                'activemq-artemis' => [
+                                    'enabled' => true,
+                                    'version' => '2.42.0',
+                                ],
+                                'nginx' => [
+                                    'enabled' => true,
+                                    'version' => '1.28',
+                                ],
+                                'varnish' => [
+                                    'enabled' => true,
+                                    'version' => '7.1',
+                                ],
+                            ],
+                            'hooks' => [
+                                'build' => 'set -e' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/generate.xml' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+                                'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+                                'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+                            ],
+                            'mounts' => [
+                                'var' => ['path' => 'var'],
+                                'app-etc' => ['path' => 'app/etc',],
+                                'pub-media' => ['path' => 'pub/media',],
+                                'pub-static' => ['path' => 'pub/static']
+                            ]
+                        ])
+                    ]
+                ]
+            ],
+            'php-8.5-activemq-artemis-2.51.0' => [
+                __DIR__ . '/_files/custom_cloud_php85_activemq_artemis_251',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => ['mode' => 'production'],
+                            'services' => [
+                                'php' => [
+                                    'enabled' => true,
+                                    'version' => '8.5',
+                                ],
+                                'mysql' => [
+                                    'enabled' => true,
+                                    'version' => '11.4',
+                                ],
+                                'activemq-artemis' => [
+                                    'enabled' => true,
+                                    'version' => '2.51.0',
+                                ],
+                                'nginx' => [
+                                    'enabled' => true,
+                                    'version' => '1.28',
+                                ],
+                                'varnish' => [
+                                    'enabled' => true,
+                                    'version' => '7.1',
+                                ],
+                            ],
+                            'hooks' => [
+                                'build' => 'set -e' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/generate.xml' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+                                'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+                                'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+                            ],
+                            'mounts' => [
+                                'var' => ['path' => 'var'],
+                                'app-etc' => ['path' => 'app/etc',],
+                                'pub-media' => ['path' => 'pub/media',],
+                                'pub-static' => ['path' => 'pub/static']
+                            ]
+                        ])
+                    ]
+                ]
+            ],
             'php-8.5-valkey-9.0' => [
                 __DIR__ . '/_files/custom_cloud_php85_valkey9',
                 [
