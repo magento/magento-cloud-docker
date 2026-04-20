@@ -16,4 +16,14 @@ class Opensearch83Cest extends OpensearchCest
      * Template version for testing
      */
     protected const TEMPLATE_VERSION = '2.4.7';
+
+    /**
+     * Gets the list of Opensearch versions to test.
+     *
+     * @return array
+     */
+    protected function getVersions(): array
+    {
+        return ['2.3', '2.4', '2.5', '2.12', '2.19'];
+    }
 }

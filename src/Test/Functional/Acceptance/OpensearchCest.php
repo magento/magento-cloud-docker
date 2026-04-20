@@ -18,6 +18,17 @@ use Robo\Exception\TaskException;
 class OpensearchCest extends AbstractCest
 {
     /**
+     * Gets the list of Opensearch versions to test.
+     * Can be overridden by child classes.
+     *
+     * @return array
+     */
+    protected function getVersions(): array
+    {
+        return ['1.1', '1.2', '1.3', '2.3', '2.4', '2.5', '2.12', '2.19', '3.0', '3.5'];
+    }
+
+    /**
      * Tests Opensearch functionality and connectivity within
      * the Magento Cloud Docker environment.
      *
@@ -80,29 +91,30 @@ class OpensearchCest extends AbstractCest
      */
     protected function dataProvider(): array
     {
+        return array_map(
+            fn(string $version) => $this->buildTestData($version),
+            $this->getVersions()
+        );
+    }
+
+    /**
+     * Builds a test data entry for a given Opensearch version.
+     *
+     * @param string $version
+     * @return array
+     */
+    private function buildTestData(string $version): array
+    {
         return [
-            [
-                'version' => '2.3',
-                'xms' => '520m',
-                'xmx' => '520m',
-                'plugins' => ['analysis-nori'],
-                'param' => [
-                    'key' => 'node.store.allow_mmap',
-                    'value' => 'false',
-                    'needle' => '"store":{"allow_mmap":"false"}',
-                ]
-            ],
-            [
-                'version' => '2.4',
-                'xms' => '520m',
-                'xmx' => '520m',
-                'plugins' => ['analysis-nori'],
-                'param' => [
-                    'key' => 'node.store.allow_mmap',
-                    'value' => 'false',
-                    'needle' => '"store":{"allow_mmap":"false"}',
-                ]
-            ],
+            'version' => $version,
+            'xms'     => '520m',
+            'xmx'     => '520m',
+            'plugins' => ['analysis-nori'],
+            'param'   => [
+                'key'    => 'node.store.allow_mmap',
+                'value'  => 'false',
+                'needle' => '"store":{"allow_mmap":"false"}',
+            ]
         ];
     }
 }
