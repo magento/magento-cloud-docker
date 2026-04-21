@@ -80,9 +80,7 @@ class ActivemqArtemisCest extends AbstractCest
     private function testArtemisCLI(CliTester $I): void
     {
         // Test ActiveMQ Artemis broker status using artemis CLI
-        $I->runDockerComposeCommand(
-            'exec -T activemq-artemis /opt/activemq-artemis/bin/artemis queue stat --user admin --password admin'
-        );
+        $I->runDockerComposeCommand($this->buildArtemisCommand('queue stat --user admin --password admin'));
         $I->seeInOutput('Connection brokerURL');
         
         // Test that we can see the default system queues
@@ -90,9 +88,7 @@ class ActivemqArtemisCest extends AbstractCest
         $I->seeInOutput('ExpiryQueue');
         
         // Test broker information
-        $I->runDockerComposeCommand(
-            'exec -T activemq-artemis /opt/activemq-artemis/bin/artemis address show --user admin --password admin'
-        );
+        $I->runDockerComposeCommand($this->buildArtemisCommand('address show --user admin --password admin'));
         $I->seeInOutput('DLQ');
     }
 
@@ -106,23 +102,23 @@ class ActivemqArtemisCest extends AbstractCest
     {
         // Test sending a message to the default DLQ queue (which always exists)
         $I->runDockerComposeCommand(
-            'exec -T activemq-artemis /opt/activemq-artemis/bin/artemis producer ' .
-            '--destination queue://DLQ --message-count 1 --message "Hello ActiveMQ Artemis Test" ' .
-            '--user admin --password admin'
+            $this->buildArtemisCommand(
+                'producer --destination queue://DLQ --message-count 1 ' .
+                '--message "Hello ActiveMQ Artemis Test" --user admin --password admin'
+            )
         );
         $I->seeInOutput('Produced: 1 messages');
         
         // Test consuming the message from the DLQ queue
         $I->runDockerComposeCommand(
-            'exec -T activemq-artemis /opt/activemq-artemis/bin/artemis consumer ' .
-            '--destination queue://DLQ --message-count 1 --user admin --password admin'
+            $this->buildArtemisCommand(
+                'consumer --destination queue://DLQ --message-count 1 --user admin --password admin'
+            )
         );
         $I->seeInOutput('Consumed: 1 messages');
         
         // Test broker memory and connection info
-        $I->runDockerComposeCommand(
-            'exec -T activemq-artemis /opt/activemq-artemis/bin/artemis queue stat --user admin --password admin'
-        );
+        $I->runDockerComposeCommand($this->buildArtemisCommand('queue stat --user admin --password admin'));
         $I->seeInOutput('Connection brokerURL');
     }
 
@@ -155,11 +151,31 @@ class ActivemqArtemisCest extends AbstractCest
     }
 
     /**
+     * Builds an Artemis CLI command that supports old and new image layouts.
+     *
+     * @param string $command
+     * @return string
+     */
+    private function buildArtemisCommand(string $command): string
+    {
+        $escapedCommand = addcslashes($command, '\\"$`');
+        return sprintf(
+            'exec -T activemq-artemis sh -lc "if [ -x /var/lib/artemis-instance/bin/artemis ]; ' .
+            'then /var/lib/artemis-instance/bin/artemis %1$s 2>/dev/null; ' .
+            'else /opt/activemq-artemis/bin/artemis %1$s 2>/dev/null; fi"',
+            $escapedCommand
+        );
+    }
+
+    /**
      * @return array
      */
     protected function dataProvider(): array
     {
         return [
+            [
+                'version' => '2.51.0',
+            ],
             [
                 'version' => '2.42.0',
             ],

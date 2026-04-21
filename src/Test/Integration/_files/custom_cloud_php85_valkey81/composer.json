@@ -1,0 +1,6 @@
+{
+  "name": "magento/project-enterprise-edition",
+  "description": "Composer file for integration tests PHP 8.5 + Valkey 8.1",
+  "type": "project",
+  "version": "2.4.9-beta"
+}

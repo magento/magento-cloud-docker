@@ -70,7 +70,11 @@ class BuildCustomComposeTest extends TestCase
     /**
      * Data provider for build method.
      *
-     * @return array
+     * Provides test cases with different Magento Cloud Docker configurations including
+     * base cloud setup, native sync mode, custom images, and services with various
+     * combinations of PHP versions, cache backends (Valkey, OpenSearch), and ports.
+     *
+     * @return array<string, array<int, mixed>>
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public static function buildDataProvider(): array
@@ -373,6 +377,288 @@ class BuildCustomComposeTest extends TestCase
                                 'opensearch' => [
                                     'enabled' => true,
                                     'version' => '3.0',
+                                ],
+                                'nginx' => [
+                                    'enabled' => true,
+                                    'version' => '1.28',
+                                ],
+                                'varnish' => [
+                                    'enabled' => true,
+                                    'version' => '7.1',
+                                ],
+                            ],
+                            'hooks' => [
+                                'build' => 'set -e' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/generate.xml' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+                                'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+                                'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+                            ],
+                            'mounts' => [
+                                'var' => ['path' => 'var'],
+                                'app-etc' => ['path' => 'app/etc',],
+                                'pub-media' => ['path' => 'pub/media',],
+                                'pub-static' => ['path' => 'pub/static']
+                            ]
+                        ])
+                    ]
+                ]
+            ],
+            'php-8.5-valkey-8.1' => [
+                __DIR__ . '/_files/custom_cloud_php85_valkey81',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => ['mode' => 'production'],
+                            'services' => [
+                                'php' => [
+                                    'enabled' => true,
+                                    'version' => '8.5',
+                                ],
+                                'mysql' => [
+                                    'enabled' => true,
+                                    'version' => '11.4',
+                                ],
+                                'valkey' => [
+                                    'enabled' => true,
+                                    'version' => '8.1',
+                                ],
+                                'nginx' => [
+                                    'enabled' => true,
+                                    'version' => '1.28',
+                                ],
+                                'varnish' => [
+                                    'enabled' => true,
+                                    'version' => '7.1',
+                                ],
+                            ],
+                            'hooks' => [
+                                'build' => 'set -e' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/generate.xml' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+                                'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+                                'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+                            ],
+                            'mounts' => [
+                                'var' => ['path' => 'var'],
+                                'app-etc' => ['path' => 'app/etc',],
+                                'pub-media' => ['path' => 'pub/media',],
+                                'pub-static' => ['path' => 'pub/static']
+                            ]
+                        ])
+                    ]
+                ]
+            ],
+            'php-8.5-opensearch-3.0-mariadb-11.8' => [
+                __DIR__ . '/_files/custom_cloud_php85_mariadb118',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => ['mode' => 'production'],
+                            'services' => [
+                                'php' => [
+                                    'enabled' => true,
+                                    'version' => '8.5',
+                                ],
+                                'mysql' => [
+                                    'enabled' => true,
+                                    'version' => '11.8',
+                                ],
+                                'opensearch' => [
+                                    'enabled' => true,
+                                    'version' => '3.0',
+                                ],
+                                'nginx' => [
+                                    'enabled' => true,
+                                    'version' => '1.28',
+                                ],
+                                'varnish' => [
+                                    'enabled' => true,
+                                    'version' => '7.1',
+                                ],
+                            ],
+                            'hooks' => [
+                                'build' => 'set -e' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/generate.xml' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+                                'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+                                'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+                            ],
+                            'mounts' => [
+                                'var' => ['path' => 'var'],
+                                'app-etc' => ['path' => 'app/etc',],
+                                'pub-media' => ['path' => 'pub/media',],
+                                'pub-static' => ['path' => 'pub/static']
+                            ]
+                        ])
+                    ]
+                ]
+            ],
+            'php-8.5-opensearch-3.0-mariadb-12.2' => [
+                __DIR__ . '/_files/custom_cloud_php85_mariadb122',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => ['mode' => 'production'],
+                            'services' => [
+                                'php' => [
+                                    'enabled' => true,
+                                    'version' => '8.5',
+                                ],
+                                'mysql' => [
+                                    'enabled' => true,
+                                    'version' => '12.2',
+                                ],
+                                'opensearch' => [
+                                    'enabled' => true,
+                                    'version' => '3.0',
+                                ],
+                                'nginx' => [
+                                    'enabled' => true,
+                                    'version' => '1.28',
+                                ],
+                                'varnish' => [
+                                    'enabled' => true,
+                                    'version' => '7.1',
+                                ],
+                            ],
+                            'hooks' => [
+                                'build' => 'set -e' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/generate.xml' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+                                'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+                                'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+                            ],
+                            'mounts' => [
+                                'var' => ['path' => 'var'],
+                                'app-etc' => ['path' => 'app/etc',],
+                                'pub-media' => ['path' => 'pub/media',],
+                                'pub-static' => ['path' => 'pub/static']
+                            ]
+                        ])
+                    ]
+                ]
+            ],
+            'php-8.5-opensearch-3.0-mariadb-12.3-rc' => [
+                __DIR__ . '/_files/custom_cloud_php85_mariadb123rc',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => ['mode' => 'production'],
+                            'services' => [
+                                'php' => [
+                                    'enabled' => true,
+                                    'version' => '8.5',
+                                ],
+                                'mysql' => [
+                                    'enabled' => true,
+                                    'version' => '12.3-rc',
+                                ],
+                                'opensearch' => [
+                                    'enabled' => true,
+                                    'version' => '3.0',
+                                ],
+                                'nginx' => [
+                                    'enabled' => true,
+                                    'version' => '1.28',
+                                ],
+                                'varnish' => [
+                                    'enabled' => true,
+                                    'version' => '7.1',
+                                ],
+                            ],
+                            'hooks' => [
+                                'build' => 'set -e' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/generate.xml' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+                                'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+                                'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+                            ],
+                            'mounts' => [
+                                'var' => ['path' => 'var'],
+                                'app-etc' => ['path' => 'app/etc',],
+                                'pub-media' => ['path' => 'pub/media',],
+                                'pub-static' => ['path' => 'pub/static']
+                            ]
+                        ])
+                    ]
+                ]
+            ],
+            'php-8.5-activemq-artemis-2.42.0' => [
+                __DIR__ . '/_files/custom_cloud_php85_activemq_artemis_242',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => ['mode' => 'production'],
+                            'services' => [
+                                'php' => [
+                                    'enabled' => true,
+                                    'version' => '8.5',
+                                ],
+                                'mysql' => [
+                                    'enabled' => true,
+                                    'version' => '11.4',
+                                ],
+                                'activemq-artemis' => [
+                                    'enabled' => true,
+                                    'version' => '2.42.0',
+                                ],
+                                'nginx' => [
+                                    'enabled' => true,
+                                    'version' => '1.28',
+                                ],
+                                'varnish' => [
+                                    'enabled' => true,
+                                    'version' => '7.1',
+                                ],
+                            ],
+                            'hooks' => [
+                                'build' => 'set -e' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/generate.xml' . PHP_EOL
+                                    . 'php ./vendor/bin/ece-tools run scenario/build/transfer.xml',
+                                'deploy' => 'php ./vendor/bin/ece-tools run scenario/deploy.xml',
+                                'post_deploy' => 'php ./vendor/bin/ece-tools run scenario/post-deploy.xml'
+                            ],
+                            'mounts' => [
+                                'var' => ['path' => 'var'],
+                                'app-etc' => ['path' => 'app/etc',],
+                                'pub-media' => ['path' => 'pub/media',],
+                                'pub-static' => ['path' => 'pub/static']
+                            ]
+                        ])
+                    ]
+                ]
+            ],
+            'php-8.5-activemq-artemis-2.51.0' => [
+                __DIR__ . '/_files/custom_cloud_php85_activemq_artemis_251',
+                [
+                    [
+                        BuildCustomCompose::ARG_SOURCE,
+                        json_encode([
+                            'name' => 'magento',
+                            'system' => ['mode' => 'production'],
+                            'services' => [
+                                'php' => [
+                                    'enabled' => true,
+                                    'version' => '8.5',
+                                ],
+                                'mysql' => [
+                                    'enabled' => true,
+                                    'version' => '11.4',
+                                ],
+                                'activemq-artemis' => [
+                                    'enabled' => true,
+                                    'version' => '2.51.0',
                                 ],
                                 'nginx' => [
                                     'enabled' => true,

@@ -7,9 +7,11 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Unit\Config;
 
+use Magento\CloudDocker\App\ConfigurationMismatchException;
 use Magento\CloudDocker\Config\Config;
 use Magento\CloudDocker\Config\Relationship;
 use Magento\CloudDocker\Service\ServiceInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -99,17 +101,24 @@ class RelationshipTest extends TestCase
     }
 
     /**
+     * Test complete relationship configuration with multiple services.
+     *
+     * Validates that the Relationship class correctly retrieves and formats
+     * configuration for all enabled services including database, cache (Redis/Valkey),
+     * search (Elasticsearch/OpenSearch), and message queue services.
+     *
+     * @param string $activemqArtemisVersion
      * @throws \Magento\CloudDocker\App\ConfigurationMismatchException
      */
-    public function testGet()
+    #[DataProvider('activemqArtemisVersionDataProvider')]
+    public function testGet(string $activemqArtemisVersion)
     {
         $mysqlVersion = '10.4';
         $redisVersion = '5.2';
-        $valkeyVersion = '9.0';
+        $valkeyVersion = '8.1';
         $esVersion = '7.7';
         $osVersion = '1.1';
         $rmqVersion = '3.5';
-        $activemqArtemisVersion = '2.17';
         $zookeeperVersion = 'latest';
         $configWithType = $this->defaultConfigs;
         $configWithType['database'][0]['type'] = "mysql:$mysqlVersion";
@@ -195,5 +204,78 @@ class RelationshipTest extends TestCase
             });
 
         $this->assertEquals($configWithType, $this->relationship->get($this->configMock));
+    }
+
+    /**
+     * Supported ActiveMQ Artemis versions to validate relationship output.
+     *
+     * @return array<string, array{0: string}>
+     */
+    public static function activemqArtemisVersionDataProvider(): array
+    {
+        return [
+            'activemq-artemis 2.17' => ['2.17'],
+            'activemq-artemis 2.42.0' => ['2.42.0'],
+            'activemq-artemis 2.51.0' => ['2.51.0'],
+        ];
+    }
+
+    /**
+     * Test relationship configuration for Valkey 8.1.
+     *
+     * Validates that Valkey 8.1 service relationships are properly configured
+     * with correct host (cache), port (6379), and type (valkey:8.1).
+     *
+     * @return void
+     * @throws ConfigurationMismatchException
+     */
+    public function testGetWithValkey81(): void
+    {
+        $valkeyVersion = '8.1';
+
+        $this->configMock->method('hasServiceEnabled')
+            ->willReturnCallback(function ($service) {
+                return $service === ServiceInterface::SERVICE_VALKEY;
+            });
+
+        $this->configMock->method('getServiceVersion')
+            ->with(ServiceInterface::SERVICE_VALKEY)
+            ->willReturn($valkeyVersion);
+
+        $relationships = $this->relationship->get($this->configMock);
+
+        $this->assertArrayHasKey('valkey', $relationships);
+        $this->assertSame('cache', $relationships['valkey'][0]['host']);
+        $this->assertSame('6379', $relationships['valkey'][0]['port']);
+        $this->assertSame('valkey:8.1', $relationships['valkey'][0]['type']);
+    }
+
+    /**
+     * Test relationship configuration for Valkey 9.
+     *
+     * Adobe Commerce 2.4.9 line - validates that Valkey 9 service relationships
+     * are properly configured with correct host (cache), port (6379), and type (valkey:9).
+     *
+     * @return void
+     * @throws ConfigurationMismatchException
+     */
+    public function testGetWithValkey9(): void
+    {
+        $valkeyVersion = '9';
+
+        $this->configMock->method('hasServiceEnabled')
+            ->willReturnCallback(function ($service) {
+                return $service === ServiceInterface::SERVICE_VALKEY;
+            });
+
+        $this->configMock->method('getServiceVersion')
+            ->with(ServiceInterface::SERVICE_VALKEY)
+            ->willReturn($valkeyVersion);
+
+        $relationships = $this->relationship->get($this->configMock);
+
+        $this->assertArrayHasKey('valkey', $relationships);
+        $this->assertSame('cache', $relationships['valkey'][0]['host']);
+        $this->assertSame('valkey:9', $relationships['valkey'][0]['type']);
     }
 }

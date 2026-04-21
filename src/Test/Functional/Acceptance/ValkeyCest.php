@@ -12,20 +12,24 @@ use Codeception\Example;
 use Robo\Exception\TaskException;
 
 /**
- * Generic Valkey tests to validate connectivity and
- * basic functionality within the Magento Cloud Docker environment.
+ * Generic Valkey acceptance tests for connectivity and core operations
+ * in the Magento Cloud Docker environment.
+ *
+ * Each PHP/Adobe Commerce line Cest (Valkey81Cest-Valkey85Cest) must implement {@see dataProvider()}.
  */
-class ValkeyCest extends AbstractCest
+abstract class ValkeyCest extends AbstractCest
 {
     /**
-     * Tests Valkey functionality and connectivity within
-     * the Magento Cloud Docker environment.
+     * Builds and starts the Docker environment, then validates Valkey health,
+     * network aliases, basic read/write operations, and server metadata.
      *
-     * @param        CliTester $I
-     * @param        Example   $data
+     * @param CliTester $I
+     * @param Example $data
+     *
      * @dataProvider dataProvider
-     * @return       void
-     * @throws       TaskException
+     *
+     * @return void
+     * @throws TaskException
      */
     public function testValkey(CliTester $I, Example $data): void
     {
@@ -89,9 +93,9 @@ class ValkeyCest extends AbstractCest
     }
 
     /**
-     * Builds build:compose command from given test data
+     * Build the `build:compose` argument string for the requested Valkey version.
      *
-     * @param  Example $data
+     * @param Example $data
      * @return string
      */
     private function buildCommand(Example $data): string
@@ -105,16 +109,9 @@ class ValkeyCest extends AbstractCest
     }
 
     /**
-     * Provides test data for Valkey tests.
+     * Provide Valkey versions for the current PHP/Adobe Commerce test line.
      *
-     * @return array
+     * @return array<int, array{version: string}>
      */
-    protected function dataProvider(): array
-    {
-        return [
-            [
-                'version' => '8.0',
-            ],
-        ];
-    }
+    abstract protected function dataProvider(): array;
 }

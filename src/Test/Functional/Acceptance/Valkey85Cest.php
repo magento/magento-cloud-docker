@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 /**
- * Valkey 9 is supported from Magento 2.4.9; tests both Valkey 8.0 and 9 here only.
+ * PHP 8.5 / Adobe Commerce 2.4.9 line — Valkey 9 (per Adobe Commerce Valkey/Redis support matrix).
  *
  * @group php85
  */
@@ -25,9 +25,6 @@ class Valkey85Cest extends ValkeyCest
     protected function dataProvider(): array
     {
         return [
-            [
-                'version' => '8.0',
-            ],
             [
                 'version' => '9',
             ],
