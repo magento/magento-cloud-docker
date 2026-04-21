@@ -15,5 +15,5 @@ class Elasticsearch85Cest extends ElasticsearchCest
     /**
      * Template version for testing
      */
-    protected const TEMPLATE_VERSION = '2.4.9-beta';
+    protected const TEMPLATE_VERSION = '2.4.9';
 }
