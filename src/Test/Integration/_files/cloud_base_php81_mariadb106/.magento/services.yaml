@@ -1,0 +1,14 @@
+mysql:
+  type: mysql:10.6
+  disk: 2048
+
+redis:
+  type: redis:7.2
+
+opensearch:
+  type: opensearch:2
+  disk: 512
+  configuration:
+    plugins:
+      - plugin_3
+      - plugin_4
