@@ -31,30 +31,6 @@ class GenerateEs extends Command
      * @var array
      */
     private $versionMap = [
-        '6.5' => [
-            'real-version' => '6.5.4',
-            'single-node' => false,
-        ],
-        '6.8' => [
-            'real-version' => '6.8.15',
-            'single-node' => true,
-        ],
-        '7.5' => [
-            'real-version' => '7.5.2',
-            'single-node' => true,
-        ],
-        '7.6' => [
-            'real-version' => '7.6.2',
-            'single-node' => true,
-        ],
-        '7.7' => [
-            'real-version' => '7.7.1',
-            'single-node' => true,
-        ],
-        '7.9' => [
-            'real-version' => '7.9.3',
-            'single-node' => true,
-        ],
         '7.10' => [
             'real-version' => '7.10.2',
             'single-node' => true,
