@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
+use CliTester;
+
 /**
  * @group php81
  */
@@ -18,35 +20,12 @@ class Opensearch81Cest extends OpensearchCest
     protected const TEMPLATE_VERSION = '2.4.4';
 
     /**
-     * Provides test data for Opensearch tests.
+     * Gets the list of Opensearch versions to test.
      *
      * @return array
      */
-    protected function dataProvider(): array
+    protected function getVersions(): array
     {
-        return [
-            [
-                'version' => '1.1',
-                'xms' => '520m',
-                'xmx' => '520m',
-                'plugins' => ['analysis-nori'],
-                'param' => [
-                    'key' => 'node.store.allow_mmap',
-                    'value' => 'false',
-                    'needle' => '"store":{"allow_mmap":"false"}',
-                ]
-            ],
-            [
-                'version' => '1.2',
-                'xms' => '520m',
-                'xmx' => '520m',
-                'plugins' => ['analysis-nori'],
-                'param' => [
-                    'key' => 'node.store.allow_mmap',
-                    'value' => 'false',
-                    'needle' => '"store":{"allow_mmap":"false"}',
-                ]
-            ],
-        ];
+        return ['1.1', '1.2', '1.3', '2.3', '2.4', '2.5', '2.12', '2.19'];
     }
 }

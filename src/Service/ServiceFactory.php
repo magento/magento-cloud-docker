@@ -17,6 +17,9 @@ use Magento\CloudDocker\Filesystem\FileList;
  */
 class ServiceFactory
 {
+    private const ACTIVEMQ_ARTEMIS_IMAGE = 'apache/activemq-artemis';
+    private const ACTIVEMQ_ARTEMIS_RENAMED_IMAGE = 'apache/artemis';
+    private const ACTIVEMQ_ARTEMIS_RENAMED_FROM = '2.50.0';
     private const PATTERN_STD = '%s:%s';
     private const PATTERN_VERSIONED = '%s:%s-%s';
 
@@ -154,7 +157,7 @@ class ServiceFactory
             'pattern' => self::PATTERN_STD,
         ],
         ServiceInterface::SERVICE_ACTIVEMQ_ARTEMIS => [
-            'image' => 'apache/activemq-artemis',
+            'image' => self::ACTIVEMQ_ARTEMIS_IMAGE,
             'pattern' => self::PATTERN_STD,
             'config' => [
                  'ports' => [61616, 61613, 8161],
@@ -252,7 +255,8 @@ class ServiceFactory
         $metaConfig = self::$config[$name];
         $defaultConfig = $metaConfig['config'] ?? [];
 
-        $image = ($customRegistry ? $customRegistry . '/' : '') . ($image ?: $metaConfig['image']);
+        $image = $this->resolveImage($name, $version, $image ?: $metaConfig['image']);
+        $image = ($customRegistry ? $customRegistry . '/' : '') . $image;
         $pattern = $imagePattern ?: $metaConfig['pattern'];
 
         return array_replace(
@@ -298,6 +302,33 @@ class ServiceFactory
                 $name
             )
         );
+    }
+
+    /**
+     * Resolves service image aliases that changed upstream between releases.
+     *
+     * @param string $name
+     * @param string $version
+     * @param string $image
+     * @return string
+     */
+    private function resolveImage(string $name, string $version, string $image): string
+    {
+        if ($name !== ServiceInterface::SERVICE_ACTIVEMQ_ARTEMIS) {
+            return $image;
+        }
+
+        if ($image === self::ACTIVEMQ_ARTEMIS_RENAMED_IMAGE) {
+            return $image;
+        }
+
+        if ($image === self::ACTIVEMQ_ARTEMIS_IMAGE
+            && version_compare($version, self::ACTIVEMQ_ARTEMIS_RENAMED_FROM, '>=')
+        ) {
+            return self::ACTIVEMQ_ARTEMIS_RENAMED_IMAGE;
+        }
+
+        return $image;
     }
 
     /**

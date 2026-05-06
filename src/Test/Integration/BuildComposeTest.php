@@ -72,6 +72,8 @@ class BuildComposeTest extends TestCase
     /**
      * Data provider for build method.
      *
+     * Includes cloud_base variants for PHP × MariaDB lines (10.6, 10.11, 11.4, 11.8; see MariaDb*Cest FT).
+     *
      * @return array
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
@@ -84,6 +86,72 @@ class BuildComposeTest extends TestCase
                     [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
                     [CliSource::OPTION_WITH_ENTRYPOINT, true],
                     [CliSource::OPTION_WITH_MARIADB_CONF, true]
+                ]
+            ],
+            'cloud-base-mariadb-12.3-rc' => [
+                __DIR__ . '/_files/cloud_base_mariadb123rc',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true]
+                ]
+            ],
+            'cloud-base-php-8.1-mariadb-10.6' => [
+                __DIR__ . '/_files/cloud_base_php81_mariadb106',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true]
+                ]
+            ],
+            'cloud-base-php-8.3-mariadb-10.11' => [
+                __DIR__ . '/_files/cloud_base_php83_mariadb1011',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true]
+                ]
+            ],
+            'cloud-base-php-8.4-mariadb-11.4' => [
+                __DIR__ . '/_files/cloud_base_php84_mariadb114',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true]
+                ]
+            ],
+            'cloud-base-php-8.5-mariadb-11.4' => [
+                __DIR__ . '/_files/cloud_base_php85_mariadb114',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true]
+                ]
+            ],
+            'cloud-base-php-8.5-mariadb-11.8' => [
+                __DIR__ . '/_files/cloud_base_php85_mariadb118',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true]
+                ]
+            ],
+            'cloud-base-activemq-artemis-2.42.0' => [
+                __DIR__ . '/_files/cloud_base_activemq_artemis',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true],
+                    [CliSource::OPTION_ACTIVEMQ_ARTEMIS, '2.42.0'],
+                ]
+            ],
+            'cloud-base-activemq-artemis-2.51.0' => [
+                __DIR__ . '/_files/cloud_base_activemq_artemis_251',
+                [
+                    [CliSource::OPTION_MODE, BuilderFactory::BUILDER_PRODUCTION],
+                    [CliSource::OPTION_WITH_ENTRYPOINT, true],
+                    [CliSource::OPTION_WITH_MARIADB_CONF, true],
+                    [CliSource::OPTION_ACTIVEMQ_ARTEMIS, '2.51.0'],
                 ]
             ],
             'cloud-base-os-2-cli' => [
