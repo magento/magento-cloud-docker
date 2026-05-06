@@ -9,7 +9,7 @@ MAILHOG_IMAGE_REPO_DEFAULT="magento/magento-cloud-docker-mailhog"
 MAILHOG_VERSIONS_DEFAULT="1.0"
 
 PHP_IMAGE_REPO_DEFAULT="magento/magento-cloud-docker-php"
-PHP_VERSIONS_DEFAULT="8.1,8.2,8.3,8.4,8.5"
+PHP_VERSIONS_DEFAULT="8.1"
 PHP_TYPES_DEFAULT="cli,fpm"
 
 NGINX_IMAGE_REPO_DEFAULT="magento/magento-cloud-docker-nginx"

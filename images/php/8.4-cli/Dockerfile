@@ -12,45 +12,24 @@ RUN if [ $(uname -m) = "x86_64" ]; then mailhog_arch="amd64"; else mailhog_arch=
 
 FROM php:8.4-cli
 
-ARG COMPOSER_VERSION=2.8.4
+ARG COMPOSER_VERSION=2.9.3
 ARG MAGENTO_ROOT=/app
 ARG COMPOSER_ALLOW_SUPERUSER=1
 ARG COMPOSER_HOME=/composer
 ARG CRONTAB=""
 
-ENV COMPOSER_MEMORY_LIMIT=-1
-ENV COMPOSER_ALLOW_SUPERUSER=${COMPOSER_ALLOW_SUPERUSER}
-ENV COMPOSER_HOME=${COMPOSER_HOME}
-ENV COMPOSER_CLEAR_CACHE=false
-ENV PHP_MEMORY_LIMIT=-1
-ENV PHP_VALIDATE_TIMESTAMPS=1
-ENV DEBUG=false
-ENV MAGENTO_RUN_MODE=production
-ENV SENDMAIL_PATH=/dev/null
-ENV PHPRC=${MAGENTO_ROOT}/php.ini
+ENV COMPOSER_MEMORY_LIMIT -1
+ENV COMPOSER_ALLOW_SUPERUSER ${COMPOSER_ALLOW_SUPERUSER}
+ENV COMPOSER_HOME ${COMPOSER_HOME}
+ENV COMPOSER_CLEAR_CACHE false
+ENV PHP_MEMORY_LIMIT -1
+ENV PHP_VALIDATE_TIMESTAMPS 1
+ENV DEBUG false
+ENV MAGENTO_RUN_MODE production
+ENV SENDMAIL_PATH /dev/null
+ENV PHPRC ${MAGENTO_ROOT}/php.ini
 
-ENV PHP_EXTENSIONS="\
-  bcmath \
-  bz2 \
-  calendar \
-  exif \
-  gd \
-  gettext \
-  intl \
-  mysqli \
-  opcache \
-  pdo_mysql \
-  redis \
-  soap \
-  sockets \
-  sodium \
-  sysvmsg \
-  sysvsem \
-  sysvshm \
-  xsl \
-  zip \
-  pcntl \
-  ftp"
+ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl ftp
 
 # Configure Node.js version
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash
@@ -65,6 +44,7 @@ RUN apt-get update \
   mariadb-client \
   nano \
   nodejs \
+  npm \
   python3 \
   python3-pip \
   redis-tools \
@@ -77,6 +57,7 @@ RUN apt-get update \
   gnupg2 \
   ca-certificates \
   lsb-release \
+  software-properties-common \
   libbz2-dev \
   libjpeg62-turbo-dev \
   libpng-dev \
@@ -85,7 +66,7 @@ RUN apt-get update \
   libgpgme11-dev \
   libicu-dev \
   libldap2-dev \
-  libpcre2-dev \
+  libpcre3-dev \
   libpspell-dev \
   libtidy-dev \
   libxslt1-dev \
@@ -124,6 +105,7 @@ RUN docker-php-ext-install -j$(nproc) \
   mysqli \
   opcache \
   pdo_mysql \
+  pspell \
   shmop \
   soap \
   sockets \
@@ -146,8 +128,7 @@ RUN pecl install -o -f \
   redis \
   xdebug-3.4.0 \
   xmlrpc-1.0.0RC3 \
-  yaml \
-  pspell
+  yaml
 
 RUN curl -L https://packages.blackfire.io/gpg.key | gpg --dearmor > blackfire.io-archive-keyring.gpg \
   && install -o root -g root -m 644 blackfire.io-archive-keyring.gpg /etc/apt/trusted.gpg.d/ \

@@ -12,7 +12,7 @@ RUN if [ $(uname -m) = "x86_64" ]; then mailhog_arch="amd64"; else mailhog_arch=
 
 FROM php:8.3-cli
 
-ARG COMPOSER_VERSION=2.7.0
+ARG COMPOSER_VERSION=2.9.3
 ARG MAGENTO_ROOT=/app
 ARG COMPOSER_ALLOW_SUPERUSER=1
 ARG COMPOSER_HOME=/composer
@@ -44,6 +44,7 @@ RUN apt-get update \
   mariadb-client \
   nano \
   nodejs \
+  npm \
   python3 \
   python3-pip \
   redis-tools \
@@ -56,6 +57,7 @@ RUN apt-get update \
   gnupg2 \
   ca-certificates \
   lsb-release \
+  software-properties-common \
   libbz2-dev \
   libjpeg62-turbo-dev \
   libpng-dev \
@@ -64,7 +66,7 @@ RUN apt-get update \
   libgpgme11-dev \
   libicu-dev \
   libldap2-dev \
-  libpcre2-dev \
+  libpcre3-dev \
   libpspell-dev \
   libtidy-dev \
   libxslt1-dev \

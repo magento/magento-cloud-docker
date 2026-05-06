@@ -37,6 +37,7 @@ RUN apt-get update \
   gnupg2 \
   ca-certificates \
   lsb-release \
+  software-properties-common \
   libbz2-dev \
   libjpeg62-turbo-dev \
   libpng-dev \
@@ -45,7 +46,7 @@ RUN apt-get update \
   libgpgme11-dev \
   libicu-dev \
   libldap2-dev \
-  libpcre2-dev \
+  libpcre3-dev \
   libpspell-dev \
   libtidy-dev \
   libxslt1-dev \
