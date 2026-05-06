@@ -44,7 +44,6 @@ RUN apt-get update \
   mariadb-client \
   nano \
   nodejs \
-  npm \
   python3 \
   python3-pip \
   redis-tools \
