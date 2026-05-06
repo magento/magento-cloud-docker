@@ -19,11 +19,7 @@ image="${VARNISH_IMAGE_REPO:-$VARNISH_IMAGE_REPO_DEFAULT}"
 # images/ is at repo root (sibling of docker-images-script/)
 IMAGES_DIR="${ROOT_DIR}/../images/varnish"
 
-if ! docker buildx ls | grep -q "$BUILDER"; then
-    docker buildx create --use --name "$BUILDER" --driver docker-container
-else
-    docker buildx use "$BUILDER"
-fi
+docker buildx create --name "$BUILDER" --driver docker-container --use 2>/dev/null || docker buildx use "$BUILDER"
 docker buildx inspect --bootstrap "$BUILDER" >/dev/null 2>&1 || true
 
 for version in "${varnishVersions[@]}"; do

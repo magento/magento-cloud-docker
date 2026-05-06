@@ -18,11 +18,7 @@ image="${OPENSEARCH_IMAGE_REPO:-$OPENSEARCH_IMAGE_REPO_DEFAULT}"
 
 IMAGES_DIR="${ROOT_DIR}/../images/opensearch"
 
-if ! docker buildx ls | grep -q "$BUILDER"; then
-    docker buildx create --use --name "$BUILDER" --driver docker-container
-else
-    docker buildx use "$BUILDER"
-fi
+docker buildx create --name "$BUILDER" --driver docker-container --use 2>/dev/null || docker buildx use "$BUILDER"
 docker buildx inspect --bootstrap "$BUILDER" >/dev/null 2>&1 || true
 
 get_image_dir() {

@@ -18,11 +18,7 @@ image="${MAILHOG_IMAGE_REPO:-$MAILHOG_IMAGE_REPO_DEFAULT}"
 # images/ is at repo root (sibling of docker-images-script/)
 IMAGES_DIR="${ROOT_DIR}/../images"
 
-if docker buildx inspect "$BUILDER" >/dev/null 2>&1; then
-    docker buildx use "$BUILDER"
-else
-    docker buildx create --name "$BUILDER" --use --driver docker-container
-fi
+docker buildx create --name "$BUILDER" --driver docker-container --use 2>/dev/null || docker buildx use "$BUILDER"
 docker buildx inspect --bootstrap "$BUILDER" >/dev/null 2>&1 || true
 
 for version in "${mailhogVersions[@]}"; do
