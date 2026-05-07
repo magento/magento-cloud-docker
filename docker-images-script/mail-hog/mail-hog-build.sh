@@ -85,10 +85,19 @@ DOCKERFILE
     build_start=$SECONDS
     if [[ "$run_release" == "true" || "$build_and_push_hash" == "true" ]]; then
         echo "Building & pushing: $tag"
-        docker buildx build --no-cache             --platform "$(IFS=,; echo "${platforms[*]}")"             --provenance=true             --sbom=true             -t "$tag"             --push .
+        docker buildx build --no-cache \
+            --platform "$(IFS=,; echo "${platforms[*]}")" \
+            --provenance=false \
+            --sbom=false \
+            -t "$tag" \
+            --push .
     else
         echo "Building (no push): $tag"
-        docker buildx build --no-cache             --platform "$(IFS=,; echo "${platforms[*]}")"             -t "$tag" .
+        docker buildx build --no-cache \
+            --platform "$(IFS=,; echo "${platforms[*]}")" \
+            --provenance=false \
+            --sbom=false \
+            -t "$tag" .
     fi
 
     build_elapsed=$(( SECONDS - build_start ))

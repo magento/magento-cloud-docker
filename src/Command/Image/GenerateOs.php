@@ -102,6 +102,17 @@ class GenerateOs extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+        $log4jFix = <<<LOG4J
+USER root
+RUN yum -y install zip && \
+    zip -q -d /usr/share/opensearch/lib/log4j-core-*.jar org/apache/logging/log4j/core/lookup/JndiLookup.class && \
+    yum remove -y zip && \
+    yum -y clean all && \
+    rm -rf /var/cache
+USER opensearch
+
+LOG4J;
+
         foreach ($this->versionMap as $version => $versionData) {
             $destination = $this->directoryList->getImagesRoot() . '/opensearch/' . $version;
             $dataDir = $this->directoryList->getImagesRoot() . '/opensearch/os/';
@@ -118,6 +129,7 @@ class GenerateOs extends Command
                     $this->filesystem->get($dockerfile),
                     [
                         '{%version%}' => $versionData['real-version'],
+                        '{%log4j_fix%}' => str_starts_with((string)$version, '1.') ? $log4jFix : '',
                     ]
                 )
             );

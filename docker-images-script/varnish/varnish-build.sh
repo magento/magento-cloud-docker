@@ -44,10 +44,21 @@ for version in "${varnishVersions[@]}"; do
     build_start=$SECONDS
     if [[ "$run_release" == "true" || "$build_and_push_hash" == "true" ]]; then
         echo "Building & pushing: $tag (${platforms[*]})"
-        docker buildx build --no-cache             --platform "$(IFS=,; echo "${platforms[*]}")"             --provenance=true             --sbom=true             -t "$tag"             --push             "$image_dir"
+        docker buildx build --no-cache \
+            --platform "$(IFS=,; echo "${platforms[*]}")" \
+            --provenance=false \
+            --sbom=false \
+            -t "$tag" \
+            --push \
+            "$image_dir"
     else
         echo "Building (no push): $tag (${platforms[*]})"
-        docker buildx build --no-cache             --platform "$(IFS=,; echo "${platforms[*]}")"             -t "$tag"             "$image_dir"
+        docker buildx build --no-cache \
+            --platform "$(IFS=,; echo "${platforms[*]}")" \
+            --provenance=false \
+            --sbom=false \
+            -t "$tag" \
+            "$image_dir"
     fi
 
     build_elapsed=$(( SECONDS - build_start ))

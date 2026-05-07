@@ -94,6 +94,14 @@ sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-* && \
     
 FIX;
 // phpcs:enable
+        $log4jFix = <<<LOG4J
+RUN %s yum -y install zip && \
+    zip -q -d /usr/share/elasticsearch/lib/log4j-core-*.jar org/apache/logging/log4j/core/lookup/JndiLookup.class && \
+    yum remove -y zip && \
+    yum -y clean all && \
+    rm -rf /var/cache
+
+LOG4J;
 
         foreach ($this->versionMap as $version => $versionData) {
             $destination = $this->directoryList->getImagesRoot() . '/elasticsearch/' . $version;
@@ -112,7 +120,9 @@ FIX;
                     [
                         '{%version%}' => $versionData['real-version'],
                         '{%single_node%}' => $versionData['single-node'] ? self::SINGLE_NODE : '',
-                        '{%fix_repos%}' => in_array($version, ['7.10', '7.11']) ? $fixRepo : '',
+                        '{%log4j_fix%}' => in_array($version, ['7.10', '7.11'])
+                            ? sprintf($log4jFix, $fixRepo)
+                            : '',
                     ]
                 )
             );
