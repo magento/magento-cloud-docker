@@ -481,6 +481,18 @@ class TestInfrastructure extends BaseModule
     }
 
     /**
+     * Gets root package version for the tested code.
+     *
+     * @return string
+     */
+    public function getRootPackageVersion(): string
+    {
+        $composer = json_decode(file_get_contents(codecept_root_dir('composer.json')), true);
+
+        return $composer['version'] ?? '';
+    }
+
+    /**
      * Runs bash command
      *
      * @param string $command
