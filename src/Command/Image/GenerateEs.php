@@ -31,16 +31,36 @@ class GenerateEs extends Command
      * @var array
      */
     private $versionMap = [
+        '6.5' => [
+            'real-version' => '6.5.4',
+            'single-node' => false,
+        ],
+        '6.8' => [
+            'real-version' => '6.8.15',
+            'single-node' => true,
+        ],
+        '7.5' => [
+            'real-version' => '7.5.2',
+            'single-node' => true,
+        ],
+        '7.6' => [
+            'real-version' => '7.6.2',
+            'single-node' => true,
+        ],
+        '7.7' => [
+            'real-version' => '7.7.1',
+            'single-node' => true,
+        ],
+        '7.9' => [
+            'real-version' => '7.9.3',
+            'single-node' => true,
+        ],
         '7.10' => [
             'real-version' => '7.10.2',
             'single-node' => true,
         ],
         '7.11' => [
             'real-version' => '7.11.2',
-            'single-node' => true,
-        ],
-        '8' => [
-            'real-version' => '8.11.3',
             'single-node' => true,
         ],
     ];
@@ -94,14 +114,6 @@ sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-* && \
     
 FIX;
 // phpcs:enable
-        $log4jFix = <<<LOG4J
-RUN %s yum -y install zip && \
-    zip -q -d /usr/share/elasticsearch/lib/log4j-core-*.jar org/apache/logging/log4j/core/lookup/JndiLookup.class && \
-    yum remove -y zip && \
-    yum -y clean all && \
-    rm -rf /var/cache
-
-LOG4J;
 
         foreach ($this->versionMap as $version => $versionData) {
             $destination = $this->directoryList->getImagesRoot() . '/elasticsearch/' . $version;
@@ -120,9 +132,7 @@ LOG4J;
                     [
                         '{%version%}' => $versionData['real-version'],
                         '{%single_node%}' => $versionData['single-node'] ? self::SINGLE_NODE : '',
-                        '{%log4j_fix%}' => in_array($version, ['7.10', '7.11'])
-                            ? sprintf($log4jFix, $fixRepo)
-                            : '',
+                        '{%fix_repos%}' => in_array($version, ['7.10', '7.11']) ? $fixRepo : '',
                     ]
                 )
             );
