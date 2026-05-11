@@ -5,22 +5,22 @@
 
 SUPPORTED_TARGETS=("mail-hog" "php" "nginx" "varnish" "elasticsearch" "opensearch")
 
-MAILHOG_IMAGE_REPO_DEFAULT="magento/magento-cloud-docker-mailhog"
+MAILHOG_IMAGE_REPO_DEFAULT="magento-commerce/magento-cloud-docker-mailhog"
 MAILHOG_VERSIONS_DEFAULT="1.0"
 
-PHP_IMAGE_REPO_DEFAULT="magento/magento-cloud-docker-php"
+PHP_IMAGE_REPO_DEFAULT="magento-commerce/magento-cloud-docker-php"
 PHP_VERSIONS_DEFAULT="8.1"
 PHP_TYPES_DEFAULT="cli,fpm"
 
-NGINX_IMAGE_REPO_DEFAULT="magento/magento-cloud-docker-nginx"
+NGINX_IMAGE_REPO_DEFAULT="magento-commerce/magento-cloud-docker-nginx"
 NGINX_VERSIONS_DEFAULT="1.24"
 
-VARNISH_IMAGE_REPO_DEFAULT="magento/magento-cloud-docker-varnish"
+VARNISH_IMAGE_REPO_DEFAULT="magento-commerce/magento-cloud-docker-varnish"
 VARNISH_VERSIONS_DEFAULT="6.0,6.2,6.5,6.6,7.0,7.1,7.1.1,8.0"
 VARNISH_MULTIARCH_VERSIONS_DEFAULT="6.0,6.6,7.0,7.1,7.1.1,8.0"
 
-ELASTICSEARCH_IMAGE_REPO_DEFAULT="magento/magento-cloud-docker-elasticsearch"
+ELASTICSEARCH_IMAGE_REPO_DEFAULT="magento-commerce/magento-cloud-docker-elasticsearch"
 ELASTICSEARCH_VERSIONS_DEFAULT="7.10,7.11,8"
 
-OPENSEARCH_IMAGE_REPO_DEFAULT="magento/magento-cloud-docker-opensearch"
+OPENSEARCH_IMAGE_REPO_DEFAULT="magento-commerce/magento-cloud-docker-opensearch"
 OPENSEARCH_VERSIONS_DEFAULT="1.1,1.2,1.3,2.3,2.4,2.5,2.12,3,3.5"

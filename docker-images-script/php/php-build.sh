@@ -45,7 +45,7 @@ for version in "${phpVersions[@]}"; do
         build_start=$SECONDS
         if [[ "$run_release" == "true" || "$build_and_push_hash" == "true" ]]; then
             echo "Building & pushing: $tag"
-            docker buildx build --no-cache \
+            docker buildx build \
                 --platform "$(IFS=,; echo "${platforms[*]}")" \
                 --provenance=false \
                 --sbom=false \
@@ -54,7 +54,7 @@ for version in "${phpVersions[@]}"; do
                 "$image_dir"
         else
             echo "Building (no push): $tag"
-            docker buildx build --no-cache \
+            docker buildx build \
                 --platform "$(IFS=,; echo "${platforms[*]}")" \
                 --provenance=false \
                 --sbom=false \
