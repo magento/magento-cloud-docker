@@ -221,6 +221,52 @@ class RelationshipTest extends TestCase
     }
 
     /**
+     *
+     * @param string $dbVersion Value from `getServiceVersion` for {@see ServiceInterface::SERVICE_DB}
+     * @return void
+     * @throws ConfigurationMismatchException
+     */
+    #[DataProvider('databaseMariaDbImageTagDataProvider')]
+    public function testGetWithDatabaseMariaDbImageTag(string $dbVersion): void
+    {
+        $this->configMock->method('hasServiceEnabled')
+            ->willReturnCallback(function ($service) {
+                return $service === ServiceInterface::SERVICE_DB;
+            });
+
+        $this->configMock->method('getServiceVersion')
+            ->with(ServiceInterface::SERVICE_DB)
+            ->willReturn($dbVersion);
+
+        $relationships = $this->relationship->get($this->configMock);
+
+        $this->assertArrayHasKey('database', $relationships);
+        $this->assertSame('db', $relationships['database'][0]['host']);
+        $this->assertSame('3306', $relationships['database'][0]['port']);
+        $this->assertSame('magento2', $relationships['database'][0]['path']);
+        $this->assertSame('magento2', $relationships['database'][0]['username']);
+        $this->assertSame('magento2', $relationships['database'][0]['password']);
+        $this->assertSame('mysql:' . $dbVersion, $relationships['database'][0]['type']);
+    }
+
+    /**
+     * MariaDB image tags exercised in functional compose tests.
+     *
+     * @return array<string, array{0: string}>
+     */
+    public static function databaseMariaDbImageTagDataProvider(): array
+    {
+        return [
+            'mariadb 10.6' => ['10.6'],
+            'mariadb 10.11' => ['10.11'],
+            'mariadb 11.4' => ['11.4'],
+            'mariadb 11.8' => ['11.8'],
+            'mariadb 12.2' => ['12.2'],
+            'mariadb 12.3-rc' => ['12.3-rc'],
+        ];
+    }
+
+    /**
      * Test relationship configuration for Valkey 8.1.
      *
      * Validates that Valkey 8.1 service relationships are properly configured

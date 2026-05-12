@@ -1,0 +1,11 @@
+mysql:
+  type: mysql:11.4
+  disk: 2048
+
+opensearch:
+  type: opensearchsearch:3
+  disk: 512
+  configuration:
+    plugins:
+      - plugin_3
+      - plugin_4
