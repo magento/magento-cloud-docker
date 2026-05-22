@@ -18,11 +18,7 @@ image="${MAILHOG_IMAGE_REPO:-$MAILHOG_IMAGE_REPO_DEFAULT}"
 # images/ is at repo root (sibling of docker-images-script/)
 IMAGES_DIR="${ROOT_DIR}/../images"
 
-if docker buildx inspect "$BUILDER" >/dev/null 2>&1; then
-    docker buildx use "$BUILDER"
-else
-    docker buildx create --name "$BUILDER" --use --driver docker-container
-fi
+docker buildx create --name "$BUILDER" --driver docker-container --use 2>/dev/null || docker buildx use "$BUILDER"
 docker buildx inspect --bootstrap "$BUILDER" >/dev/null 2>&1 || true
 
 for version in "${mailhogVersions[@]}"; do
@@ -89,10 +85,19 @@ DOCKERFILE
     build_start=$SECONDS
     if [[ "$run_release" == "true" || "$build_and_push_hash" == "true" ]]; then
         echo "Building & pushing: $tag"
-        docker buildx build --no-cache             --platform "$(IFS=,; echo "${platforms[*]}")"             --provenance=true             --sbom=true             -t "$tag"             --push .
+        docker buildx build --no-cache \
+            --platform "$(IFS=,; echo "${platforms[*]}")" \
+            --provenance=false \
+            --sbom=false \
+            -t "$tag" \
+            --push .
     else
         echo "Building (no push): $tag"
-        docker buildx build --no-cache             --platform "$(IFS=,; echo "${platforms[*]}")"             -t "$tag" .
+        docker buildx build --no-cache \
+            --platform "$(IFS=,; echo "${platforms[*]}")" \
+            --provenance=false \
+            --sbom=false \
+            -t "$tag" .
     fi
 
     build_elapsed=$(( SECONDS - build_start ))
