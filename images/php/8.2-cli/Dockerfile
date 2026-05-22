@@ -2,13 +2,13 @@
 FROM golang:1.15 AS builder
 
 RUN if [ $(uname -m) = "x86_64" ]; then mailhog_arch="amd64"; else mailhog_arch="arm64"; fi \
-  && wget -O mhsendmail.tar.gz https://github.com/mailhog/mhsendmail/archive/refs/tags/v0.2.0.tar.gz \
-  && tar -xf mhsendmail.tar.gz \
-  && mkdir -p ./src/github.com/mailhog/ \
-  && mv ./mhsendmail-0.2.0 ./src/github.com/mailhog/mhsendmail \
-  && cd ./src/github.com/mailhog/mhsendmail/ \
-  && go get . \
-  && GOOS=linux GOARCH=${mailhog_arch} go build -o mhsendmail .
+    && wget -O mhsendmail.tar.gz https://github.com/mailhog/mhsendmail/archive/refs/tags/v0.2.0.tar.gz \
+    && tar -xf mhsendmail.tar.gz \
+    && mkdir -p ./src/github.com/mailhog/ \
+    && mv ./mhsendmail-0.2.0 ./src/github.com/mailhog/mhsendmail \
+    && cd ./src/github.com/mailhog/mhsendmail/ \
+    && go get . \
+    && GOOS=linux GOARCH=${mailhog_arch} go build -o mhsendmail .
 
 FROM php:8.2-cli
 
@@ -165,17 +165,17 @@ RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/b
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN ["chmod", "+x", \
-  "/docker-entrypoint.sh", \
-  "/usr/local/bin/magento-installer", \
-  "/usr/local/bin/magento-command", \
-  "/usr/local/bin/mftf-command", \
-  "/usr/local/bin/ece-command", \
-  "/usr/local/bin/cloud-build", \
-  "/usr/local/bin/cloud-deploy", \
-  "/usr/local/bin/cloud-post-deploy", \
-  "/usr/local/bin/run-cron", \
-  "/usr/local/bin/run-hooks" \
-  ]
+    "/docker-entrypoint.sh", \
+    "/usr/local/bin/magento-installer", \
+    "/usr/local/bin/magento-command", \
+    "/usr/local/bin/mftf-command", \
+    "/usr/local/bin/ece-command", \
+    "/usr/local/bin/cloud-build", \
+    "/usr/local/bin/cloud-deploy", \
+    "/usr/local/bin/cloud-post-deploy", \
+    "/usr/local/bin/run-cron", \
+    "/usr/local/bin/run-hooks" \
+]
 
 RUN mkdir -p ${MAGENTO_ROOT}
 

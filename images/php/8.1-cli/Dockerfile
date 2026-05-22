@@ -189,17 +189,17 @@ RUN groupadd -g 1000 www && useradd -g 1000 -u 1000 -d ${MAGENTO_ROOT} -s /bin/b
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN ["chmod", "+x", \
-  "/docker-entrypoint.sh", \
-  "/usr/local/bin/magento-installer", \
-  "/usr/local/bin/magento-command", \
-  "/usr/local/bin/mftf-command", \
-  "/usr/local/bin/ece-command", \
-  "/usr/local/bin/cloud-build", \
-  "/usr/local/bin/cloud-deploy", \
-  "/usr/local/bin/cloud-post-deploy", \
-  "/usr/local/bin/run-cron", \
-  "/usr/local/bin/run-hooks" \
-  ]
+    "/docker-entrypoint.sh", \
+    "/usr/local/bin/magento-installer", \
+    "/usr/local/bin/magento-command", \
+    "/usr/local/bin/mftf-command", \
+    "/usr/local/bin/ece-command", \
+    "/usr/local/bin/cloud-build", \
+    "/usr/local/bin/cloud-deploy", \
+    "/usr/local/bin/cloud-post-deploy", \
+    "/usr/local/bin/run-cron", \
+    "/usr/local/bin/run-hooks" \
+]
 
 RUN mkdir -p ${MAGENTO_ROOT}
 
