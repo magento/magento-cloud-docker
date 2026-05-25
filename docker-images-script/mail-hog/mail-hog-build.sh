@@ -82,22 +82,21 @@ DOCKERFILE
         tag="${image}:${version}-${release}"
     fi
 
+    build_args=(
+        --no-cache
+        --platform "$(IFS=,; echo "${platforms[*]}")"
+        --provenance=false
+        --sbom=false
+        -t "$tag"
+    )
+
     build_start=$SECONDS
     if [[ "$run_release" == "true" || "$build_and_push_hash" == "true" ]]; then
         echo "Building & pushing: $tag"
-        docker buildx build --no-cache \
-            --platform "$(IFS=,; echo "${platforms[*]}")" \
-            --provenance=false \
-            --sbom=false \
-            -t "$tag" \
-            --push .
+        docker buildx build "${build_args[@]}" --push .
     else
         echo "Building (no push): $tag"
-        docker buildx build --no-cache \
-            --platform "$(IFS=,; echo "${platforms[*]}")" \
-            --provenance=false \
-            --sbom=false \
-            -t "$tag" .
+        docker buildx build "${build_args[@]}" .
     fi
 
     build_elapsed=$(( SECONDS - build_start ))
