@@ -1,3 +1,3 @@
 FROM varnish:7.1
 
-COPY etc/default.vcl /etc/varnish/
+COPY --chmod=0644 etc/default.vcl /etc/varnish/default.vcl

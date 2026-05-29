@@ -26,17 +26,8 @@ class RabbitMq82Cest extends RabbitMqCest
     {
         return [
             [
-                'version' => '3.9',
-            ],
-            [
-                'version' => '3.9-management',
-            ],
-            [
-                'version' => '3.11',
-            ],
-            [
-                'version' => '3.11-management',
-            ],
+                'version' => '4.2',
+            ]
         ];
     }
 }
