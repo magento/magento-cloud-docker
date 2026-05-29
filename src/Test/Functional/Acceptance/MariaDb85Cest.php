@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 /**
- * PHP 8.5 line — MariaDB 11.4, 11.8, 12.2, 12.3-rc functional coverage.
+ * PHP 8.5 line — MariaDB 11.8, 12.2, 12.3-rc functional coverage.
  *
  * @group php85
  */
@@ -25,9 +25,6 @@ class MariaDb85Cest extends MariaDbCest
     protected function dataProvider(): array
     {
         return [
-            [
-                'version' => '11.4',
-            ],
             [
                 'version' => '11.8',
             ],

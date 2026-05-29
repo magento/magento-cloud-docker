@@ -28,9 +28,6 @@ class MariaDb81Cest extends MariaDbCest
             [
                 'version' => '10.11',
             ],
-            [
-                'version' => '10.6',
-            ],
         ];
     }
 }
