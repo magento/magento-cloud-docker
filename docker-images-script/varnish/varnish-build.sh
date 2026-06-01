@@ -19,11 +19,7 @@ image="${VARNISH_IMAGE_REPO:-$VARNISH_IMAGE_REPO_DEFAULT}"
 # images/ is at repo root (sibling of docker-images-script/)
 IMAGES_DIR="${ROOT_DIR}/../images/varnish"
 
-if ! docker buildx ls | grep -q "$BUILDER"; then
-    docker buildx create --use --name "$BUILDER" --driver docker-container
-else
-    docker buildx use "$BUILDER"
-fi
+docker buildx create --name "$BUILDER" --driver docker-container --use 2>/dev/null || docker buildx use "$BUILDER"
 docker buildx inspect --bootstrap "$BUILDER" >/dev/null 2>&1 || true
 
 for version in "${varnishVersions[@]}"; do
@@ -45,13 +41,21 @@ for version in "${varnishVersions[@]}"; do
         platforms=("linux/amd64")
     fi
 
+    build_args=(
+        --no-cache
+        --platform "$(IFS=,; echo "${platforms[*]}")"
+        --provenance=false
+        --sbom=false
+        -t "$tag"
+    )
+
     build_start=$SECONDS
     if [[ "$run_release" == "true" || "$build_and_push_hash" == "true" ]]; then
         echo "Building & pushing: $tag (${platforms[*]})"
-        docker buildx build --no-cache             --platform "$(IFS=,; echo "${platforms[*]}")"             --provenance=true             --sbom=true             -t "$tag"             --push             "$image_dir"
+        docker buildx build "${build_args[@]}" --push "$image_dir"
     else
         echo "Building (no push): $tag (${platforms[*]})"
-        docker buildx build --no-cache             --platform "$(IFS=,; echo "${platforms[*]}")"             -t "$tag"             "$image_dir"
+        docker buildx build "${build_args[@]}" "$image_dir"
     fi
 
     build_elapsed=$(( SECONDS - build_start ))

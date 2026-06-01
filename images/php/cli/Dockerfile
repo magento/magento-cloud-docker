@@ -1,14 +1,14 @@
 {%note%}
-FROM golang:1.15 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.15 AS builder
+ARG TARGETARCH
 
-RUN if [ $(uname -m) = "x86_64" ]; then mailhog_arch="amd64"; else mailhog_arch="arm64"; fi \
-    && wget -O mhsendmail.tar.gz https://github.com/mailhog/mhsendmail/archive/refs/tags/v0.2.0.tar.gz \
+RUN wget -O mhsendmail.tar.gz https://github.com/mailhog/mhsendmail/archive/refs/tags/v0.2.0.tar.gz \
     && tar -xf mhsendmail.tar.gz \
     && mkdir -p ./src/github.com/mailhog/ \
     && mv ./mhsendmail-0.2.0 ./src/github.com/mailhog/mhsendmail \
     && cd ./src/github.com/mailhog/mhsendmail/ \
     && go get . \
-    && GOOS=linux GOARCH=${mailhog_arch} go build -o mhsendmail .
+    && GOOS=linux GOARCH=${TARGETARCH} go build -o mhsendmail .
 
 FROM php:{%version%}-cli
 
