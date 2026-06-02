@@ -34,24 +34,21 @@ for version in "${elasticsearchVersions[@]}"; do
         tag="${image}:${version}-${release}"
     fi
 
+    build_args=(
+        --no-cache
+        --platform "$(IFS=,; echo "${platforms[*]}")"
+        --provenance=false
+        --sbom=false
+        -t "$tag"
+    )
+
     build_start=$SECONDS
     if [[ "$run_release" == "true" || "$build_and_push_hash" == "true" ]]; then
         echo "Building & pushing: $tag"
-        docker buildx build --no-cache \
-            --platform "$(IFS=,; echo "${platforms[*]}")" \
-            --provenance=false \
-            --sbom=false \
-            -t "$tag" \
-            --push \
-            "$image_dir"
+        docker buildx build "${build_args[@]}" --push "$image_dir"
     else
         echo "Building (no push): $tag"
-        docker buildx build --no-cache \
-            --platform "$(IFS=,; echo "${platforms[*]}")" \
-            --provenance=false \
-            --sbom=false \
-            -t "$tag" \
-            "$image_dir"
+        docker buildx build "${build_args[@]}" "$image_dir"
     fi
 
     build_elapsed=$(( SECONDS - build_start ))
