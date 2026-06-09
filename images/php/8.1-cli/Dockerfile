@@ -12,7 +12,7 @@ RUN wget -O mhsendmail.tar.gz https://github.com/mailhog/mhsendmail/archive/refs
 
 FROM php:8.1.1-cli
 
-ARG COMPOSER_VERSION=2.2.26
+ARG COMPOSER_VERSION=2.2.28
 ARG MAGENTO_ROOT=/app
 ARG COMPOSER_ALLOW_SUPERUSER=1
 ARG COMPOSER_HOME=/composer
