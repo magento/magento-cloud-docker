@@ -14,36 +14,15 @@ FROM php:8.4-fpm
 
 ARG MAGENTO_ROOT=/app
 
-ENV PHP_MEMORY_LIMIT=2G
-ENV PHP_VALIDATE_TIMESTAMPS=1
-ENV DEBUG=false
-ENV MAGENTO_RUN_MODE=production
-ENV UPLOAD_MAX_FILESIZE=64M
-ENV SENDMAIL_PATH=/dev/null
-ENV PHPRC=${MAGENTO_ROOT}/php.ini
+ENV PHP_MEMORY_LIMIT 2G
+ENV PHP_VALIDATE_TIMESTAMPS 1
+ENV DEBUG false
+ENV MAGENTO_RUN_MODE production
+ENV UPLOAD_MAX_FILESIZE 64M
+ENV SENDMAIL_PATH /dev/null
+ENV PHPRC ${MAGENTO_ROOT}/php.ini
 
-ENV PHP_EXTENSIONS="\
-  bcmath \
-  bz2 \
-  calendar \
-  exif \
-  gd \
-  gettext \
-  intl \
-  mysqli \
-  opcache \
-  pdo_mysql \
-  redis \
-  soap \
-  sockets \
-  sodium \
-  sysvmsg \
-  sysvsem \
-  sysvshm \
-  xsl \
-  zip \
-  pcntl \
-  ftp"
+ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl ftp
 
 # Install dependencies
 RUN apt-get update \
@@ -121,8 +100,7 @@ RUN pecl install -o -f \
   redis \
   xdebug-3.4.0 \
   xmlrpc-1.0.0RC3 \
-  yaml \
-  pspell
+  yaml
 
 RUN curl -L https://packages.blackfire.io/gpg.key | gpg --dearmor > blackfire.io-archive-keyring.gpg \
   && install -o root -g root -m 644 blackfire.io-archive-keyring.gpg /etc/apt/trusted.gpg.d/ \

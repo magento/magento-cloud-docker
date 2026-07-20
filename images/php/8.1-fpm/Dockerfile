@@ -89,7 +89,10 @@ RUN docker-php-ext-install -j$(nproc) \
   zip \
   pcntl
 
-RUN pecl install -o -f \
+RUN pear channel-update pear.php.net \
+  && pear upgrade --force pear/Archive_Tar pear/PEAR \
+  && pecl channel-update pecl.php.net \
+  && pecl install -o -f \
   gnupg \
   mailparse \
   msgpack \

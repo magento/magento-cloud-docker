@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 /**
- * RabbitMQ acceptance tests for PHP 8.1 — template 2.4.5 maps to ~3.5 || ~3.7 || ~3.8 || ~3.9.
+ * RabbitMQ acceptance tests for PHP 8.1 — template 2.4.5 maps to 4.2 and 4.3.
  *
  * @group php81
  */
@@ -25,18 +25,8 @@ class RabbitMq81Cest extends RabbitMqCest
     protected function dataProvider(): array
     {
         return [
-            [
-                'version' => '3.8',
-            ],
-            [
-                'version' => '3.8-management',
-            ],
-            [
-                'version' => '3.9',
-            ],
-            [
-                'version' => '3.9-management',
-            ],
+            ['version' => '4.2'],
+            ['version' => '4.3'],
         ];
     }
 }
