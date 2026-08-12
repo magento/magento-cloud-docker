@@ -152,6 +152,7 @@ sub vcl_backend_response {
    # If page is not cacheable then bypass varnish for 2 minutes as Hit-For-Pass
    if (beresp.ttl <= 0s ||
         beresp.http.Surrogate-control ~ "no-store" ||
+        (!beresp.http.Surrogate-Control && beresp.http.Cache-Control ~ "no-cache|no-store") ||
         (!beresp.http.Surrogate-Control && beresp.http.Vary == "*")) {
         # Mark as Hit-For-Pass for the next 2 minutes
         set beresp.ttl = 120s;
