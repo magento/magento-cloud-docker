@@ -28,6 +28,10 @@ class Valkey85Cest extends ValkeyCest
             [
                 'version' => '9',
             ],
+            [
+                'version' => '9',
+                'template_version' => '2.4.10-alpha',
+            ],
         ];
     }
 }

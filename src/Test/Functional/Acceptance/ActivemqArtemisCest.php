@@ -28,6 +28,7 @@ class ActivemqArtemisCest extends AbstractCest
      */
     public function testActivemqArtemis(CliTester $I, Example $data): void
     {
+        $this->prepareWorkDirForTemplate($I, $data['template_version'] ?? static::TEMPLATE_VERSION);
         $I->generateDockerCompose($this->buildCommand($data));
         $I->replaceImagesWithCustom();
         $I->startEnvironment();
@@ -60,13 +61,13 @@ class ActivemqArtemisCest extends AbstractCest
     {
         // Test ActiveMQ Artemis web console accessibility (port 8161) using curl instead of nc
         $I->runDockerComposeCommand('exec -T fpm curl -f -s http://activemq-artemis.magento2.docker:8161/ > /dev/null');
-        
+
         // Test ActiveMQ Artemis broker port accessibility (port 61616) using telnet timeout
         $I->runDockerComposeCommand('exec -T fpm timeout 5 bash -c "</dev/tcp/activemq-artemis.magento2.docker/61616"');
-        
+
         // Test ActiveMQ Artemis STOMP port accessibility (port 61613)
         $I->runDockerComposeCommand('exec -T fpm timeout 5 bash -c "</dev/tcp/activemq-artemis.magento2.docker/61613"');
-        
+
         // Test that ActiveMQ Artemis is accessible through direct host name
         $I->runDockerComposeCommand('exec -T fpm timeout 5 bash -c "</dev/tcp/activemq-artemis/61616"');
     }
@@ -82,11 +83,11 @@ class ActivemqArtemisCest extends AbstractCest
         // Test ActiveMQ Artemis broker status using artemis CLI
         $I->runDockerComposeCommand($this->buildArtemisCommand('queue stat --user admin --password admin'));
         $I->seeInOutput('Connection brokerURL');
-        
+
         // Test that we can see the default system queues
         $I->seeInOutput('DLQ');
         $I->seeInOutput('ExpiryQueue');
-        
+
         // Test broker information
         $I->runDockerComposeCommand($this->buildArtemisCommand('address show --user admin --password admin'));
         $I->seeInOutput('DLQ');
@@ -108,7 +109,7 @@ class ActivemqArtemisCest extends AbstractCest
             )
         );
         $I->seeInOutput('Produced: 1 messages');
-        
+
         // Test consuming the message from the DLQ queue
         $I->runDockerComposeCommand(
             $this->buildArtemisCommand(
@@ -116,7 +117,7 @@ class ActivemqArtemisCest extends AbstractCest
             )
         );
         $I->seeInOutput('Consumed: 1 messages');
-        
+
         // Test broker memory and connection info
         $I->runDockerComposeCommand($this->buildArtemisCommand('queue stat --user admin --password admin'));
         $I->seeInOutput('Connection brokerURL');
