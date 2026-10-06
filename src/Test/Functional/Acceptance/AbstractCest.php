@@ -14,8 +14,6 @@ use CliTester;
  */
 abstract class AbstractCest
 {
-    use Connect20RepositoryTrait;
-
     /**
      * Template version for testing
      */
@@ -23,10 +21,9 @@ abstract class AbstractCest
 
     /**
      * Product metapackages required for pre-release template versions, keyed by template version.
-     * Pre-release builds are available through the connect20 repository only.
      */
     private const TEMPLATE_PRODUCT_DEPENDENCIES = [
-        '2.4.10-alpha' => ['magento/product-enterprise-edition' => '^2.4.10-alpha111'],
+        '2.4.10-alpha' => ['magento/product-enterprise-edition' => '^2.4.10-alpha1'],
     ];
 
     /**
@@ -112,14 +109,12 @@ abstract class AbstractCest
 
         if ($I->isCacheWorkDirExists($templateVersion)) {
             $I->restoreWorkDirFromCache($templateVersion);
-            $this->applyConnect20Configuration($I);
 
             return;
         }
 
         $I->cloneTemplateToWorkDir($templateVersion);
         $I->createAuthJson();
-        $this->applyConnect20Configuration($I);
         $I->createArtifactsDir();
         $dockerVersion = $I->getRootPackageVersion();
         $I->createArtifactCurrentTestedCode('docker', $dockerVersion);

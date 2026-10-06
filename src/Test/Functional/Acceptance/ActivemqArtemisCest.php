@@ -180,6 +180,9 @@ class ActivemqArtemisCest extends AbstractCest
             [
                 'version' => '2.42.0',
             ],
+            [
+                'version' => '2.54.0',
+            ],
         ];
     }
 }

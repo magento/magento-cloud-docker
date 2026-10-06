@@ -35,7 +35,7 @@ class Opensearch85Cest extends OpensearchCest
      */
     protected function getVersions(): array
     {
-        return ['3.5'];
+        return ['3.5','3.7'];
     }
 
     /**

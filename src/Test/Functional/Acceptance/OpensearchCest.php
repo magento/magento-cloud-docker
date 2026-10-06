@@ -25,7 +25,7 @@ class OpensearchCest extends AbstractCest
      */
     protected function getVersions(): array
     {
-        return ['1.1', '1.2', '1.3', '2.3', '2.4', '2.5', '2.12', '2.19', '3.0', '3.5'];
+        return ['1.1', '1.2', '1.3', '2.3', '2.4', '2.5', '2.12', '2.19', '3.0', '3.5', '3.7'];
     }
 
     /**
