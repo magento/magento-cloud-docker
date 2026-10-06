@@ -24,6 +24,11 @@ ENV PHPRC ${MAGENTO_ROOT}/php.ini
 
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl
 
+RUN sed -i \
+  's|deb http://security.debian.org/debian-security|deb [check-valid-until=no] https://archive.debian.org/debian-security|' \
+  /etc/apt/sources.list \
+  && rm -rf /var/lib/apt/lists/*
+
 # Install dependencies
 RUN apt-get update \
   && apt-get upgrade -y \
