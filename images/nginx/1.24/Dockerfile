@@ -19,7 +19,10 @@ COPY etc/xdebug-upstream.conf /etc/nginx/conf.d/xdebug/upstream.conf
 
 RUN mkdir /etc/nginx/ssl
 
-RUN apt-get update && \
+RUN sed -i \
+  's|deb http://deb.debian.org/debian-security|deb [check-valid-until=no] https://archive.debian.org/debian-security|' \
+  /etc/apt/sources.list && \
+    apt-get update && \
     apt-get install -y openssl
 
 RUN openssl req -x509 -newkey rsa:2048 -sha256 -days 730 -nodes \
