@@ -39,6 +39,7 @@ abstract class MariaDbCest extends AbstractCest
      */
     public function testMariaDb(CliTester $I, Example $data): void
     {
+        $this->prepareWorkDirForTemplate($I, $data['template_version'] ?? static::TEMPLATE_VERSION);
         $I->generateDockerCompose($this->buildCommand($data));
         $I->replaceImagesWithCustom();
         $I->startEnvironment();

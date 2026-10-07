@@ -20,6 +20,13 @@ abstract class AbstractCest
     protected const TEMPLATE_VERSION = 'master';
 
     /**
+     * Product metapackages required for pre-release template versions, keyed by template version.
+     */
+    private const TEMPLATE_PRODUCT_DEPENDENCIES = [
+        '2.4.10-alpha' => ['magento/product-enterprise-edition' => '^2.4.10-alpha1'],
+    ];
+
+    /**
      * Runs before each test to prepare the test environment.
      *
      * @param CliTester $I Codeception CLI tester instance.
@@ -79,5 +86,70 @@ abstract class AbstractCest
         $I->runDockerComposeCommand('ps');
         $I->stopEnvironment();
         $I->removeWorkDir();
+    }
+
+    /**
+     * Prepares the work dir for a template version other than TEMPLATE_VERSION.
+     *
+     * _before() has already prepared TEMPLATE_VERSION, so nothing is done for that version.
+     * For any other version the work dir is rebuilt from that template (using its own cache entry).
+     * Intended to be called by subclasses at the start of a test, e.g. with a dataset value.
+     *
+     * @param CliTester $I Codeception CLI tester instance.
+     * @param string $templateVersion
+     * @return void
+     */
+    protected function prepareWorkDirForTemplate(CliTester $I, string $templateVersion): void
+    {
+        if ($templateVersion === static::TEMPLATE_VERSION) {
+            return;
+        }
+
+        $I->cleanupWorkDir();
+
+        if ($I->isCacheWorkDirExists($templateVersion)) {
+            $I->restoreWorkDirFromCache($templateVersion);
+
+            return;
+        }
+
+        $I->cloneTemplateToWorkDir($templateVersion);
+        $I->createAuthJson();
+        $I->createArtifactsDir();
+        $dockerVersion = $I->getRootPackageVersion();
+        $I->createArtifactCurrentTestedCode('docker', $dockerVersion);
+        $I->addArtifactsRepoToComposer();
+        $I->addDependencyToComposer('magento/magento-cloud-docker', $dockerVersion);
+
+        $I->addEceToolsGitRepoToComposer();
+        $I->addDependencyToComposer(
+            'magento/ece-tools',
+            $I->getDependencyVersion('magento/ece-tools') ?: 'dev-develop as 2002.2.99'
+        );
+
+        if ($mccVersion = $I->getDependencyVersion('magento/magento-cloud-components')) {
+            $I->addCloudComponentsGitRepoToComposer();
+            $I->addDependencyToComposer('magento/magento-cloud-components', $mccVersion);
+        }
+
+        if ($mcpVersion = $I->getDependencyVersion('magento/magento-cloud-patches')) {
+            $I->addCloudPatchesGitRepoToComposer();
+            $I->addDependencyToComposer('magento/magento-cloud-patches', $mcpVersion);
+        }
+
+        if ($mqpVersion = $I->getDependencyVersion('magento/quality-patches')) {
+            $I->addQualityPatchesGitRepoToComposer();
+            $I->addDependencyToComposer('magento/quality-patches', $mqpVersion);
+        }
+
+        foreach (self::TEMPLATE_PRODUCT_DEPENDENCIES[$templateVersion] ?? [] as $package => $version) {
+            $I->assertTrue(
+                $I->addDependencyToComposer($package, $version),
+                'Can not add dependency ' . $package
+            );
+        }
+
+        $I->assertTrue($I->composerUpdate(), 'Composer update failed');
+        $I->cacheWorkDir($templateVersion);
     }
 }

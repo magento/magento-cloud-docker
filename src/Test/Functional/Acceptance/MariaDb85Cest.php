@@ -35,6 +35,10 @@ class MariaDb85Cest extends MariaDbCest
                 'version' => '12.3-rc',
                 'version_assert' => '12.3',
             ],
+            [
+                'version' => '12.3',
+                'template_version' => '2.4.10-alpha',
+            ],
         ];
     }
 }

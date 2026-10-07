@@ -8,7 +8,8 @@ declare(strict_types=1);
 namespace Magento\CloudDocker\Test\Functional\Acceptance;
 
 /**
- * RabbitMQ acceptance tests for PHP 8.5 — template 2.4.9 maps to 4.2 and 4.3.
+ * RabbitMQ acceptance tests for PHP 8.5 — template 2.4.9 runs against 4.2 and 4.3,
+ * template 2.4.10-alpha runs against 4.3.
  *
  * @group php85
  */
@@ -20,13 +21,37 @@ class RabbitMq85Cest extends RabbitMqCest
     protected const TEMPLATE_VERSION = '2.4.9';
 
     /**
+     * RabbitMQ versions tested for TEMPLATE_VERSION
+     */
+    private const BASE_RABBITMQ_VERSIONS = ['4.2', '4.3'];
+
+    /**
+     * RabbitMQ versions tested for each additional template version
+     */
+    private const ADDITIONAL_TEMPLATE_RABBITMQ_VERSIONS = [
+        '2.4.10-alpha' => ['4.3'],
+    ];
+
+    /**
      * @inheritDoc
      */
     protected function dataProvider(): array
     {
-        return [
-            ['version' => '4.2'],
-            ['version' => '4.3'],
-        ];
+        $datasets = [];
+
+        foreach (self::BASE_RABBITMQ_VERSIONS as $rabbitMqVersion) {
+            $datasets[] = ['version' => $rabbitMqVersion];
+        }
+
+        foreach (self::ADDITIONAL_TEMPLATE_RABBITMQ_VERSIONS as $templateVersion => $rabbitMqVersions) {
+            foreach ($rabbitMqVersions as $rabbitMqVersion) {
+                $datasets[] = [
+                    'version' => $rabbitMqVersion,
+                    'template_version' => $templateVersion,
+                ];
+            }
+        }
+
+        return $datasets;
     }
 }

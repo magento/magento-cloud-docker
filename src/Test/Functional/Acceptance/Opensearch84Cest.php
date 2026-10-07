@@ -24,6 +24,6 @@ class Opensearch84Cest extends OpensearchCest
      */
     protected function getVersions(): array
     {
-        return ['2.3', '2.4', '2.5', '2.12', '2.19', '3.0'];
+        return ['2.3', '2.4', '2.5', '2.12', '2.19', '3.0', '3.7'];
     }
 }
