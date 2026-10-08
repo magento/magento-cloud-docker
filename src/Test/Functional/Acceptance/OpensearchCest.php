@@ -25,7 +25,7 @@ class OpensearchCest extends AbstractCest
      */
     protected function getVersions(): array
     {
-        return ['1.1', '1.2', '1.3', '2.3', '2.4', '2.5', '2.12', '2.19', '3.0', '3.5'];
+        return ['1.1', '1.2', '1.3', '2.3', '2.4', '2.5', '2.12', '2.19', '3.0', '3.5', '3.7'];
     }
 
     /**
@@ -40,6 +40,7 @@ class OpensearchCest extends AbstractCest
      */
     public function testOpensearch(CliTester $I, Example $data): void
     {
+        $this->prepareWorkDirForTemplate($I, $data['template_version'] ?? static::TEMPLATE_VERSION);
         $I->generateDockerCompose($this->buildCommand($data));
         $I->replaceImagesWithCustom();
         $I->startEnvironment();
