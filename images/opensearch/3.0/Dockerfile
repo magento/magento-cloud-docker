@@ -8,10 +8,6 @@ RUN yum -y install zip && \
     rm -rf /var/cache
 USER opensearch
 
-# Java4Shell (CVE-2026-114938): disable the vulnerable Base64 intrinsic in the bundled JDK
-RUN mkdir -p config/jvm.options.d && \
-    echo "-XX:-UseBASE64Intrinsics" > config/jvm.options.d/java4shell.options
-
 RUN bin/opensearch-plugin install -b analysis-icu && \
     bin/opensearch-plugin install -b analysis-phonetic
 
