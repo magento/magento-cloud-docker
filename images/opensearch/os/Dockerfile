@@ -8,7 +8,7 @@ RUN yum -y install zip && \
     rm -rf /var/cache
 USER opensearch
 
-RUN bin/opensearch-plugin install -b analysis-icu && \
+{%java4shell_fix%}RUN bin/opensearch-plugin install -b analysis-icu && \
     bin/opensearch-plugin install -b analysis-phonetic
 
 COPY --chmod=755 docker-healthcheck.sh /docker-healthcheck.sh
