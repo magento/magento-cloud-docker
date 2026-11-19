@@ -31,7 +31,7 @@ class GeneratePhp extends Command
 
     private const VERSION_MAP = [
         '8.0' => '8.0.14',
-        '8.1' => '8.1.1',
+        '8.1' => '8.1',
         '8.2' => '8.2',
         '8.3' => '8.3',
         '8.4' => '8.4',

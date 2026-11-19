@@ -10,7 +10,7 @@ RUN wget -O mhsendmail.tar.gz https://github.com/mailhog/mhsendmail/archive/refs
     && go get . \
     && GOOS=linux GOARCH=${TARGETARCH} go build -o mhsendmail .
 
-FROM php:8.1.1-cli
+FROM php:8.1-cli
 
 ARG COMPOSER_VERSION=2.2.28
 ARG MAGENTO_ROOT=/app
@@ -30,11 +30,6 @@ ENV SENDMAIL_PATH /dev/null
 ENV PHPRC ${MAGENTO_ROOT}/php.ini
 
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl
-
-RUN sed -i \
-  's|deb http://security.debian.org/debian-security|deb [check-valid-until=no] https://archive.debian.org/debian-security|' \
-  /etc/apt/sources.list \
-  && rm -rf /var/lib/apt/lists/*
 
 # Configure Node.js version
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash
@@ -76,11 +71,9 @@ RUN apt-get update \
   libyaml-dev \
   libzip-dev \
   libzookeeper-mt-dev \
+  python3-yaml \
   zip \
   && rm -rf /var/lib/apt/lists/*
-
-# Install Python packages
-RUN pip3 install --upgrade setuptools && pip3 install pyyaml
 
 # Install Grunt
 RUN npm install -g grunt-cli
