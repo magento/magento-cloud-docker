@@ -23,6 +23,15 @@ class GenerateOs extends Command
     private const NAME = 'image:generate:os';
 
     /**
+     * Disables the Base64 intrinsic affected by Java4Shell (CVE-2026-114938) in the bundled JDK
+     */
+    private const JAVA4SHELL_FIX = '# Java4Shell (CVE-2026-114938): disable the vulnerable Base64 intrinsic'
+        . " in the bundled JDK\n"
+        . "RUN mkdir -p config/jvm.options.d && \\\n"
+        . '    echo "-XX:-UseBASE64Intrinsics" > config/jvm.options.d/java4shell.options'
+        . "\n\n";
+
+    /**
      * Configuration map for generating es images data
      *
      * @var array
@@ -47,19 +56,24 @@ class GenerateOs extends Command
             'real-version' => '2.5.0'
         ],
         '2.12' => [
-            'real-version' => '2.12.0'
+            'real-version' => '2.12.0',
+            'java4shell-fix' => true,
         ],
         '2.19' => [
-            'real-version' => '2.19.0'
+            'real-version' => '2.19.0',
+            'java4shell-fix' => true,
         ],
         '3.0' => [
-            'real-version' => '3.0.0'
+            'real-version' => '3.0.0',
+            'java4shell-fix' => true,
         ],
         '3.5' => [
-            'real-version' => '3.5.0'
+            'real-version' => '3.5.0',
+            'java4shell-fix' => true,
         ],
         '3.7' => [
-            'real-version' => '3.7.0'
+            'real-version' => '3.7.0',
+            'java4shell-fix' => true,
         ]
     ];
 
@@ -121,6 +135,7 @@ class GenerateOs extends Command
                     $this->filesystem->get($dockerfile),
                     [
                         '{%version%}' => $versionData['real-version'],
+                        '{%java4shell_fix%}' => empty($versionData['java4shell-fix']) ? '' : self::JAVA4SHELL_FIX,
                     ]
                 )
             );

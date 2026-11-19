@@ -1,8 +1,14 @@
 FROM opensearchproject/opensearch:{%version%}
 
-{%log4j_fix%}
+USER root
+RUN yum -y install zip && \
+    zip -q -d /usr/share/opensearch/lib/log4j-core-*.jar org/apache/logging/log4j/core/lookup/JndiLookup.class && \
+    yum remove -y zip && \
+    yum -y clean all && \
+    rm -rf /var/cache
+USER opensearch
 
-RUN bin/opensearch-plugin install -b analysis-icu && \
+{%java4shell_fix%}RUN bin/opensearch-plugin install -b analysis-icu && \
     bin/opensearch-plugin install -b analysis-phonetic
 
 COPY --chmod=755 docker-healthcheck.sh /docker-healthcheck.sh

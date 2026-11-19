@@ -10,7 +10,7 @@ RUN if [ $(uname -m) = "x86_64" ]; then mailhog_arch="amd64"; else mailhog_arch=
     && go get . \
     && GOOS=linux GOARCH=${mailhog_arch} go build -o mhsendmail .
 
-FROM php:8.1.1-fpm
+FROM php:8.1-fpm
 
 ARG MAGENTO_ROOT=/app
 
@@ -23,11 +23,6 @@ ENV SENDMAIL_PATH /dev/null
 ENV PHPRC ${MAGENTO_ROOT}/php.ini
 
 ENV PHP_EXTENSIONS bcmath bz2 calendar exif gd gettext intl mysqli opcache pdo_mysql redis soap sockets sodium sysvmsg sysvsem sysvshm xsl zip pcntl
-
-RUN sed -i \
-  's|deb http://security.debian.org/debian-security|deb [check-valid-until=no] https://archive.debian.org/debian-security|' \
-  /etc/apt/sources.list \
-  && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
 RUN apt-get update \
@@ -57,6 +52,7 @@ RUN apt-get update \
   libyaml-dev \
   libzip-dev \
   zip \
+  python3-yaml \
   && rm -rf /var/lib/apt/lists/*
 
 # Install MailHog
@@ -94,10 +90,7 @@ RUN docker-php-ext-install -j$(nproc) \
   zip \
   pcntl
 
-RUN pear channel-update pear.php.net \
-  && pear upgrade --force pear/Archive_Tar pear/PEAR \
-  && pecl channel-update pecl.php.net \
-  && pecl install -o -f \
+RUN pecl install -o -f \
   gnupg \
   mailparse \
   msgpack \
@@ -133,7 +126,9 @@ RUN mkdir -p /tmp/zoo \
   && phpize \
   && ./configure --with-libzookeeper-dir=../zookeeper-3.4.14/zookeeper-client/zookeeper-client-c \
   && make \
-  && make install
+  && make install \
+  && cd / \
+  && rm -rf /tmp/zoo
 RUN rm -f /usr/local/etc/php/conf.d/*sodium.ini \
   && rm -f /usr/local/lib/php/extensions/*/*sodium.so \
   && apt-get remove libsodium* -y \
