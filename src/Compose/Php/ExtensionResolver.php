@@ -168,13 +168,31 @@ class ExtensionResolver
                 '>=7.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_CORE],
             ],
             'blackfire' => [
-                '>=7.2 <8.5' => [
+                '>=7.2 <8.1' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
                     self::EXTENSION_OS_DEPENDENCIES => [
                         'gnupg2',
                         'ca-certificates',
                         'lsb-release',
                         'software-properties-common'
+                    ],
+                    // phpcs:disable
+                    self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
+curl -L https://packages.blackfire.io/gpg.key | gpg --dearmor > blackfire.io-archive-keyring.gpg
+install -o root -g root -m 644 blackfire.io-archive-keyring.gpg /etc/apt/trusted.gpg.d/
+echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.list.d/blackfire.list
+apt-get update
+apt-get install blackfire-php
+rm -rf /var/lib/apt/lists/*
+BASH
+// phpcs:enable
+                ],
+                '>=8.1 <8.5' => [
+                    self::EXTENSION_TYPE => self::EXTENSION_TYPE_INSTALLATION_SCRIPT,
+                    self::EXTENSION_OS_DEPENDENCIES => [
+                        'gnupg2',
+                        'ca-certificates',
+                        'lsb-release'
                     ],
                     // phpcs:disable
                     self::EXTENSION_INSTALLATION_SCRIPT => <<< BASH
@@ -312,11 +330,11 @@ BASH
             ],
             'oauth' => [
                 '>=7.0 <8.0' => [self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL],
-                '>=8.0 <8.5' => [
+                '>=8.0 <8.1' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_OS_DEPENDENCIES => ['libpcre3-dev'],
                 ],
-                '>=8.5' => [
+                '>=8.1' => [
                     self::EXTENSION_TYPE => self::EXTENSION_TYPE_PECL,
                     self::EXTENSION_OS_DEPENDENCIES => ['libpcre2-dev'],
                 ],
@@ -385,6 +403,8 @@ phpize
 ./configure --with-libzookeeper-dir=../zookeeper-3.4.14/zookeeper-client/zookeeper-client-c
 make
 make install
+cd /
+rm -rf /tmp/zoo
 BASH
 // phpcs:enable
                 ],
