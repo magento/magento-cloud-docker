@@ -299,7 +299,7 @@ class GeneratePhp extends Command
             }
         }
 
-        if ($this->semver::satisfies($phpVersion, '>=8.2')) {
+        if ($this->semver::satisfies($phpVersion, '>=8.1')) {
             $packages[] = 'python3-yaml';
             $pythonPackages = '';
         } else {

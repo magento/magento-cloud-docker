@@ -70,10 +70,12 @@ RUN apt-get update \
   libxslt1-dev \
   libyaml-dev \
   libzip-dev \
-  libzookeeper-mt-dev \
-  python3-yaml \
   zip \
+  python3-yaml \
   && rm -rf /var/lib/apt/lists/*
+
+# Install Python packages
+
 
 # Install Grunt
 RUN npm install -g grunt-cli
@@ -113,10 +115,7 @@ RUN docker-php-ext-install -j$(nproc) \
   zip \
   pcntl
 
-RUN pear channel-update pear.php.net \
-  && pear upgrade --force pear/Archive_Tar pear/PEAR \
-  && pecl channel-update pecl.php.net \
-  && pecl install -o -f \
+RUN pecl install -o -f \
   gnupg \
   mailparse \
   msgpack \
@@ -136,19 +135,23 @@ RUN curl -L https://packages.blackfire.io/gpg.key | gpg --dearmor > blackfire.io
   && rm -rf /var/lib/apt/lists/*
 RUN if [ $(uname -m) = "x86_64" ]; then ldap_arch="x86_64-linux-gnu"; else ldap_arch="aarch64-linux-gnu"; fi \
   && docker-php-ext-configure ldap --with-libdir=lib/${ldap_arch}
-RUN ARCH=$(dpkg-architecture -qDEB_HOST_MULTIARCH 2>/dev/null || echo "x86_64-linux-gnu") \
-  && mkdir -p /usr/local/zookeeper-compat/include /usr/local/zookeeper-compat/lib \
-  && cp /usr/include/zookeeper/*.h /usr/local/zookeeper-compat/include/ \
-  && cp /usr/lib/${ARCH}/libzookeeper_mt.a /usr/local/zookeeper-compat/lib/libzookeeper.a \
-  && mkdir -p /tmp/zoo \
+RUN mkdir -p /tmp/zoo \
   && cd /tmp/zoo \
   && git clone https://github.com/php-zookeeper/php-zookeeper.git \
-  && cd /tmp/zoo/php-zookeeper \
-  && phpize \
-  && ./configure --with-libzookeeper-dir=/usr/local/zookeeper-compat \
+  && curl -LO https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/zookeeper-3.4.14.tar.gz \
+  && tar -xf zookeeper-3.4.14.tar.gz \
+  && cp zookeeper-3.4.14/zookeeper-client/zookeeper-client-c/generated/zookeeper.jute.h zookeeper-3.4.14/zookeeper-client/zookeeper-client-c/include \
+  && cd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c \
+  && ./configure \
+  && sed -i 's/CFLAGS = -g -O2 -D_GNU_SOURCE/CFLAGS = -g -O2 -D_GNU_SOURCE -Wno-error=format-overflow -Wno-error=stringop-truncation/g' Makefile \
   && make \
   && make install \
-  && rm -rf /tmp/zoo /usr/local/zookeeper-compat
+  && ldconfig \
+  && cd /tmp/zoo/php-zookeeper \
+  && phpize \
+  && ./configure --with-libzookeeper-dir=../zookeeper-3.4.14/zookeeper-client/zookeeper-client-c \
+  && make \
+  && make install
 RUN rm -f /usr/local/etc/php/conf.d/*sodium.ini \
   && rm -f /usr/local/lib/php/extensions/*/*sodium.so \
   && apt-get remove libsodium* -y \
@@ -156,7 +159,8 @@ RUN rm -f /usr/local/etc/php/conf.d/*sodium.ini \
   && curl -sL https://github.com/jedisct1/libsodium/archive/1.0.18-RELEASE.tar.gz | tar xzf - -C  /tmp/libsodium \
   && cd /tmp/libsodium/libsodium-1.0.18-RELEASE/ \
   && ./configure \
-  && make && make install \
+  && make && make check \
+  && make install \
   && cd / \
   && rm -rf /tmp/libsodium \
   && pecl install -o -f libsodium
