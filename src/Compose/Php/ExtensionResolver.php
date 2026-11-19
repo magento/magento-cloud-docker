@@ -403,6 +403,8 @@ phpize
 ./configure --with-libzookeeper-dir=../zookeeper-3.4.14/zookeeper-client/zookeeper-client-c
 make
 make install
+cd /
+rm -rf /tmp/zoo
 BASH
 // phpcs:enable
                 ],

@@ -151,7 +151,9 @@ RUN mkdir -p /tmp/zoo \
   && phpize \
   && ./configure --with-libzookeeper-dir=../zookeeper-3.4.14/zookeeper-client/zookeeper-client-c \
   && make \
-  && make install
+  && make install \
+  && cd / \
+  && rm -rf /tmp/zoo
 RUN rm -f /usr/local/etc/php/conf.d/*sodium.ini \
   && rm -f /usr/local/lib/php/extensions/*/*sodium.so \
   && apt-get remove libsodium* -y \
