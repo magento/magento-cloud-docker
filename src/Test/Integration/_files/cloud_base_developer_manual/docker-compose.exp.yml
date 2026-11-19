@@ -78,7 +78,7 @@ services:
         condition: service_healthy
   web:
     hostname: web.magento2.docker
-    image: 'magento/magento-cloud-docker-nginx:1.24-1.4.6'
+    image: 'magento/magento-cloud-docker-nginx:1.30-1.4.6'
     extends: generic
     volumes:
       - 'magento-app:/app'
@@ -105,7 +105,7 @@ services:
         condition: service_started
   tls:
     hostname: tls.magento2.docker
-    image: 'magento/magento-cloud-docker-nginx:1.24-1.4.6'
+    image: 'magento/magento-cloud-docker-nginx:1.30-1.4.6'
     extends: generic
     networks:
       magento:
